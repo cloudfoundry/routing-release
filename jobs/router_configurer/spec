@@ -1,0 +1,26 @@
+---
+name: router_configurer
+
+templates:
+  router_configurer_ctl.erb: bin/router_configurer_ctl
+
+packages:
+  - pid_utils
+  - router_configurer
+
+properties:
+  router.router_configurer.listen_addr:
+    description: "Address at which to serve API requests"
+    default: "0.0.0.0:15002"
+
+  router.router_configurer.debug_addr:
+    description: "Address at which to serve debug info"
+    default: "0.0.0.0:17014"
+
+  router.router_configurer.log_level:
+    description: "Log level"
+    default: "info"
+
+  router.router_configurer.tcp_config_file:
+    description: "Config file of underlying tcp proxy"
+    default: "/var/vcap/jobs/haproxy/haproxy.conf"

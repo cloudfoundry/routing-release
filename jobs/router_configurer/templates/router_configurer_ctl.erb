@@ -1,0 +1,40 @@
+#!/bin/bash -e
+
+RUN_DIR=/var/vcap/sys/run/router_configurer
+LOG_DIR=/var/vcap/sys/log/router_configurer
+CONF_DIR=/var/vcap/jobs/router_configurer/config
+PIDFILE=$RUN_DIR/router_configurer.pid
+
+source /var/vcap/packages/pid_utils/pid_utils.sh
+
+case $1 in
+
+  start)
+    pid_guard $PIDFILE "router_configurer"
+
+    mkdir -p $RUN_DIR
+    mkdir -p $LOG_DIR
+
+    echo $$ > /var/vcap/sys/run/router_configurer/router_configurer.pid
+
+    exec /var/vcap/packages/router_configurer/bin/router-configurer \
+      -address=<%= p("router.router_configurer.listen_addr") %> \
+      -debugAddr=<%= p("router.router_configurer.debug_addr") %> \
+      -logLevel=<%= p("router.router_configurer.log_level") %> \
+      -tcpLoadBalancerConfig=<%= p("router.router_configurer.tcp_config_file") %> \
+      2>> $LOG_DIR/router_configurer.stderr.log \
+      1> >(tee -a $LOG_DIR/router_configurer.stdout.log | logger -t vcap.router_configurer)
+
+    ;;
+
+  stop)
+    kill_and_wait $PIDFILE
+
+    ;;
+
+  *)
+    echo "Usage: router_configurer_ctl {start|stop}"
+
+    ;;
+
+esac

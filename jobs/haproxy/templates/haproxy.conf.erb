@@ -1,0 +1,22 @@
+global
+    log 127.0.0.1   syslog info
+    daemon
+    user vcap
+    group vcap
+    maxconn 64000
+    spread-checks 4
+
+defaults
+    log global
+    timeout connect 30000ms
+    maxconn 64000
+    <% if p("request_timeout_in_seconds").to_i > 0 %>
+        timeout client <%= p("request_timeout_in_seconds").to_i * 1000 %>ms
+        timeout server <%= p("request_timeout_in_seconds").to_i * 1000 %>ms
+    <% end %>
+
+frontend http-in
+    mode http
+    bind :<%= p("haproxy.faux_port") %>
+    option forwardfor
+    reqadd X-Forwarded-Proto:\ http

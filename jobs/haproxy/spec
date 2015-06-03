@@ -1,0 +1,21 @@
+---
+name: haproxy
+
+description: "The tcp proxy layer used by router to achieve tcp routing functionality."
+
+packages:
+  - pid_utils
+  - haproxy
+
+templates:
+  haproxy.conf.erb: config/haproxy.conf
+  haproxy_ctl: bin/haproxy_ctl
+
+properties:
+  haproxy.request_timeout_in_seconds:
+    description: "Server and client timeouts in seconds"
+    default: 300
+
+  haproxy.faux_port:
+    description: "Port that HAProxy listens on when it comes up for first time to make sure HAProxy process is started"
+    default: 1234

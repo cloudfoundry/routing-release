@@ -1,0 +1,30 @@
+/bin/
+/pkg/
+.blobs/
+blobs/
+config/dev.yml
+config/private.yml
+/*.yml
+stub.yml
+.final_builds/jobs/**/*.tgz
+.final_builds/packages/**/*.tgz
+.dev_builds
+output/
+tmp/
+releases/**/*.tgz
+dev_releases
+*.swp
+*~
+*#
+#*
+
+# gosub and friends
+src/github.com/vito/gosub
+# lol bet you were looking for this
+src/github.com/codegangsta/cli
+
+tags
+.tags
+
+# built .test files from run-inigo compile check
+*.test

@@ -1,0 +1,167 @@
+#!/bin/sh
+
+set -e
+
+PATH=/var/vcap/packages/haproxy/bin:$PATH
+
+NAME=haproxy
+DAEMON=$(which haproxy)
+CONFIG=/var/vcap/jobs/haproxy/config/haproxy.conf
+DESC="HAProxy"
+USER=vcap
+
+PID_FILE=/var/vcap/sys/run/haproxy/pid
+
+TIMESTAMP=$(which date)
+
+test -x "${DAEMON}"
+test -f "${CONFIG}"
+
+RETVAL=0
+
+ensure_dir() {
+    DIR=$1
+    if [ ! -d "${DIR}" ] ; then
+        mkdir -p "${DIR}"
+        chown -R "${USER}":"${USER}" "${DIR}"
+        chmod 755 "${DIR}"
+    fi
+}
+
+ensure_dirs() {
+    ensure_dir "$(dirname "${PID_FILE}")"
+}
+
+remove_pid() {
+    rm -f "${PID_FILE}"
+    rmdir "$(dirname "${PID_FILE}")" || :
+}
+
+start_haproxy() {
+    status_haproxy
+    if [ "${RETVAL}" = 0 ]; then
+        echo "HAProxy is currently running"
+    else
+        RETVAL=0
+        ensure_dirs
+        echo "$("${TIMESTAMP}"): Starting HAProxy"
+        set +e
+        "${DAEMON}" -f "${CONFIG}" -D -p "${PID_FILE}" 0<&-
+        RETVAL=$?
+        set -e
+        case "${RETVAL}" in
+            0)
+                echo "$("${TIMESTAMP}"): Finished starting HAProxy"
+                echo "SUCCESS"
+                ;;
+            *)
+                echo "$("${TIMESTAMP}"): Errored starting HAProxy"
+                echo "$("${TIMESTAMP}"): Errored starting HAProxy" >&2
+                remove_pid
+                echo "FAILED - check logs"
+                RETVAL=1
+                ;;
+        esac
+    fi
+}
+
+stop_haproxy() {
+    status_haproxy
+    if [ "${RETVAL}" = 0 ]; then
+        set +e
+        for pid in $(cat "${PID_FILE}"); do
+            kill ${pid} || RETVAL=$?
+        done
+        set -e
+        if [ "${RETVAL}" = 0 ]; then
+            remove_pid
+        else
+            echo "FAILED - check logs"
+        fi
+    else
+        echo "HAProxy not running"
+    fi
+}
+
+# RETVAL = 0 if running, != 0 if stopped
+status_haproxy() {
+    if [ -f "${PID_FILE}" ]; then
+        RETVAL=0
+        set +e
+        for pid in $(cat "${PID_FILE}"); do
+            kill -0 "${pid}" > /dev/null 2>&1 || RETVAL=3
+        done
+        kill -0 $(cat "${PID_FILE}") > /dev/null 2>&1
+        if [ $? != 0 ]; then
+            RETVAL=3
+        fi
+        set -e
+    else
+        RETVAL=1
+    fi
+}
+
+restart_haproxy() {
+    stop_haproxy
+    start_haproxy
+}
+
+reload_haproxy() {
+    status_haproxy
+    if [ "${RETVAL}" = 0 ]; then
+        RETVAL=0
+        ensure_dirs
+        echo "$("${TIMESTAMP}"): reloading HAProxy"
+        set +e
+        "${DAEMON}" -f "${CONFIG}" -p "${PID_FILE}" -D -sf $(cat $PID_FILE) 0<&-
+        RETVAL=$?
+        set -e
+        case "${RETVAL}" in
+            0)
+                echo "$("${TIMESTAMP}"): Finished reloading HAProxy"
+                echo "SUCCESS"
+                ;;
+            *)
+                echo "$("${TIMESTAMP}"): Errored reloading HAProxy"
+                echo "$("${TIMESTAMP}"): Errored reloading HAProxy" >&2
+                remove_pid
+                echo "FAILED - check logs"
+                RETVAL=1
+                ;;
+        esac
+    else
+        echo "HAProxy is not currently running"
+    fi
+}
+
+case "$1" in
+    start)
+        echo -n "Starting ${DESC}: "
+        start_haproxy
+        echo "${NAME}."
+        ;;
+    stop)
+        echo -n "Stopping ${DESC}: "
+        stop_haproxy
+        echo "${NAME}."
+        ;;
+    status)
+        status_haproxy
+        ;;
+    reload)
+        echo -n "Reloading ${DESC}: "
+        reload_haproxy
+        echo "${NAME}."
+        ;;
+    force-reload|restart)
+        echo -n "Restarting ${DESC}: "
+        restart_haproxy
+        echo "${NAME}."
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|reload|force-reload}" >&2
+        RETVAL=1
+        ;;
+esac
+
+exit "${RETVAL}"

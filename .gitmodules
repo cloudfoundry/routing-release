@@ -1,0 +1,42 @@
+[submodule "src/github.com/GESoftware-CF/cf-tcp-router"]
+	path = src/github.com/GESoftware-CF/cf-tcp-router
+	url = https://github.com/GESoftware-CF/cf-tcp-router
+[submodule "src/github.com/GESoftware-CF/cf-tcp-router-acceptance-tests"]
+	path = src/github.com/GESoftware-CF/cf-tcp-router-acceptance-tests
+	url = https://github.com/GESoftware-CF/cf-tcp-router-acceptance-tests
+[submodule "src/github.com/tedsuo/rata"]
+	path = src/github.com/tedsuo/rata
+	url = https://github.com/tedsuo/rata
+[submodule "src/github.com/onsi/ginkgo"]
+	path = src/github.com/onsi/ginkgo
+	url = https://github.com/onsi/ginkgo
+[submodule "src/github.com/onsi/gomega"]
+	path = src/github.com/onsi/gomega
+	url = https://github.com/onsi/gomega
+[submodule "src/github.com/bmizerany/pat"]
+	path = src/github.com/bmizerany/pat
+	url = https://github.com/bmizerany/pat
+[submodule "src/github.com/cloudfoundry-incubator/cf-debug-server"]
+	path = src/github.com/cloudfoundry-incubator/cf-debug-server
+	url = https://github.com/cloudfoundry-incubator/cf-debug-server
+[submodule "src/github.com/cloudfoundry-incubator/cf-lager"]
+	path = src/github.com/cloudfoundry-incubator/cf-lager
+	url = https://github.com/cloudfoundry-incubator/cf-lager
+[submodule "src/github.com/pivotal-golang/lager"]
+	path = src/github.com/pivotal-golang/lager
+	url = https://github.com/pivotal-golang/lager
+[submodule "src/github.com/cloudfoundry/dropsonde"]
+	path = src/github.com/cloudfoundry/dropsonde
+	url = https://github.com/cloudfoundry/dropsonde
+[submodule "src/github.com/tedsuo/ifrit"]
+	path = src/github.com/tedsuo/ifrit
+	url = https://github.com/tedsuo/ifrit
+[submodule "src/github.com/cloudfoundry/gosteno"]
+	path = src/github.com/cloudfoundry/gosteno
+	url = https://github.com/cloudfoundry/gosteno/
+[submodule "src/github.com/gogo/protobuf"]
+	path = src/github.com/gogo/protobuf
+	url = https://github.com/gogo/protobuf
+[submodule "src/github.com/nu7hatch/gouuid"]
+	path = src/github.com/nu7hatch/gouuid
+	url = https://github.com/nu7hatch/gouuid
