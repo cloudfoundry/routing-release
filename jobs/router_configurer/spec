@@ -11,7 +11,7 @@ packages:
 properties:
   router.router_configurer.listen_addr:
     description: "Address at which to serve API requests"
-    default: "0.0.0.0:15002"
+    default: "0.0.0.0:9999"
 
   router.router_configurer.debug_addr:
     description: "Address at which to serve debug info"

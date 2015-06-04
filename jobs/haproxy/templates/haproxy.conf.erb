@@ -10,13 +10,13 @@ defaults
     log global
     timeout connect 30000ms
     maxconn 64000
-    <% if p("haproxy.request_timeout_in_seconds").to_i > 0 %>
-        timeout client <%= p("haproxy.request_timeout_in_seconds").to_i * 1000 %>ms
-        timeout server <%= p("haproxy.request_timeout_in_seconds").to_i * 1000 %>ms
+    <% if p("router.haproxy.request_timeout_in_seconds").to_i > 0 %>
+        timeout client <%= p("router.haproxy.request_timeout_in_seconds").to_i * 1000 %>ms
+        timeout server <%= p("router.haproxy.request_timeout_in_seconds").to_i * 1000 %>ms
     <% end %>
 
 frontend http-in
     mode http
-    bind :<%= p("haproxy.faux_port") %>
+    bind :<%= p("router.haproxy.faux_port") %>
     option forwardfor
     reqadd X-Forwarded-Proto:\ http

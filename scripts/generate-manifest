@@ -1,0 +1,71 @@
+#!/bin/bash
+
+set -e -x
+
+manifest_generation=$(dirname $0)/../manifest-generation
+
+function usage() {
+  >&2 echo "    Usage:
+    $0 /path/to/stub/director-uuid.yml \\
+       /path/to/stub/ 
+
+    Ex:
+    $0 ~/deployments/bosh-lite/director.yml \\
+       manifest-generation/bosh-lite-stubs 
+"
+  exit 1
+}
+
+director_uuid=$1
+stubs_dir=$2
+property_overrides=$stubs_dir/property-overrides.yml
+instance_counts=$stubs_dir/instance-count-overrides.yml
+persistent_disk=$stubs_dir/persistent-disk-overrides.yml
+iaas_settings=$stubs_dir/iaas-settings.yml
+
+
+if [ ! -z "$3" ]; then
+  >&2 echo "Too many arguments"
+  usage
+fi
+
+if [ ! -f "${director_uuid}" ]; then
+  >&2 echo "Director UUID stub '${director_uuid}' is not a regular file"
+  usage
+fi
+
+if [ ! -f "${property_overrides}" ]; then
+  >&2 echo "Did not find Property Overrides stub '${property_overrides}' in '${stubs_dir}' directory"
+  usage
+fi
+
+if [ ! -f "${instance_counts}" ]; then
+  >&2 echo "Did not find Instance Count Overrides stub '${instance_counts}'  in '${stubs_dir}' directory"
+  usage
+fi
+
+if [ ! -f "${persistent_disk}" ]; then
+  >&2 echo "Did not find Persistent Disk Overrides stub '${persistent_disk}'  in '${stubs_dir}' directory"
+  usage
+fi
+
+if [ ! -f "${iaas_settings}" ]; then
+  >&2 echo "Did not find IaaS Setting stub '${iaas_settings}'  in '${stubs_dir}' directory"
+  usage
+fi
+
+tmpdir=$(mktemp -d /tmp/router-manifest.XXXXX)
+
+spiff merge \
+  ${manifest_generation}/router.yml \
+  ${property_overrides} \
+  ${instance_counts} \
+  ${persistent_disk} \
+  ${iaas_settings} \
+  > ${tmpdir}/router.yml
+
+  spiff merge \
+  ${manifest_generation}/misc-templates/bosh.yml \
+  ${director_uuid} \
+  ${tmpdir}/router.yml
+

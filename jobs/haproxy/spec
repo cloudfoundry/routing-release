@@ -12,10 +12,10 @@ templates:
   haproxy_ctl: bin/haproxy_ctl
 
 properties:
-  haproxy.request_timeout_in_seconds:
+  router.haproxy.request_timeout_in_seconds:
     description: "Server and client timeouts in seconds"
     default: 300
 
-  haproxy.faux_port:
+  router.haproxy.faux_port:
     description: "Port that HAProxy listens on when it comes up for first time to make sure HAProxy process is started"
     default: 1234

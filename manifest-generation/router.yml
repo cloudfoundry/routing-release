@@ -1,0 +1,105 @@
+name: cf-tcp-router
+
+releases:
+- name: router
+  version: latest
+
+compilation:
+  network: router1
+  reuse_compilation_vms: true
+  workers: 6
+  cloud_properties: (( iaas_settings.compilation_cloud_properties ))
+
+update:
+  canaries: 1
+  canary_watch_time: 5000-120000
+  max_in_flight: 1
+  serial: false
+  update_watch_time: 5000-120000
+
+networks:
+- name: router1
+  subnets: (( iaas_settings.subnet_configs.router1.subnets ))
+  type: manual
+- name: router2
+  subnets: (( iaas_settings.subnet_configs.router2.subnets ))
+  type: manual
+- name: router3
+  subnets: (( iaas_settings.subnet_configs.router3.subnets ))
+  type: manual
+
+resource_pools:
+  - name: haproxy_z1
+    network: router1
+    stemcell: (( iaas_settings.stemcell ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.haproxy_z1.cloud_properties ))
+
+  - name: haproxy_z2
+    network: router2
+    stemcell: (( iaas_settings.stemcell ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.haproxy_z2.cloud_properties ))
+
+  - name: haproxy_z3
+    network: router3
+    stemcell: (( iaas_settings.stemcell ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.haproxy_z3.cloud_properties ))
+
+jobs:
+  - name: haproxy_z1
+    templates: (( base_job_templates.haproxy ))
+    instances: (( instance_count_overrides.haproxy_z1.instances || 1 ))
+    persistent_disk: (( persistent_disk_overrides.haproxy_z1 || 1024 ))
+    resource_pool: haproxy_z1
+    networks:
+      - name: router1
+        static_ips: (( static_ips(0) ))
+    update:
+      serial: true
+      max_in_flight: 1
+  - name: haproxy_z2
+    templates: (( base_job_templates.haproxy ))
+    instances: (( instance_count_overrides.haproxy_z2.instances || 0 ))
+    persistent_disk: (( persistent_disk_overrides.haproxy_z2 || 1024 ))
+    resource_pool: haproxy_z2
+    networks:
+      - name: router2
+        static_ips: (( static_ips(0) ))
+    update:
+      serial: true
+      max_in_flight: 1
+  - name: haproxy_z3
+    templates: (( base_job_templates.haproxy ))
+    instances: (( instance_count_overrides.haproxy_z3.instances || 0 ))
+    persistent_disk: (( persistent_disk_overrides.haproxy_z3 || 1024 ))
+    resource_pool: haproxy_z3
+    networks:
+      - name: router3
+        static_ips: (( static_ips(0) ))
+    update:
+      serial: true
+      max_in_flight: 1
+
+property_overrides: (( merge ))
+iaas_settings: (( merge ))
+instance_count_overrides: (( merge ))
+persistent_disk_overrides: (( merge ))
+
+properties:
+  router:
+    router_configurer:
+      debug_addr: (( property_overrides.router_configurer.debug_addr ))
+      tcp_config_file: (( property_overrides.router_configurer.tcp_config_file ))
+      listen_addr: (( property_overrides.router_configurer.listen_addr )) 
+      log_level: (( property_overrides.router_configurer.log_level )) 
+    haproxy:
+      request_timeout_in_seconds: (( property_overrides.haproxy.request_timeout_in_seconds || 300 ))
+      faux_port: (( property_overrides.haproxy.faux_port || 1234 ))
+
+base_job_templates:
+  haproxy:
+    - name: haproxy
+      release: router
+    - name: router_configurer
+      release: router
+
+
