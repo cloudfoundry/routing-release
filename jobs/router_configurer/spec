@@ -23,4 +23,4 @@ properties:
 
   router.router_configurer.tcp_config_file:
     description: "Config file of underlying tcp proxy"
-    default: "/var/vcap/jobs/haproxy/haproxy.conf"
+    default: "/var/vcap/jobs/haproxy/config/haproxy.conf"
