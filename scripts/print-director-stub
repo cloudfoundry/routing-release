@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -e
+
+printf "director_uuid: %s" $(bosh status --uuid)
