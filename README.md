@@ -46,7 +46,7 @@ as you switch in and out of the directory.
 
 2. Run unit tests
 
-		ginkgo -r -p
+        ./scripts/run-unit-tests
 
 ---
 
