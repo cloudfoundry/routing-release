@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e -x
+set -e
 
 manifest_generation=$(dirname $0)/../manifest-generation
 
