@@ -12,7 +12,7 @@ When working on individual components of TCP Router, work out of the submodules 
 See [Initial Setup](#initial-setup).
 
 Run the individual component unit tests as you work on them using
-[ginkgo](https://github.com/onsi/ginkgo)
+[ginkgo](https://github.com/onsi/ginkgo).
 
 ---
 ##<a name="initial-setup"></a> Initial Setup
