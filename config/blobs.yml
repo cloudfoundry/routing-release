@@ -1,1 +1,13 @@
---- {}
+---
+golang/go1.4.linux-amd64.tar.gz:
+  object_id: fc60477a-b459-4c07-a9e1-e6d0aca856c1
+  sha: cd82abcb0734f82f7cf2d576c9528cebdafac4c6
+  size: 63289725
+haproxy/haproxy-1.5.12.tar.gz:
+  object_id: 82d0e243-0d33-4492-bf1c-cded4e2b1cdd
+  sha: c488f7f108ddefb558bd86e7cbc1b71636ada856
+  size: 1344813
+haproxy/pcre-8.36.tar.gz:
+  object_id: d4433f56-9d7b-47d4-b7c3-944b1a61128d
+  sha: fb537757756818133d8157ec878bc11f5a93ef4d
+  size: 2009464
