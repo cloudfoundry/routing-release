@@ -3,6 +3,7 @@ property_overrides:
     tcp_config_file: /var/vcap/jobs/haproxy/config/haproxy.conf
     listen_addr: 0.0.0.0:9999
     log_level: info
-    debug_addr: ~  
+    debug_addr: ~
+    start_frontend_port: 50000
   haproxy:
     faux_port: 1234
