@@ -99,3 +99,33 @@ as you switch in and out of the directory.
         bosh -n deploy
 
 
+## Running Acceptance tests
+
+### Test setup
+
+To run the Router Acceptance tests, you will need:
+- a running router deployment
+- an environment variable `ROUTER_API_CONFIG` which points to a `.json` file that contains the router api endpoint
+
+The following commands will setup the `ROUTER_API_CONFIG` for a [bosh-lite](https://github.com/cloudfoundry/bosh-lite)
+installation. Replace config as appropriate for your environment.
+
+
+```bash
+cat > router_config.json <<EOF
+{
+  "address": "10.244.8.2",
+  "port": 9999
+}
+EOF
+export ROUTER_API_CONFIG=$PWD/router_config.json
+```
+
+### Running the tests
+
+After correctly setting the `ROUTER_API_CONFIG` environment variable, the following command will run the tests:
+
+```
+./scripts/run-acceptance-tests
+```
+
