@@ -22,6 +22,8 @@ dev_releases
 src/github.com/vito/gosub
 # lol bet you were looking for this
 src/github.com/codegangsta/cli
+src/github.com/cloudfoundry-incubator/candiedyaml/
+src/github.com/cloudfoundry-incubator/spiff/
 
 tags
 .tags
