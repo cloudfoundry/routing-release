@@ -112,13 +112,13 @@ installation. Replace config as appropriate for your environment.
 
 
 ```bash
-cat > router_config.json <<EOF
+cd ~/workspace/router-release
+cat > src/github.com/GESoftware-CF/cf-tcp-router-acceptance-tests/router_config.json <<EOF
 {
   "address": "10.244.8.2",
   "port": 9999
 }
 EOF
-export ROUTER_API_CONFIG=$PWD/router_config.json
 ```
 
 ### Running the tests

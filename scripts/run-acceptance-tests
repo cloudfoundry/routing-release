@@ -9,7 +9,7 @@ set -e
     manifest-generation/bosh-lite-stubs \
     > ~/deployments/bosh-lite/router.yml
 
-bosh create release --force
+bosh create release --force --name router
 bosh -t lite -n upload release
 bosh -t lite -d ~/deployments/bosh-lite/router.yml -n deploy
 
