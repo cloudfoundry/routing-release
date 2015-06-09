@@ -1,7 +1,7 @@
-name: cf-tcp-router
+name: cf-warden-routing
 
 releases:
-- name: router
+- name: cf-routing
   version: latest
 
 compilation:
@@ -29,49 +29,49 @@ networks:
   type: manual
 
 resource_pools:
-  - name: haproxy_z1
+  - name: tcp_router_z1
     network: router1
     stemcell: (( iaas_settings.stemcell ))
-    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.haproxy_z1.cloud_properties ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.tcp_router_z1.cloud_properties ))
 
-  - name: haproxy_z2
+  - name: tcp_router_z2
     network: router2
     stemcell: (( iaas_settings.stemcell ))
-    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.haproxy_z2.cloud_properties ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.tcp_router_z2.cloud_properties ))
 
-  - name: haproxy_z3
+  - name: tcp_router_z3
     network: router3
     stemcell: (( iaas_settings.stemcell ))
-    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.haproxy_z3.cloud_properties ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.tcp_router_z3.cloud_properties ))
 
 jobs:
-  - name: haproxy_z1
+  - name: tcp_router_z1
     templates: (( base_job_templates.haproxy ))
-    instances: (( instance_count_overrides.haproxy_z1.instances || 1 ))
-    persistent_disk: (( persistent_disk_overrides.haproxy_z1 || 1024 ))
-    resource_pool: haproxy_z1
+    instances: (( instance_count_overrides.tcp_router_z1.instances || 1 ))
+    persistent_disk: (( persistent_disk_overrides.tcp_router_z1 || 1024 ))
+    resource_pool: tcp_router_z1
     networks:
       - name: router1
         static_ips: (( static_ips(0) ))
     update:
       serial: true
       max_in_flight: 1
-  - name: haproxy_z2
+  - name: tcp_router_z2
     templates: (( base_job_templates.haproxy ))
-    instances: (( instance_count_overrides.haproxy_z2.instances || 0 ))
-    persistent_disk: (( persistent_disk_overrides.haproxy_z2 || 1024 ))
-    resource_pool: haproxy_z2
+    instances: (( instance_count_overrides.tcp_router_z2.instances || 0 ))
+    persistent_disk: (( persistent_disk_overrides.tcp_router_z2 || 1024 ))
+    resource_pool: tcp_router_z2
     networks:
       - name: router2
         static_ips: (( static_ips(0) ))
     update:
       serial: true
       max_in_flight: 1
-  - name: haproxy_z3
+  - name: tcp_router_z3
     templates: (( base_job_templates.haproxy ))
-    instances: (( instance_count_overrides.haproxy_z3.instances || 0 ))
-    persistent_disk: (( persistent_disk_overrides.haproxy_z3 || 1024 ))
-    resource_pool: haproxy_z3
+    instances: (( instance_count_overrides.tcp_router_z3.instances || 0 ))
+    persistent_disk: (( persistent_disk_overrides.tcp_router_z3 || 1024 ))
+    resource_pool: tcp_router_z3
     networks:
       - name: router3
         static_ips: (( static_ips(0) ))
@@ -99,8 +99,8 @@ properties:
 base_job_templates:
   haproxy:
     - name: haproxy
-      release: router
+      release: cf-routing
     - name: router_configurer
-      release: router
+      release: cf-routing
 
 
