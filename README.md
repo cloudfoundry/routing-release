@@ -126,19 +126,23 @@ After correctly setting the `ROUTER_API_CONFIG` environment variable, the follow
 
 These instructions assume the release has been deployed to bosh-lite
 
-1. Start the tcp-sample-listener on your local workstation
+1. Start the `tcp-sample-listener` on your local workstation
 	```
 	$ src/github.com/GESoftware-CF/cf-tcp-router-acceptance-tests/assets/tcp-sample-receiver/tcp-sample-receiver --address HOST:PORT
 	```
 	Substitute your workstation IP and a port of your choosing for `HOST:PORT` (e.g. 10.80.130.159:3333)
 
-2. Reserve an external port on the router and map it to the host and port tcp-sample-listener is listening on. By default, the API server listens on port 9999.
+2. Using an API call, reserve an external port on the router and map it to the host and port `tcp-sample-listener` is listening on. By default, the API server listens on port 9999.
 
 	```
-	$ curl 10.244.8.2:9999/v0/external_ports -X POST -d '[{"backend_ip": "10.80.130.159", "backend_port":3333}]'
+	$ curl 10.244.8.2:9999/v0/external_ports -X POST -d '[{"backend_ip": "HOST", "backend_port":"PORT"}]'
+	{"external_ip":"10.244.8.2","external_port":60000}
 	```
-
-3. Use netcat to send messages to the listener via the router
+	Substitute the same workstation IP and a port you used in step #1 for `backend_ip` and `backed_port` (e.g. 10.80.130.159 and 3333). 
+	
+	The response will include the external port on the router which is mapped to the `HOST` and `PORT` you provided.
+	
+3. You can then use netcat to send messages to the external port on the router, and verify they are received by `tcp-sample-listener`.
 	```
 	$ nc 10.244.8.2 50001
 	isn't
