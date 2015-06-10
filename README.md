@@ -77,17 +77,10 @@ as you switch in and out of the directory.
 
         go get github.com/cloudfoundry-incubator/spiff
 
-1. Generate a deployment stub with the BOSH director UUID
-
-        mkdir -p ~/deployments/bosh-lite
-        cd ~/workspace/router-release
-        ./scripts/print-director-stub > ~/deployments/bosh-lite/director.yml
-
 1. Generate and target router's manifest:
 
         cd ~/workspace/router-release
         ./scripts/generate-manifest \
-            ~/deployments/bosh-lite/director.yml \
             manifest-generation/bosh-lite-stubs \
             > ~/deployments/bosh-lite/router.yml
         bosh deployment ~/deployments/bosh-lite/router.yml
