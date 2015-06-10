@@ -142,7 +142,7 @@ These instructions assume the release has been deployed to bosh-lite
 2. Reserve an external port on the router and map it to the host and port tcp-sample-listener is listening on. By default, the API server listens on port 9999.
 
 	```
-	$ curl 10.244.8.2:9999/v0/external_ports -X POST -d '[{"backend_ip": "10.80.130.159", "backend_port":3333}
+	$ curl 10.244.8.2:9999/v0/external_ports -X POST -d '[{"backend_ip": "10.80.130.159", "backend_port":3333}]'
 	```
 
 3. Use netcat to send messages to the listener via the router
