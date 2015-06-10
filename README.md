@@ -94,31 +94,5 @@ as you switch in and out of the directory.
 
 ## Running Acceptance tests
 
-### Test setup
-
-To run the Router Acceptance tests, you will need:
-- a running router deployment
-- an environment variable `ROUTER_API_CONFIG` which points to a `.json` file that contains the router api endpoint
-
-The following commands will setup the `ROUTER_API_CONFIG` for a [bosh-lite](https://github.com/cloudfoundry/bosh-lite)
-installation. Replace config as appropriate for your environment.
-
-
-```bash
-cd ~/workspace/router-release
-cat > src/github.com/GESoftware-CF/cf-tcp-router-acceptance-tests/router_config.json <<EOF
-{
-  "address": "10.244.8.2",
-  "port": 9999
-}
-EOF
-```
-
-### Running the tests
-
-After correctly setting the `ROUTER_API_CONFIG` environment variable, the following command will run the tests:
-
-```
-./scripts/run-acceptance-tests
-```
+See the README for [Router Acceptance Tests](https://github.com/GESoftware-CF/cf-tcp-router-acceptance-tests)
 
