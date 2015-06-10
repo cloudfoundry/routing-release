@@ -1,0 +1,17 @@
+---
+platform: linux
+
+image: docker:///cloudfoundry/diego-pipeline
+
+inputs:
+  - name: router-release
+
+params:
+  DEPLOYMENTS_DIR: ~
+  ENVIRONMENT_NAME: ~
+  INFRASTRUCTURE: ~
+  BOSH_USER: ~
+  BOSH_PASSWORD: ~
+
+run:
+  path: router-release/router-deployments-runtime/ci/generate_deployment_manifests

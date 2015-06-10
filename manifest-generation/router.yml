@@ -77,7 +77,7 @@ jobs:
         static_ips: (( static_ips(0) ))
     update:
       serial: true
-      max_in_flight: 1
+      max_in_flight: 1  
 
 property_overrides: (( merge ))
 iaas_settings: (( merge ))

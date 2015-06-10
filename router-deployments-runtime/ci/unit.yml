@@ -1,0 +1,13 @@
+---
+platform: linux
+
+image: docker:///cloudfoundry/diego-pipeline
+
+inputs:
+  - name: router-release
+
+params:
+  PACKAGE:
+
+run:
+  path: router-release/router-deployments-runtime/ci/run_unit

@@ -1,0 +1,34 @@
+#!/bin/bash
+
+set -e -x -u
+
+pushd router-release
+
+export BOSH_USER=${BOSH_USER}
+export BOSH_PASSWORD=${BOSH_PASSWORD}
+bosh -n target ${BOSH_TARGET} lite
+director_uuid=/tmp/director.yml
+
+printf "director_uuid: %s" $(bosh status --uuid) > ${director_uuid}
+
+acceptance_tests_manifest=${PWD}/${ACCEPTANCE_TESTS_MANIFEST}
+
+spiff merge \
+  ${acceptance_tests_manifest} \
+  ${director_uuid} \
+  > ../router-acceptance-test-deployment.yml
+
+bosh deployment ../router-acceptance-test-deployment.yml
+bosh -n deploy
+
+set +e
+bosh run errand router_acceptance_tests --download-logs --keep-alive
+errand_result=$?
+set -e
+
+original_name=$(ls router_acceptance_tests.0.*.tgz)
+new_name=$(echo $original_name | sed 's/\.0\./\.0.0.0./')
+mv $original_name $new_name
+exit $errand_result
+
+popd

@@ -1,0 +1,142 @@
+resources:
+- name: router-release
+  type: git
+  source:
+    branch: wip_96509810
+    uri: https://github.com/GESoftware-CF/router-release.git
+
+- name: router-dev-release
+  type: s3
+  source:
+    bucket: router-release-blobs
+    regexp: router-(.*).tgz
+    access_key_id: {{s3_access_key_id}}
+    secret_access_key: {{s3_secret_access_key}}
+
+- name: version
+  type: semver
+  source:
+    access_key_id: {{s3_access_key_id}}
+    secret_access_key: {{s3_secret_access_key}}
+    bucket: router-release-blobs
+    initial_version: 0.0.0
+    key: current-version
+    region_name: us-east-1
+
+- name: bosh-lite-stemcell
+  type: bosh-io-stemcell
+  source:
+    name: bosh-warden-boshlite-centos-go_agent
+
+- name: orinoco-router-deployment
+  type: bosh-deployment
+  source:
+    target: https://192.168.50.4:25555
+    username: {{bosh_username}}
+    password: {{bosh_password}}
+    deployment: cf-warden-routing
+    ignore_ssl: true
+
+- name: router-final-release
+  type: s3
+  source:
+    bucket: router-final-releases
+    regexp: router-(.*).tgz
+    access_key_id: {{s3_access_key_id}}
+    secret_access_key: {{s3_secret_access_key}}
+
+jobs:
+- name: unit
+  plan:
+  - get: router-release
+    trigger: true
+  - task: unit
+    file: router-release/router-deployments-runtime/ci/unit.yml
+
+- name: create-router-release
+  serial: true
+  serial_groups:
+    - pipeline-router
+  plan:
+  - aggregate:
+    - get: router-release
+      trigger: true
+      passed:
+      - unit
+      params:
+        submodules: all
+    - get: version
+      trigger: false
+      params:
+        bump: minor
+  - put: version
+    params:
+      file: version/number
+  - task: create-release
+    file: router-release/router-deployments-runtime/ci/create_router_dev_release.build.yml
+  - put: router-dev-release
+    params:
+      from: create-release/cf-routing-([\d\.]+).tgz
+
+- name: deploy-and-test
+  serial: true
+  serial_groups:
+    - pipeline-router
+  plan:
+  - aggregate:
+    - get: router-release
+      passed:
+      - create-router-release
+      params:
+        submodules: all
+    - get: version
+      passed:
+      - create-router-release    
+    - get: router-release-tarball
+      resource: router-dev-release
+      trigger: true
+      passed:
+        - create-router-release    
+    - get: bosh-stemcell
+      resource: bosh-lite-stemcell
+  - task: generate-deployment-manifests
+    file: router-release/router-deployments-runtime/ci/generate_deployment_manifests.build.yml
+    config:
+      params:
+        DEPLOYMENTS_DIR: router-release
+        ENVIRONMENT_NAME: orinoco
+        INFRASTRUCTURE: bosh-lite
+        BOSH_USER: {{bosh_username}}
+        BOSH_PASSWORD: {{bosh_password}}
+  - put: orinoco-router-deployment
+    params:
+      manifest: generate-deployment-manifests/router-deployment.yml
+      releases: [router-release-tarball/*.tgz]
+      stemcells: [bosh-stemcell/*.tgz]
+  - task: router-acceptance-tests
+    file: router-release/router-deployments-runtime/ci/run_acceptance_tests.build.yml
+    config:
+      params:
+        ACCEPTANCE_TESTS_MANIFEST: router-deployments-runtime/orinoco/deployments/orinoco-router-acceptance-tests.yml
+        BOSH_TARGET: 192.168.50.4
+        BOSH_USER: {{bosh_username}}
+        BOSH_PASSWORD: {{bosh_password}}
+- name: create-final-release
+  serial: true
+  plan:
+  - aggregate:
+    - get: router-release
+      trigger: false
+      passed:
+      - deploy-and-test
+      params:
+        submodules: all
+    - get: version
+      trigger: false
+      passed:
+      - deploy-and-test
+  - task: create-final-release
+    file: router-release/router-deployments-runtime/ci/create_router_final_release.build.yml
+  - put: router-final-release
+    params:
+      from: create-final-release/cf-routing-([\d\.]+).tgz

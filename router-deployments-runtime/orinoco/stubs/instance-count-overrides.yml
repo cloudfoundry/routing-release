@@ -1,0 +1,5 @@
+instance_count_overrides:
+  - name: tcp_router_z2
+    instances: 0
+  - name: tcp_router_z3
+    instances: 0

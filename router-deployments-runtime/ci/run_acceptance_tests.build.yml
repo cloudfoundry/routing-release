@@ -1,0 +1,16 @@
+---
+platform: linux
+
+image: docker:///cloudfoundry/diego-pipeline
+
+inputs:
+  - name: router-release
+
+params:
+  BOSH_USER: ~
+  BOSH_PASSWORD: ~
+  BOSH_TARGET: ~
+  ACCEPTANCE_TESTS_MANIFEST: ~
+
+run:
+  path: router-release/router-deployments-runtime/ci/run_acceptance_tests

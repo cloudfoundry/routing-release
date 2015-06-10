@@ -33,6 +33,9 @@ function sync_package() {
 }
 
 sync_package router_configurer              -app  github.com/GESoftware-CF/cf-tcp-router/cmd/... &
+sync_package acceptance_tests \
+  -test github.com/GESoftware-CF/cf-tcp-router-acceptance-tests/... \
+  -app github.com/onsi/ginkgo/ginkgo &
 
 wait
 

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+
+./scripts/generate-manifest  manifest-generation/bosh-lite-stubs  > ~/deployments/bosh-lite/router.yml
+
+bosh create release --force --name cf-routing
+bosh -t lite -n upload release
+bosh -t lite -d ~/deployments/bosh-lite/router.yml -n deploy
+
+pushd ./src/github.com/GESoftware-CF/cf-tcp-router-acceptance-tests/
+  export ROUTER_API_CONFIG=`pwd`/router_config.json
+  ginkgo -r -nodes=3 "$@" router/ 
+  unset ROUTER_API_CONFIG
+popd

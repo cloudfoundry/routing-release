@@ -1,0 +1,5 @@
+#!/bin/bash
+
+root_dir=$(dirname $0)
+
+${root_dir}/../scripts/generate-manifest ${root_dir}/stubs

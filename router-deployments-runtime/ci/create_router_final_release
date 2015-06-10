@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e -x -u
+
+#Copy private.yml from private repo before creating final bosh release
+
+FINAL_VERSION=`cat version/number`
+
+pushd router-release
+  echo "----- Create final release"
+  bosh --parallel 4 -n create release --final --with-tarball --version $FINAL_VERSION 
+
+  mv releases/cf-routing/*.tgz ../cf-routing-$FINAL_VERSION.tgz
+popd

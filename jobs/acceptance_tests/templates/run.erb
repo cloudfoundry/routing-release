@@ -1,0 +1,32 @@
+#!/bin/bash -l
+
+set -e -x
+
+export GOROOT=$(readlink -nf /var/vcap/packages/golang_1.4)
+export PATH=${GOROOT}/bin:${PATH}
+
+export GOPATH=/var/vcap/packages/acceptance_tests
+export PATH=${GOPATH}/bin:${PATH}
+
+export GOPATH=${PWD}/Godeps/_workspace:${GOPATH}
+export PATH=${PWD}/Godeps/_workspace/bin:${PATH}
+
+export ROUTER_API_CONFIG=/var/vcap/jobs/acceptance_tests/bin/config.json
+
+mkdir -p /var/vcap/sys/log/acceptance_tests
+cd /var/vcap/packages/acceptance_tests/src/github.com/GESoftware-CF/cf-tcp-router-acceptance-tests
+
+EXITSTATUS=0
+nodes=<%= properties.acceptance_tests.nodes %>
+verbose=<%= properties.acceptance_tests.verbose ? "-v" : "" %>
+bin/test -randomizeAllSpecs $verbose -skipPackage=$packagesToSkip -nodes=$nodes -keepGoing || EXITSTATUS=$?
+
+echo "Acceptance Tests Complete; exit status: $EXITSTATUS"
+
+for i in /var/vcap/sys/log/acceptance_tests/*.txt; do
+  if [ -e "$i" ]; then
+    mv $i $i.log # needed to make download-logs work
+  fi
+done
+
+exit $EXITSTATUS

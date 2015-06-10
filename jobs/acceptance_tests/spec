@@ -1,0 +1,19 @@
+---
+name: acceptance_tests
+
+templates:
+  run.erb: bin/run
+  config.json.erb: bin/config.json
+
+packages:
+ - golang_1.4
+ - acceptance_tests
+ - golang_1.4
+
+properties:
+ acceptance_tests.nodes:
+    default: 4
+    description: The number of parallel test executors to spawn. The larger the number the higher the stress on the system.
+ acceptance_tests.verbose:
+    default: false
+    description: Whether to pass the -v flag to router acceptance tests
