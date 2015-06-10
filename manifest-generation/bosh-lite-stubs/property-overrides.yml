@@ -4,6 +4,6 @@ property_overrides:
     listen_addr: 0.0.0.0:9999
     log_level: info
     debug_addr: ~
-    start_frontend_port: 50000
+    starting_external_port: 50000
   haproxy:
     faux_port: 1234

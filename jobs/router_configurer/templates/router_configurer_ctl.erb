@@ -22,7 +22,7 @@ case $1 in
       -debugAddr=<%= p("router.router_configurer.debug_addr") %> \
       -logLevel=<%= p("router.router_configurer.log_level") %> \
       -tcpLoadBalancerConfig=<%= p("router.router_configurer.tcp_config_file") %> \
-      -startFrontendPort=<%= p("router.router_configurer.start_frontend_port") %> \
+      -startExternalPort=<%= p("router.router_configurer.starting_external_port") %> \
       2>> $LOG_DIR/router_configurer.stderr.log \
       1> >(tee -a $LOG_DIR/router_configurer.stdout.log | logger -t vcap.router_configurer)
 

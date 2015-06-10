@@ -2,12 +2,7 @@
 
 set -e
 
-./scripts/print-director-stub > ~/deployments/bosh-lite/director.yml
-
-./scripts/generate-manifest \
-    ~/deployments/bosh-lite/director.yml \
-    manifest-generation/bosh-lite-stubs \
-    > ~/deployments/bosh-lite/router.yml
+./scripts/generate-manifest  manifest-generation/bosh-lite-stubs  > ~/deployments/bosh-lite/router.yml
 
 bosh create release --force --name cf-routing
 bosh -t lite -n upload release

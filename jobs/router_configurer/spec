@@ -25,5 +25,5 @@ properties:
     description: "Config file of underlying tcp proxy"
     default: "/var/vcap/jobs/haproxy/config/haproxy.conf"
 
-  router.router_configurer.start_frontend_port:
+  router.router_configurer.starting_external_port:
     description: "Port number to be used as starting number to handout dynamic port mapping"
