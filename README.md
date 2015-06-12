@@ -80,9 +80,7 @@ as you switch in and out of the directory.
 1. Generate and target router's manifest:
 
         cd ~/workspace/router-release
-        ./scripts/generate-manifest \
-            manifest-generation/bosh-lite-stubs \
-            > ~/deployments/bosh-lite/router.yml
+        ./bosh-lite/make-manifest > ~/deployments/bosh-lite/router.yml
         bosh deployment ~/deployments/bosh-lite/router.yml
 
 1. Do the BOSH Dance:
