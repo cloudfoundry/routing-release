@@ -2,7 +2,7 @@ resources:
 - name: router-release
   type: git
   source:
-    branch: wip_96509810
+    branch: master
     uri: https://github.com/GESoftware-CF/router-release.git
 
 - name: router-dev-release
