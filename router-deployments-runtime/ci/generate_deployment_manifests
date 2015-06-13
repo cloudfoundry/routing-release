@@ -16,7 +16,7 @@ director_uuid=/tmp/director.yml
 printf "director_uuid: %s" $(bosh status --uuid) > ${director_uuid}
 
 spiff merge \
-  manifest-generation/router.yml \
+  templates/router.yml \
   ${stubs_path}/property-overrides.yml \
   ${stubs_path}/instance-count-overrides.yml \
   ${stubs_path}/persistent-disk-overrides.yml \
@@ -24,7 +24,7 @@ spiff merge \
   > /tmp/router.yml
 
   spiff merge \
-  manifest-generation/misc-templates/bosh.yml \
+  templates/router-deployment.yml \
   ${director_uuid} \
   /tmp/router.yml \
   > ../router-deployment.yml

@@ -2,14 +2,14 @@
 
 set -e
 
-manifest_generation=$(dirname $0)/../manifest-generation
+templates=$(dirname $0)/../templates
 
 function usage() {
   >&2 echo "    Usage:
     $0 /path/to/stub/ 
 
     Ex:
-    $0 manifest-generation/bosh-lite-stubs 
+    $0 bosh-lite/stubs 
 "
   exit 1
 }
@@ -51,7 +51,7 @@ director_uuid=${tmpdir}/director.yml
 printf "director_uuid: %s" $(bosh status --uuid) > ${director_uuid}
 
 spiff merge \
-  ${manifest_generation}/router.yml \
+  ${templates}/router.yml \
   ${property_overrides} \
   ${instance_counts} \
   ${persistent_disk} \
@@ -59,7 +59,7 @@ spiff merge \
   > ${tmpdir}/router.yml
 
   spiff merge \
-  ${manifest_generation}/misc-templates/bosh.yml \
+  ${templates}/router-deployment.yml \
   ${director_uuid} \
   ${tmpdir}/router.yml
 
