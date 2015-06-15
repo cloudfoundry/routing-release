@@ -2,4 +2,8 @@
 
 root_dir=$(dirname $0)
 
-${root_dir}/../scripts/generate-manifest ${root_dir}/stubs
+mkdir -p ${root_dir}/manifests
+
+${root_dir}/../scripts/generate-manifest ${root_dir}/stubs > ${root_dir}/manifests/cf-routing-manifest.yml
+
+bosh deployment ${root_dir}/manifests/cf-routing-manifest.yml

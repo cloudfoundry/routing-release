@@ -18,6 +18,7 @@ dev_releases
 *#
 #*
 
+bosh-lite/manifests
 # gosub and friends
 src/github.com/vito/gosub
 # lol bet you were looking for this
@@ -25,7 +26,6 @@ src/github.com/codegangsta/cli
 src/github.com/cloudfoundry-incubator/candiedyaml/
 src/github.com/cloudfoundry-incubator/spiff/
 router-deployments-runtime/ci/credentials.yml
-
 tags
 .tags
 
