@@ -7,3 +7,4 @@ property_overrides:
     starting_external_port: 50000
   haproxy:
     faux_port: 1234
+  cf_deployment_name: cf-warden

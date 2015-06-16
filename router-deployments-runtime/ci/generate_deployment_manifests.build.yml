@@ -9,7 +9,7 @@ inputs:
 params:
   DEPLOYMENTS_DIR: ~
   ENVIRONMENT_NAME: ~
-  INFRASTRUCTURE: ~
+  BOSH_TARGET: ~
   BOSH_USER: ~
   BOSH_PASSWORD: ~
 

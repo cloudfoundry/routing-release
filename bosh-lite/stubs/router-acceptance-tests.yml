@@ -1,0 +1,80 @@
+director_uuid: (( merge ))
+
+name: boshlite-router-acceptance-tests
+
+releases:
+- name: cf-routing
+  version: latest
+
+networks:
+- name: default
+  type: manual
+  subnets:
+  - cloud_properties: {}
+    range: 10.244.14.0/30
+    reserved:
+    - 10.244.14.1
+    static:
+    - 10.244.14.2
+  - cloud_properties: {}
+    range: 10.244.14.4/30
+    reserved:
+    - 10.244.14.5
+    static: []
+  - cloud_properties: {}
+    range: 10.244.14.8/30
+    reserved:
+    - 10.244.14.9
+    static: []
+  - cloud_properties: {}
+    range: 10.244.14.12/30
+    reserved:
+    - 10.244.14.13
+    static: []
+  - cloud_properties: {}
+    range: 10.244.14.16/30
+    reserved:
+    - 10.244.14.17
+    static: []
+  - cloud_properties: {}
+    range: 10.244.14.20/30
+    reserved:
+    - 10.244.14.21
+    static: []
+  - cloud_properties: {}
+    range: 10.244.14.24/30
+    reserved:
+    - 10.244.14.25
+    static: []
+
+resource_pools:
+- name: small_errand
+  network: default
+  stemcell:
+    name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+    version: latest
+  cloud_properties: {}
+
+compilation:
+  network: default
+  reuse_compilation_vms: true
+  workers: 6
+  cloud_properties: {}
+
+update:
+  canaries: 1
+  canary_watch_time: 30000-600000
+  max_in_flight: 3
+  serial: false
+  update_watch_time: 5000-600000
+
+jobs:
+- name: router_acceptance_tests
+  templates:
+  - name: acceptance_tests
+    release: cf-routing
+  lifecycle: errand
+  instances: 1
+  networks:
+  - name: default
+  resource_pool: small_errand

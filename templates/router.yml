@@ -1,4 +1,4 @@
-name: cf-warden-routing
+name: (( property_overrides.cf_deployment_name "-routing" ))
 
 releases:
 - name: cf-routing
@@ -19,14 +19,14 @@ update:
 
 networks:
 - name: router1
+  type: manual
   subnets: (( iaas_settings.subnet_configs.router1.subnets ))
-  type: manual
 - name: router2
+  type: manual
   subnets: (( iaas_settings.subnet_configs.router2.subnets ))
-  type: manual
 - name: router3
-  subnets: (( iaas_settings.subnet_configs.router3.subnets ))
   type: manual
+  subnets: (( iaas_settings.subnet_configs.router3.subnets ))
 
 resource_pools:
   - name: tcp_router_z1

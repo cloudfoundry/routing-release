@@ -10,56 +10,36 @@ networks:
 - name: default
   type: manual
   subnets:
-  - cloud_properties: {}
-    range: 10.244.14.0/30
-    reserved:
-    - 10.244.14.1
-    static:
-    - 10.244.14.2
-  - cloud_properties: {}
-    range: 10.244.14.4/30
-    reserved:
-    - 10.244.14.5
-    static: []
-  - cloud_properties: {}
-    range: 10.244.14.8/30
-    reserved:
-    - 10.244.14.9
-    static: []
-  - cloud_properties: {}
-    range: 10.244.14.12/30
-    reserved:
-    - 10.244.14.13
-    static: []
-  - cloud_properties: {}
-    range: 10.244.14.16/30
-    reserved:
-    - 10.244.14.17
-    static: []
-  - cloud_properties: {}
-    range: 10.244.14.20/30
-    reserved:
-    - 10.244.14.21
-    static: []
-  - cloud_properties: {}
-    range: 10.244.14.24/30
-    reserved:
-    - 10.244.14.25
-    static: []
+    - range: 10.0.128.0/20
+      reserved: [10.0.128.2 - 10.0.128.9]
+      static:
+        - &discovery_static_ip 10.0.128.10
+      dns: [10.0.0.2]
+      gateway: 10.0.128.1
+      cloud_properties:
+        security_groups: [BOSH-CloudFormation-BOSHSecurityGroup-YD8774L5GB6V]
+        subnet: subnet-785c2821
 
 resource_pools:
 - name: small_errand
   network: default
   stemcell:
-    name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
     version: latest
-  cloud_properties: {}
+  cloud_properties:
+    instance_type: m3.medium
+    availability_zone: us-east-1c
 
 compilation:
   network: default
   reuse_compilation_vms: true
-  workers: 6
-  cloud_properties: {}
+  workers: 3
+  cloud_properties:
+    instance_type: c4.large
+    availability_zone: us-east-1c
+    ephemeral_disk:
+      size: 30000 # in MB
+      type: gp2
 
 update:
   canaries: 1
@@ -78,3 +58,7 @@ jobs:
   networks:
   - name: default
   resource_pool: small_errand
+properties:
+  acceptance_tests:
+    router_api_address: "10.0.32.10"
+    router_api_port: 9999

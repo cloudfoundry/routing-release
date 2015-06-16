@@ -23,18 +23,18 @@ resources:
     key: current-version
     region_name: us-east-1
 
-- name: bosh-lite-stemcell
+- name: bosh-stemcell
   type: bosh-io-stemcell
   source:
-    name: bosh-warden-boshlite-centos-go_agent
+    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
 
 - name: orinoco-router-deployment
   type: bosh-deployment
   source:
-    target: https://192.168.50.4:25555
+    target: https://52.6.203.246:25555
     username: {{bosh_username}}
     password: {{bosh_password}}
-    deployment: cf-warden-routing
+    deployment: cf-routing
     ignore_ssl: true
 
 - name: router-final-release
@@ -98,14 +98,14 @@ jobs:
       passed:
         - create-router-release    
     - get: bosh-stemcell
-      resource: bosh-lite-stemcell
+      resource: bosh-stemcell
   - task: generate-deployment-manifests
     file: cf-routing-release/router-deployments-runtime/ci/generate_deployment_manifests.build.yml
     config:
       params:
         DEPLOYMENTS_DIR: router-release
         ENVIRONMENT_NAME: orinoco
-        INFRASTRUCTURE: bosh-lite
+        BOSH_TARGET: 52.6.203.246
         BOSH_USER: {{bosh_username}}
         BOSH_PASSWORD: {{bosh_password}}
   - put: orinoco-router-deployment
@@ -118,7 +118,7 @@ jobs:
     config:
       params:
         ACCEPTANCE_TESTS_MANIFEST: router-deployments-runtime/orinoco/deployments/orinoco-router-acceptance-tests.yml
-        BOSH_TARGET: 192.168.50.4
+        BOSH_TARGET: 52.6.203.246
         BOSH_USER: {{bosh_username}}
         BOSH_PASSWORD: {{bosh_password}}
 - name: create-final-release

@@ -17,3 +17,9 @@ properties:
  acceptance_tests.verbose:
     default: false
     description: Whether to pass the -v flag to router acceptance tests
+ acceptance_tests.router_api_address:
+    default: "10.244.8.2"
+    description: Router API IP Address
+ acceptance_tests.router_api_port:
+    default: 9999
+    description: Router API IP Port

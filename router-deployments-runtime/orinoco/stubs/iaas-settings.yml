@@ -1,130 +1,58 @@
 iaas_settings:
   stemcell:
-    name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
     version: latest
   subnet_configs:
     - name: router1
-      type: manual
       subnets:
-      - cloud_properties: {}
-        range: 10.244.8.0/30
-        reserved:
-        - 10.244.8.1
-        static:
-        - 10.244.8.2
-      - cloud_properties: {}
-        range: 10.244.8.4/30
-        reserved:
-        - 10.244.8.5
-        static: []
-      - cloud_properties: {}
-        range: 10.244.8.8/30
-        reserved:
-        - 10.244.8.9
-        static: []
-      - cloud_properties: {}
-        range: 10.244.8.12/30
-        reserved:
-        - 10.244.8.13
-        static: []
-      - cloud_properties: {}
-        range: 10.244.8.16/30
-        reserved:
-        - 10.244.8.17
-        static: []
-      - cloud_properties: {}
-        range: 10.244.8.20/30
-        reserved:
-        - 10.244.8.21
-        static: []
-      - cloud_properties: {}
-        range: 10.244.8.24/30
-        reserved:
-        - 10.244.8.25
-        static: []
+        - range: 10.0.32.0/20
+          reserved: [10.0.32.2 - 10.0.32.9]
+          static:
+            - &discovery_static_ip 10.0.32.10
+          dns: [10.0.0.2]
+          gateway: 10.0.32.1
+          cloud_properties:
+            security_groups: [BOSH-CloudFormation-BOSHSecurityGroup-YD8774L5GB6V]
+            subnet: subnet-dda739f6
     - name: router2
-      type: manual
       subnets:
-      - cloud_properties: {}
-        range: 10.244.10.0/30
-        reserved:
-        - 10.244.10.1
-        static:
-        - 10.244.10.2
-      - cloud_properties: {}
-        range: 10.244.10.4/30
-        reserved:
-        - 10.244.10.5
-        static: []
-      - cloud_properties: {}
-        range: 10.244.10.8/30
-        reserved:
-        - 10.244.10.9
-        static: []
-      - cloud_properties: {}
-        range: 10.244.10.12/30
-        reserved:
-        - 10.244.10.13
-        static: []
-      - cloud_properties: {}
-        range: 10.244.10.16/30
-        reserved:
-        - 10.244.10.17
-        static: []
-      - cloud_properties: {}
-        range: 10.244.10.20/30
-        reserved:
-        - 10.244.10.21
-        static: []
-      - cloud_properties: {}
-        range: 10.244.10.24/30
-        reserved:
-        - 10.244.10.25
-        static: []
+        - range: 10.0.64.0/20
+          reserved: [10.0.64.2 - 10.0.64.9]
+          static:
+            - &discovery_static_ip 10.0.64.10
+          dns: [10.0.0.2]
+          gateway: 10.0.64.1
+          cloud_properties:
+            security_groups: [BOSH-CloudFormation-BOSHSecurityGroup-YD8774L5GB6V]
+            subnet: subnet-e1a1f296
     - name: router3
       type: manual
       subnets:
-      - cloud_properties: {}
-        range: 10.244.12.0/30
-        reserved:
-        - 10.244.12.1
-        static:
-        - 10.244.12.2
-      - cloud_properties: {}
-        range: 10.244.12.4/30
-        reserved:
-        - 10.244.12.5
-        static: []
-      - cloud_properties: {}
-        range: 10.244.12.8/30
-        reserved:
-        - 10.244.12.9
-        static: []
-      - cloud_properties: {}
-        range: 10.244.12.12/30
-        reserved:
-        - 10.244.12.13
-        static: []
-      - cloud_properties: {}
-        range: 10.244.12.16/30
-        reserved:
-        - 10.244.12.17
-        static: []
-      - cloud_properties: {}
-        range: 10.244.12.20/30
-        reserved:
-        - 10.244.12.21
-        static: []
-      - cloud_properties: {}
-        range: 10.244.12.24/30
-        reserved:
-        - 10.244.12.25
-        static: []
-  compilation_cloud_properties: {}
+        - range: 10.0.128.0/20
+          reserved: [10.0.128.2 - 10.0.128.9]
+          static:
+            - &discovery_static_ip 10.0.128.10
+          dns: [10.0.0.2]
+          gateway: 10.0.128.1
+          cloud_properties:
+            security_groups: [BOSH-CloudFormation-BOSHSecurityGroup-YD8774L5GB6V]
+            subnet: subnet-785c2821
+  compilation_cloud_properties:
+    instance_type: c4.large
+    availability_zone: us-east-1a
+    ephemeral_disk:
+      size: 30000 # in MB
+      type: gp2
   resource_pool_cloud_properties:
     - name: tcp_router_z1
-      cloud_properties: {}
+      cloud_properties:
+        instance_type: m3.medium
+        availability_zone: us-east-1a
     - name: tcp_router_z2
-      cloud_properties: {}
+      cloud_properties:
+        instance_type: m3.medium
+        availability_zone: us-east-1b
     - name: tcp_router_z3
-      cloud_properties: {}
+      cloud_properties:
+        instance_type: m3.medium
+        availability_zone: us-east-1c
