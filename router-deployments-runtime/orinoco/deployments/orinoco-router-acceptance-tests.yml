@@ -18,7 +18,7 @@ networks:
       gateway: 10.0.128.1
       cloud_properties:
         security_groups: [BOSH-CloudFormation-BOSHSecurityGroup-YD8774L5GB6V]
-        subnet: subnet-785c2821
+        subnet: subnet-605b2f39
 
 resource_pools:
 - name: small_errand
