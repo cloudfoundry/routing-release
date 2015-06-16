@@ -17,7 +17,7 @@ networks:
       dns: [10.0.0.2]
       gateway: 10.0.128.1
       cloud_properties:
-        security_groups: [BOSH-CloudFormation-BOSHSecurityGroup-YD8774L5GB6V]
+        security_groups: [BOSH-CloudFormation-InternalSecurityGroup-1CMPPF9YMH794]
         subnet: subnet-605b2f39
 
 resource_pools:

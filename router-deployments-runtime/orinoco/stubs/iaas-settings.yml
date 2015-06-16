@@ -12,7 +12,7 @@ iaas_settings:
           dns: [10.0.0.2]
           gateway: 10.0.32.1
           cloud_properties:
-            security_groups: [BOSH-CloudFormation-BOSHSecurityGroup-YD8774L5GB6V]
+            security_groups: [BOSH-CloudFormation-InternalSecurityGroup-1CMPPF9YMH794]
             subnet: subnet-925fc1b9
     - name: router2
       subnets:
@@ -23,7 +23,7 @@ iaas_settings:
           dns: [10.0.0.2]
           gateway: 10.0.64.1
           cloud_properties:
-            security_groups: [BOSH-CloudFormation-BOSHSecurityGroup-YD8774L5GB6V]
+            security_groups: [BOSH-CloudFormation-InternalSecurityGroup-1CMPPF9YMH794]
             subnet: subnet-03a9fa74
     - name: router3
       type: manual
@@ -35,7 +35,7 @@ iaas_settings:
           dns: [10.0.0.2]
           gateway: 10.0.128.1
           cloud_properties:
-            security_groups: [BOSH-CloudFormation-BOSHSecurityGroup-YD8774L5GB6V]
+            security_groups: [BOSH-CloudFormation-InternalSecurityGroup-1CMPPF9YMH794]
             subnet: subnet-605b2f39
   compilation_cloud_properties:
     instance_type: c4.large
