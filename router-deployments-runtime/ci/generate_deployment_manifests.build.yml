@@ -4,7 +4,7 @@ platform: linux
 image: docker:///cloudfoundry/diego-pipeline
 
 inputs:
-  - name: router-release
+  - name: cf-routing-release
 
 params:
   DEPLOYMENTS_DIR: ~

@@ -1,5 +1,5 @@
 resources:
-- name: router-release
+- name: cf-routing-release
   type: git
   source:
     branch: master
@@ -48,7 +48,7 @@ resources:
 jobs:
 - name: unit
   plan:
-  - get: router-release
+  - get: cf-routing-release
     trigger: true
   - task: unit
     file: cf-routing-release/router-deployments-runtime/ci/unit.yml
@@ -59,7 +59,7 @@ jobs:
     - pipeline-router
   plan:
   - aggregate:
-    - get: router-release
+    - get: cf-routing-release
       trigger: true
       passed:
       - unit
@@ -84,7 +84,7 @@ jobs:
     - pipeline-router
   plan:
   - aggregate:
-    - get: router-release
+    - get: cf-routing-release
       passed:
       - create-router-release
       params:
@@ -103,7 +103,7 @@ jobs:
     file: cf-routing-release/router-deployments-runtime/ci/generate_deployment_manifests.build.yml
     config:
       params:
-        DEPLOYMENTS_DIR: router-release
+        DEPLOYMENTS_DIR: cf-routing-release
         ENVIRONMENT_NAME: orinoco
         BOSH_TARGET: 52.6.203.246
         BOSH_USER: {{bosh_username}}
@@ -125,7 +125,7 @@ jobs:
   serial: true
   plan:
   - aggregate:
-    - get: router-release
+    - get: cf-routing-release
       trigger: false
       passed:
       - deploy-and-test
