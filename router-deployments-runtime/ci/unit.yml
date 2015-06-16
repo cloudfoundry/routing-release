@@ -10,4 +10,4 @@ params:
   PACKAGE:
 
 run:
-  path: router-release/router-deployments-runtime/ci/run_unit
+  path: cf-routing-release/router-deployments-runtime/ci/run_unit

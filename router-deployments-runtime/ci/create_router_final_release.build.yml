@@ -8,4 +8,4 @@ inputs:
   - name: version
 
 run:
-  path: router-release/router-deployments-runtime/ci/create_router_final_release
+  path: cf-routing-release/router-deployments-runtime/ci/create_router_final_release

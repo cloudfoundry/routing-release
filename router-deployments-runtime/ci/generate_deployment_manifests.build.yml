@@ -14,4 +14,4 @@ params:
   BOSH_PASSWORD: ~
 
 run:
-  path: router-release/router-deployments-runtime/ci/generate_deployment_manifests
+  path: cf-routing-release/router-deployments-runtime/ci/generate_deployment_manifests

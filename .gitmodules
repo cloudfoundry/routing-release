@@ -1,9 +1,3 @@
-[submodule "src/github.com/GESoftware-CF/cf-tcp-router"]
-	path = src/github.com/GESoftware-CF/cf-tcp-router
-	url = https://github.com/GESoftware-CF/cf-tcp-router
-[submodule "src/github.com/GESoftware-CF/cf-tcp-router-acceptance-tests"]
-	path = src/github.com/GESoftware-CF/cf-tcp-router-acceptance-tests
-	url = https://github.com/GESoftware-CF/cf-tcp-router-acceptance-tests
 [submodule "src/github.com/tedsuo/rata"]
 	path = src/github.com/tedsuo/rata
 	url = https://github.com/tedsuo/rata
@@ -40,3 +34,9 @@
 [submodule "src/github.com/nu7hatch/gouuid"]
 	path = src/github.com/nu7hatch/gouuid
 	url = https://github.com/nu7hatch/gouuid
+[submodule "src/github.com/cloudfoundry-incubator/cf-tcp-router"]
+	path = src/github.com/cloudfoundry-incubator/cf-tcp-router
+	url = https://github.com/cloudfoundry-incubator/cf-tcp-router
+[submodule "src/github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests"]
+	path = src/github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests
+	url = https://github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests

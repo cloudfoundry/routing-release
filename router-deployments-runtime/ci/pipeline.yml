@@ -3,7 +3,7 @@ resources:
   type: git
   source:
     branch: master
-    uri: https://github.com/GESoftware-CF/router-release.git
+    uri: https://github.com/cloudfoundry-incubator/cf-routing-release.git
 
 - name: router-dev-release
   type: s3
@@ -51,7 +51,7 @@ jobs:
   - get: router-release
     trigger: true
   - task: unit
-    file: router-release/router-deployments-runtime/ci/unit.yml
+    file: cf-routing-release/router-deployments-runtime/ci/unit.yml
 
 - name: create-router-release
   serial: true
@@ -73,7 +73,7 @@ jobs:
     params:
       file: version/number
   - task: create-release
-    file: router-release/router-deployments-runtime/ci/create_router_dev_release.build.yml
+    file: cf-routing-release/router-deployments-runtime/ci/create_router_dev_release.build.yml
   - put: router-dev-release
     params:
       from: create-release/cf-routing-([\d\.]+).tgz
@@ -100,7 +100,7 @@ jobs:
     - get: bosh-stemcell
       resource: bosh-lite-stemcell
   - task: generate-deployment-manifests
-    file: router-release/router-deployments-runtime/ci/generate_deployment_manifests.build.yml
+    file: cf-routing-release/router-deployments-runtime/ci/generate_deployment_manifests.build.yml
     config:
       params:
         DEPLOYMENTS_DIR: router-release
@@ -114,7 +114,7 @@ jobs:
       releases: [router-release-tarball/*.tgz]
       stemcells: [bosh-stemcell/*.tgz]
   - task: router-acceptance-tests
-    file: router-release/router-deployments-runtime/ci/run_acceptance_tests.build.yml
+    file: cf-routing-release/router-deployments-runtime/ci/run_acceptance_tests.build.yml
     config:
       params:
         ACCEPTANCE_TESTS_MANIFEST: router-deployments-runtime/orinoco/deployments/orinoco-router-acceptance-tests.yml
@@ -136,7 +136,7 @@ jobs:
       passed:
       - deploy-and-test
   - task: create-final-release
-    file: router-release/router-deployments-runtime/ci/create_router_final_release.build.yml
+    file: cf-routing-release/router-deployments-runtime/ci/create_router_final_release.build.yml
   - put: router-final-release
     params:
       from: create-final-release/cf-routing-([\d\.]+).tgz

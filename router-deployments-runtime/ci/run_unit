@@ -6,7 +6,7 @@ set -e
 export GOROOT=/usr/local/go
 export PATH=$GOROOT/bin:$PATH
 
-cd router-release/
+cd cf-routing-release/
 
 export GOPATH=$PWD
 export PATH=$GOPATH/bin:$PATH

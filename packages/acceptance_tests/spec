@@ -5,15 +5,15 @@ dependencies:
   - golang_1.4
 
 files:
-  - github.com/GESoftware-CF/cf-tcp-router-acceptance-tests/bin/*
+  - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/bin/*
   - github.com/onsi/ginkgo/ginkgo/*.go # gosub
-  - github.com/GESoftware-CF/cf-tcp-router-acceptance-tests/assets/tcp-sample-receiver/*.go # gosub
-  - github.com/GESoftware-CF/cf-tcp-router-acceptance-tests/assets/tcp-sample-receiver/testrunner/*.go # gosub
-  - github.com/GESoftware-CF/cf-tcp-router-acceptance-tests/assets/tcp-sample-sender/*.go # gosub
-  - github.com/GESoftware-CF/cf-tcp-router-acceptance-tests/helpers/*.go # gosub
-  - github.com/GESoftware-CF/cf-tcp-router-acceptance-tests/router/*.go # gosub
-  - github.com/GESoftware-CF/cf-tcp-router/*.go # gosub
-  - github.com/GESoftware-CF/cf-tcp-router/testutil/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/tcp-sample-receiver/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/tcp-sample-receiver/testrunner/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/tcp-sample-sender/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/helpers/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/router/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-tcp-router/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-tcp-router/testutil/*.go # gosub
   - github.com/onsi/ginkgo/*.go # gosub
   - github.com/onsi/gomega/*.go # gosub
   - github.com/onsi/gomega/gexec/*.go # gosub

@@ -6,7 +6,7 @@ set -e -x -u
 
 FINAL_VERSION=`cat version/number`
 
-pushd router-release
+pushd cf-routing-release
   echo "----- Create final release"
   bosh --parallel 4 -n create release --final --with-tarball --version $FINAL_VERSION 
 

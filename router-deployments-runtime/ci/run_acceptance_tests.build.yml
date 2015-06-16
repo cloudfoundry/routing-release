@@ -13,4 +13,4 @@ params:
   ACCEPTANCE_TESTS_MANIFEST: ~
 
 run:
-  path: router-release/router-deployments-runtime/ci/run_acceptance_tests
+  path: cf-routing-release/router-deployments-runtime/ci/run_acceptance_tests

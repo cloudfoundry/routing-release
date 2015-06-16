@@ -8,7 +8,7 @@ export GOPATH=$BOSH_INSTALL_TARGET
 mkdir -p ${GOPATH}/src
 cp -a . ${GOPATH}/src
 
-cd ${GOPATH}/src/github.com/GESoftware-CF/cf-tcp-router-acceptance-tests
+cd ${GOPATH}/src/github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests
 
 go install github.com/onsi/ginkgo/ginkgo
 
