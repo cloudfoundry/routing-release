@@ -23,8 +23,8 @@ you if you have [direnv](http://direnv.net) installed.
     # fetch release repo
     mkdir -p ~/workspace
     cd ~/workspace
-    git clone https://github.com/GESoftware-CF/router-release.git
-    cd router-release/
+    git clone https://github.com/cloudfoundry-incubator/cf-routing-release.git
+    cd cf-routing-release/
 
     # automate $GOPATH and $PATH setup
     direnv allow
@@ -62,11 +62,11 @@ as you switch in and out of the directory.
         bosh download public stemcell (name)
         bosh upload stemcell (downloaded filename)
 
-1. Checkout router-release (develop branch) from git
+1. Checkout cf-routing-release (develop branch) from git
 
         cd ~/workspace
-   		git clone https://github.com/GESoftware-CF/router-release.git
-        cd ~/workspace/router-release/
+   		git clone https://github.com/cloudfoundry-incubator/cf-routing-release.git
+        cd ~/workspace/cf-routing-release/
 	    git submodule init
 	    git submodule update
 
@@ -79,7 +79,7 @@ as you switch in and out of the directory.
 
 1. Generate and target router's manifest:
 
-        cd ~/workspace/router-release
+        cd ~/workspace/cf-routing-release
         ./bosh-lite/make-manifest > ~/deployments/bosh-lite/router.yml
         bosh deployment ~/deployments/bosh-lite/router.yml
 
