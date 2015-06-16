@@ -80,8 +80,7 @@ as you switch in and out of the directory.
 1. Generate and target router's manifest:
 
         cd ~/workspace/cf-routing-release
-        ./bosh-lite/make-manifest > ~/deployments/bosh-lite/router.yml
-        bosh deployment ~/deployments/bosh-lite/router.yml
+        ./bosh-lite/make-manifest
 
 1. Do the BOSH Dance:
 
@@ -104,19 +103,18 @@ These instructions assume the release has been deployed to bosh-lite
 	```
 	Substitute your workstation IP and a port of your choosing for `HOST:PORT` (e.g. 10.80.130.159:3333)
 
-2. Using an API call, reserve an external port on the router and map it to the host and port `tcp-sample-listener` is listening on. By default, the API server listens on port 9999.
+2. Using an API call, map an external port on the router to the host and port `tcp-sample-listener` is listening on. By default, the API server listens on port 9999.
 
 	```
-	$ curl 10.244.8.2:9999/v0/external_ports -X POST -d '[{"backend_ip": "HOST", "backend_port":"PORT"}]'
-	{"external_ip":"10.244.8.2","external_port":60000}
+	$ curl 10.244.8.2:9999/v0/external_ports -X POST -d '[{"external_port":60000, "backends": [{"ip": "HOST", "port":"PORT"}]}]'	
 	```
-	Substitute the same workstation IP and a port you used in step #1 for `backend_ip` and `backed_port` (e.g. 10.80.130.159 and 3333). 
+	Substitute the same workstation IP and a port you used in step #1 for `ip` and `port` (e.g. 10.80.130.159 and 3333). 
 	
-	The response will include the external port on the router which is mapped to the `HOST` and `PORT` you provided.
+	A successful response will be an empty body with 200 status code.
 	
 3. You can then use netcat to send messages to the external port on the router, and verify they are received by `tcp-sample-listener`.
 	```
-	$ nc 10.244.8.2 50001
+	$ nc 10.244.8.2 60000
 	isn't
 	isn't
 	this
