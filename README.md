@@ -145,4 +145,7 @@ These instructions assume the release has been deployed to bosh-lite
 	cool?
 	```
 
+## Router API Overview
+
+Please refer to the following document to review the [TCP Router API] (https://github.com/cloudfoundry-incubator/cf-tcp-router/blob/master/overview.md)
 
