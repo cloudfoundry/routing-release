@@ -37,6 +37,18 @@ iaas_settings:
           cloud_properties:
             security_groups: [BOSH-CloudFormation-InternalSecurityGroup-1CMPPF9YMH794]
             subnet: subnet-605b2f39
+    - name: errand1
+      type: manual
+      subnets:
+        - range: 10.0.96.0/20
+          reserved: [10.0.96.2 - 10.0.96.9]
+          static:
+            - &discovery_static_ip 10.0.96.10
+          dns: [10.0.0.2]
+          gateway: 10.0.96.1
+          cloud_properties:
+            security_groups: [BOSH-CloudFormation-InternalSecurityGroup-1CMPPF9YMH794]
+            subnet: subnet-b250ce99
   compilation_cloud_properties:
     instance_type: c4.large
     availability_zone: us-east-1a
@@ -56,3 +68,7 @@ iaas_settings:
       cloud_properties:
         instance_type: m3.medium
         availability_zone: us-east-1c
+    - name: small_errand
+      cloud_properties:
+        instance_type: m3.medium
+        availability_zone: us-east-1a

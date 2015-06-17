@@ -91,6 +91,20 @@ as you switch in and out of the directory.
 
 ## Running Acceptance tests
 
+### Using a BOSH errand on BOSH-Lite
+
+Before running the acceptance tests errand, make sure to have the following setup.
+
+1. bosh is targeted to your local bosh-lite
+1. cf-routing-release [deployed](#deploying-tcp-router-to-a-local-bosh-lite-instance) on bosh-lite 
+
+Run the following commands to execute the acceptance tests as an errand on bosh-lite
+
+```
+bosh run errand router_acceptance_tests
+```
+
+### Manually 
 See the README for [Router Acceptance Tests](https://github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests)
 
 ## Testing the TCP Router Service manually

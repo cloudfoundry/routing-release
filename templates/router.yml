@@ -27,6 +27,9 @@ networks:
 - name: router3
   type: manual
   subnets: (( iaas_settings.subnet_configs.router3.subnets ))
+- name: errand1
+  type: manual
+  subnets: (( iaas_settings.subnet_configs.errand1.subnets ))
 
 resource_pools:
   - name: tcp_router_z1
@@ -43,6 +46,12 @@ resource_pools:
     network: router3
     stemcell: (( iaas_settings.stemcell ))
     cloud_properties: (( iaas_settings.resource_pool_cloud_properties.tcp_router_z3.cloud_properties ))
+
+  - name: small_errand
+    network: errand1
+    stemcell: (( iaas_settings.stemcell ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.small_errand.cloud_properties ))
+
 
 jobs:
   - name: tcp_router_z1
@@ -78,6 +87,13 @@ jobs:
     update:
       serial: true
       max_in_flight: 1  
+  - name: router_acceptance_tests
+    templates: (( base_job_templates.acceptance_tests_errand ))
+    lifecycle: errand
+    instances: (( instance_count_overrides.small_errand.instances || 1 ))
+    networks:
+    - name: errand1
+    resource_pool: small_errand
 
 property_overrides: (( merge ))
 iaas_settings: (( merge ))
@@ -95,12 +111,18 @@ properties:
     haproxy:
       request_timeout_in_seconds: (( property_overrides.haproxy.request_timeout_in_seconds || 300 ))
       faux_port: (( property_overrides.haproxy.faux_port || 1234 ))
+    acceptance_tests:
+      router_api_address: (( property_overrides.acceptance_tests.router_api_address ))
+      router_api_port: (( property_overrides.acceptance_tests.router_api_port ))
 
 base_job_templates:
   haproxy:
     - name: haproxy
       release: cf-routing
     - name: router_configurer
+      release: cf-routing
+  acceptance_tests_errand:
+    - name: acceptance_tests
       release: cf-routing
 
 

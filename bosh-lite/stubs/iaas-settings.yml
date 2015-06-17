@@ -120,6 +120,46 @@ iaas_settings:
         reserved:
         - 10.244.12.25
         static: []
+    - name: errand1
+      type: manual
+      subnets:
+      - cloud_properties: {}
+        range: 10.244.14.0/30
+        reserved:
+        - 10.244.14.1
+        static:
+        - 10.244.14.2
+      - cloud_properties: {}
+        range: 10.244.14.4/30
+        reserved:
+        - 10.244.14.5
+        static: []
+      - cloud_properties: {}
+        range: 10.244.14.8/30
+        reserved:
+        - 10.244.14.9
+        static: []
+      - cloud_properties: {}
+        range: 10.244.14.12/30
+        reserved:
+        - 10.244.14.13
+        static: []
+      - cloud_properties: {}
+        range: 10.244.14.16/30
+        reserved:
+        - 10.244.14.17
+        static: []
+      - cloud_properties: {}
+        range: 10.244.14.20/30
+        reserved:
+        - 10.244.14.21
+        static: []
+      - cloud_properties: {}
+        range: 10.244.14.24/30
+        reserved:
+        - 10.244.14.25
+        static: []
+
   compilation_cloud_properties: {}
   resource_pool_cloud_properties:
     - name: tcp_router_z1
@@ -127,4 +167,6 @@ iaas_settings:
     - name: tcp_router_z2
       cloud_properties: {}
     - name: tcp_router_z3
+      cloud_properties: {}
+    - name: small_errand
       cloud_properties: {}

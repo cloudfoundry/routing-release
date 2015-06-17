@@ -11,15 +11,15 @@ packages:
  - golang_1.4
 
 properties:
- acceptance_tests.nodes:
+ router.acceptance_tests.nodes:
     default: 4
     description: The number of parallel test executors to spawn. The larger the number the higher the stress on the system.
- acceptance_tests.verbose:
+ router.acceptance_tests.verbose:
     default: false
     description: Whether to pass the -v flag to router acceptance tests
- acceptance_tests.router_api_address:
+ router.acceptance_tests.router_api_address:
     default: "10.244.8.2"
     description: Router API IP Address
- acceptance_tests.router_api_port:
+ router.acceptance_tests.router_api_port:
     default: 9999
     description: Router API IP Port
