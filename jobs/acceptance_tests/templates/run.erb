@@ -17,8 +17,8 @@ mkdir -p /var/vcap/sys/log/acceptance_tests
 cd /var/vcap/packages/acceptance_tests/src/github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests
 
 EXITSTATUS=0
-nodes=<%= properties.acceptance_tests.nodes %>
-verbose=<%= properties.acceptance_tests.verbose ? "-v" : "" %>
+nodes=<%= properties.router.acceptance_tests.nodes %>
+verbose=<%= properties.router.acceptance_tests.verbose ? "-v" : "" %>
 bin/test -randomizeAllSpecs $verbose -skipPackage=$packagesToSkip -nodes=$nodes -keepGoing || EXITSTATUS=$?
 
 echo "Acceptance Tests Complete; exit status: $EXITSTATUS"
