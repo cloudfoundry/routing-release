@@ -91,12 +91,12 @@ jobs:
         submodules: all
     - get: version
       passed:
-      - create-router-release    
+      - create-router-release
     - get: router-release-tarball
       resource: router-dev-release
       trigger: true
       passed:
-        - create-router-release    
+        - create-router-release
     - get: bosh-stemcell
       resource: bosh-stemcell
   - task: generate-deployment-manifests

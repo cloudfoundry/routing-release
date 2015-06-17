@@ -5,6 +5,7 @@ image: docker:///cloudfoundry/diego-pipeline
 
 inputs:
   - name: cf-routing-release
+  - name: generate-deployment-manifests
 
 params:
   BOSH_USER: ~
