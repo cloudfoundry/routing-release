@@ -9,6 +9,7 @@ packages:
 
 templates:
   haproxy.conf.erb: config/haproxy.conf
+  haproxy.conf.template.erb: config/haproxy.conf.template
   haproxy_ctl: bin/haproxy_ctl
 
 properties:

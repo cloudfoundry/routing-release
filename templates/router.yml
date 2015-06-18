@@ -105,9 +105,9 @@ properties:
     router_configurer:
       debug_addr: (( property_overrides.router_configurer.debug_addr ))
       tcp_config_file: (( property_overrides.router_configurer.tcp_config_file ))
-      listen_addr: (( property_overrides.router_configurer.listen_addr )) 
-      log_level: (( property_overrides.router_configurer.log_level )) 
-      starting_external_port: (( property_overrides.router_configurer.starting_external_port ))
+      tcp_config_file_template: (( property_overrides.router_configurer.tcp_config_file_template ))
+      listen_addr: (( property_overrides.router_configurer.listen_addr ))
+      log_level: (( property_overrides.router_configurer.log_level ))
     haproxy:
       request_timeout_in_seconds: (( property_overrides.haproxy.request_timeout_in_seconds || 300 ))
       faux_port: (( property_overrides.haproxy.faux_port || 1234 ))

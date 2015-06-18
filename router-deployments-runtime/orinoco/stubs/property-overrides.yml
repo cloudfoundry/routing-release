@@ -1,6 +1,7 @@
 property_overrides:
   router_configurer:
     tcp_config_file: /var/vcap/jobs/haproxy/config/haproxy.conf
+    tcp_config_file_template: /var/vcap/jobs/haproxy/config/haproxy.conf.template
     listen_addr: 0.0.0.0:9999
     log_level: info
     debug_addr: ~
