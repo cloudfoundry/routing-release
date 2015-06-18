@@ -1,43 +1,49 @@
 # Cloud Foundry Routers [BOSH release]
 
-----
 This repo is a [BOSH](https://github.com/cloudfoundry/bosh) release for deploying TCP Router and associated tasks.
 
 The TCP Router adds non-HTTP routing capabilities to Cloud Foundry.
 
-----
 ## Developer Workflow
 
 When working on individual components of TCP Router, work out of the submodules under `src/`.
-See [Initial Setup](#initial-setup).
 
 Run the individual component unit tests as you work on them using
 [ginkgo](https://github.com/onsi/ginkgo).
 
----
-##<a name="initial-setup"></a> Initial Setup
+Commits to this repo (including Pull Requests) should be made on the Develop branch.
 
-This BOSH release doubles as a `$GOPATH`. It will automatically be set up for
-you if you have [direnv](http://direnv.net) installed.
+##<a name="get-the-code"></a> Get the code
 
-    # fetch release repo
+1. Fetch release repo
+
+    ```
     mkdir -p ~/workspace
     cd ~/workspace
     git clone https://github.com/cloudfoundry-incubator/cf-routing-release.git
     cd cf-routing-release/
+    ```
 
-    # automate $GOPATH and $PATH setup
+    
+1. Automate `$GOPATH` and `$PATH` setup
+
+    This BOSH release doubles as a `$GOPATH`. It will automatically be set up for you if you have [direnv](http://direnv.net) installed.
+
+
+    ```
     direnv allow
+    ```
+    
+    If you do not wish to use direnv, you can simply `source` the `.envrc` file in the root of the release repo.  You may manually need to update your `$GOPATH` and `$PATH` variables as you switch in and out of the directory.
 
-    # initialize and sync submodules
-    git submodule init
-    git submodule update
 
-If you do not wish to use direnv, you can simply `source` the `.envrc` file in the root
-of the release repo.  You may manually need to update your `$GOPATH` and `$PATH` variables
-as you switch in and out of the directory.
+1. Initialize and sync submodules
 
----
+
+    ```
+    ./scripts/update
+    ```
+    
 ## Running Unit Tests
 
 1. Install ginkgo
@@ -47,8 +53,6 @@ as you switch in and out of the directory.
 2. Run unit tests
 
         ./scripts/run-unit-tests
-
----
 
 ## Deploying TCP Router to a local BOSH-Lite instance
 
@@ -62,13 +66,9 @@ as you switch in and out of the directory.
         bosh download public stemcell (name)
         bosh upload stemcell (downloaded filename)
 
-1. Checkout cf-routing-release (develop branch) from git
+1. Clone the repo and sync submodules
 
-        cd ~/workspace
-   		git clone https://github.com/cloudfoundry-incubator/cf-routing-release.git
-        cd ~/workspace/cf-routing-release/
-	    git submodule init
-	    git submodule update
+   See [Get the code](#get-the-code)
 
 1. Install spiff, a tool for generating BOSH manifests. spiff is required for
    running the scripts in later steps. The following installation method
@@ -87,7 +87,6 @@ as you switch in and out of the directory.
         bosh create release --force
         bosh -n upload release
         bosh -n deploy
-
 
 ## Running Acceptance tests
 
