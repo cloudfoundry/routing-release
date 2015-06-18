@@ -7,12 +7,11 @@ The TCP Router adds non-HTTP routing capabilities to Cloud Foundry.
 ## Developer Workflow
 
 When working on individual components of TCP Router, work out of the submodules under `src/`.
-See [Initial Setup](#initial-setup).
 
 Run the individual component unit tests as you work on them using
 [ginkgo](https://github.com/onsi/ginkgo).
 
-Commits to this repo should be submitted on the Develop branch
+Commits to this repo (including Pull Requests) should be made on the Develop branch.
 
 ##<a name="get-the-code"></a> Get the code
 
