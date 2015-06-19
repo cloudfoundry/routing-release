@@ -62,9 +62,8 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 
 1. Download the latest Warden Trusty Go-Agent stemcell and upload it to BOSH-lite
 
-        bosh public stemcells
-        bosh download public stemcell (name)
-        bosh upload stemcell (downloaded filename)
+        curl -L -J -O https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent
+        bosh upload stemcell bosh-warden-boshlite-ubuntu-trusty-go_agent
 
 1. Clone the repo and sync submodules
 
