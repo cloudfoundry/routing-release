@@ -17,6 +17,8 @@ files:
   - github.com/onsi/ginkgo/*.go # gosub
   - github.com/onsi/gomega/*.go # gosub
   - github.com/onsi/gomega/gexec/*.go # gosub
+  - github.com/pivotal-golang/lager/*.go # gosub
+  - github.com/pivotal-golang/lager/lagertest/*.go # gosub
   - github.com/tedsuo/ifrit/*.go # gosub
   - github.com/tedsuo/ifrit/ginkgomon/*.go # gosub
   - github.com/onsi/ginkgo/config/*.go # gosub
