@@ -2,7 +2,7 @@ resources:
 - name: cf-routing-release
   type: git
   source:
-    branch: master
+    branch: develop
     uri: https://github.com/cloudfoundry-incubator/cf-routing-release.git
 
 - name: router-dev-release
