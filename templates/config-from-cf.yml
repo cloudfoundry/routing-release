@@ -1,0 +1,5 @@
+config_from_cf:
+  cf_deployment_name: (( merge ))
+  consul:
+    log_level: (( merge ))
+    lan_servers: (( merge ))

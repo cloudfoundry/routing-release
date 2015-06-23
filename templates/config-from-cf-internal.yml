@@ -1,0 +1,14 @@
+config_from_cf:
+  cf_deployment_name: (( name ))
+  consul:
+    log_level: (( properties.consul.agent.log_level ))
+    lan_servers: (( properties.consul.agent.servers.lan ))
+
+# The keys below should not be included in the final stub
+name: (( merge ))
+properties:
+  consul:
+    agent:
+      log_level: (( merge ))
+      servers:
+        lan: (( merge ))

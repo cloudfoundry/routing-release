@@ -1,0 +1,22 @@
+---
+name: tcp_emitter
+
+templates:
+  tcp_emitter_ctl.erb: bin/tcp_emitter_ctl
+
+packages:
+  - pid_utils
+  - tcp_emitter
+
+properties:
+  router.tcp_emitter.debug_addr:
+    description: "Address at which to serve debug info"
+    default: "0.0.0.0:17016"
+
+  router.tcp_emitter.log_level:
+    description: "Log level"
+    default: "info"
+
+  router.tcp_emitter.diego_api_url:
+    description: "Diego Receptor endpoint url"
+    default: "http://receptor.service.consul:8888"

@@ -81,7 +81,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 1. Generate and target router's manifest:
 
         cd ~/workspace/cf-routing-release
-        ./bosh-lite/make-manifest
+        ./bosh-lite/make-manifest <cf_deployment_manifest>
 
 1. Do the BOSH Dance:
 

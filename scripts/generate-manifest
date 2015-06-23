@@ -6,23 +6,29 @@ templates=$(dirname $0)/../templates
 
 function usage() {
   >&2 echo "    Usage:
-    $0 /path/to/stub/ 
+    $0 /path/to/stub/ /path/to/cf-release-manifest
 
     Ex:
-    $0 bosh-lite/stubs 
+    $0 bosh-lite/stubs ~/deployments/bosh-lite/cf.yml
 "
   exit 1
 }
 
 stubs_dir=$1
+cf_manifest_file=$2
 property_overrides=$stubs_dir/property-overrides.yml
 instance_counts=$stubs_dir/instance-count-overrides.yml
 persistent_disk=$stubs_dir/persistent-disk-overrides.yml
 iaas_settings=$stubs_dir/iaas-settings.yml
 
 
-if [ ! -z "$2" ]; then
+if [ ! -z "$3" ]; then
   >&2 echo "Too many arguments"
+  usage
+fi
+
+if [ ! -f "${cf_manifest_file}" ]; then
+  >&2 echo "CF release manifest ${cf_manifest_file} does not exist"
   usage
 fi
 
@@ -51,11 +57,18 @@ director_uuid=${tmpdir}/director.yml
 printf "director_uuid: %s" $(bosh status --uuid) > ${director_uuid}
 
 spiff merge \
+  ${templates}/config-from-cf.yml \
+  ${templates}/config-from-cf-internal.yml \
+  ${cf_manifest_file} \
+  > ${tmpdir}/config-from-cf.yml
+
+spiff merge \
   ${templates}/router.yml \
   ${property_overrides} \
   ${instance_counts} \
   ${persistent_disk} \
   ${iaas_settings} \
+  ${tmpdir}/config-from-cf.yml \
   > ${tmpdir}/router.yml
 
   spiff merge \

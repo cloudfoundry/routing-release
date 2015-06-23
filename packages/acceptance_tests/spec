@@ -7,6 +7,7 @@ dependencies:
 files:
   - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/bin/*
   - github.com/onsi/ginkgo/ginkgo/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/desired_lrp-client/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/tcp-sample-receiver/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/tcp-sample-receiver/testrunner/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/tcp-sample-sender/*.go # gosub
@@ -32,6 +33,14 @@ files:
   - github.com/onsi/ginkgo/reporters/*.go # gosub
   - github.com/onsi/ginkgo/reporters/stenographer/*.go # gosub
   - github.com/onsi/ginkgo/types/*.go # gosub
+  - github.com/bmizerany/pat/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-lager/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf_http/*.go # gosub
+  - github.com/cloudfoundry-incubator/receptor/*.go # gosub
+  - github.com/cloudfoundry-incubator/runtime-schema/models/*.go # gosub
+  - github.com/nu7hatch/gouuid/*.go # gosub
+  - github.com/tedsuo/rata/*.go # gosub
+  - github.com/vito/go-sse/sse/*.go # gosub
   - github.com/onsi/ginkgo/internal/codelocation/*.go # gosub
   - github.com/onsi/ginkgo/internal/containernode/*.go # gosub
   - github.com/onsi/ginkgo/internal/failer/*.go # gosub
@@ -52,5 +61,3 @@ files:
   - github.com/onsi/gomega/matchers/support/goraph/node/*.go # gosub
   - github.com/onsi/gomega/matchers/support/goraph/util/*.go # gosub
   - github.com/onsi/gomega/types/*.go # gosub
-  - github.com/bmizerany/pat/*.go # gosub
-  - github.com/tedsuo/rata/*.go # gosub

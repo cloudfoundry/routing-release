@@ -1,0 +1,39 @@
+#!/bin/bash -e
+
+RUN_DIR=/var/vcap/sys/run/tcp_emitter
+LOG_DIR=/var/vcap/sys/log/tcp_emitter
+CONF_DIR=/var/vcap/jobs/tcp_emitter/config
+PIDFILE=$RUN_DIR/tcp_emitter.pid
+
+source /var/vcap/packages/pid_utils/pid_utils.sh
+
+case $1 in
+
+  start)
+    pid_guard $PIDFILE "tcp_emitter"
+
+    mkdir -p $RUN_DIR
+    mkdir -p $LOG_DIR
+
+    echo $$ > /var/vcap/sys/run/tcp_emitter/tcp_emitter.pid
+
+    exec /var/vcap/packages/tcp_emitter/bin/tcp-emitter \
+      -diegoAPIURL=<%= p("router.tcp_emitter.diego_api_url") %> \
+      -debugAddr=<%= p("router.tcp_emitter.debug_addr") %> \
+      -logLevel=<%= p("router.tcp_emitter.log_level") %> \
+      2>> $LOG_DIR/tcp_emitter.stderr.log \
+      1> >(tee -a $LOG_DIR/tcp_emitter.stdout.log | logger -t vcap.tcp_emitter)
+
+    ;;
+
+  stop)
+    kill_and_wait $PIDFILE
+
+    ;;
+
+  *)
+    echo "Usage: tcp_emitter_ctl {start|stop}"
+
+    ;;
+
+esac

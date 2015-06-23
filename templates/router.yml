@@ -1,7 +1,9 @@
-name: (( property_overrides.cf_deployment_name "-routing" ))
+name: (( config_from_cf.cf_deployment_name "-routing" ))
 
 releases:
 - name: cf-routing
+  version: latest
+- name: cf
   version: latest
 
 compilation:
@@ -99,8 +101,14 @@ property_overrides: (( merge ))
 iaas_settings: (( merge ))
 instance_count_overrides: (( merge ))
 persistent_disk_overrides: (( merge ))
+config_from_cf: (( merge ))
 
 properties:
+  consul:
+    agent:
+      log_level: (( config_from_cf.consul.log_level ))
+      servers:
+        lan: (( config_from_cf.consul.lan_servers ))
   router:
     router_configurer:
       debug_addr: (( property_overrides.router_configurer.debug_addr ))
@@ -108,6 +116,10 @@ properties:
       tcp_config_file_template: (( property_overrides.router_configurer.tcp_config_file_template ))
       listen_addr: (( property_overrides.router_configurer.listen_addr ))
       log_level: (( property_overrides.router_configurer.log_level ))
+    tcp_emitter:
+      diego_api_url: (( property_overrides.tcp_emitter.diego_api_url ))
+      debug_addr: (( property_overrides.tcp_emitter.debug_addr ))
+      log_level: (( property_overrides.tcp_emitter.log_level ))
     haproxy:
       request_timeout_in_seconds: (( property_overrides.haproxy.request_timeout_in_seconds || 300 ))
       faux_port: (( property_overrides.haproxy.faux_port || 1234 ))
@@ -121,6 +133,10 @@ base_job_templates:
       release: cf-routing
     - name: router_configurer
       release: cf-routing
+    - name: tcp_emitter
+      release: cf-routing
+    - name: consul_agent
+      release: cf
   acceptance_tests_errand:
     - name: acceptance_tests
       release: cf-routing
