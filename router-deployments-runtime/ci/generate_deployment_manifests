@@ -4,7 +4,8 @@ set -e -x -u
 
 environment_path="${PWD}/${DEPLOYMENTS_DIR}/router-deployments-runtime/${ENVIRONMENT_NAME}"
 stubs_path="${environment_path}/stubs"
-
+deployments_path="${environment_path}/deployments"
+cf_manifest_file="${deployments_path}/cf.yml"
 
 pushd cf-routing-release
 
@@ -16,11 +17,18 @@ director_uuid=/tmp/director.yml
 printf "director_uuid: %s" $(bosh status --uuid) > ${director_uuid}
 
 spiff merge \
+  templates/config-from-cf.yml \
+  templates/config-from-cf-internal.yml \
+  ${cf_manifest_file} \
+  > /tmp/config-from-cf.yml
+
+spiff merge \
   templates/router.yml \
   ${stubs_path}/property-overrides.yml \
   ${stubs_path}/instance-count-overrides.yml \
   ${stubs_path}/persistent-disk-overrides.yml \
   ${stubs_path}/iaas-settings.yml \
+  /tmp/config-from-cf.yml \
   > /tmp/router.yml
 
   spiff merge \

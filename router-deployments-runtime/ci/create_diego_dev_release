@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e -x -u
+
+export GEM_HOME="${HOME}/.gem"
+mkdir -p "${GEM_HOME}"
+
+pushd diego-release
+  echo "----- Create dev release"
+  version=$(date "+%s")
+  bosh --parallel 4 -n create release --version ${version} --with-tarball
+
+  mv dev_releases/diego/*.tgz ../diego-release.tgz
+popd

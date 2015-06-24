@@ -1,0 +1,433 @@
+# The following line helps maintain current documentation at http://docs.cloudfoundry.org.
+# code_snippet cf-minimal-aws start
+---
+name: cf-orinoco
+director_uuid: 9c6b8ce9-c330-4ff4-af9b-80278ea63e97
+
+releases:
+- {name: cf, version: latest}
+
+networks:
+- name: cf_private
+  type: manual
+  subnets:
+  - range: 10.0.192.0/20
+    gateway: 10.0.192.1
+    dns: [10.0.0.2]
+    reserved: ["10.0.192.2 - 10.0.192.3"]
+    static: ["10.0.192.100 - 10.0.192.106"]
+    cloud_properties:
+      subnet: subnet-6d8a1046
+      security_groups: [BOSH-CloudFormation-InternalSecurityGroup-1CMPPF9YMH794,BOSH-CloudFormation-WebSecurityGroup-CDA1ZS3KT0T1]
+
+- name: cf_public
+  type: manual
+  subnets:
+  - range: 10.0.0.0/24
+    gateway: 10.0.0.1
+    dns: [10.0.0.2]
+    reserved: ["10.0.0.2 - 10.0.0.10"]
+    cloud_properties:
+      subnet: subnet-ae851b85
+      security_groups: [BOSH-CloudFormation-InternalSecurityGroup-1CMPPF9YMH794,BOSH-CloudFormation-WebSecurityGroup-CDA1ZS3KT0T1]
+
+- name: elastic
+  type: vip
+  cloud_properties: {}
+
+resource_pools:
+- name: small_z1
+  network: cf_private
+  stemcell:
+    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+    version: latest
+  cloud_properties:
+    availability_zone: us-east-1a
+    instance_type: c3.large
+
+compilation:
+  workers: 6
+  network: cf_private
+  reuse_compilation_vms: true
+  cloud_properties:
+    availability_zone: us-east-1a
+    instance_type: c3.large
+
+update:
+  canaries: 1
+  max_in_flight: 1
+  serial: false
+  canary_watch_time: 30000-600000
+  update_watch_time: 5000-600000
+
+jobs:
+- name: consul_z1
+  templates:
+  - {name: consul_agent, release: cf}
+  - {name: metron_agent, release: cf}
+  instances: 1
+  persistent_disk: 1024
+  resource_pool: small_z1
+  networks:
+    - name: cf_private
+      static_ips: [10.0.192.106]
+  update:
+    serial: true
+    max_in_flight: 1
+  properties:
+    consul:
+      agent:
+        mode: server
+    metron_agent:
+      zone: z1
+
+- name: nats_z1
+  instances: 1
+  persistent_disk: 102400
+  resource_pool: small_z1
+  templates:
+  - {name: nats, release: cf}
+  - {name: nats_stream_forwarder, release: cf}
+  - {name: metron_agent, release: cf}
+  - {name: debian_nfs_server, release: cf}
+  networks:
+  - name: cf_private
+    static_ips: [10.0.192.103]
+
+- name: etcd_z1
+  instances: 1
+  resource_pool: small_z1
+  persistent_disk: 102400
+  templates:
+  - {name: etcd, release: cf}
+  - {name: etcd_metrics_server, release: cf}
+  - {name: metron_agent, release: cf}
+  networks:
+  - name: cf_private
+    static_ips: [10.0.192.104]
+  properties:
+    etcd_metrics_server:
+      nats:
+        machines: [10.0.192.103]
+        password: tubful1_handballer
+        username: whirl865-irritancy
+
+- name: postgres_z1
+  instances: 1
+  persistent_disk: 1024
+  resource_pool: small_z1
+  templates:
+  - {name: postgres, release: cf}
+  - {name: metron_agent, release: cf}
+  networks:
+  - name: cf_private
+    static_ips: [10.0.192.101]
+  update:
+    serial: true
+
+- name: api_z1
+  instances: 1
+  resource_pool: small_z1
+  templates:
+  - {name: cloud_controller_ng, release: cf}
+  - {name: cloud_controller_worker, release: cf}
+  - {name: cloud_controller_clock, release: cf}
+  - {name: routing-api, release: cf}
+  - {name: metron_agent, release: cf}
+  - {name: statsd-injector, release: cf}
+  - {name: consul_agent, release: cf}
+  - {name: nfs_mounter, release: cf}
+  - {name: hm9000, release: cf}
+  - {name: uaa, release: cf}
+  networks:
+  - name: cf_private
+  properties:
+    consul:
+      agent:
+        services:
+          cloud_controller_ng: {}
+          routing-api: {}
+          uaa: {}
+    nfs_server:
+      address: 10.0.192.103
+      allow_from_entries: [10.0.192.0/20]
+    login:
+      catalina_opts: -Xmx768m -XX:MaxPermSize=256m
+    uaa:
+      admin:
+        client_secret: achingly4_beshield
+      batch:
+        password: ruewort3_manubrial
+        username: batch_user
+      cc:
+        client_secret: lacebark3_Minervan
+      scim:
+        userids_enabled: true
+        users:
+        - admin|sk1N875job|scim.write,scim.read,openid,cloud_controller.admin,doppler.firehose
+    uaadb:
+      address: 10.0.192.101
+      databases:
+      - {name: uaadb, tag: uaa}
+      db_scheme: postgresql
+      port: 5524
+      roles:
+      - {name: uaaadmin, password: admin, tag: admin}
+
+- name: ha_proxy_z1
+  instances: 1
+  resource_pool: small_z1
+  templates:
+  - {name: haproxy, release: cf}
+  - {name: metron_agent, release: cf}
+  - {name: consul_agent, release: cf}
+  networks:
+  - name: elastic
+    static_ips: [52.5.83.228]
+  - name: cf_public
+    default: [gateway, dns]
+  properties:
+    ha_proxy:
+      disable_http: false
+      ssl_ciphers:
+      ssl_pem: |
+        -----BEGIN CERTIFICATE-----
+        MIICmTCCAgICCQCGlqfUIpf65DANBgkqhkiG9w0BAQUFADCBkDELMAkGA1UEBhMC
+        VVMxCzAJBgNVBAgTAkNBMRIwEAYDVQQHEwlTYW4gUmFtb24xCzAJBgNVBAoTAkdF
+        MQ8wDQYDVQQLEwZQcmVkaXgxGzAZBgNVBAMTEm9yaW5vY28uY2YtYXBwLmNvbTEl
+        MCMGCSqGSIb3DQEJARYWYXR1bC5rc2hpcnNhZ2FyQGdlLmNvbTAeFw0xNTA2MjQx
+        NzEwNTZaFw0xNTA3MjQxNzEwNTZaMIGQMQswCQYDVQQGEwJVUzELMAkGA1UECBMC
+        Q0ExEjAQBgNVBAcTCVNhbiBSYW1vbjELMAkGA1UEChMCR0UxDzANBgNVBAsTBlBy
+        ZWRpeDEbMBkGA1UEAxMSb3Jpbm9jby5jZi1hcHAuY29tMSUwIwYJKoZIhvcNAQkB
+        FhZhdHVsLmtzaGlyc2FnYXJAZ2UuY29tMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCB
+        iQKBgQCk2tPyku6NQJx7QzyDA8N75m77wWULSI6Z8UbtiDesE7SA7Djl1/kJo5oJ
+        AH9V798wyCLW6OednIdNsDgopF/+PH2I60ou4FtV/28gH28wz67aJ3fRUZTgRCc/
+        m3VBeQ2cyImkmnGfpg0vvO1mu8cnqOTDRXkz4O7OM0+u3dQ/nQIDAQABMA0GCSqG
+        SIb3DQEBBQUAA4GBAEv83vFyF+Xe7WWENUdzIBIe+3t6I7BigCxBXzXL89xy7/qS
+        5/g55ysmsrq8bBq7+gfblirb5sl60pisM+scmcIvCztiSGkzT05F43sxWOnkgxnf
+        w/soY90GnUis/lkd+Ub3h/qe0CArV92FUfAiRgjEHGKTMqzeUFnrDH1nTXUg
+        -----END CERTIFICATE-----
+        -----BEGIN RSA PRIVATE KEY-----
+        MIICXAIBAAKBgQCk2tPyku6NQJx7QzyDA8N75m77wWULSI6Z8UbtiDesE7SA7Djl
+        1/kJo5oJAH9V798wyCLW6OednIdNsDgopF/+PH2I60ou4FtV/28gH28wz67aJ3fR
+        UZTgRCc/m3VBeQ2cyImkmnGfpg0vvO1mu8cnqOTDRXkz4O7OM0+u3dQ/nQIDAQAB
+        AoGAY8e7b2A1mTNZQ1Yv4xC9GlogJKsqsIirH0wlZRIEuFd48muICL4PEyF90yME
+        74vvaERKqg9wWTprvr8BTsAnBO7fw8550ilExPsDFgaiIUSR7vWVqEmjiQAB3hHA
+        jLjz2G4oReGNhW8FiYxOjW1iY9oHFAzovnndktd3Udybt3UCQQDUVn31bqvJE5id
+        vUW1+asIshhDT6ySllnItKPst2+5flO5D+xgNHBy44/WSyHAkNgeQGjdpDd3cNUh
+        qdn1GegDAkEAxsDRXaLETH+EieG1Eo8CTCVSdTTxLcsAR6hKLKmhBp43g0OCEaYf
+        P8rwNKVX2JAyWuki75ZjiEG1vKhYtSO33wJADFZ6OyiTErvwwjmdM1WuenLetgqL
+        HHlf/imA3OBLvZt5gedK9MwXPJW8Zdc3vtirthZIAZjpICeOOsaDw5odwQJBALiu
+        eJ06Xo76usxoV5n8GtVopLtWS3kStZrgLLRdlswQfmLReu4tX8ImL5erv/ny22eQ
+        VK8uHiSBcn7wKyV+IB8CQHmg2oXnV/bOX5TNXUkhJo7HVbebWRkkiRFCGF519e7h
+        eMpz6zu0P+Kuj38JYV0wuv+MoA4gH02kQ5//SMySwCw=
+        -----END RSA PRIVATE KEY-----
+    router:
+      servers:
+        z1: [10.0.192.102]
+
+- name: router_z1
+  instances: 1
+  resource_pool: small_z1
+  templates:
+  - {name: gorouter, release: cf}
+  - {name: metron_agent, release: cf}
+  - {name: consul_agent, release: cf}
+  networks:
+  - name: cf_private
+    static_ips: [10.0.192.102]
+  properties:
+    dropsonde: {enabled: true}
+
+- name: doppler_z1
+  instances: 1
+  resource_pool: small_z1
+  templates:
+  - {name: doppler, release: cf}
+  - {name: syslog_drain_binder, release: cf}
+  - {name: metron_agent, release: cf}
+  networks:
+  - name: cf_private
+  properties:
+    doppler: {zone: z1}
+    doppler_endpoint:
+      shared_secret: aPtGRw4E1hJ7W06QpluA20K4NueCQm
+
+- name: runner_z1
+  instances: 1
+  resource_pool: small_z1
+  templates:
+  - {name: dea_next, release: cf}
+  - {name: dea_logging_agent, release: cf}
+  - {name: metron_agent, release: cf}
+  - {name: collector, release: cf}
+  - {name: loggregator_trafficcontroller, release: cf}
+  - {name: syslog_drain_binder, release: cf}
+  networks:
+  - name: cf_private
+  properties:
+    dea_next: {zone: z1}
+    collector: {deployment_name: CF}
+    traffic_controller: {zone: z1}
+
+properties:
+  networks: {apps: cf_private}
+  app_domains: [orinoco.cf-app.com]
+  cc:
+    allow_app_ssh_access: false
+    billing_event_writing_enabled: false
+    bulk_api_password: underargue957-snog
+    db_encryption_key: mawkishly8936-oxyl
+    default_running_security_groups: [public_networks, dns]
+    default_staging_security_groups: [public_networks, dns]
+    install_buildpacks:
+    - {name: java_buildpack, package: buildpack_java}
+    - {name: ruby_buildpack, package: buildpack_ruby}
+    - {name: nodejs_buildpack, package: buildpack_nodejs}
+    - {name: go_buildpack, package: buildpack_go}
+    - {name: python_buildpack, package: buildpack_python}
+    - {name: php_buildpack, package: buildpack_php}
+    - {name: staticfile_buildpack, package: buildpack_staticfile}
+    - {name: binary_buildpack, package: buildpack_binary}
+    internal_api_password: supported-smug-n0ise
+    quota_definitions:
+      default:
+        memory_limit: 102400
+        non_basic_services_allowed: true
+        total_routes: 1000
+        total_services: -1
+    security_group_definitions:
+    - name: public_networks
+      rules:
+      - {destination: 0.0.0.0-9.255.255.255, protocol: all}
+      - {destination: 11.0.0.0-169.253.255.255, protocol: all}
+      - {destination: 169.255.0.0-172.15.255.255, protocol: all}
+      - {destination: 172.32.0.0-192.167.255.255, protocol: all}
+      - {destination: 192.169.0.0-255.255.255.255, protocol: all}
+    - name: dns
+      rules:
+      - {destination: 0.0.0.0/0, ports: '53', protocol: tcp}
+      - {destination: 0.0.0.0/0, ports: '53', protocol: udp}
+    srv_api_uri: http://api.orinoco.cf-app.com
+    staging_upload_password: append5-bradylexia
+    staging_upload_user: tag269_downsinking
+  ccdb:
+    address: 10.0.192.101
+    databases:
+    - {name: ccdb, tag: cc}
+    db_scheme: postgres
+    port: 5524
+    roles:
+    - {name: ccadmin, password: admin, tag: admin}
+  databases:
+    databases:
+    - {name: ccdb, tag: cc, citext: true}
+    - {name: uaadb, tag: uaa, citext: true}
+    port: 5524
+    roles:
+    - {name: ccadmin, password: admin, tag: admin}
+    - {name: uaaadmin, password: admin, tag: admin}
+  dea_next:
+    advertise_interval_in_seconds: 5
+    heartbeat_interval_in_seconds: 10
+    memory_mb: 33996
+  description: Cloud Foundry sponsored by Pivotal
+  domain: orinoco.cf-app.com
+  etcd:
+    machines: [10.0.192.104]
+  hm9000:
+    url: http://hm9000.orinoco.cf-app.com
+  logger_endpoint:
+    port: 4443
+  loggregator_endpoint:
+    shared_secret: aPtGRw4E1hJ7W06QpluA20K4NueCQm
+  login:
+    protocol: http
+  metron_agent:
+    zone: z1
+    deployment: minimal-aws
+  metron_endpoint:
+    shared_secret: aPtGRw4E1hJ7W06QpluA20K4NueCQm
+  nats:
+    machines: [10.0.192.103]
+    password: tubful1_handballer
+    port: 4222
+    user: whirl865-irritancy
+  nfs_server:
+    address: 10.0.192.103
+    allow_from_entries: [10.0.192.0/20]
+  ssl:
+    skip_cert_verify: true
+  system_domain: orinoco.cf-app.com
+  system_domain_organization: default_organization
+  uaa:
+    clients:
+      cc-service-dashboards:
+        authorities: clients.read,clients.write,clients.admin
+        authorized-grant-types: client_credentials
+        scope: openid,cloud_controller_service_permissions.read
+        secret: PASSWORD
+      cloud_controller_username_lookup:
+        authorities: scim.userids
+        authorized-grant-types: client_credentials
+        secret: cloud-controller-username-lookup
+      gorouter:
+        authorities: clients.read,clients.write,clients.admin,route.admin,route.advertise
+        authorized-grant-types: client_credentials,refresh_token
+        scope: openid,cloud_controller_service_permissions.read
+        secret: gorouter-secret
+      doppler:
+        authorities: uaa.resource
+        secret: doppler-secret
+      login:
+        authorities: oauth.login,scim.write,clients.read,notifications.write,critical_notifications.write,emails.write,scim.userids,password.write
+        authorized-grant-types: authorization_code,client_credentials,refresh_token
+        redirect-uri: http://login.orinoco.cf-app.com
+        scope: openid,oauth.approvals
+        secret: wearifully3-enfold
+      servicesmgmt:
+        authorities: uaa.resource,oauth.service,clients.read,clients.write,clients.secret
+        authorized-grant-types: authorization_code,client_credentials,password,implicit
+        autoapprove: true
+        redirect-uri: http://servicesmgmt.orinoco.cf-app.com/auth/cloudfoundry/callback
+        scope: openid,cloud_controller.read,cloud_controller.write
+        secret:  pistilliform0-gaet
+    jwt:
+      signing_key: |
+        -----BEGIN RSA PRIVATE KEY-----
+        MIICXAIBAAKBgQDHFr+KICms+tuT1OXJwhCUmR2dKVy7psa8xzElSyzqx7oJyfJ1
+        JZyOzToj9T5SfTIq396agbHJWVfYphNahvZ/7uMXqHxf+ZH9BL1gk9Y6kCnbM5R6
+        0gfwjyW1/dQPjOzn9N394zd2FJoFHwdq9Qs0wBugspULZVNRxq7veq/fzwIDAQAB
+        AoGBAJ8dRTQFhIllbHx4GLbpTQsWXJ6w4hZvskJKCLM/o8R4n+0W45pQ1xEiYKdA
+        Z/DRcnjltylRImBD8XuLL8iYOQSZXNMb1h3g5/UGbUXLmCgQLOUUlnYt34QOQm+0
+        KvUqfMSFBbKMsYBAoQmNdTHBaz3dZa8ON9hh/f5TT8u0OWNRAkEA5opzsIXv+52J
+        duc1VGyX3SwlxiE2dStW8wZqGiuLH142n6MKnkLU4ctNLiclw6BZePXFZYIK+AkE
+        xQ+k16je5QJBAN0TIKMPWIbbHVr5rkdUqOyezlFFWYOwnMmw/BKa1d3zp54VP/P8
+        +5aQ2d4sMoKEOfdWH7UqMe3FszfYFvSu5KMCQFMYeFaaEEP7Jn8rGzfQ5HQd44ek
+        lQJqmq6CE2BXbY/i34FuvPcKU70HEEygY6Y9d8J3o6zQ0K9SYNu+pcXt4lkCQA3h
+        jJQQe5uEGJTExqed7jllQ0khFJzLMx0K6tj0NeeIzAaGCQz13oo2sCdeGRHO4aDh
+        HH6Qlq/6UOV5wP8+GAcCQFgRCcB+hrje8hfEEefHcFpyKH+5g1Eu1k0mLrxK2zd+
+        4SlotYRHgPCEubokb2S1zfZDWIXW3HmggnGgM949TlY=
+        -----END RSA PRIVATE KEY-----
+
+      verification_key: |
+        -----BEGIN PUBLIC KEY-----
+        MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDHFr+KICms+tuT1OXJwhCUmR2d
+        KVy7psa8xzElSyzqx7oJyfJ1JZyOzToj9T5SfTIq396agbHJWVfYphNahvZ/7uMX
+        qHxf+ZH9BL1gk9Y6kCnbM5R60gfwjyW1/dQPjOzn9N394zd2FJoFHwdq9Qs0wBug
+        spULZVNRxq7veq/fzwIDAQAB
+        -----END PUBLIC KEY-----
+
+    no_ssl: true
+    url: http://uaa.orinoco.cf-app.com
+  route_registrar:
+    api_endpoint: http://routing-api.orinoco.cf-app.com
+    api_username: gorouter
+    api_password: gorouter-secret
+  consul:
+    agent:
+      log_level:
+      servers:
+        lan: [10.0.192.106]
+# code_snippet cf-minimal-aws end
+# The previous line helps maintain current documentation at http://docs.cloudfoundry.org.

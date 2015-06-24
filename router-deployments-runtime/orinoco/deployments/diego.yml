@@ -1,0 +1,530 @@
+---
+compilation:
+  cloud_properties:
+    availability_zone: us-east-1a
+    instance_type: c3.large
+  network: diego1
+  reuse_compilation_vms: true
+  workers: 6
+director_uuid: 9c6b8ce9-c330-4ff4-af9b-80278ea63e97
+jobs:
+- instances: 1
+  name: etcd_z1
+  networks:
+  - name: diego1
+  persistent_disk: 1024
+  properties:
+    consul:
+      agent:
+        services:
+          etcd: {}
+  resource_pool: etcd_z1
+  templates:
+  - name: etcd
+    release: diego
+  - name: consul_agent
+    release: cf
+  update:
+    max_in_flight: 1
+    serial: true
+- instances: 1
+  name: brain_z1
+  networks:
+  - name: diego1
+  properties:
+    metron_agent:
+      zone: z1
+  resource_pool: brain_z1
+  templates:
+  - name: consul_agent
+    release: cf
+  - name: auctioneer
+    release: diego
+  - name: converger
+    release: diego
+  - name: runtime_metrics_server
+    release: diego
+  - name: metron_agent
+    release: cf
+  update:
+    max_in_flight: 1
+    serial: true
+- instances: 1
+  name: cell_z1
+  networks:
+  - name: diego1
+  properties:
+    diego:
+      rep:
+        zone: z1
+    metron_agent:
+      zone: z1
+  resource_pool: cell_z1
+  templates:
+  - name: rep
+    release: diego
+  - name: consul_agent
+    release: cf
+  - name: garden-linux
+    release: diego
+  - name: metron_agent
+    release: cf
+  update:
+    max_in_flight: 1
+    serial: false
+- instances: 1
+  name: cc_bridge_z1
+  networks:
+  - name: diego1
+  properties:
+    consul:
+      agent:
+        services:
+          file_server: {}
+          nsync: {}
+          stager: {}
+          tps: {}
+    metron_agent:
+      zone: z1
+  resource_pool: cc_bridge_z1
+  templates:
+  - name: stager
+    release: diego
+  - name: nsync
+    release: diego
+  - name: tps
+    release: diego
+  - name: file_server
+    release: diego
+  - name: consul_agent
+    release: cf
+  - name: metron_agent
+    release: cf
+  update:
+    max_in_flight: 1
+    serial: false
+- instances: 1
+  name: access_z1
+  networks:
+  - name: diego1
+    static_ips:
+    - 10.0.48.11
+  properties:
+    consul:
+      agent:
+        services:
+          receptor: {}
+          ssh_proxy: {}
+    metron_agent:
+      zone: z1
+  resource_pool: access_z1
+  templates:
+  - name: ssh_proxy
+    release: diego
+  - name: consul_agent
+    release: cf
+  - name: metron_agent
+    release: cf
+  - name: receptor
+    release: diego
+  - name: route_emitter
+    release: diego
+  update:
+    max_in_flight: 1
+    serial: false
+name: cf-orinoco-diego
+networks:
+- name: diego1
+  subnets:
+  - cloud_properties:
+      security_groups:
+      - BOSH-CloudFormation-InternalSecurityGroup-1CMPPF9YMH794
+      subnet: subnet-e69e04cd
+    dns:
+    - 10.0.0.2
+    gateway: 10.0.48.1
+    range: 10.0.48.0/20
+    reserved:
+    - 10.0.48.2 - 10.0.48.9
+    static:
+    - 10.0.48.10 - 10.0.48.63
+  type: manual
+properties:
+  consul:
+    agent:
+      log_level: 
+      servers:
+        lan:
+        - 10.0.192.106
+  diego:
+    auctioneer:
+      etcd:
+        machines:
+        - etcd.service.consul
+      log_level: 
+    converger:
+      etcd:
+        machines:
+        - etcd.service.consul
+      log_level: 
+    etcd:
+      ca_cert: |
+        -----BEGIN CERTIFICATE-----
+        MIIFATCCAuugAwIBAgIBATALBgkqhkiG9w0BAQswEjEQMA4GA1UEAxMHZGllZ29D
+        QTAeFw0xNTA2MTkyMzM0MDhaFw0yNTA2MTkyMzM0MTdaMBIxEDAOBgNVBAMTB2Rp
+        ZWdvQ0EwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQClxq0qO4JNbEo3
+        KYHFTd2QAeAW9aY2hgsjrf/tM4kFkkbLLB/0GhPwr9gmnF/vqFXWk9H1W70DClpL
+        PiedRSDCChjrkc4/LL2Og47SpvGjXYBtfKFUaCp76hqZNFhUpCkfO1ZMEWA9JH4h
+        qiWIcHK1yLJagJLPa9v8+MDeC6J8gOMCRMVHIGK7OKfT5tX20Qb6n8fwt51A9VCP
+        sDh2TD9Bm7WHSlU8H1EZjOtzipaqd+8VTUq6y/WNf6Ja8FacWr8HudAhQIRAjJIj
+        qCx40/8vnbYiF1TwvLfFv/X+dO1SVfqYARQJotHRuq+cxQwNiJSZGhhbbnrju9Ky
+        QY2mtcstF8KSeqjcVBdF0UVb9rF2boukvYebGpicNhXjTEjo6Ys+DaxjvzWg9V7h
+        ZMZdDaeUFtrnD+T5qOypHE7XHn5qZ1NzEGe67+V3VUnYReDPMnXU23RtX/QmG2Tt
+        12eLXcL8ppLZbuw8H2itl4cYXBQR4DcxBPUlyA1QjuSOKeEMTvUDdp2I+wUKwWN4
+        5wTPV2+tTy8ukwAvL1MPMVmsdct/5GcE2ZC/a0bFkZsTSoKq6JwYL4Mhp0r9bAPa
+        7nohqFt0EbbPDv5FXX7mT0BqBpKR1sc5BmsWqAi1m0dcXp8qdi3P6FI3ibd59AhL
+        VHp4B7mIl3Df3eep3ruDEbVP3EPHfQIDAQABo2YwZDAOBgNVHQ8BAf8EBAMCAAYw
+        EgYDVR0TAQH/BAgwBgEB/wIBADAdBgNVHQ4EFgQUjV6xmctEjQNOWVZyiHalkfJn
+        0OwwHwYDVR0jBBgwFoAUjV6xmctEjQNOWVZyiHalkfJn0OwwCwYJKoZIhvcNAQEL
+        A4ICAQCYDboA0DR7IoDMfyz+BtJZuNvgcoxMLw7Wh0iyPHZVSXxZDHs6BEXkLJ8T
+        aSrVCq3iKLW+PMRnjBZClEHmQ2wGcRbBbdWIG/fBl32JGWGJ/bl6H+AQC3bU/+0w
+        AhoqFPMBxZcUo8J+tY4BXRxXbmeICVpN1as6Re31MteZtc0z6wsuvJDOGxJph/Mw
+        9qBkFKYGOrbxxw8fXdrWTe9FgwV4rtdB1LzLqCiiw3MOBJCnsyTlMJOjQz3fW1ZO
+        hJ+cI2wceDXao7ATtNJLe5xSu8I/pe79QkFgKUHegHnR+ICupXyhhSYsk7nywER5
+        Orrjp8saHXurb+YhLbHu+7GfklBFdEzHTqfBtDeItQyfcBYa/yqmGuwy+WeRl1Jw
+        dzQRvg+SEdbe4oyuCTnVMVtkeJWOpA/QQsZZFNKeiwwELcUyibi2A9xRIanyw1Jt
+        yI2EaFTQYm6U/kH54CRijC5dcg2sOLx3c4uiOpTHdOErHQG/H4HTJixR07oUsPm/
+        uZk+SH3LTOpV0LBpVdlsXqRiqTawoaipbjY3r9mpr1wG0aONL7oYngatuDVtPNaZ
+        97D8brtvygPzZ9xneTHWz+11zURIKSAs2+tJ1qJyIwmsBJH8GbcdHhIL4rb21uP8
+        qEpddFpuFxGUrDBw4cAMvPu/fS4o3OQC+lS6hBA33NPwmja6rg==
+        -----END CERTIFICATE-----
+      client_cert: |
+        -----BEGIN CERTIFICATE-----
+        MIIEHzCCAgmgAwIBAgIRAJVFWUiL55Tluj//WQY3NAEwCwYJKoZIhvcNAQELMBIx
+        EDAOBgNVBAMTB2RpZWdvQ0EwHhcNMTUwNjE5MjMzODQ5WhcNMTcwNjE5MjMzODUw
+        WjAVMRMwEQYDVQQDEwpjbGllbnROYW1lMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8A
+        MIIBCgKCAQEAwMVRkQoHUVD3/YHLs0iq/thOr7j2kwQo+8BN7emaoKiTQvuF/Vb+
+        zpXa2ikwZyfvIhe1sS2hawIY42u7nXHw/GuWEzuCiIBrmyqBVM/Grd8NZgDdb5KL
+        /EMpu1fMsLjqwxVQsnm6SD8i8F9IF354hVEguW6nqK7Xc8b65GZq6UXboeEUStU+
+        ZenY/eWJa4V0n/omwuYtzHicUL9tgjoM5neye4PhMqGDd6gCMWDIhrH9BOUSpntn
+        sBGSj0v+w1IDitZUc3ESYGhMN40/H5fMEJ5kqwBus8gmdpbUfNLvfBsGyMinC7Q0
+        K2GQjEJcw1N9wumhhx8vk6+cwal23wkz3QIDAQABo3EwbzAOBgNVHQ8BAf8EBAMC
+        ALgwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMB0GA1UdDgQWBBQ1kTOX
+        eUjvzawDgH1aZLwZObg5yjAfBgNVHSMEGDAWgBSNXrGZy0SNA05ZVnKIdqWR8mfQ
+        7DALBgkqhkiG9w0BAQsDggIBAG+OZq/3AKH0yiqIA05KEc2gRC8fsS4ES4zUkp7s
+        8K/FjrDqkQEajMueUFd2P8K9SVbVpQmAzjaVzHDM67Z0LihSqYSu4hlhlXQtwlxH
+        TeFQLPUjimmCZ5nLMPgqfB8szk97ghmjBFkTyTcHnnbOrXVbr3qM95eMSXqce9Z1
+        4Ey9TLw34Fr7qOC1+j22L5CR6XzXTgWa+UnZA5HR9uP4FcOPDUsb5P7nBd08vI21
+        5lAoqpbCcDCDn7wWfYi1TUmvbwzXrJWCuYd/kTdY/s8cCIn12E7QK4nv2KiQQT9p
+        kMAXlBKcgIL6A4jA8WADASonfpcGMSuXzsEtqBLW1HyygDWQUQbfi8tcBArg1cau
+        DBTK5cLl8DGKB8+UNBZ/xBODjhp0FvSpwTQjPAweInhJVz4aLVQ8DzYsJPkdK+Vd
+        nTYTM+mEy1ib53Ap2u7lI8Sdv8+9JZLxWEb7Ezp8j8wkuu1zMZhArMwqRbgtcvI0
+        vPpRt6fNXyhLFNsz9aEgDcejOtbP+Fn6yGZimrP1TT+gwHRsmeDXiLfM0IhfFl1G
+        Izo2VhZCN3hIv9LOIAX5FD03hAUGZD+9JKuGdBKhYsqSVL9kGB2yIquDiR3wRBMY
+        FfBUFvr5lbcRt/WTuyQEw8IrCfUDBg37rUcZgpaWfHI92UShiQbD0EwIcO8MSrjq
+        /9Un
+        -----END CERTIFICATE-----
+      client_key: |
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEpQIBAAKCAQEAwMVRkQoHUVD3/YHLs0iq/thOr7j2kwQo+8BN7emaoKiTQvuF
+        /Vb+zpXa2ikwZyfvIhe1sS2hawIY42u7nXHw/GuWEzuCiIBrmyqBVM/Grd8NZgDd
+        b5KL/EMpu1fMsLjqwxVQsnm6SD8i8F9IF354hVEguW6nqK7Xc8b65GZq6UXboeEU
+        StU+ZenY/eWJa4V0n/omwuYtzHicUL9tgjoM5neye4PhMqGDd6gCMWDIhrH9BOUS
+        pntnsBGSj0v+w1IDitZUc3ESYGhMN40/H5fMEJ5kqwBus8gmdpbUfNLvfBsGyMin
+        C7Q0K2GQjEJcw1N9wumhhx8vk6+cwal23wkz3QIDAQABAoIBAQCdsQxfdG+2AmFL
+        PKFQ4PIYlQQRVWJHs5B/GLnnFEDMifolQjJCoqbAge/MpQMWb6F8Jx8XeDdinQ2V
+        BG0uh6XWJ4BV7UmDtmHQRb4Ujf99/kgsmCqMeboPuzVpLpKgQjSxLz+bMF7FePhw
+        39DOf0PB8zKs3itCnvxalnxo2Ks+dNw1KO64AOK77hW7fznhnSxNgNk7DqmrWZ01
+        BZzuFkZCqnSp3PLDzOn+ZWVCTy7re1CaUWy/cDHr3MW3aFXsge+BGZxOIuPcFmgL
+        QZfvJSuUKtg6/m/Or0IIoxafH61bQMGk2ZqGD5aXHtGT/wa4K/mtvGrV/drQ8kSq
+        VFDxPa+VAoGBAPkltqtNHuCVdoYygNT3vIqVmciRjl+cxdVkupK0AVPqniBQg+/e
+        FF1X/jSW4uCs+/vybNjoDyEfPtSV7YLBYEVkDkE8vPqKrmVMnZe4MZndBx/AfmXv
+        z/2J54n3sUBotZroBREpV/SpnrvafLJZSe1wcMZ7RnXqLpXmedi14tYjAoGBAMYS
+        phPHbPqFWRN6aD8JglGnLoa77+jDwn5/yB/tWE74oMYdfOyYM8m2tWnEKsih1f9J
+        uje5gAOs37Qt7v4sgrTW/QjAqAWFtnG2qhfzTjY+lMxuNTeveWLS2IrTae3w2PYO
+        3eZFQMEmBh5nhA1F4adjMHxVjp7q4oNbBXdjg23/AoGBAO4IBwaQLsDYax15ILbX
+        XQ12Mi96SPC2IhhnHQ1N5rrau2oaIoNHxGMNz3NE+Ms42aHzEeUFiHbXmDqYZwt2
+        XtjM6AWR1ubzGfzz/thWBSWAEu9WBCy1uhv75fddar4ji+XMaBLmUf8REvNcoafv
+        QH8V3tjyK/Y533odcSoHVAnLAoGAa/dAVamvyoKjQk3Hwwyg33c8ki6hIASM4L0w
+        Tc7nAuzdXgA21xRDrmEMU+Gc3I3ygtwiSDux/s7dhW5ARoXmnUJO3NV/ALuY7jT+
+        VF3INSM5opE0Ku1YQjjh1hJVPGC7Mqx54gm/uUjLrwkH3uBHlyEnDa7pNdCctbMI
+        sMIqousCgYEAmrbw5l4QqKwbY2UG4N7lJyAWYnotL0tReZ06/3fZ/yyurxigrglz
+        IGTUJ2IoHcHX3PS3KDl2mvLSyPmbjsj6DkJi1p4oEO/yBDYVQGocdZd+yXyLbZ6W
+        ikzx1KsoIS8NetvduUIheAyN3Uz04TUkvr0c31LbgGdE1ysof2ZRL0Q=
+        -----END RSA PRIVATE KEY-----
+      cluster:
+      - instances: 1
+        name: etcd_z1  
+      machines:
+      - etcd.service.consul
+      require_ssl: false
+      server_cert: |
+        -----BEGIN CERTIFICATE-----
+        MIIEYDCCAkqgAwIBAgIQDfduO2gzodt3ToW9TIJXmjALBgkqhkiG9w0BAQswEjEQ
+        MA4GA1UEAxMHZGllZ29DQTAeFw0xNTA2MTkyMzM3MjZaFw0xNzA2MTkyMzM3MjZa
+        MB4xHDAaBgNVBAMTE2V0Y2Quc2VydmljZS5jb25zdWwwggEiMA0GCSqGSIb3DQEB
+        AQUAA4IBDwAwggEKAoIBAQC+5X4rbe5w9hBjkIt+I7iOZs2AheNgkYGNBerTs5pf
+        eTdE/jmroYo/a3UlpG95CvLnbLUShuhA5FCJbo/LDgsSZghDF+CUn0DM41DFDaP8
+        RnCrE/iXRNcUjsOf+Uv1/n2piow3aCFzWjGNSVJPCqrmgo5b2/tXLviLmIvWJ0MM
+        OyLCNLCuTrf87Gis7d7zA4aOI2W8HDmtdSqI2xsv9pZOn3EuT9xxMiviWnpfPS5b
+        xoFzfEtUfQZDl2RR1F2dauvdoQLy6o/88GiOFornj1X81EpXwljtofj7mMk1yiM1
+        u+0plDYfS87KPPFpOjT5So8qatlMaR+eTWeiwONSYsQHAgMBAAGjgakwgaYwDgYD
+        VR0PAQH/BAQDAgC4MB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjAdBgNV
+        HQ4EFgQUkSmIbT0EtPHj1/yZRP/T/hQ6p00wHwYDVR0jBBgwFoAUjV6xmctEjQNO
+        WVZyiHalkfJn0OwwNQYDVR0RBC4wLIIVKi5ldGNkLnNlcnZpY2UuY29uc3VsghNl
+        dGNkLnNlcnZpY2UuY29uc3VsMAsGCSqGSIb3DQEBCwOCAgEAhK1JFzzfhDjcayhk
+        PWAAD2lJne2iZRaC3vZ+YCKNJYeguypFmD3A5IcNj399iHAfKxv+j+3Ii8iXS029
+        9RxcuSPfyFhru+Loiz6aagPiVEHei6cKbMySrnOliEpOCnQB/84YvUQ4rtbXlUKz
+        VL1JBoBZkMX15bKKtiPde+V9YnIbtwo879x76k0qRLCvLiJbR8CM6g2CrJH5RuDE
+        +5FiLUCfbaGFCzEQu6aVCkLnYDHZaiq0ALJtTrSwutXfIN3Bu1YhEg6BLrRgCNpD
+        0R52ydbmwl0lD1+xRHrwwz0aEQ0ytdN5b93jb6g5G7h1ukeAOY76inh/xIjKI+1Z
+        SQc8IReOeBPtBFo30xZFv4L4w1KI72Y1biRn29VMpO61GpSHLGEjwU2Ek3FhQ8+n
+        ABa/6eIj3Jfi7bZ4bG2bRZl4p+NpgRYafFyBezET9kqqD5OJ0+S4pAbNBq2BC+z4
+        DsJPcBsemyN4w1tEwcdmm4V0U9SpJBF1iPfyGgO9/vp0YW2NnIxa6QQLk/mhD1LJ
+        qdKHNNX7mhMk+yoCdWVLi7MPJZqUoPEyH/VAPo+UKvdpfAwC54wmEnbp2MDxG02/
+        swkwQ1xKM/B4iQtns7+hxap9ajXHX8Nfug7nB/zHdw3hj3/RYTulrknPDYPCGC4I
+        +2ak22eF30x47nqBJZNC7exGYMg=
+        -----END CERTIFICATE-----
+      server_key: |
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEowIBAAKCAQEAvuV+K23ucPYQY5CLfiO4jmbNgIXjYJGBjQXq07OaX3k3RP45
+        q6GKP2t1JaRveQry52y1EoboQORQiW6Pyw4LEmYIQxfglJ9AzONQxQ2j/EZwqxP4
+        l0TXFI7Dn/lL9f59qYqMN2ghc1oxjUlSTwqq5oKOW9v7Vy74i5iL1idDDDsiwjSw
+        rk63/OxorO3e8wOGjiNlvBw5rXUqiNsbL/aWTp9xLk/ccTIr4lp6Xz0uW8aBc3xL
+        VH0GQ5dkUdRdnWrr3aEC8uqP/PBojhaK549V/NRKV8JY7aH4+5jJNcojNbvtKZQ2
+        H0vOyjzxaTo0+UqPKmrZTGkfnk1nosDjUmLEBwIDAQABAoIBAGMDFVXhRvNALW/2
+        4OMkE+2IVL58s1q7Hb7PeuUjGsa6UHhwg+kJeHM8gR5tE4RssWBneeOKJZzCzyL5
+        PYvMVOHOGiryj4GGuE2M+a+7S3rl7jpNuXp8MjJveffXjhahUPxG6EM0t2TlOx5V
+        EWP93HaC8OOkTdECg9ej36PL6XLFs4bZUBGvUy/BlJ69I/1M8+SeXJi7okzK+2GH
+        1byn2lKdZzcZeDaKMoAvZfc/TD61H1KXd298TIx9N1IA1oCYXTxOiA2Dmq/tVhMw
+        y3J++8BekK4bXRgmuGLciDQbYrP0DVrY9WFnFdhNaFlL76ER5ygzDwUounMl2Sh9
+        Om9R6sECgYEAzux3jVCMLY7lIvFXi2tS42GBg9bT0lKYGapuJvjk3JmLr17B7EtR
+        +S6AJElk9P8Xs0h+Qr7gHdpz2nr2mVArYbmN02FWwGwWVPeWRl+t1ngnFB0xL29A
+        MYq1Gj+bOO6dKMSHNs0KnPIkTsLCgeeqTrvWf99bntVSBiaxS5zcQiMCgYEA7Cvr
+        W45yMQbJAHGHAJu+98C1ZOKCdhzjJlgLiT0NVbwg4K9Q2azBlV+MsEn7JHhykhnz
+        ahNyKRzZhf0+dqEfvoXU2uM/hTD+qbnBaFq8Vl9szBgiVtXGc66rFgsu7JKAa/Tw
+        b/hULc/guAxwCnQAd+fnvY8YeK62AFCSrGaQ2s0CgYEAmA+8N3Qm31/wUUJsJD+l
+        dQV1qQ4ZMamSruHI+wjTHq4Tsbd/6Qbc4bJjZscs0sIXh5/RcXlVt3qOwtK0H6yD
+        hNhYOiuBFf0YWC5uF58+X6qChUyClao60W1uczClACyR/6CVARejIfzr45lKWS6G
+        wD9XfTcF3G5FTdHnXnqSfmMCgYAN0Pvx3UF88MKtjfax6Gqhn9p8zmuHcWUwhxIV
+        s0amb10VB+yY72xbyr02Sv2wQoOhXHdLC1wwX4myNwCCfCaZRMcRDx5WMmmTkFRq
+        QHSoMOjyf67ymYsElYFYxsq1+FQe/LNcOZDjJTgmTEP5uJOWcDC0fDyYQtBO8GfE
+        QjPTOQKBgCI0c4yWXyr5qbxWRpl/3eaVNgr8/QD9dis5rusdya9BcvS+sTwU0Ohp
+        cRmf5P3HY1iBWj380ZcU3G1kx9rb2C3Y05YH+gYHGHjrg71fBhuqvs86F0zpjhpG
+        5Mlwg/dPI14LqDoP1bksofruc8jj4+OQzu4qePYOK+B3IP61iTbW
+        -----END RSA PRIVATE KEY-----
+    executor:
+      allow_privileged: true
+      drain_timeout_in_seconds: 
+      garden:
+        address: 
+        network: 
+      log_level: 
+    file_server:
+      cc:
+        base_url: https://api.orinoco.cf-app.com
+        basic_auth_password: supported-smug-n0ise
+        external_port: 9022
+        staging_upload_password: append5-bradylexia
+        staging_upload_user: tag269_downsinking
+      log_level: 
+    garden-linux:
+      allow_networks:
+      - 10.0.0.2/32
+      disk_quota_enabled: 
+      insecure_docker_registry_list:
+      - 10.0.14.0/24
+      kernel_network_tuning_enabled: 
+      listen_address: 
+      listen_network: 
+    nsync:
+      cc:
+        base_url: https://api.orinoco.cf-app.com
+        basic_auth_password: supported-smug-n0ise
+        external_port: 9022
+        staging_upload_password: append5-bradylexia
+        staging_upload_user: tag269_downsinking
+      diego_api_url: http://diego:horse2thbrush@receptor.service.consul:8888
+      etcd:
+        machines:
+        - etcd.service.consul
+      log_level: 
+    receptor:
+      cors_enabled: true
+      domain_names:
+      - receptor.orinoco.ci.cf-app.com
+      etcd:
+        machines:
+        - etcd.service.consul
+      log_level: 
+      nats:
+        machines:
+        - 10.0.192.103
+        password: tubful1_handballer
+        port: 4222
+        username: whirl865-irritancy
+      password: horse2thbrush
+      register_with_router: true
+      username: diego
+    rep:
+      etcd:
+        machines:
+        - etcd.service.consul
+      log_level: 
+    route_emitter:
+      diego_api_url: http://diego:horse2thbrush@receptor.service.consul:8888
+      log_level: 
+      nats:
+        machines:
+        - 10.0.192.103
+        password: tubful1_handballer
+        port: 4222
+        username: whirl865-irritancy
+    runtime_metrics_server:
+      diego_api_url: http://diego:horse2thbrush@receptor.service.consul:8888
+      etcd:
+        machines:
+        - etcd.service.consul
+      log_level: 
+      nats:
+        machines:
+        - 10.0.192.103
+        password: tubful1_handballer
+        port: 4222
+        username: whirl865-irritancy
+    ssh_proxy:
+      cc:
+        external_port: 9022
+      diego_api_url: http://diego:horse2thbrush@receptor.service.consul:8888
+      enable_cf_auth: true
+      enable_diego_auth: true
+      host_key: |
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEhgIBAAKB/DNXaWSsdH1m45NMnMjWvuQNNn1k5agk/sCi7bVqcaxDPKaRn5sE
+        siZRrMr3euz5DPGJ2rzWdT4kkDz3DepLxviW1TbR49GQlqXjrS3dUAOX1k58brDX
+        L2LuAIybjnidru3W+ecLm3Gi7rh2/22bqERIVerIeDUkAMJnux7XXwKax+wnBofk
+        G/9S5n+nGIKYdwzC/ZkwnObdYJ6onGDe+A+ma2ILf0T+WQWZyVP7pRTN+qeslJOE
+        kcCNbQFAgMaQxaIzJnpWQAux9VtrNmi3RASQdQRssXph+v8rm2c8f4BD97exysmU
+        vS4xurhzopghklf+a6QLbUQNSFyUPwIDAQABAoH8FJfYJ1Bg/Te6yodtT8WLFdAS
+        7iL9Vv9Xy47Oh/jlFXJ2rl00xqoQhvw1sceoX8rZnTxtJ1dh+YYS8NErnLG+YlGl
+        vfJcTd+P/YQgH4hoorhRdnPEtlvpnuXWBJAUil69Hpse68SlGeR/mi/o7l8EFDdr
+        dtvoE3CYeWHAFXPPRPVzLB9WKbfw2myHqpXyjdnrcylXj1I2grSQt3de7pOI4q7h
+        sNadUU5sLpSe2nbxc4B7xpG0FyxCU8x6tFKICa3RmDuUD6E6skDUo4YjDuMXwKhw
+        Pq0RBcXcptGg0Oireob+lvbGxtGpQi4oXC877c0ios9T3uaABV1f170ZAn57YJor
+        cCSMNgTWKFNmitBTvPwkwWkwLvEdVVrDAJ4JYjaZKJFG00hYnZEERyQVpNF1/XWh
+        nrYV56/hFYW/pLbIlca+VBg8T19NYja8GE+pXC1NefwVcHwQyFu8oEJA09Crj7c0
+        /2KrvR0And70qpOkz3LOMDu8hTgTmAJVu3UCfmqHufHjvvZfGDz9j8krbJkLAvRY
+        2buzHGfkDw0PP6PS96+BA24fLMlDU6rL/CGGQ7K9jkZdE681WIcy999S4cgWkCk/
+        b6zthmcnuETxCqxTNDTNXYIkmQffsoQwm2WZKvyvuO3s978Fwccm76NXE3qFm3GY
+        cU6VtmSxQHv+YwJ+RbKyBX4Jt4fAvbb0PoaG3/dwPddhdA3gumCAsI7FuKlaDLXl
+        NCyhvyXsSY1i7jM4/T3dWRtO5BsJuc8tyrDjbXdnWhgpxNBWF2I3Z5UYU6W2FgGm
+        jfoIrHZzlKC4LOU8Cd9bcT4g4MIqAzIsRO2kEMP8qEyJQpvDrRX/o60NAn47ci/O
+        DnOykdA5wJjq/kNkh6OHbMlbl5BjXP0VIYw2w/QZSJn8aoMYcGyQ47F3l6/RXzu0
+        gh4I6HDVSRjO0zZQ7F5X1iFgU09r4ttOBWAaV3fLe0oR5JBMt4SrhWBB6p31Ua2V
+        f2Wkf/bpRg31jRK+jS33zsRzwNF+EPdV+dcCfi0LEcb4EJMh8Rpj3JlxE7elDQe4
+        WVWpU64ifLJacO1xiZjl3tnbOsACrg6C9LnVrSqxshGFT6iGSrjAw2HyU5IiwWT+
+        JcwfZRV/EOiyuLKisb8nyyy6QgF9BKswqegODXOkgrAMMScG0nBJ0OeCCpIrmO5p
+        U273zY9Doa0mpA==
+        -----END RSA PRIVATE KEY-----
+      servers:
+      - 10.0.48.11
+    ssl:
+      skip_cert_verify: true
+    stager:
+      cc:
+        base_url: https://api.orinoco.cf-app.com
+        basic_auth_password: supported-smug-n0ise
+        external_port: 9022
+        staging_upload_password: append5-bradylexia
+        staging_upload_user: tag269_downsinking
+      diego_api_url: http://diego:horse2thbrush@receptor.service.consul:8888
+      insecure_docker_registry: true
+      log_level: 
+    tps:
+      cc:
+        base_url: https://api.orinoco.cf-app.com
+        basic_auth_password: supported-smug-n0ise
+        external_port: 9022
+        staging_upload_password: append5-bradylexia
+        staging_upload_user: tag269_downsinking
+      diego_api_url: http://diego:horse2thbrush@receptor.service.consul:8888
+      log_level: 
+      traffic_controller_url: wss://doppler.orinoco.cf-app.com:443
+  etcd:
+    machines:
+    - 10.0.192.104
+  loggregator_endpoint:
+    shared_secret: aPtGRw4E1hJ7W06QpluA20K4NueCQm
+  metron_agent:
+    deployment: cf-orinoco-diego
+  nats:
+    machines:
+    - 10.0.192.103
+    password: tubful1_handballer
+    port: 4222
+    user: whirl865-irritancy
+  syslog_daemon_config:
+    address: logs2.papertrailapp.com
+    port: 30426
+releases:
+- name: diego
+  version: latest
+- name: cf
+  version: latest
+resource_pools:
+- cloud_properties:
+    availability_zone: us-east-1a
+    elbs:
+    - BOSH-Clou-WebELBLo-1XWN16SMGHGDQ
+    instance_type: m3.medium
+  name: access_z1
+  network: diego1
+  stemcell:
+    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+    version: '2992'
+- cloud_properties:
+    availability_zone: us-east-1a
+    instance_type: m3.medium
+  name: brain_z1
+  network: diego1
+  stemcell:
+    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+    version: '2992'
+- cloud_properties:
+    availability_zone: us-east-1a
+    instance_type: m3.medium
+  name: cc_bridge_z1
+  network: diego1
+  stemcell:
+    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+    version: '2992'
+- cloud_properties:
+    availability_zone: us-east-1a
+    instance_type: m3.large
+  name: cell_z1
+  network: diego1
+  stemcell:
+    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+    version: '2992'
+- cloud_properties:
+    availability_zone: us-east-1a
+    instance_type: m3.medium
+  name: etcd_z1
+  network: diego1
+  stemcell:
+    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+    version: '2992'
+- cloud_properties:
+    availability_zone: us-east-1a
+    instance_type: m3.medium
+  name: route_emitter_z1
+  network: diego1
+  stemcell:
+    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+    version: '2992'
+update:
+  canaries: 1
+  canary_watch_time: 5000-120000
+  max_in_flight: 1
+  serial: false
+  update_watch_time: 5000-120000

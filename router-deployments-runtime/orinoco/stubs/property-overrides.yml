@@ -7,7 +7,7 @@ property_overrides:
     debug_addr: ~
     starting_external_port: 50000
   tcp_emitter:
-    diego_api_url: ~
+    diego_api_url: http://diego:horse2thbrush@receptor.service.consul:8888
     log_level: info
     debug_addr: ~
   haproxy:
