@@ -12,6 +12,8 @@ files:
   - github.com/cloudfoundry-incubator/cf_http/*.go # gosub
   - github.com/cloudfoundry-incubator/receptor/*.go # gosub
   - github.com/cloudfoundry-incubator/runtime-schema/models/*.go # gosub
+  - github.com/cloudfoundry-incubator/tcp-emitter/routing_table/*.go # gosub
+  - github.com/cloudfoundry-incubator/tcp-emitter/tcp_routes/*.go # gosub
   - github.com/cloudfoundry-incubator/tcp-emitter/watcher/*.go # gosub
   - github.com/cloudfoundry/dropsonde/*.go # gosub
   - github.com/cloudfoundry/dropsonde/control/*.go # gosub
