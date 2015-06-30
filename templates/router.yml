@@ -67,6 +67,11 @@ jobs:
     update:
       serial: true
       max_in_flight: 1
+    properties:
+      consul:
+        agent:
+          services:
+            router_configurer: {}
   - name: tcp_router_z2
     templates: (( base_job_templates.haproxy ))
     instances: (( instance_count_overrides.tcp_router_z2.instances || 0 ))
@@ -78,6 +83,11 @@ jobs:
     update:
       serial: true
       max_in_flight: 1
+    properties:
+      consul:
+        agent:
+          services:
+            router_configurer: {}
   - name: tcp_router_z3
     templates: (( base_job_templates.haproxy ))
     instances: (( instance_count_overrides.tcp_router_z3.instances || 0 ))
@@ -88,7 +98,12 @@ jobs:
         static_ips: (( static_ips(0) ))
     update:
       serial: true
-      max_in_flight: 1  
+      max_in_flight: 1
+    properties:
+      consul:
+        agent:
+          services:
+            router_configurer: {}
   - name: router_acceptance_tests
     templates: (( base_job_templates.acceptance_tests_errand ))
     lifecycle: errand
@@ -118,6 +133,7 @@ properties:
       log_level: (( property_overrides.router_configurer.log_level ))
     tcp_emitter:
       diego_api_url: (( property_overrides.tcp_emitter.diego_api_url ))
+      tcp_router_api_url: (( property_overrides.tcp_emitter.tcp_router_api_url ))
       debug_addr: (( property_overrides.tcp_emitter.debug_addr ))
       log_level: (( property_overrides.tcp_emitter.log_level ))
     haproxy:
@@ -126,6 +142,7 @@ properties:
     acceptance_tests:
       router_api_address: (( property_overrides.acceptance_tests.router_api_address ))
       router_api_port: (( property_overrides.acceptance_tests.router_api_port ))
+      diego_api_url: (( property_overrides.acceptance_tests.diego_api_url ))
 
 base_job_templates:
   haproxy:
@@ -140,5 +157,7 @@ base_job_templates:
   acceptance_tests_errand:
     - name: acceptance_tests
       release: cf-routing
+    - name: consul_agent
+      release: cf
 
 

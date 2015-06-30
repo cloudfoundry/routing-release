@@ -3,6 +3,7 @@ name: router_configurer
 
 templates:
   router_configurer_ctl.erb: bin/router_configurer_ctl
+  dns_health_check.erb: bin/dns_health_check
 
 packages:
   - pid_utils

@@ -7,6 +7,7 @@ templates:
 packages:
   - pid_utils
   - tcp_emitter
+  - router_configurer
 
 properties:
   router.tcp_emitter.debug_addr:
@@ -20,3 +21,7 @@ properties:
   router.tcp_emitter.diego_api_url:
     description: "Diego Receptor endpoint url"
     default: "http://receptor.service.consul:8888"
+
+  router.tcp_emitter.tcp_router_api_url:
+    description: "TCP router API endpoint url"
+    default: "http://router-configurer.service.consul:9999"

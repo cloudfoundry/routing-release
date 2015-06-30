@@ -149,3 +149,80 @@ These instructions assume the release has been deployed to bosh-lite
 
 Please refer to the following document to review the [TCP Router API] (https://github.com/cloudfoundry-incubator/cf-tcp-router/blob/master/overview.md)
 
+## Diego Integration
+
+### Changes to DesiredLRPCreateRequest
+In order to receive TCP traffic on a given application port, the [DesiredLRPCreateRequest] (https://github.com/cloudfoundry-incubator/receptor/blob/master/doc/lrps.md#describing-desiredlrps) should be created as follows:
+
+```
+{
+    "process_guid": "some-guid",
+    "domain": "some-domain",
+
+    "instances": 17,
+
+    "rootfs": "VALID-ROOTFS",
+
+    "setup": ACTION,
+    "action":  ACTION,
+    "monitor": ACTION,
+
+    "ports": [8080, 5050, 5222],
+    "routes": {
+        "cf-router": [
+            {
+                "hostnames": ["a.example.com", "b.example.com"],
+                "port": 8080
+            }, {
+                "hostnames": ["c.example.com"],
+                "port": 5050
+            }
+        ],
+        "tcp-router" : [
+            {
+                "external_port":60000,
+                "container_port":5222
+            }
+        ]
+    }
+}
+```
+
+Let’s break this down:
+
+1. The `ports` section now includes the container port on which the application will receive TCP traffic.
+
+1. The `tcp-router` section within `routes` includes the association (*mapping*) between the external port on the TCP Router and the corresponding container port.
+
+### Changes to DesiredLRPUpdateRequest
+In order to update an existing Desired LRP with new external port mapping, the [DesiredLRPUpdateRequest](https://github.com/cloudfoundry-incubator/receptor/blob/master/doc/lrps.md#updating-desiredlrps) should be created like this:
+
+```
+{
+    "instances": 17,
+    "routes": {
+        "cf-router": [
+            {
+                "hostnames": ["a.example.com", "b.example.com"],
+                "port": 8080
+            }, {
+                "hostnames": ["c.example.com"],
+                "port": 5050
+            }
+        ],
+        "tcp-router" : [
+            {
+                "external_port":60000,
+                "container_port":5222
+            }
+        ]
+    },
+    "annotation": "arbitrary metadata"
+}
+```
+
+Let’s break this down:
+
+1. The `container_port` must have been already specified as part of the `ports` section in the DesiredLRPCreateRequest
+
+1. The `tcp-router` section within `routes` includes the new association (*mapping*) between the external port on the TCP Router and the corresponding container port.

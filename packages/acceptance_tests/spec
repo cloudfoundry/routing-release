@@ -15,6 +15,7 @@ files:
   - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/router/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router/testutil/*.go # gosub
+  - github.com/cloudfoundry-incubator/receptor/*.go # gosub
   - github.com/onsi/ginkgo/*.go # gosub
   - github.com/onsi/gomega/*.go # gosub
   - github.com/onsi/gomega/gexec/*.go # gosub
@@ -36,7 +37,6 @@ files:
   - github.com/bmizerany/pat/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-lager/*.go # gosub
   - github.com/cloudfoundry-incubator/cf_http/*.go # gosub
-  - github.com/cloudfoundry-incubator/receptor/*.go # gosub
   - github.com/cloudfoundry-incubator/runtime-schema/models/*.go # gosub
   - github.com/nu7hatch/gouuid/*.go # gosub
   - github.com/tedsuo/rata/*.go # gosub
@@ -61,3 +61,4 @@ files:
   - github.com/onsi/gomega/matchers/support/goraph/node/*.go # gosub
   - github.com/onsi/gomega/matchers/support/goraph/util/*.go # gosub
   - github.com/onsi/gomega/types/*.go # gosub
+  - github.com/cloudfoundry-incubator/tcp-emitter/tcp_routes/*.go # gosub
