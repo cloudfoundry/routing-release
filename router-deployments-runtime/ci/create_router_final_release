@@ -3,12 +3,23 @@
 set -e -x -u
 
 #Copy private.yml from private repo before creating final bosh release
+echo "----- Copy private blobstore credentials into cf-routing-release"
+cp deployments-routing/orinoco/private.yml cf-routing-release/config/private.yml
 
 FINAL_VERSION=`cat version/number`
 
 pushd cf-routing-release
+  echo "----- Set git identity"
+  git config user.email "cf-routing-eng@pivotal.io"
+  git config user.name "Routing CI (Automated)"
+
+  git merge --no-edit origin/master
+
   echo "----- Create final release"
-  bosh --parallel 4 -n create release --final --with-tarball --version $FINAL_VERSION 
+  bosh --parallel 4 -n create release --final --with-tarball --version $FINAL_VERSION
 
   mv releases/cf-routing/*.tgz ../cf-routing-$FINAL_VERSION.tgz
+  echo "----- Update master and develop branches on origin"
+  git add -A
+  git commit -m "Create final release ${FINAL_RELEASE_VERSION}"
 popd

@@ -12,6 +12,20 @@ resources:
     uri: git@github.com:cloudfoundry-incubator/cf-routing-release.git
     private_key: {{github_private_key}}
 
+- name: cf-routing-release-master
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cloudfoundry-incubator/cf-routing-release.git
+    private_key: {{github_private_key}}
+
+- name: deployments-routing
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cloudfoundry/deployments-routing.git
+    private_key: {{github_private_key}}
+
 - name: cf-release
   type: git
   source:
@@ -286,8 +300,13 @@ jobs:
       trigger: false
       passed:
       - deploy-and-test
+    - get: deployments-routing
+      trigger: false
   - task: create-final-release
     file: cf-routing-release/router-deployments-runtime/ci/create_router_final_release.build.yml
   - put: router-final-release
     params:
       from: create-final-release/cf-routing-([\d\.]+).tgz
+  - put: cf-routing-release-master
+    params:
+      repository: cf-routing-release
