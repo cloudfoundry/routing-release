@@ -9,7 +9,7 @@ property_overrides:
   tcp_emitter:
     diego_api_url: ~
     tcp_router_api_url: ~
-    log_level: info
+    log_level: debug
     debug_addr: ~
   haproxy:
     faux_port: 1234
