@@ -21,5 +21,5 @@ pushd cf-routing-release
   mv releases/cf-routing/*.tgz ../cf-routing-$FINAL_VERSION.tgz
   echo "----- Update master and develop branches on origin"
   git add -A
-  git commit -m "Create final release ${FINAL_RELEASE_VERSION}"
+  git commit -m "Create final release ${FINAL_VERSION}"
 popd
