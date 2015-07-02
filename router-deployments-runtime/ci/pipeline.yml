@@ -5,6 +5,13 @@ resources:
     branch: develop
     uri: https://github.com/cloudfoundry-incubator/cf-routing-release.git
 
+- name: cf-routing-release-mergeback
+  type: git
+  source:
+    branch: develop
+    uri: https://github.com/cloudfoundry-incubator/cf-routing-release.git
+    private_key: {{github_private_key}}
+
 - name: cf-routing-release-rc
   type: git
   source:
@@ -288,6 +295,8 @@ jobs:
 
 - name: create-final-release
   serial: true
+  serial_groups:
+    - final-release-group
   plan:
   - aggregate:
     - get: cf-routing-release
@@ -309,4 +318,26 @@ jobs:
       from: create-final-release/cf-routing-([\d\.]+).tgz
   - put: cf-routing-release-master
     params:
-      repository: cf-routing-release
+      repository: create-final-release/cf-routing-release
+
+- name: merge-master-into-develop
+  serial: true
+  serial_groups:
+    - final-release-group
+  plan:
+  - aggregate:
+    - get: cf-routing-release
+      trigger: false
+      params:
+        submodules: none
+    - get: cf-routing-release-master
+      trigger: true
+      passed:
+        - create-final-release
+      params:
+        submodules: none
+  - task: merge-into-develop
+    file: cf-routing-release/router-deployments-runtime/ci/merge_master_into_develop.build.yml
+  - put: cf-routing-release-mergeback
+    params:
+      repository: merge-into-develop/cf-routing-release
