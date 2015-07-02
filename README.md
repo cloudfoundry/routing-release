@@ -111,6 +111,8 @@ See the README for [Router Acceptance Tests](https://github.com/cloudfoundry-inc
 
 These instructions assume the release has been deployed to bosh-lite
 
+### Using Routing API
+
 1. Start the `tcp-sample-listener` on your local workstation
 	```
 	$ src/github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/tcp-sample-receiver/tcp-sample-receiver --address HOST:PORT
@@ -144,14 +146,10 @@ These instructions assume the release has been deployed to bosh-lite
 	this
 	cool?
 	```
+	
+### Using Diego API
 
-## Router API Overview
-
-Please refer to the following document to review the [TCP Router API] (https://github.com/cloudfoundry-incubator/cf-tcp-router/blob/master/overview.md)
-
-## Diego Integration
-
-### Changes to DesiredLRPCreateRequest
+#### DesiredLRPCreateRequest
 In order to receive TCP traffic on a given application port, the [DesiredLRPCreateRequest] (https://github.com/cloudfoundry-incubator/receptor/blob/master/doc/lrps.md#describing-desiredlrps) should be created as follows:
 
 ```
@@ -194,7 +192,7 @@ Let’s break this down:
 
 1. The `tcp-router` section within `routes` includes the association (*mapping*) between the external port on the TCP Router and the corresponding container port.
 
-### Changes to DesiredLRPUpdateRequest
+#### DesiredLRPUpdateRequest
 In order to update an existing Desired LRP with new external port mapping, the [DesiredLRPUpdateRequest](https://github.com/cloudfoundry-incubator/receptor/blob/master/doc/lrps.md#updating-desiredlrps) should be created like this:
 
 ```
@@ -226,3 +224,8 @@ Let’s break this down:
 1. The `container_port` must have been already specified as part of the `ports` section in the DesiredLRPCreateRequest
 
 1. The `tcp-router` section within `routes` includes the new association (*mapping*) between the external port on the TCP Router and the corresponding container port.
+## Router API Overview
+
+Please refer to the following document to review the [TCP Router API] (https://github.com/cloudfoundry-incubator/cf-tcp-router/blob/master/overview.md)
+
+
