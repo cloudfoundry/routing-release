@@ -342,6 +342,7 @@ jobs:
   - put: cf-routing-release-master
     params:
       repository: create-final-release/cf-routing-release
+      tag: version/number
 
 - name: merge-master-into-develop
   serial: true
