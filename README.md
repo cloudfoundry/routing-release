@@ -88,7 +88,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
     * Upload the final available release
 
             cd ~/workspace/cf-routing-release
-            bosh -n upload release releases/cf-routing/cf-routing-<lastest_version>.yml
+            bosh -n upload release releases/cf-routing-<lastest_version>.yml
             bosh -n deploy
 
     * Or create and upload your release
