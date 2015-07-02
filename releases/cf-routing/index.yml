@@ -1,0 +1,5 @@
+---
+builds:
+  de10ed0c-72ac-4735-b520-5712528ad3b0:
+    version: 0.55.0
+format-version: '2'
