@@ -83,11 +83,19 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
         cd ~/workspace/cf-routing-release
         ./bosh-lite/make-manifest <cf_deployment_manifest>
 
-1. Do the BOSH Dance:
+1. Create and upload cf-routing release, either by using a final release or creating your own development release as described below:
 
-        bosh create release --force
-        bosh -n upload release
-        bosh -n deploy
+    * Upload the final available release
+
+            cd ~/workspace/cf-routing-release
+            bosh -n upload release releases/cf-routing/cf-routing-<lastest_version>.yml
+            bosh -n deploy
+
+    * Or create and upload your release
+
+            bosh create release --force
+            bosh -n upload release
+            bosh -n deploy
 
 ## Running Acceptance tests
 
