@@ -9,7 +9,7 @@ resources:
   type: git
   source:
     branch: develop
-    uri: https://github.com/cloudfoundry-incubator/cf-routing-release.git
+    uri: git@github.com:cloudfoundry-incubator/cf-routing-release.git
     private_key: {{github_private_key}}
 
 - name: cf-routing-release-rc
