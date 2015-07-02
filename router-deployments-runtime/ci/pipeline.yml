@@ -1,3 +1,21 @@
+groups:
+- name: cf-routing-pipeline
+  jobs:
+    - unit
+    - create-router-release
+    - deploy-and-test
+    - create-final-release
+    - merge-master-into-develop
+- name: cf-diego-deployment-pipeline
+  jobs:
+    - create-cf-release
+    - create-diego-release
+    - orinoco-cf-deploy
+    - orinoco-diego-deploy
+- name: periodic-tasks
+  jobs:
+    - orinoco-bosh-cleanup
+
 resources:
 - name: cf-routing-release
   type: git
@@ -118,6 +136,11 @@ resources:
     regexp: router-(.*).tgz
     access_key_id: {{s3_access_key_id}}
     secret_access_key: {{s3_secret_access_key}}
+
+- name: daily
+  type: time
+  source:
+    interval: 24h
 
 jobs:
 - name: unit
@@ -341,3 +364,23 @@ jobs:
   - put: cf-routing-release-mergeback
     params:
       repository: merge-into-develop/cf-routing-release
+
+- name: orinoco-bosh-cleanup
+  serial: true
+  serial_groups:
+    - pipeline-router
+  plan:
+  - aggregate:
+    - get: cf-routing-release
+      trigger: false
+      params:
+        submodules: none
+    - get: daily
+      trigger: true
+  - task: cleanup
+    file: cf-routing-release/router-deployments-runtime/ci/bosh_cleanup.build.yml
+    config:
+      params:
+        BOSH_TARGET: 52.6.203.246
+        BOSH_USER: {{bosh_username}}
+        BOSH_PASSWORD: {{bosh_password}}

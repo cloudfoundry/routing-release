@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e -x -u
+
+pushd cf-routing-release
+
+	export BOSH_USER=${BOSH_USER}
+	export BOSH_PASSWORD=${BOSH_PASSWORD}
+	bosh -n target ${BOSH_TARGET}
+	bosh -n cleanup
+
+popd

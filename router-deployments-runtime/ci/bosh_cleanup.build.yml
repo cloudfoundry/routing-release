@@ -1,0 +1,15 @@
+---
+platform: linux
+
+image: docker:///cloudfoundry/diego-pipeline
+
+inputs:
+  - name: cf-routing-release
+
+params:
+  BOSH_PASSWORD: ~
+  BOSH_TARGET: ~
+  BOSH_USER: ~
+
+run:
+  path: cf-routing-release/router-deployments-runtime/ci/bosh_cleanup
