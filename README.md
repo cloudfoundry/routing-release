@@ -115,6 +115,10 @@ bosh run errand router_acceptance_tests
 ### Manually 
 See the README for [Router Acceptance Tests](https://github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests)
 
+## Router API
+
+For details refer to [TCP Router API] (https://github.com/cloudfoundry-incubator/cf-tcp-router/blob/master/overview.md).
+
 ## Testing the TCP Router Service manually
 
 These instructions assume the release has been deployed to bosh-lite
@@ -232,8 +236,5 @@ Let’s break this down:
 1. The `container_port` must have been already specified as part of the `ports` section in the DesiredLRPCreateRequest
 
 1. The `tcp-router` section within `routes` includes the new association (*mapping*) between the external port on the TCP Router and the corresponding container port.
-## Router API Overview
-
-Please refer to the following document to review the [TCP Router API] (https://github.com/cloudfoundry-incubator/cf-tcp-router/blob/master/overview.md)
 
 
