@@ -163,7 +163,6 @@ jobs:
       params:
         submodules: all
     - get: version
-      trigger: false
       params:
         bump: minor
   - put: version
@@ -182,13 +181,11 @@ jobs:
   plan:
   - aggregate:
     - get: cf-routing-release
-      trigger: false
       passed:
       - unit
       params:
-        submodules: all
+        submodules: none
     - get: cf-release
-      trigger: false
       params:
         submodules: all
   - task: create-cf-release-task
@@ -204,11 +201,11 @@ jobs:
   plan:
   - aggregate:
     - get: cf-routing-release
-      trigger: false
       passed:
       - unit
       params:
-        submodules: all
+        submodules: none
+    - get: deployments-routing
     - get: cf-release-tarball
       resource: cf-dev-release
       trigger: true
@@ -218,7 +215,7 @@ jobs:
       resource: bosh-stemcell
   - put: orinoco-cf-deployment
     params:
-      manifest: cf-routing-release/router-deployments-runtime/orinoco/deployments/cf.yml
+      manifest: deployments-routing/orinoco/deployments/cf.yml
       releases: [cf-release-tarball/*.tgz]
       stemcells: [bosh-stemcell/*.tgz]
 
@@ -229,13 +226,11 @@ jobs:
   plan:
   - aggregate:
     - get: cf-routing-release
-      trigger: false
       passed:
       - unit
       params:
-        submodules: all
+        submodules: none
     - get: diego-release
-      trigger: false
       params:
         submodules: all
   - task: create-diego-release-task
@@ -251,11 +246,11 @@ jobs:
   plan:
   - aggregate:
     - get: cf-routing-release
-      trigger: false
       passed:
       - unit
       params:
-        submodules: all
+        submodules: none
+    - get: deployments-routing
     - get: diego-release-tarball
       resource: diego-dev-release
       trigger: true
@@ -265,7 +260,7 @@ jobs:
       resource: bosh-stemcell
   - put: orinoco-diego-deployment
     params:
-      manifest: cf-routing-release/router-deployments-runtime/orinoco/deployments/diego.yml
+      manifest: deployments-routing/orinoco/deployments/diego.yml
       releases: [diego-release-tarball/*.tgz]
       stemcells: [bosh-stemcell/*.tgz]
 
@@ -283,6 +278,7 @@ jobs:
     - get: version
       passed:
       - create-router-release
+    - get: deployments-routing
     - get: router-release-tarball
       resource: router-dev-release
       trigger: true
@@ -294,7 +290,6 @@ jobs:
     file: cf-routing-release/router-deployments-runtime/ci/generate_deployment_manifests.build.yml
     config:
       params:
-        DEPLOYMENTS_DIR: cf-routing-release
         ENVIRONMENT_NAME: orinoco
         BOSH_TARGET: 52.6.203.246
         BOSH_USER: {{bosh_username}}
@@ -323,17 +318,14 @@ jobs:
   plan:
   - aggregate:
     - get: cf-routing-release
-      trigger: false
       passed:
       - deploy-and-test
       params:
         submodules: all
     - get: version
-      trigger: false
       passed:
       - deploy-and-test
     - get: deployments-routing
-      trigger: false
   - task: create-final-release
     file: cf-routing-release/router-deployments-runtime/ci/create_router_final_release.build.yml
   - put: router-final-release
@@ -351,7 +343,6 @@ jobs:
   plan:
   - aggregate:
     - get: cf-routing-release
-      trigger: false
       params:
         submodules: none
     - get: cf-routing-release-master
@@ -373,7 +364,6 @@ jobs:
   plan:
   - aggregate:
     - get: cf-routing-release
-      trigger: false
       params:
         submodules: none
     - get: daily
