@@ -5,9 +5,9 @@ image: docker:///cloudfoundry/diego-pipeline
 
 inputs:
   - name: cf-routing-release
+  - name: deployments-routing
 
 params:
-  DEPLOYMENTS_DIR: ~
   ENVIRONMENT_NAME: ~
   BOSH_TARGET: ~
   BOSH_USER: ~
