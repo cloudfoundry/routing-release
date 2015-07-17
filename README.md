@@ -167,8 +167,8 @@ The following example starts [the Redis Docker image](https://registry.hub.docke
 
 - [bosh-lite](https://github.com/cloudfoundry/bosh-lite)
 - [cf-release](https://github.com/cloudfoundry/cf-release) deployment - must be deployed with configuration for Diego, see [diego-release README](https://github.com/cloudfoundry-incubator/diego-release)
-- [diego-release deployment] - See README for deployment instructions 
-- cf-routing-release deployment
+- [diego-release deployment](https://github.com/cloudfoundry-incubator/diego-release) - See README for deployment instructions 
+- cf-routing-release deployment - this release
 
 This example was tested with [diego-release 0.1369.0](https://github.com/cloudfoundry-incubator/diego-release/releases/tag/0.1369.0) and [cf-release](https://github.com/cloudfoundry/cf-release) sha 07576287. Compatible versions of diego-release and cf-release are documented [here](https://github.com/cloudfoundry-incubator/diego-cf-compatibility/blob/master/compatibility-v1.csv).
 
@@ -178,7 +178,7 @@ This example was tested with [diego-release 0.1369.0](https://github.com/cloudfo
 	```
 	$ curl receptor.10.244.0.34.xip.io/v1/domains/redis-example -X PUT
 	
-	$  curl receptor.10.244.0.34.xip.io/v1/domains
+	$ curl receptor.10.244.0.34.xip.io/v1/domains
 	["redis-example","cf-apps"]
 	```
 	
@@ -190,7 +190,7 @@ This example was tested with [diego-release 0.1369.0](https://github.com/cloudfo
 	$ curl receptor.10.244.0.34.xip.io/v1/desired_lrps -X POST -d '{"process_guid":"92bcf571-630f-4ad3-bfa6-146afd40bded","domain":"redis-example","rootfs":"docker:///redis","instances":1,"ports":[6379],"action":{"run":{"path":"/entrypoint.sh","args":["redis-server"],"dir":"/data","user":"root"}},"routes":{"tcp-router":[{"external_port":50000,"container_port":6379}]}}'
 	```
 	
-	Let's take a closer look at the body:
+	Let's take a closer look at the body of this request:
 	```
 	{
 	    "process_guid":"92bcf571-630f-4ad3-bfa6-146afd40bded",
@@ -221,9 +221,9 @@ This example was tested with [diego-release 0.1369.0](https://github.com/cloudfo
 	}
 	```
 
-	- `ports` declares the container port on which the application will receive TCP traffic.
-	- The contents of `routes` are opaque to Diego, and provides a mechanism for Diego API clients to pass through configuration to the routing tier which are [listening for events from Diego](https://github.com/cloudfoundry-incubator/receptor/blob/master/doc/api_lrps.md#receiving-events-when-actual-or-desired-lrps-change).
-	- Within `routes`, the `tcp-router` declares the `external_port` that TCP Router should listen for requests to this LRP, and the container port which enables TCP Router to discover the `host_port` once the actualLRP is created. 
+	- `ports` declares the container ports on which the LRP is listening and for which Diego will create a `host_port`. It is to the `host_port` that TCP Router will will route TCP requests.
+	- The contents of `routes` are opaque to Diego, and provides a mechanism for Diego API clients to pass through configuration to the routing tier which is [listening for events from Diego](https://github.com/cloudfoundry-incubator/receptor/blob/master/doc/api_lrps.md#receiving-events-when-actual-or-desired-lrps-change).
+	- Within `routes`, `tcp-router` is used to declare the `external_port` on which TCP Router will listen for requests to this LRP, and the `container_port` which enables TCP Router to discover the `host_port` once the actualLRP is created. 
 
 	Within a few moments, Diego will generate the actualLRP:
 	```
@@ -254,7 +254,7 @@ This example was tested with [diego-release 0.1369.0](https://github.com/cloudfo
 	]
 	```
 	
-	Notice `address` and `host_port`, this is where TCP Router route traffic for the requested `external_port`. Diego will handle routing from `host_port` to `container_port`.
+	Notice `address` and `host_port`, this is the IP and port to which TCP Router route traffic for the requested `external_port`. Diego will handle routing from `host_port` to `container_port`.
 
 2. Test that a request to the `external_port` is received by the Redis process
 	```
@@ -279,12 +279,14 @@ This example was tested with [diego-release 0.1369.0](https://github.com/cloudfo
 
 3. (Optional) Add an External Port
 
-	You can add an external port for which TCP Router will route traffic to the LRP, however the ports opened on the container cannot be modified (a new LRP must be created), the `container_port` provided must have been included in the `ports` field with the createLRP request. We'll use [DesiredLRPUpdateRequest](https://github.com/cloudfoundry-incubator/receptor/blob/master/doc/api_lrps.md#modifying-desiredlrps) and include the additional `external_port` and the same `container_port`.
+	You can add an external port for which TCP Router will route traffic to the LRP, however the ports opened on the container cannot be modified (a new LRP must be created). The `container_port` provided with the update request must have been included in the `ports` field with the createLRP request. We'll use [DesiredLRPUpdateRequest](https://github.com/cloudfoundry-incubator/receptor/blob/master/doc/api_lrps.md#modifying-desiredlrps) and include the additional `external_port` and the same `container_port` we did with the createLRP request earlier.
 	
+	**Note** The header `-H 'Content-Type: application/json'` is required for this to work.
 	```
-	$ curl receptor.10.244.0.34.xip.io/v1/desired_lrps/92bcf571-630f-4ad3-bfa6-146afd40bded -X PUT -d '{"routes":{"tcp-router":[{"external_port":50001,"container_port":6379}]}}'
+	$ curl receptor.10.244.0.34.xip.io/v1/desired_lrps/92bcf571-630f-4ad3-bfa6-146afd40bded -X PUT -d '{"routes":{"tcp-router":[{"external_port":50001,"container_port":6379}]}}' -H 'Content-Type: application/json'
 	
-	
+	$ redis-cli -h 10.244.8.2 -p 50001 ping
+	PONG
 	```
 	
 
