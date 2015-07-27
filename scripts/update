@@ -8,6 +8,7 @@ if [ "$1" == "--help" ]; then
   exit 0
 fi
 
+set -e
 set -x
 
 if [[ "$(git --version | grep 'version 1.7')x" != "x" ]]; then
