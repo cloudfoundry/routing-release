@@ -168,6 +168,7 @@ The following example starts [the Redis Docker image](https://registry.hub.docke
 - [bosh-lite](https://github.com/cloudfoundry/bosh-lite)
 - [cf-release](https://github.com/cloudfoundry/cf-release) deployment - must be deployed with configuration for Diego, see [diego-release README](https://github.com/cloudfoundry-incubator/diego-release)
 - [diego-release deployment](https://github.com/cloudfoundry-incubator/diego-release) - See README for deployment instructions 
+  - **Important** Diego must be deployed with manifest property `properties.diego.executor.allow_privileged: true`
 - cf-routing-release deployment - this release
 
 This example was tested with [diego-release 0.1369.0](https://github.com/cloudfoundry-incubator/diego-release/releases/tag/0.1369.0) and [cf-release](https://github.com/cloudfoundry/cf-release) sha 07576287. Compatible versions of diego-release and cf-release are documented [here](https://github.com/cloudfoundry-incubator/diego-cf-compatibility/blob/master/compatibility-v1.csv).
