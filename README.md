@@ -71,12 +71,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 
    See [Get the code](#get-the-code)
 
-1. Install spiff, a tool for generating BOSH manifests. spiff is required for
-   running the scripts in later steps. The following installation method
-   assumes that go is installed. For other ways of installing `spiff`, see
-   [the spiff README](https://github.com/cloudfoundry-incubator/spiff).
-
-        go get github.com/cloudfoundry-incubator/spiff
+1. Install spiff, a tool for generating BOSH manifests. spiff is required for running the scripts in later steps. Stable binaries can be downloaded from [Spiff Releases](https://github.com/cloudfoundry-incubator/spiff/releases).
 
 1. Generate and target router's manifest:
 
