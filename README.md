@@ -161,19 +161,17 @@ These instructions assume the release has been deployed to bosh-lite
 	
 ### Using Diego API
 
-The following example starts [the Redis Docker image](https://registry.hub.docker.com/_/redis/) as an LRP, and automatically configures the TCP Router to route traffic for a requested external port on the router to the Redis process. We will be using the Diego Receptor API; for more information see [Diego API Docs](https://github.com/cloudfoundry-incubator/receptor/tree/master/doc). 
+The following tutorial starts [the Redis Docker image](https://registry.hub.docker.com/_/redis/) as an LRP, and automatically configures the TCP Router to route traffic for a requested external port on the router to the Redis process. We will be using the Diego Receptor API; for more information see [Diego API Docs](https://github.com/cloudfoundry-incubator/receptor/tree/master/doc). 
 
 #### Prerequisites
 
 - [bosh-lite](https://github.com/cloudfoundry/bosh-lite)
 - [cf-release](https://github.com/cloudfoundry/cf-release) deployment - must be deployed with configuration for Diego, see [diego-release README](https://github.com/cloudfoundry-incubator/diego-release)
 - [diego-release deployment](https://github.com/cloudfoundry-incubator/diego-release) - See README for deployment instructions 
-  - **Important** Diego must be deployed with manifest property `properties.diego.executor.allow_privileged: true`
+  - **Important** Diego must be deployed with manifest property `properties.diego.executor.allow_privileged: true`. This is required because the Redis process will be started with user root.
 - cf-routing-release deployment - this release
 
 This example was tested with [diego-release 0.1369.0](https://github.com/cloudfoundry-incubator/diego-release/releases/tag/0.1369.0) and [cf-release](https://github.com/cloudfoundry/cf-release) sha 07576287. Compatible versions of diego-release and cf-release are documented [here](https://github.com/cloudfoundry-incubator/diego-cf-compatibility/blob/master/compatibility-v1.csv).
-
-#### Routing TCP traffic to Redis running on Diego
 
 1. Create a domain for your testing. Domains are namespaces for LRPs in Diego and are not to be confused with domains in Cloud Foundry.
 	```
@@ -257,7 +255,7 @@ This example was tested with [diego-release 0.1369.0](https://github.com/cloudfo
 	
 	Notice `address` and `host_port`, this is the IP and port to which TCP Router route traffic for the requested `external_port`. Diego will handle routing from `host_port` to `container_port`.
 
-2. Test that a request to the `external_port` is received by the Redis process
+3. Test that a request to the `external_port` is received by the Redis process
 	```
 	$ bosh vms cf-warden-routing
 	Deployment `cf-warden-routing'
@@ -278,7 +276,7 @@ This example was tested with [diego-release 0.1369.0](https://github.com/cloudfo
 	PONG
 	```
 
-3. (Optional) Add an External Port
+4. (Optional) Add an External Port
 
 	You can add an external port for which TCP Router will route traffic to the LRP, however the ports opened on the container cannot be modified (a new LRP must be created). The `container_port` provided with the update request must have been included in the `ports` field with the createLRP request. We'll use [DesiredLRPUpdateRequest](https://github.com/cloudfoundry-incubator/receptor/blob/master/doc/api_lrps.md#modifying-desiredlrps) and include the additional `external_port` and the same `container_port` we did with the createLRP request earlier.
 	
