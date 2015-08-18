@@ -124,6 +124,13 @@ properties:
       log_level: (( config_from_cf.consul.log_level ))
       servers:
         lan: (( config_from_cf.consul.lan_servers ))
+    ca_cert: (( config_from_cf.consul.ca_cert ))
+    agent_cert: (( config_from_cf.consul.agent_cert ))
+    agent_key: (( config_from_cf.consul.agent_key ))
+    encrypt_key: (( config_from_cf.consul.encrypt_key ))
+    require_ssl: (( config_from_cf.consul.require_ssl ))
+    server_cert: (( config_from_cf.consul.server_cert ))
+    server_key: (( config_from_cf.consul.server_key ))
   router:
     router_configurer:
       debug_addr: (( property_overrides.router_configurer.debug_addr ))
