@@ -1,0 +1,15 @@
+---
+platform: linux
+
+image: docker:///cloudfoundry/runtime-ci
+
+inputs:
+  - name: cf-release
+  - name: ci-scripts
+
+run:
+  path: ci-scripts/routing-ci/scripts/ci/create_cf_release_manifest
+
+params:
+  INFRASTRUCTURE:
+  ENVIRONMENT:

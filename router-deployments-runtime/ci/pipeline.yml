@@ -213,9 +213,15 @@ jobs:
         - create-cf-release
     - get: bosh-stemcell
       resource: bosh-stemcell
+  - task: create-cf-manifest
+    file: cf-routing-release/router-deployments-runtime/ci/create_cf_release_manifest.build.yml
+    config:
+      params:
+        INFRASTRUCTURE: aws
+        ENVIRONMENT: orinoco
   - put: orinoco-cf-deployment
     params:
-      manifest: deployments-routing/orinoco/deployments/cf.yml
+      manifest: create-cf-manifest/deployment.yml
       releases: [cf-release-tarball/*.tgz]
       stemcells: [bosh-stemcell/*.tgz]
 

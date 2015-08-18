@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e -x
+
+source ~/.bashrc
+
+pushd cf-release
+
+./generate_deployment_manifest ${INFRASTRUCTURE} ../deployments-routing/${ENVIRONMENT}/stubs/cf/*.yml > ../deployment.yml
+
+echo "===GENERATED MANIFEST==="
+cat ../deployment.yml
+
+popd
