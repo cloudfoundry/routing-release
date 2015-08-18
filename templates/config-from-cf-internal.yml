@@ -3,6 +3,13 @@ config_from_cf:
   consul:
     log_level: (( properties.consul.agent.log_level ))
     lan_servers: (( properties.consul.agent.servers.lan ))
+    ca_cert: (( properties.consul.ca_cert ))
+    agent_cert: (( properties.consul.agent_cert ))
+    agent_key: (( properties.consul.agent_key ))
+    encrypt_key: (( properties.consul.encrypt_key ))
+    require_ssl: (( properties.consul.require_ssl ))
+    server_cert: (( properties.consul.server_cert ))
+    server_key: (( properties.consul.server_key ))
 
 # The keys below should not be included in the final stub
 name: (( merge ))
@@ -12,3 +19,10 @@ properties:
       log_level: (( merge ))
       servers:
         lan: (( merge ))
+    ca_cert:
+    agent_cert:
+    agent_key:
+    encrypt_key:
+    require_ssl:
+    server_cert:
+    server_key:

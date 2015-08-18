@@ -25,5 +25,5 @@ properties:
     default: 9999
     description: Router API IP Port
  router.acceptance_tests.diego_api_url:
-    default: "http://receptor.service.consul:8888"
+    default: "http://receptor.service.cf.internal:8887"
     description: Diego Receptor API URL
