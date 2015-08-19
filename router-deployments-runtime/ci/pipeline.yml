@@ -8,8 +8,6 @@ groups:
     - merge-master-into-develop
 - name: cf-diego-deployment-pipeline
   jobs:
-    - create-cf-release
-    - create-diego-release
     - orinoco-cf-deploy
     - orinoco-diego-deploy
 - name: periodic-tasks
@@ -71,22 +69,6 @@ resources:
     access_key_id: {{s3_access_key_id}}
     secret_access_key: {{s3_secret_access_key}}
 
-- name: cf-dev-release
-  type: s3
-  source:
-    bucket: router-release-blobs
-    versioned_file: cf-dev-release.tgz
-    access_key_id: {{s3_access_key_id}}
-    secret_access_key: {{s3_secret_access_key}}
-
-- name: diego-dev-release
-  type: s3
-  source:
-    bucket: router-release-blobs
-    versioned_file: diego-dev-release.tgz
-    access_key_id: {{s3_access_key_id}}
-    secret_access_key: {{s3_secret_access_key}}
-
 - name: version
   type: semver
   source:
@@ -105,7 +87,7 @@ resources:
 - name: orinoco-cf-deployment
   type: bosh-deployment
   source:
-    target: https://52.6.203.246:25555
+    target: https://52.6.225.225:25555
     username: {{bosh_username}}
     password: {{bosh_password}}
     deployment: cf-orinoco
@@ -114,7 +96,7 @@ resources:
 - name: orinoco-diego-deployment
   type: bosh-deployment
   source:
-    target: https://52.6.203.246:25555
+    target: https://52.6.225.225:25555
     username: {{bosh_username}}
     password: {{bosh_password}}
     deployment: cf-orinoco-diego
@@ -174,26 +156,6 @@ jobs:
     params:
       from: create-release/cf-routing-([\d\.]+).tgz
 
-- name: create-cf-release
-  serial: true
-  serial_groups:
-    - orinoco-cf-deploy-group
-  plan:
-  - aggregate:
-    - get: cf-routing-release
-      passed:
-      - unit
-      params:
-        submodules: none
-    - get: cf-release
-      params:
-        submodules: all
-  - task: create-cf-release-task
-    file: cf-routing-release/router-deployments-runtime/ci/create_cf_dev_release.build.yml
-  - put: cf-dev-release
-    params:
-      from: create-cf-release-task/cf-dev-release.tgz
-
 - name: orinoco-cf-deploy
   serial: true
   serial_groups:
@@ -207,17 +169,11 @@ jobs:
         submodules: none
     - get: deployments-routing
     - get: cf-release
-      passed:
-      - create-cf-release
       params:
-        submodules: none
-    - get: cf-release-tarball
-      resource: cf-dev-release
-      trigger: true
-      passed:
-        - create-cf-release
+        submodules: all
     - get: bosh-stemcell
-      resource: bosh-stemcell
+  - task: create-cf-release-task
+    file: cf-routing-release/router-deployments-runtime/ci/create_cf_dev_release.build.yml
   - task: create-cf-manifest
     file: cf-routing-release/router-deployments-runtime/ci/create_cf_release_manifest.build.yml
     config:
@@ -227,28 +183,8 @@ jobs:
   - put: orinoco-cf-deployment
     params:
       manifest: create-cf-manifest/deployment.yml
-      releases: [cf-release-tarball/*.tgz]
+      releases: [create-cf-release-task/cf-dev-release.tgz]
       stemcells: [bosh-stemcell/*.tgz]
-
-- name: create-diego-release
-  serial: true
-  serial_groups:
-    - orinoco-diego-deploy-group
-  plan:
-  - aggregate:
-    - get: cf-routing-release
-      passed:
-      - unit
-      params:
-        submodules: none
-    - get: diego-release
-      params:
-        submodules: all
-  - task: create-diego-release-task
-    file: cf-routing-release/router-deployments-runtime/ci/create_diego_dev_release.build.yml
-  - put: diego-dev-release
-    params:
-      from: create-diego-release-task/diego-release.tgz
 
 - name: orinoco-diego-deploy
   serial: true
@@ -262,17 +198,23 @@ jobs:
       params:
         submodules: none
     - get: deployments-routing
-    - get: diego-release-tarball
-      resource: diego-dev-release
-      trigger: true
-      passed:
-        - create-diego-release
+    - get: diego-release
+      params:
+        submodules: all
     - get: bosh-stemcell
-      resource: bosh-stemcell
+  - task: create-diego-release-task
+    file: cf-routing-release/router-deployments-runtime/ci/create_diego_dev_release.build.yml
+  - task: create-diego-manifest
+    file: cf-routing-release/router-deployments-runtime/ci/generate_diego_deployment_manifest.build.yml
+    config:
+      params:
+        INFRASTRUCTURE: aws
+        ENVIRONMENT: orinoco
+        DEPLOYMENTS_DIR: deployments-routing
   - put: orinoco-diego-deployment
     params:
-      manifest: deployments-routing/orinoco/deployments/diego.yml
-      releases: [diego-release-tarball/*.tgz]
+      manifest: create-diego-manifest/diego-deployment.yml
+      releases: [create-diego-release-task/diego-release.tgz]
       stemcells: [bosh-stemcell/*.tgz]
 
 - name: deploy-and-test
@@ -296,7 +238,6 @@ jobs:
       passed:
         - create-router-release
     - get: bosh-stemcell
-      resource: bosh-stemcell
   - task: generate-deployment-manifests
     file: cf-routing-release/router-deployments-runtime/ci/generate_deployment_manifests.build.yml
     config:

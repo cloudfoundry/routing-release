@@ -1,0 +1,18 @@
+---
+platform: linux
+
+image: docker:///cloudfoundry/diego-pipeline
+
+inputs:
+  - name: cf-release
+  - name: cf-routing-release
+  - name: deployments-routing
+  - name: diego-release
+
+params:
+  DEPLOYMENTS_DIR: ~
+  ENVIRONMENT: ~
+  INFRASTRUCTURE: ~
+
+run:
+  path: cf-routing-release/router-deployments-runtime/ci/generate_diego_deployment_manifests
