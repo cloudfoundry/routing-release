@@ -206,6 +206,11 @@ jobs:
       params:
         submodules: none
     - get: deployments-routing
+    - get: cf-release
+      passed:
+      - create-cf-release
+      params:
+        submodules: none
     - get: cf-release-tarball
       resource: cf-dev-release
       trigger: true

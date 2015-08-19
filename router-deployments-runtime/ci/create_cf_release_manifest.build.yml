@@ -5,10 +5,11 @@ image: docker:///cloudfoundry/runtime-ci
 
 inputs:
   - name: cf-release
-  - name: ci-scripts
+  - name: cf-routing-release
+  - name: deployments-routing
 
 run:
-  path: ci-scripts/routing-ci/scripts/ci/create_cf_release_manifest
+  path: cf-routing-release/router-deployments-runtime/ci/create_cf_release_manifest
 
 params:
   INFRASTRUCTURE:
