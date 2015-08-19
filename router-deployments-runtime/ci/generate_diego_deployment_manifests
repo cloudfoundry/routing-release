@@ -25,4 +25,9 @@ pushd diego-release
     ${stubs_path}/diego/additional-jobs.yml \
     /tmp \
     > ../diego-deployment.yml
+
+  echo "===GENERATED MANIFEST==="
+  cat ../diego-deployment.yml
+
 popd
+
