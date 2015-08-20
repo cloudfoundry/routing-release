@@ -159,7 +159,7 @@ jobs:
 - name: orinoco-cf-deploy
   serial: true
   serial_groups:
-    - orinoco-cf-deploy-group
+    - orinoco-deployment-group
   plan:
   - aggregate:
     - get: cf-routing-release
@@ -169,8 +169,6 @@ jobs:
         submodules: none
     - get: deployments-routing
     - get: cf-release
-      params:
-        submodules: all
     - get: bosh-stemcell
   - task: create-cf-release-task
     file: cf-routing-release/router-deployments-runtime/ci/create_cf_dev_release.build.yml
@@ -189,18 +187,20 @@ jobs:
 - name: orinoco-diego-deploy
   serial: true
   serial_groups:
-    - orinoco-diego-deploy-group
+    - orinoco-deployment-group
   plan:
   - aggregate:
     - get: cf-routing-release
-      passed:
-      - unit
       params:
         submodules: none
     - get: deployments-routing
     - get: diego-release
       params:
         submodules: all
+    - get: cf-release
+      params:
+        submodules:
+          - src/loggregator
     - get: bosh-stemcell
   - task: create-diego-release-task
     file: cf-routing-release/router-deployments-runtime/ci/create_diego_dev_release.build.yml
@@ -221,6 +221,7 @@ jobs:
   serial: true
   serial_groups:
     - pipeline-router
+    - orinoco-deployment-group
   plan:
   - aggregate:
     - get: cf-routing-release
