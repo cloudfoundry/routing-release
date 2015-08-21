@@ -29,9 +29,6 @@ networks:
 - name: router3
   type: manual
   subnets: (( iaas_settings.subnet_configs.router3.subnets ))
-- name: errand1
-  type: manual
-  subnets: (( iaas_settings.subnet_configs.errand1.subnets ))
 
 resource_pools:
   - name: tcp_router_z1
@@ -50,7 +47,7 @@ resource_pools:
     cloud_properties: (( iaas_settings.resource_pool_cloud_properties.tcp_router_z3.cloud_properties ))
 
   - name: small_errand
-    network: errand1
+    network: router1
     stemcell: (( iaas_settings.stemcell ))
     cloud_properties: (( iaas_settings.resource_pool_cloud_properties.small_errand.cloud_properties ))
 
@@ -109,7 +106,7 @@ jobs:
     lifecycle: errand
     instances: (( instance_count_overrides.small_errand.instances || 1 ))
     networks:
-    - name: errand1
+    - name: router1
     resource_pool: small_errand
 
 property_overrides: (( merge ))

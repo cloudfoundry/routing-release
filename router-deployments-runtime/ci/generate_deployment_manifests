@@ -3,7 +3,7 @@
 set -e -x -u
 
 environment_path="${PWD}/deployments-routing/${ENVIRONMENT_NAME}/"
-stubs_path="${environment_path}/stubs"
+stubs_path="${environment_path}/stubs/routing"
 deployments_path="${environment_path}/deployments"
 cf_manifest_file="${deployments_path}/cf.yml"
 
