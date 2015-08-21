@@ -227,9 +227,16 @@ jobs:
   plan:
   - aggregate:
     - get: cf-release
+      passed:
+        - orinoco-cf-deploy
       params:
         submodules:
           - src/loggregator
+    - get: diego-release
+      passed:
+        - orinoco-diego-deploy
+      params:
+        submodules: none
     - get: cf-routing-release
       passed:
       - create-router-release
