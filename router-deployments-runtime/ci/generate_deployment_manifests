@@ -2,10 +2,15 @@
 
 set -e -x -u
 
-environment_path="${PWD}/deployments-routing/${ENVIRONMENT_NAME}/"
+environment_path="${PWD}/deployments-routing/${ENVIRONMENT}/"
 stubs_path="${environment_path}/stubs/routing"
 deployments_path="${environment_path}/deployments"
-cf_manifest_file="${deployments_path}/cf.yml"
+cf_manifest_file="${PWD}/cf-deployment.yml"
+
+pushd cf-release
+  ./generate_deployment_manifest ${INFRASTRUCTURE} ../deployments-routing/${ENVIRONMENT}/stubs/cf/*.yml > ${cf_manifest_file}
+popd
+
 
 pushd cf-routing-release
 

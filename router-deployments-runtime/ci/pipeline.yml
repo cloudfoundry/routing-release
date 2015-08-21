@@ -169,6 +169,7 @@ jobs:
         submodules: none
     - get: deployments-routing
     - get: cf-release
+      trigger: true
     - get: bosh-stemcell
   - task: create-cf-release-task
     file: cf-routing-release/router-deployments-runtime/ci/create_cf_dev_release.build.yml
@@ -195,6 +196,7 @@ jobs:
         submodules: none
     - get: deployments-routing
     - get: diego-release
+      trigger: true
       params:
         submodules: all
     - get: cf-release
@@ -224,6 +226,10 @@ jobs:
     - orinoco-deployment-group
   plan:
   - aggregate:
+    - get: cf-release
+      params:
+        submodules:
+          - src/loggregator
     - get: cf-routing-release
       passed:
       - create-router-release
@@ -243,7 +249,8 @@ jobs:
     file: cf-routing-release/router-deployments-runtime/ci/generate_deployment_manifests.build.yml
     config:
       params:
-        ENVIRONMENT_NAME: orinoco
+        ENVIRONMENT: orinoco
+        INFRASTRUCTURE: aws
         BOSH_TARGET: 52.6.225.225
         BOSH_USER: {{bosh_username}}
         BOSH_PASSWORD: {{bosh_password}}
