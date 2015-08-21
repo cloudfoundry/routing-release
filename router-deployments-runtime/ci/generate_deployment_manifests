@@ -36,4 +36,8 @@ spiff merge \
   ${director_uuid} \
   /tmp/router.yml \
   > ../router-deployment.yml
+
+  echo "===GENERATED MANIFEST==="
+  cat ../router-deployment.yml
+
 popd
