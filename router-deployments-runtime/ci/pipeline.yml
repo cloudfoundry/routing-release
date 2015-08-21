@@ -200,6 +200,9 @@ jobs:
       params:
         submodules: all
     - get: cf-release
+      passed:
+      - orinoco-cf-deploy
+      trigger: true
       params:
         submodules:
           - src/loggregator
@@ -228,13 +231,14 @@ jobs:
   - aggregate:
     - get: cf-release
       passed:
-        - orinoco-cf-deploy
+      - orinoco-cf-deploy
       params:
         submodules:
           - src/loggregator
     - get: diego-release
       passed:
-        - orinoco-diego-deploy
+      - orinoco-diego-deploy
+      trigger: true
       params:
         submodules: none
     - get: cf-routing-release
