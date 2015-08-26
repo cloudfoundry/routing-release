@@ -49,10 +49,10 @@ resources:
     uri: git@github.com:cloudfoundry/deployments-routing.git
     private_key: {{github_private_key}}
 
-- name: cf-release
+- name: cf-release-rc
   type: git
   source:
-    branch: runtime-passed
+    branch: release-candidate
     uri: https://github.com/cloudfoundry/cf-release.git
 
 - name: diego-release
@@ -168,7 +168,7 @@ jobs:
       params:
         submodules: none
     - get: deployments-routing
-    - get: cf-release
+    - get: cf-release-rc
       trigger: true
     - get: bosh-stemcell
   - task: create-cf-release-task
@@ -199,7 +199,7 @@ jobs:
       trigger: true
       params:
         submodules: all
-    - get: cf-release
+    - get: cf-release-rc
       passed:
       - orinoco-cf-deploy
       trigger: true
@@ -229,7 +229,7 @@ jobs:
     - orinoco-deployment-group
   plan:
   - aggregate:
-    - get: cf-release
+    - get: cf-release-rc
       passed:
       - orinoco-cf-deploy
       params:

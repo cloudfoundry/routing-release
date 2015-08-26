@@ -5,7 +5,7 @@ image: docker:///cloudfoundry/diego-pipeline
 
 inputs:
   - name: cf-routing-release
-  - name: cf-release
+  - name: cf-release-rc
 
 run:
   path: cf-routing-release/router-deployments-runtime/ci/create_cf_dev_release
