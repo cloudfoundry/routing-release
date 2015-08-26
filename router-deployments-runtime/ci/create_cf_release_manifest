@@ -4,7 +4,7 @@ set -e -x
 
 source ~/.bashrc
 
-pushd cf-release
+pushd cf-release-rc
 
 ./generate_deployment_manifest ${INFRASTRUCTURE} ../deployments-routing/${ENVIRONMENT}/stubs/cf/*.yml > ../deployment.yml
 

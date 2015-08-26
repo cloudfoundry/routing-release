@@ -7,7 +7,7 @@ stubs_path="${environment_path}/stubs/routing"
 deployments_path="${environment_path}/deployments"
 cf_manifest_file="${PWD}/cf-deployment.yml"
 
-pushd cf-release
+pushd cf-release-rc
   ./generate_deployment_manifest ${INFRASTRUCTURE} ../deployments-routing/${ENVIRONMENT}/stubs/cf/*.yml > ${cf_manifest_file}
 popd
 
