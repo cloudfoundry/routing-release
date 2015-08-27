@@ -1,9 +1,0 @@
-platform: linux
-
-image: docker:///cloudfoundry/diego-pipeline
-
-inputs:
-  - name: cf-routing-release
-
-run:
-  path: cf-routing-release/router-deployments-runtime/ci/merge_master_into_develop
