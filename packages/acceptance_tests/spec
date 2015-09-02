@@ -8,6 +8,7 @@ files:
   - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/bin/*
   - github.com/onsi/ginkgo/ginkgo/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/desired_lrp-client/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/tcp-droplet-receiver/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/tcp-sample-receiver/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/tcp-sample-receiver/testrunner/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/tcp-sample-sender/*.go # gosub
@@ -16,6 +17,7 @@ files:
   - github.com/cloudfoundry-incubator/cf-tcp-router/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router/testutil/*.go # gosub
   - github.com/cloudfoundry-incubator/receptor/*.go # gosub
+  - github.com/cloudfoundry-incubator/tcp-emitter/tcp_routes/*.go # gosub
   - github.com/onsi/ginkgo/*.go # gosub
   - github.com/onsi/gomega/*.go # gosub
   - github.com/onsi/gomega/gexec/*.go # gosub
@@ -61,4 +63,3 @@ files:
   - github.com/onsi/gomega/matchers/support/goraph/node/*.go # gosub
   - github.com/onsi/gomega/matchers/support/goraph/util/*.go # gosub
   - github.com/onsi/gomega/types/*.go # gosub
-  - github.com/cloudfoundry-incubator/tcp-emitter/tcp_routes/*.go # gosub
