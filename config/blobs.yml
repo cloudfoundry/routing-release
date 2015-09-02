@@ -11,3 +11,7 @@ haproxy/pcre-8.36.tar.gz:
   object_id: f383d186-4a0c-480a-a710-0ca0a31b5be9
   sha: fb537757756818133d8157ec878bc11f5a93ef4d
   size: 2009464
+haproxy/pcre-8.37.tar.gz:
+  object_id: 9bc2a944-f396-45ac-9f04-132af7de2fe5
+  sha: 4a24a20c61347d8da4edc86d5475aaf70ac146bb
+  size: 2041593
