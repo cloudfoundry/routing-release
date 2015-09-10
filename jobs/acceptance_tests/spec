@@ -24,6 +24,6 @@ properties:
  router.acceptance_tests.router_api_port:
     default: 9999
     description: Router API IP Port
- router.acceptance_tests.diego_api_url:
-    default: "http://receptor.service.cf.internal:8887"
-    description: Diego Receptor API URL
+ router.acceptance_tests.bbs_api_url:
+    default: "http://bbs.service.cf.internal:8889"
+    description: Diego BBS Server API URL

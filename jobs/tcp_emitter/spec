@@ -18,9 +18,9 @@ properties:
     description: "Log level"
     default: "info"
 
-  router.tcp_emitter.diego_api_url:
-    description: "Diego Receptor endpoint url"
-    default: "http://receptor.service.cf.internal:8887"
+  router.tcp_emitter.bbs_api_url:
+    description: "Diego BBS Server endpoint url"
+    default: "http://bbs.service.cf.internal:8889"
 
   router.tcp_emitter.tcp_router_api_url:
     description: "TCP router API endpoint url"

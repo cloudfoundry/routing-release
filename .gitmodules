@@ -49,12 +49,9 @@
 [submodule "src/github.com/cloudfoundry-incubator/cf_http"]
 	path = src/github.com/cloudfoundry-incubator/cf_http
 	url = https://github.com/cloudfoundry-incubator/cf_http
-[submodule "src/github.com/cloudfoundry-incubator/receptor"]
-	path = src/github.com/cloudfoundry-incubator/receptor
-	url = https://github.com/cloudfoundry-incubator/receptor
 [submodule "src/github.com/vito/go-sse"]
 	path = src/github.com/vito/go-sse
 	url = https://github.com/vito/go-sse
-[submodule "src/github.com/cloudfoundry-incubator/runtime-schema"]
-	path = src/github.com/cloudfoundry-incubator/runtime-schema
-	url = https://github.com/cloudfoundry-incubator/runtime-schema
+[submodule "src/github.com/cloudfoundry-incubator/bbs"]
+	path = src/github.com/cloudfoundry-incubator/bbs
+	url = https://github.com/cloudfoundry-incubator/bbs

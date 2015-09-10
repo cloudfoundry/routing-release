@@ -136,7 +136,7 @@ properties:
       listen_addr: (( property_overrides.router_configurer.listen_addr ))
       log_level: (( property_overrides.router_configurer.log_level ))
     tcp_emitter:
-      diego_api_url: (( property_overrides.tcp_emitter.diego_api_url ))
+      bbs_api_url: (( property_overrides.tcp_emitter.bbs_api_url ))
       tcp_router_api_url: (( property_overrides.tcp_emitter.tcp_router_api_url ))
       debug_addr: (( property_overrides.tcp_emitter.debug_addr ))
       log_level: (( property_overrides.tcp_emitter.log_level ))
@@ -146,7 +146,7 @@ properties:
     acceptance_tests:
       router_api_address: (( property_overrides.acceptance_tests.router_api_address ))
       router_api_port: (( property_overrides.acceptance_tests.router_api_port ))
-      diego_api_url: (( property_overrides.acceptance_tests.diego_api_url ))
+      bbs_api_url: (( property_overrides.acceptance_tests.bbs_api_url ))
 
 base_job_templates:
   haproxy:
