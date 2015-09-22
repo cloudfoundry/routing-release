@@ -3,6 +3,9 @@ name: tcp_emitter
 
 templates:
   tcp_emitter_ctl.erb: bin/tcp_emitter_ctl
+  bbs_ca.crt.erb: config/certs/bbs/ca.crt
+  bbs_client.crt.erb: config/certs/bbs/client.crt
+  bbs_client.key.erb: config/certs/bbs/client.key
 
 packages:
   - pid_utils
@@ -18,9 +21,22 @@ properties:
     description: "Log level"
     default: "info"
 
-  router.tcp_emitter.bbs_api_url:
+  router.tcp_emitter.bbs.api_location:
     description: "Diego BBS Server endpoint url"
     default: "http://bbs.service.cf.internal:8889"
+
+  router.tcp_emitter.bbs.ca_cert:
+    description: "PEM-encoded CA certificate"
+
+  router.tcp_emitter.bbs.client_cert:
+    description: "PEM-encoded client certificate"
+
+  router.tcp_emitter.bbs.client_key:
+    description: "PEM-encoded client key"
+
+  router.tcp_emitter.bbs.require_ssl:
+    description: "enable ssl for all communication with the bbs"
+    default: true
 
   router.tcp_emitter.tcp_router_api_url:
     description: "TCP router API endpoint url"

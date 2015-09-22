@@ -4,6 +4,9 @@ name: acceptance_tests
 templates:
   run.erb: bin/run
   config.json.erb: bin/config.json
+  bbs_ca.crt.erb: config/certs/bbs/ca.crt
+  bbs_client.crt.erb: config/certs/bbs/client.crt
+  bbs_client.key.erb: config/certs/bbs/client.key
 
 packages:
  - golang_1.4
@@ -14,16 +17,33 @@ packages:
 properties:
  router.acceptance_tests.nodes:
     default: 4
-    description: The number of parallel test executors to spawn. The larger the number the higher the stress on the system.
+    description: "The number of parallel test executors to spawn. The larger the number the higher the stress on the system."
+
  router.acceptance_tests.verbose:
     default: false
-    description: Whether to pass the -v flag to router acceptance tests
+    description: "Whether to pass the -v flag to router acceptance tests"
+
  router.acceptance_tests.router_api_address:
     default: "10.244.8.2"
-    description: Router API IP Address
+    description: "Router API IP Address"
+
  router.acceptance_tests.router_api_port:
     default: 9999
-    description: Router API IP Port
- router.acceptance_tests.bbs_api_url:
-    default: "http://bbs.service.cf.internal:8889"
-    description: Diego BBS Server API URL
+    description: "Router API IP Port"
+
+ router.acceptance_tests.bbs.api_location:
+    description: "Diego BBS Server endpoint url"
+    default: "https://bbs.service.cf.internal:8889"
+
+ router.acceptance_tests.bbs.ca_cert:
+    description: "PEM-encoded CA certificate"
+
+ router.acceptance_tests.bbs.client_cert:
+    description: "PEM-encoded client certificate"
+
+ router.acceptance_tests.bbs.client_key:
+    description: "PEM-encoded client key"
+
+ router.acceptance_tests.bbs.require_ssl:
+    description: "enable ssl for all communication with the bbs"
+    default: true

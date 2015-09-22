@@ -1,5 +1,10 @@
 {
   "address": "<%= properties.router.acceptance_tests.router_api_address %>",
   "port": <%= properties.router.acceptance_tests.router_api_port %>,
-  "bbs_api_url": "<%= properties.router.acceptance_tests.bbs_api_url %>"
+  "bbs_api_url": "<%= properties.router.acceptance_tests.bbs.api_location %>",
+  "bbs_require_ssl": <%= properties.router.acceptance_tests.bbs.require_ssl %>,
+  "bbs_client_cert": "/var/vcap/jobs/acceptance_tests/config/certs/bbs/client.crt",
+  "bbs_client_key": "/var/vcap/jobs/acceptance_tests/config/certs/bbs/client.key",
+  "bbs_ca_cert": "/var/vcap/jobs/acceptance_tests/config/certs/bbs/ca.crt"
+
 }
