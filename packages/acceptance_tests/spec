@@ -7,7 +7,7 @@ dependencies:
 files:
   - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/bin/*
   - github.com/onsi/ginkgo/ginkgo/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/desired_lrp-client/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/diego-client/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/tcp-droplet-receiver/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/tcp-sample-receiver/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/tcp-sample-receiver/testrunner/*.go # gosub
