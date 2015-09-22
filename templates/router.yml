@@ -114,6 +114,7 @@ iaas_settings: (( merge ))
 instance_count_overrides: (( merge ))
 persistent_disk_overrides: (( merge ))
 config_from_cf: (( merge ))
+config_from_diego: (( merge ))
 
 properties:
   consul:
@@ -136,7 +137,12 @@ properties:
       listen_addr: (( property_overrides.router_configurer.listen_addr ))
       log_level: (( property_overrides.router_configurer.log_level ))
     tcp_emitter:
-      bbs_api_url: (( property_overrides.tcp_emitter.bbs_api_url ))
+      bbs:
+        api_location: (( "bbs.service.cf.internal:8889" ))
+        ca_cert: (( config_from_diego.bbs.ca_cert ))
+        require_ssl: (( config_from_diego.bbs.require_ssl || nil ))
+        client_cert: (( property_overrides.bbs.client_cert ))
+        client_key: (( property_overrides.bbs.client_key ))
       tcp_router_api_url: (( property_overrides.tcp_emitter.tcp_router_api_url ))
       debug_addr: (( property_overrides.tcp_emitter.debug_addr ))
       log_level: (( property_overrides.tcp_emitter.log_level ))
@@ -146,7 +152,11 @@ properties:
     acceptance_tests:
       router_api_address: (( property_overrides.acceptance_tests.router_api_address ))
       router_api_port: (( property_overrides.acceptance_tests.router_api_port ))
-      bbs_api_url: (( property_overrides.acceptance_tests.bbs_api_url ))
+      bbs:
+        ca_cert: (( config_from_diego.bbs.ca_cert ))
+        require_ssl: (( config_from_diego.bbs.require_ssl || nil ))
+        client_cert: (( property_overrides.bbs.client_cert ))
+        client_key: (( property_overrides.bbs.client_key ))
 
 base_job_templates:
   haproxy:

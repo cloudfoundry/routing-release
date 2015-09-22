@@ -1,0 +1,4 @@
+config_from_diego:
+  bbs:
+    ca_cert: (( merge ))
+    require_ssl: (( merge ))

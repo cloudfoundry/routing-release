@@ -3,17 +3,18 @@ set -e
 
 function usage() {
   >&2 echo "    Usage:
-    $0 /path/to/cf-release-manifest
+    $0 /path/to/cf-release-manifest /path/to/diego-release-manifest
 
     Ex:
-    $0 ~/deployments/bosh-lite/cf.yml
+    $0 ~/deployments/bosh-lite/cf.yml ~/deployments/bosh-lite/diego.yml
 "
   exit 1
 }
 
 cf_manifest_file=$1
+diego_manifest_file=$2
 
-if [ ! -z "$2" ]; then
+if [ ! -z "$3" ]; then
   >&2 echo "Too many arguments"
   usage
 fi
@@ -23,10 +24,15 @@ if [ ! -f "${cf_manifest_file}" ]; then
   usage
 fi
 
+if [ ! -f "${diego_manifest_file}" ]; then
+  >&2 echo "Diego release manifest ${diego_manifest_file} does not exist"
+  usage
+fi
+
 root_dir=$(dirname $0)
 
 mkdir -p ${root_dir}/manifests
 
-${root_dir}/../scripts/generate-manifest ${root_dir}/stubs ${cf_manifest_file}> ${root_dir}/manifests/cf-routing-manifest.yml
+${root_dir}/../scripts/generate-manifest ${root_dir}/stubs ${cf_manifest_file} ${diego_manifest_file} > ${root_dir}/manifests/cf-routing-manifest.yml
 
 bosh deployment ${root_dir}/manifests/cf-routing-manifest.yml

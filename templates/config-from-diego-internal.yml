@@ -1,0 +1,11 @@
+config_from_diego:
+  bbs:
+    ca_cert: (( properties.diego.bbs.ca_cert ))
+    require_ssl: (( properties.diego.bbs.require_ssl || nil ))
+
+# The keys below should not be included in the final stub
+properties:
+  diego:
+    bbs:
+      ca_cert:
+      require_ssl:

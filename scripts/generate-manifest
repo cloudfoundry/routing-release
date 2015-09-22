@@ -6,29 +6,35 @@ templates=$(dirname $0)/../templates
 
 function usage() {
   >&2 echo "    Usage:
-    $0 /path/to/stub/ /path/to/cf-release-manifest
+    $0 /path/to/stub/ /path/to/cf-release-manifest /path/to/diego-release-manifest
 
     Ex:
-    $0 bosh-lite/stubs ~/deployments/bosh-lite/cf.yml
+    $0 bosh-lite/stubs ~/deployments/bosh-lite/cf.yml ~/deployments/bosh-lite/diego.yml
 "
   exit 1
 }
 
 stubs_dir=$1
 cf_manifest_file=$2
+diego_manifest_file=$3
 property_overrides=$stubs_dir/property-overrides.yml
 instance_counts=$stubs_dir/instance-count-overrides.yml
 persistent_disk=$stubs_dir/persistent-disk-overrides.yml
 iaas_settings=$stubs_dir/iaas-settings.yml
 
 
-if [ ! -z "$3" ]; then
+if [ ! -z "$4" ]; then
   >&2 echo "Too many arguments"
   usage
 fi
 
 if [ ! -f "${cf_manifest_file}" ]; then
   >&2 echo "CF release manifest ${cf_manifest_file} does not exist"
+  usage
+fi
+
+if [ ! -f "${diego_manifest_file}" ]; then
+  >&2 echo "Diego release manifest ${diego_manifest_file} does not exist"
   usage
 fi
 
@@ -63,12 +69,19 @@ spiff merge \
   > ${tmpdir}/config-from-cf.yml
 
 spiff merge \
+  ${templates}/config-from-diego.yml \
+  ${templates}/config-from-diego-internal.yml \
+  ${diego_manifest_file} \
+  > ${tmpdir}/config-from-diego.yml
+
+spiff merge \
   ${templates}/router.yml \
   ${property_overrides} \
   ${instance_counts} \
   ${persistent_disk} \
   ${iaas_settings} \
   ${tmpdir}/config-from-cf.yml \
+  ${tmpdir}/config-from-diego.yml \
   > ${tmpdir}/router.yml
 
   spiff merge \
