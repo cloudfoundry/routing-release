@@ -55,3 +55,33 @@
 [submodule "src/github.com/cloudfoundry-incubator/bbs"]
 	path = src/github.com/cloudfoundry-incubator/bbs
 	url = https://github.com/cloudfoundry-incubator/bbs
+[submodule "src/github.com/cloudfoundry-incubator/routing-api"]
+	path = src/github.com/cloudfoundry-incubator/routing-api
+	url = https://github.com/cloudfoundry-incubator/routing-api
+[submodule "src/github.com/cactus/go-statsd-client"]
+	path = src/github.com/cactus/go-statsd-client
+	url = https://github.com/cactus/go-statsd-client
+[submodule "src/github.com/cloudfoundry-incubator/trace-logger"]
+	path = src/github.com/cloudfoundry-incubator/trace-logger
+	url = https://github.com/cloudfoundry-incubator/trace-logger/
+[submodule "src/github.com/cloudfoundry/gunk"]
+	path = src/github.com/cloudfoundry/gunk
+	url = https://github.com/cloudfoundry/gunk/
+[submodule "src/github.com/cloudfoundry/storeadapter"]
+	path = src/github.com/cloudfoundry/storeadapter
+	url = https://github.com/cloudfoundry/storeadapter/
+[submodule "src/github.com/coreos/etcd"]
+	path = src/github.com/coreos/etcd
+	url = https://github.com/coreos/etcd
+[submodule "src/github.com/coreos/go-etcd"]
+	path = src/github.com/coreos/go-etcd
+	url = https://github.com/coreos/go-etcd
+[submodule "src/github.com/dgrijalva/jwt-go"]
+	path = src/github.com/dgrijalva/jwt-go
+	url = https://github.com/dgrijalva/jwt-go
+[submodule "src/github.com/ugorji/go"]
+	path = src/github.com/ugorji/go
+	url = https://github.com/ugorji/go
+[submodule "src/github.com/cloudfoundry/sonde-go"]
+	path = src/github.com/cloudfoundry/sonde-go
+	url = https://github.com/cloudfoundry/sonde-go
