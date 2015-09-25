@@ -5,6 +5,12 @@
   "bbs_require_ssl": <%= properties.router.acceptance_tests.bbs.require_ssl %>,
   "bbs_client_cert": "/var/vcap/jobs/acceptance_tests/config/certs/bbs/client.crt",
   "bbs_client_key": "/var/vcap/jobs/acceptance_tests/config/certs/bbs/client.key",
-  "bbs_ca_cert": "/var/vcap/jobs/acceptance_tests/config/certs/bbs/ca.crt"
-
+  "bbs_ca_cert": "/var/vcap/jobs/acceptance_tests/config/certs/bbs/ca.crt",
+  "routing_api_url": "http://routing-api.service.cf.internal:3000",
+  "oauth": {
+    "token_endpoint": "http://uaa.service.cf.internal",
+    "client_name": "gorouter",
+    "client_secret": "<%= p("router.acceptance_tests.gorouter_secret") %>",
+    "port": <%= p("router.acceptance_tests.uaa_port") %>
+  }
 }

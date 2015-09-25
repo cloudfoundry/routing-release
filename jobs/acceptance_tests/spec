@@ -15,35 +15,42 @@ packages:
  - tcp_emitter
 
 properties:
- router.acceptance_tests.nodes:
+  router.acceptance_tests.nodes:
     default: 4
     description: "The number of parallel test executors to spawn. The larger the number the higher the stress on the system."
 
- router.acceptance_tests.verbose:
+  router.acceptance_tests.verbose:
     default: false
     description: "Whether to pass the -v flag to router acceptance tests"
 
- router.acceptance_tests.router_api_address:
+  router.acceptance_tests.router_api_address:
     default: "10.244.8.2"
     description: "Router API IP Address"
 
- router.acceptance_tests.router_api_port:
+  router.acceptance_tests.router_api_port:
     default: 9999
     description: "Router API IP Port"
 
- router.acceptance_tests.bbs.api_location:
+  router.acceptance_tests.bbs.api_location:
     description: "Diego BBS Server endpoint url"
     default: "https://bbs.service.cf.internal:8889"
 
- router.acceptance_tests.bbs.ca_cert:
+  router.acceptance_tests.bbs.ca_cert:
     description: "PEM-encoded CA certificate"
 
- router.acceptance_tests.bbs.client_cert:
+  router.acceptance_tests.bbs.client_cert:
     description: "PEM-encoded client certificate"
 
- router.acceptance_tests.bbs.client_key:
+  router.acceptance_tests.bbs.client_key:
     description: "PEM-encoded client key"
 
- router.acceptance_tests.bbs.require_ssl:
+  router.acceptance_tests.bbs.require_ssl:
     description: "enable ssl for all communication with the bbs"
     default: true
+
+  router.acceptance_tests.gorouter_secret:
+    description: "Password for UAA client for the gorouter."
+
+  router.acceptance_tests.uaa_port:
+    description: "Port on which UAA is running."
+    default: "8080"

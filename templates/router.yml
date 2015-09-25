@@ -154,6 +154,8 @@ properties:
     acceptance_tests:
       router_api_address: (( property_overrides.acceptance_tests.router_api_address ))
       router_api_port: (( property_overrides.acceptance_tests.router_api_port ))
+      uaa_port: (( config_from_cf.uaa.port ))
+      gorouter_secret: (( config_from_cf.uaa.clients.gorouter.secret ))
       bbs:
         ca_cert: (( config_from_diego.bbs.ca_cert ))
         require_ssl: (( config_from_diego.bbs.require_ssl || nil ))
