@@ -23,6 +23,7 @@ case $1 in
       -logLevel=<%= p("router.router_configurer.log_level") %> \
       -tcpLoadBalancerConfig=<%= p("router.router_configurer.tcp_config_file") %> \
       -tcpLoadBalancerBaseConfig=<%= p("router.router_configurer.tcp_config_file_template") %> \
+      -config=$CONF_DIR/router_configurer.yml \
       2>> $LOG_DIR/router_configurer.stderr.log \
       1> >(tee -a $LOG_DIR/router_configurer.stdout.log | logger -t vcap.router_configurer)
 

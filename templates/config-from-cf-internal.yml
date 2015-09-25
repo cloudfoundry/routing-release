@@ -10,6 +10,13 @@ config_from_cf:
     require_ssl: (( properties.consul.require_ssl ))
     server_cert: (( properties.consul.server_cert ))
     server_key: (( properties.consul.server_key ))
+  routing_api:
+    port: (( properties.routing_api.port ))
+  uaa:
+    port: (( properties.uaa.port ))
+    clients:
+      gorouter:
+        secret: (( properties.uaa.clients.gorouter.secret ))
 
 # The keys below should not be included in the final stub
 name: (( merge ))
@@ -26,3 +33,10 @@ properties:
     require_ssl:
     server_cert:
     server_key:
+  routing_api:
+    port:
+  uaa:
+    port:
+    clients:
+      gorouter:
+        secret:

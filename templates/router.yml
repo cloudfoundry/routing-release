@@ -135,6 +135,8 @@ properties:
       tcp_config_file: (( property_overrides.router_configurer.tcp_config_file ))
       tcp_config_file_template: (( property_overrides.router_configurer.tcp_config_file_template ))
       listen_addr: (( property_overrides.router_configurer.listen_addr ))
+      uaa_port: (( config_from_cf.uaa.port ))
+      gorouter_secret: (( config_from_cf.uaa.clients.gorouter.secret ))
       log_level: (( property_overrides.router_configurer.log_level ))
     tcp_emitter:
       bbs:

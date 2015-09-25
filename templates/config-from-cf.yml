@@ -10,3 +10,10 @@ config_from_cf:
     require_ssl: (( merge ))
     server_cert: (( merge ))
     server_key: (( merge ))
+  routing_api:
+    port: (( merge ))
+  uaa:
+    port: (( merge ))
+    clients:
+      gorouter:
+        secret: (( merge ))

@@ -85,3 +85,6 @@
 [submodule "src/github.com/cloudfoundry/sonde-go"]
 	path = src/github.com/cloudfoundry/sonde-go
 	url = https://github.com/cloudfoundry/sonde-go
+[submodule "src/github.com/cloudfoundry-incubator/uaa-token-fetcher"]
+	path = src/github.com/cloudfoundry-incubator/uaa-token-fetcher
+	url = https://github.com/cloudfoundry-incubator/uaa-token-fetcher

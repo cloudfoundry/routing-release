@@ -4,6 +4,7 @@ name: router_configurer
 templates:
   router_configurer_ctl.erb: bin/router_configurer_ctl
   dns_health_check.erb: bin/dns_health_check
+  router_configurer.yml.erb: config/router_configurer.yml
 
 packages:
   - pid_utils
@@ -29,3 +30,14 @@ properties:
   router.router_configurer.tcp_config_file:
     description: "Config file of underlying tcp proxy"
     default: "/var/vcap/jobs/haproxy/config/haproxy.conf"
+
+  router.router_configurer.routing_api_port:
+    description: "Port of routing api"
+    default: "3000"
+
+  router.router_configurer.gorouter_secret:
+    description: "Password for UAA client for the gorouter."
+
+  router.router_configurer.uaa_port:
+    description: "Port on which UAA is running."
+    default: "8080"

@@ -1,0 +1,11 @@
+oauth:
+  token_endpoint: http://uaa.service.cf.internal
+  client_name: "gorouter"
+  client_secret: <%= p("router.router_configurer.gorouter_secret") %>
+  port: <%= p("router.router_configurer.uaa_port") %>
+
+routing_api:
+  uri: http://routing-api.service.cf.internal
+  port: <%= p("router.router_configurer.routing_api_port") %>
+
+
