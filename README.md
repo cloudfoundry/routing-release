@@ -112,7 +112,7 @@ See the README for [Router Acceptance Tests](https://github.com/cloudfoundry-inc
 
 ## Router API
 
-For details refer to [TCP Router API] (https://github.com/cloudfoundry-incubator/cf-tcp-router/blob/master/overview.md).
+For details refer to [Routing API](https://github.com/cloudfoundry-incubator/routing-api/blob/master/README.md).
 
 ## Testing the TCP Router Service manually
 
@@ -126,10 +126,10 @@ These instructions assume the release has been deployed to bosh-lite
 	```
 	Substitute your workstation IP and a port of your choosing for `HOST:PORT` (e.g. 10.80.130.159:3333)
 
-2. Using an API call, map an external port on the router to the host and port `tcp-sample-listener` is listening on. By default, the API server listens on port 9999.
+2. Using an API call, map an external port on the router to the host and port `tcp-sample-listener` is listening on. We would be POSTing to routing_api (listening on 10.24.0.134:3000 by default)
 
 	```
-	$ curl 10.244.8.2:9999/v0/external_ports -X POST -d '[{"external_port":60000, "backends": [{"ip": "HOST", "port":"PORT"}]}]'	
+	$ curl 10.24.0.134:3000/routing/v1/tcp_routes/create -X POST -d '[{"route":{"router_group_guid": "tcp-default", "port": 60000}, "backend_ip": "HOST", "backend_port": PORT}]'
 	```
 	Substitute the same workstation IP and a port you used in step #1 for `ip` and `port` (e.g. 10.80.130.159 and 3333). 
 	
@@ -178,7 +178,7 @@ This example was tested with [diego-release 0.1369.0](https://github.com/cloudfo
 	
 2. Create the desiredLRP
 
-	In order for TCP traffic to be routed to a container port, the [DesiredLRPCreateRequest] (https://github.com/cloudfoundry-incubator/receptor/blob/master/doc/lrps.md#describing-desiredlrps) must include an `external_port`, along with `container_port` set to one of the values of `ports`. TCP Router uses the `container_port` to identify the discover the `host_port` provided by Diego once the actualLRP is created.
+	In order for TCP traffic to be routed to a container port, the [DesiredLRPCreateRequest](https://github.com/cloudfoundry-incubator/receptor/blob/master/doc/lrps.md#describing-desiredlrps) must include an `external_port`, along with `container_port` set to one of the values of `ports`. TCP Router uses the `container_port` to identify the discover the `host_port` provided by Diego once the actualLRP is created.
 
 	```
 	$ curl receptor.10.244.0.34.xip.io/v1/desired_lrps -X POST -d '{"process_guid":"92bcf571-630f-4ad3-bfa6-146afd40bded","domain":"redis-example","rootfs":"docker:///redis","instances":1,"ports":[6379],"action":{"run":{"path":"/entrypoint.sh","args":["redis-server"],"dir":"/data","user":"root"}},"routes":{"tcp-router":[{"external_port":50000,"container_port":6379}]}}'

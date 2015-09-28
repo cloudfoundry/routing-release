@@ -31,9 +31,9 @@ case $1 in
 
     exec /var/vcap/packages/tcp_emitter/bin/tcp-emitter ${bbs_sec_flags} \
       -bbsAddress=${bbs_api_url} \
-      -tcpRouterAPIURL=<%= p("router.tcp_emitter.tcp_router_api_url") %> \
       -debugAddr=<%= p("router.tcp_emitter.debug_addr") %> \
       -logLevel=<%= p("router.tcp_emitter.log_level") %> \
+      -config=$CONF_DIR/tcp_emitter.yml \
       2>> $LOG_DIR/tcp_emitter.stderr.log \
       1> >(tee -a $LOG_DIR/tcp_emitter.stdout.log | logger -t vcap.tcp_emitter)
 

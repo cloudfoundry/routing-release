@@ -2,12 +2,10 @@ property_overrides:
   router_configurer:
     tcp_config_file: /var/vcap/jobs/haproxy/config/haproxy.conf
     tcp_config_file_template: /var/vcap/jobs/haproxy/config/haproxy.conf.template
-    listen_addr: 0.0.0.0:9999
     log_level: info
     debug_addr: ~
     starting_external_port: 50000
   tcp_emitter:
-    tcp_router_api_url: ~
     log_level: debug
     debug_addr: ~
   haproxy:

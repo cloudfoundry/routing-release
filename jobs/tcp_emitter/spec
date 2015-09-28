@@ -6,6 +6,7 @@ templates:
   bbs_ca.crt.erb: config/certs/bbs/ca.crt
   bbs_client.crt.erb: config/certs/bbs/client.crt
   bbs_client.key.erb: config/certs/bbs/client.key
+  tcp_emitter.yml.erb: config/tcp_emitter.yml
 
 packages:
   - pid_utils
@@ -38,6 +39,13 @@ properties:
     description: "enable ssl for all communication with the bbs"
     default: true
 
-  router.tcp_emitter.tcp_router_api_url:
-    description: "TCP router API endpoint url"
-    default: "http://router-configurer.service.cf.internal:9999"
+  router.tcp_emitter.routing_api_port:
+    description: "Port of routing api"
+    default: "3000"
+
+  router.tcp_emitter.gorouter_secret:
+    description: "Password for UAA client for the gorouter."
+
+  router.tcp_emitter.uaa_port:
+    description: "Port on which UAA is running."
+    default: "8080"

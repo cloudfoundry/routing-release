@@ -3,7 +3,6 @@ name: router_configurer
 
 templates:
   router_configurer_ctl.erb: bin/router_configurer_ctl
-  dns_health_check.erb: bin/dns_health_check
   router_configurer.yml.erb: config/router_configurer.yml
 
 packages:
@@ -11,10 +10,6 @@ packages:
   - router_configurer
 
 properties:
-  router.router_configurer.listen_addr:
-    description: "Address at which to serve API requests"
-    default: "0.0.0.0:9999"
-
   router.router_configurer.debug_addr:
     description: "Address at which to serve debug info"
     default: "0.0.0.0:17014"

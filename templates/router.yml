@@ -64,11 +64,6 @@ jobs:
     update:
       serial: true
       max_in_flight: 1
-    properties:
-      consul:
-        agent:
-          services:
-            router_configurer: {}
   - name: tcp_router_z2
     templates: (( base_job_templates.haproxy ))
     instances: (( instance_count_overrides.tcp_router_z2.instances || 0 ))
@@ -80,11 +75,6 @@ jobs:
     update:
       serial: true
       max_in_flight: 1
-    properties:
-      consul:
-        agent:
-          services:
-            router_configurer: {}
   - name: tcp_router_z3
     templates: (( base_job_templates.haproxy ))
     instances: (( instance_count_overrides.tcp_router_z3.instances || 0 ))
@@ -96,11 +86,6 @@ jobs:
     update:
       serial: true
       max_in_flight: 1
-    properties:
-      consul:
-        agent:
-          services:
-            router_configurer: {}
   - name: router_acceptance_tests
     templates: (( base_job_templates.acceptance_tests_errand ))
     lifecycle: errand
@@ -134,7 +119,6 @@ properties:
       debug_addr: (( property_overrides.router_configurer.debug_addr ))
       tcp_config_file: (( property_overrides.router_configurer.tcp_config_file ))
       tcp_config_file_template: (( property_overrides.router_configurer.tcp_config_file_template ))
-      listen_addr: (( property_overrides.router_configurer.listen_addr ))
       uaa_port: (( config_from_cf.uaa.port ))
       gorouter_secret: (( config_from_cf.uaa.clients.gorouter.secret ))
       log_level: (( property_overrides.router_configurer.log_level ))
@@ -145,9 +129,10 @@ properties:
         require_ssl: (( config_from_diego.bbs.require_ssl || nil ))
         client_cert: (( property_overrides.bbs.client_cert ))
         client_key: (( property_overrides.bbs.client_key ))
-      tcp_router_api_url: (( property_overrides.tcp_emitter.tcp_router_api_url ))
       debug_addr: (( property_overrides.tcp_emitter.debug_addr ))
       log_level: (( property_overrides.tcp_emitter.log_level ))
+      uaa_port: (( config_from_cf.uaa.port ))
+      gorouter_secret: (( config_from_cf.uaa.clients.gorouter.secret ))
     haproxy:
       request_timeout_in_seconds: (( property_overrides.haproxy.request_timeout_in_seconds || 300 ))
       faux_port: (( property_overrides.haproxy.faux_port || 1234 ))
