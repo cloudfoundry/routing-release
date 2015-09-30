@@ -91,3 +91,9 @@
 [submodule "src/github.com/cloudfoundry-incubator/candiedyaml"]
 	path = src/github.com/cloudfoundry-incubator/candiedyaml
 	url = https://github.com/cloudfoundry-incubator/candiedyaml
+[submodule "src/github.com/cloudfoundry-incubator/consuladapter"]
+	path = src/github.com/cloudfoundry-incubator/consuladapter
+	url = https://github.com/cloudfoundry-incubator/consuladapter
+[submodule "src/github.com/hashicorp/consul"]
+	path = src/github.com/hashicorp/consul
+	url = https://github.com/hashicorp/consul.git

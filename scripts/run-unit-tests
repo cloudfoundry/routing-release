@@ -1,6 +1,12 @@
 #!/bin/bash
 
-set -e
+set -e -x
+
+pushd src/github.com/coreos/etcd
+  go install .
+popd
+
+export PATH=$PATH:$PWD/bin
 
 if [ -n "$PACKAGE" ]; then
   ginkgo -r -p "$@" "./src/${PACKAGE}"
