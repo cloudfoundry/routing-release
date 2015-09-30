@@ -60,7 +60,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
    following its
    [README](https://github.com/cloudfoundry/bosh-lite/blob/master/README.md).
 
-1. Download the latest Warden Trusty Go-Agent stemcell and upload it to BOSH-lite
+1. Download the latest Warden Trusty Go-Agent stemcell and upload it to BOSH-lite.
 
 	```
 	curl -L -J -O https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent
