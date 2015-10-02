@@ -16,7 +16,8 @@ iaas_settings:
         range: 10.244.8.4/30
         reserved:
         - 10.244.8.5
-        static: []
+        static:
+        - 10.244.8.6
       - cloud_properties: {}
         range: 10.244.8.8/30
         reserved:
@@ -55,7 +56,8 @@ iaas_settings:
         range: 10.244.10.4/30
         reserved:
         - 10.244.10.5
-        static: []
+        static:
+        - 10.244.10.6
       - cloud_properties: {}
         range: 10.244.10.8/30
         reserved:
@@ -94,7 +96,8 @@ iaas_settings:
         range: 10.244.12.4/30
         reserved:
         - 10.244.12.5
-        static: []
+        static:
+        - 10.244.12.6
       - cloud_properties: {}
         range: 10.244.12.8/30
         reserved:

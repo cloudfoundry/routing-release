@@ -54,7 +54,7 @@ resource_pools:
 
 jobs:
   - name: tcp_router_z1
-    templates: (( base_job_templates.haproxy ))
+    templates: (( base_job_templates.tcp_router ))
     instances: (( instance_count_overrides.tcp_router_z1.instances || 1 ))
     persistent_disk: (( persistent_disk_overrides.tcp_router_z1 || 1024 ))
     resource_pool: tcp_router_z1
@@ -65,7 +65,7 @@ jobs:
       serial: true
       max_in_flight: 1
   - name: tcp_router_z2
-    templates: (( base_job_templates.haproxy ))
+    templates: (( base_job_templates.tcp_router ))
     instances: (( instance_count_overrides.tcp_router_z2.instances || 0 ))
     persistent_disk: (( persistent_disk_overrides.tcp_router_z2 || 1024 ))
     resource_pool: tcp_router_z2
@@ -76,13 +76,46 @@ jobs:
       serial: true
       max_in_flight: 1
   - name: tcp_router_z3
-    templates: (( base_job_templates.haproxy ))
+    templates: (( base_job_templates.tcp_router ))
     instances: (( instance_count_overrides.tcp_router_z3.instances || 0 ))
     persistent_disk: (( persistent_disk_overrides.tcp_router_z3 || 1024 ))
     resource_pool: tcp_router_z3
     networks:
       - name: router3
         static_ips: (( static_ips(0) ))
+    update:
+      serial: true
+      max_in_flight: 1
+  - name: tcp_emitter_z1
+    templates: (( base_job_templates.tcp_emitter ))
+    instances: (( instance_count_overrides.tcp_emitter_z1.instances || 1 ))
+    persistent_disk: (( persistent_disk_overrides.tcp_emitter_z1 || 1024 ))
+    resource_pool: tcp_router_z1
+    networks:
+      - name: router1
+        static_ips: (( static_ips(1) ))
+    update:
+      serial: true
+      max_in_flight: 1
+  - name: tcp_emitter_z2
+    templates: (( base_job_templates.tcp_emitter ))
+    instances: (( instance_count_overrides.tcp_emitter_z2.instances || 0 ))
+    persistent_disk: (( persistent_disk_overrides.tcp_emitter_z2 || 1024 ))
+    resource_pool: tcp_router_z2
+    networks:
+      - name: router2
+        static_ips: (( static_ips(1) ))
+    update:
+      serial: true
+      max_in_flight: 1
+  - name: tcp_emitter_z3
+    templates: (( base_job_templates.tcp_emitter ))
+    instances: (( instance_count_overrides.tcp_emitter_z3.instances || 0 ))
+    persistent_disk: (( persistent_disk_overrides.tcp_emitter_z3 || 1024 ))
+    resource_pool: tcp_router_z3
+    networks:
+      - name: router3
+        static_ips: (( static_ips(1) ))
     update:
       serial: true
       max_in_flight: 1
@@ -148,11 +181,14 @@ properties:
         client_key: (( property_overrides.bbs.client_key ))
 
 base_job_templates:
-  haproxy:
+  tcp_router:
     - name: haproxy
       release: cf-routing
     - name: router_configurer
       release: cf-routing
+    - name: consul_agent
+      release: cf
+  tcp_emitter:
     - name: tcp_emitter
       release: cf-routing
     - name: consul_agent
