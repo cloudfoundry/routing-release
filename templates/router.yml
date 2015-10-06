@@ -166,6 +166,9 @@ properties:
       log_level: (( property_overrides.tcp_emitter.log_level ))
       uaa_port: (( config_from_cf.uaa.port ))
       gorouter_secret: (( config_from_cf.uaa.clients.gorouter.secret ))
+      lock_ttl: (( property_overrides.tcp_emitter.lock_ttl || nil ))
+      lock_retry_interval: (( property_overrides.tcp_emitter.lock_retry_interval || nil ))
+      session_name: (( property_overrides.tcp_emitter.session_name || nil ))
     haproxy:
       request_timeout_in_seconds: (( property_overrides.haproxy.request_timeout_in_seconds || 300 ))
       faux_port: (( property_overrides.haproxy.faux_port || 1234 ))

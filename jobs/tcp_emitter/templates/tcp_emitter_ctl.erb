@@ -30,6 +30,10 @@ case $1 in
     echo $$ > /var/vcap/sys/run/tcp_emitter/tcp_emitter.pid
 
     exec /var/vcap/packages/tcp_emitter/bin/tcp-emitter ${bbs_sec_flags} \
+      -lockTTL=<%= p("router.tcp_emitter.lock_ttl") %> \
+      -lockRetryInterval=<%= p("router.tcp_emitter.lock_retry_interval") %> \
+      -consulCluster=<%= p("router.tcp_emitter.consul_cluster") %> \
+      -sessionName=<%= p("router.tcp_emitter.session_name") %> \
       -bbsAddress=${bbs_api_url} \
       -debugAddr=<%= p("router.tcp_emitter.debug_addr") %> \
       -logLevel=<%= p("router.tcp_emitter.log_level") %> \

@@ -49,3 +49,19 @@ properties:
   router.tcp_emitter.uaa_port:
     description: "Port on which UAA is running."
     default: "8080"
+
+  router.tcp_emitter.consul_cluster:
+    description: "comma-separated list of consul server URLs (scheme://ip:port)"
+    default: "http://127.0.0.1:8500"
+
+  router.tcp_emitter.lock_ttl:
+    description: "TTL for service lock"
+    default: "10s"
+
+  router.tcp_emitter.lock_retry_interval:
+    description: "interval to wait before retrying a failed lock acquisition"
+    default: "5s"
+
+  router.tcp_emitter.session_name:
+    description: "consul session name"
+    default: "tcp-emitter"

@@ -97,3 +97,6 @@
 [submodule "src/github.com/hashicorp/consul"]
 	path = src/github.com/hashicorp/consul
 	url = https://github.com/hashicorp/consul.git
+[submodule "src/github.com/cloudfoundry-incubator/locket"]
+	path = src/github.com/cloudfoundry-incubator/locket
+	url = http://github.com/cloudfoundry-incubator/locket
