@@ -1,7 +1,11 @@
 {
   "address": "<%= properties.router.acceptance_tests.router_api_address %>",
   "port": <%= properties.router.acceptance_tests.router_api_port %>,
-  "bbs_api_url": "<%= properties.router.acceptance_tests.bbs.api_location %>",
+  <% if p("router.acceptance_tests.bbs.require_ssl") %>
+  "bbs_api_url": "<%= "https://" + p("router.acceptance_tests.bbs.api_location") %>",
+  <% else %>
+  "bbs_api_url": "<%= "http://" + p("router.acceptance_tests.bbs.api_location") %>",
+  <% end %>
   "bbs_require_ssl": <%= properties.router.acceptance_tests.bbs.require_ssl %>,
   "bbs_client_cert": "/var/vcap/jobs/acceptance_tests/config/certs/bbs/client.crt",
   "bbs_client_key": "/var/vcap/jobs/acceptance_tests/config/certs/bbs/client.key",

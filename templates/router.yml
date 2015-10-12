@@ -178,6 +178,7 @@ properties:
       uaa_port: (( config_from_cf.uaa.port ))
       gorouter_secret: (( config_from_cf.uaa.clients.gorouter.secret ))
       bbs:
+        api_location: (( "bbs.service.cf.internal:8889" ))
         ca_cert: (( config_from_diego.bbs.ca_cert ))
         require_ssl: (( config_from_diego.bbs.require_ssl || nil ))
         client_cert: (( property_overrides.bbs.client_cert ))
