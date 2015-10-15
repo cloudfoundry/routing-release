@@ -46,6 +46,21 @@ resource_pools:
     stemcell: (( iaas_settings.stemcell ))
     cloud_properties: (( iaas_settings.resource_pool_cloud_properties.tcp_router_z3.cloud_properties ))
 
+  - name: tcp_emitter_z1
+    network: router1
+    stemcell: (( iaas_settings.stemcell ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.tcp_emitter_z1.cloud_properties ))
+
+  - name: tcp_emitter_z2
+    network: router2
+    stemcell: (( iaas_settings.stemcell ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.tcp_emitter_z2.cloud_properties ))
+
+  - name: tcp_emitter_z3
+    network: router3
+    stemcell: (( iaas_settings.stemcell ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.tcp_emitter_z3.cloud_properties ))
+
   - name: small_errand
     network: router1
     stemcell: (( iaas_settings.stemcell ))
@@ -90,7 +105,7 @@ jobs:
     templates: (( base_job_templates.tcp_emitter ))
     instances: (( instance_count_overrides.tcp_emitter_z1.instances || 1 ))
     persistent_disk: (( persistent_disk_overrides.tcp_emitter_z1 || 1024 ))
-    resource_pool: tcp_router_z1
+    resource_pool: tcp_emitter_z1
     networks:
       - name: router1
         static_ips: (( static_ips(1) ))
@@ -101,7 +116,7 @@ jobs:
     templates: (( base_job_templates.tcp_emitter ))
     instances: (( instance_count_overrides.tcp_emitter_z2.instances || 0 ))
     persistent_disk: (( persistent_disk_overrides.tcp_emitter_z2 || 1024 ))
-    resource_pool: tcp_router_z2
+    resource_pool: tcp_emitter_z2
     networks:
       - name: router2
         static_ips: (( static_ips(1) ))
@@ -112,7 +127,7 @@ jobs:
     templates: (( base_job_templates.tcp_emitter ))
     instances: (( instance_count_overrides.tcp_emitter_z3.instances || 0 ))
     persistent_disk: (( persistent_disk_overrides.tcp_emitter_z3 || 1024 ))
-    resource_pool: tcp_router_z3
+    resource_pool: tcp_emitter_z3
     networks:
       - name: router3
         static_ips: (( static_ips(1) ))
