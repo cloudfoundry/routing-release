@@ -188,7 +188,7 @@ properties:
       request_timeout_in_seconds: (( property_overrides.haproxy.request_timeout_in_seconds || 300 ))
       faux_port: (( property_overrides.haproxy.faux_port || 1234 ))
     acceptance_tests:
-      router_api_address: (( property_overrides.acceptance_tests.router_api_address ))
+      router_api_addresses: (( property_overrides.acceptance_tests.router_api_addresses ))
       router_api_port: (( property_overrides.acceptance_tests.router_api_port ))
       uaa_port: (( config_from_cf.uaa.port ))
       gorouter_secret: (( config_from_cf.uaa.clients.gorouter.secret ))

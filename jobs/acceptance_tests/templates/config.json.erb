@@ -1,5 +1,5 @@
 {
-  "address": "<%= properties.router.acceptance_tests.router_api_address %>",
+  "addresses": <%= properties.router.acceptance_tests.router_api_addresses %>,
   "port": <%= properties.router.acceptance_tests.router_api_port %>,
   <% if p("router.acceptance_tests.bbs.require_ssl") %>
   "bbs_api_url": "<%= "https://" + p("router.acceptance_tests.bbs.api_location") %>",

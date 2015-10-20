@@ -23,8 +23,9 @@ properties:
     default: false
     description: "Whether to pass the -v flag to router acceptance tests"
 
-  router.acceptance_tests.router_api_address:
-    default: "10.244.8.2"
+  router.acceptance_tests.router_api_addresses:
+    default:
+      - "10.244.8.2"
     description: "Router API IP Address"
 
   router.acceptance_tests.router_api_port:
