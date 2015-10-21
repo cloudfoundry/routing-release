@@ -10,8 +10,9 @@ config_from_cf:
     require_ssl: (( properties.consul.require_ssl ))
     server_cert: (( properties.consul.server_cert ))
     server_key: (( properties.consul.server_key ))
-  routing_api:
-    port: (( properties.routing_api.port ))
+  routing-api:
+    port: (( properties.routing-api.port ))
+    auth_disabled: (( properties.routing-api.auth_disabled ))
   uaa:
     port: (( properties.uaa.port ))
     clients:
@@ -33,8 +34,9 @@ properties:
     require_ssl:
     server_cert:
     server_key:
-  routing_api:
+  routing-api:
     port:
+    auth_disabled:
   uaa:
     port:
     clients:

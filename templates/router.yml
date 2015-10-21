@@ -170,6 +170,7 @@ properties:
       uaa_port: (( config_from_cf.uaa.port ))
       gorouter_secret: (( config_from_cf.uaa.clients.gorouter.secret ))
       log_level: (( property_overrides.router_configurer.log_level ))
+      routing_api_auth_disabled: (( config_from_cf.routing-api.auth_disabled))
     tcp_emitter:
       bbs:
         api_location: (( "bbs.service.cf.internal:8889" ))
@@ -184,6 +185,7 @@ properties:
       lock_ttl: (( property_overrides.tcp_emitter.lock_ttl || nil ))
       lock_retry_interval: (( property_overrides.tcp_emitter.lock_retry_interval || nil ))
       session_name: (( property_overrides.tcp_emitter.session_name || nil ))
+      routing_api_auth_disabled: (( config_from_cf.routing-api.auth_disabled))
     haproxy:
       request_timeout_in_seconds: (( property_overrides.haproxy.request_timeout_in_seconds || 300 ))
       faux_port: (( property_overrides.haproxy.faux_port || 1234 ))

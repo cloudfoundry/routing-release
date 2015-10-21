@@ -43,6 +43,10 @@ properties:
     description: "Port of routing api"
     default: "3000"
 
+  router.tcp_emitter.routing_api_auth_disabled:
+    description: "auth disabled setting of routing api"
+    default: false
+
   router.tcp_emitter.gorouter_secret:
     description: "Password for UAA client for the gorouter."
 

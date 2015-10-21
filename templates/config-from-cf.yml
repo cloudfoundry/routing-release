@@ -10,8 +10,9 @@ config_from_cf:
     require_ssl: (( merge ))
     server_cert: (( merge ))
     server_key: (( merge ))
-  routing_api:
+  routing-api:
     port: (( merge ))
+    auth_disabled: (( merge ))
   uaa:
     port: (( merge ))
     clients:
