@@ -29,6 +29,15 @@ networks:
 - name: router3
   type: manual
   subnets: (( iaas_settings.subnet_configs.router3.subnets ))
+- name: public-router1
+  type: manual
+  subnets: (( iaas_settings.subnet_configs.public-router1.subnets ))
+- name: public-router2
+  type: manual
+  subnets: (( iaas_settings.subnet_configs.public-router2.subnets ))
+- name: public-router3
+  type: manual
+  subnets: (( iaas_settings.subnet_configs.public-router3.subnets ))
 
 resource_pools:
   - name: tcp_router_z1
