@@ -38,6 +38,9 @@ networks:
 - name: public-router3
   type: manual
   subnets: (( iaas_settings.subnet_configs.public-router3.subnets ))
+- name: public
+  type: vip
+
 
 resource_pools:
   - name: tcp_router_z1
@@ -85,6 +88,8 @@ jobs:
     networks:
       - name: public-router1
         static_ips: (( static_ips(0) ))
+      - name: public
+        static_ips: 52.3.41.164
     update:
       serial: true
       max_in_flight: 1
@@ -96,6 +101,8 @@ jobs:
     networks:
       - name: public-router2
         static_ips: (( static_ips(0) ))
+      - name: public
+        static_ips: 52.20.20.215
     update:
       serial: true
       max_in_flight: 1
