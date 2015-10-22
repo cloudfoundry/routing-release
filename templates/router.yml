@@ -74,7 +74,7 @@ jobs:
     persistent_disk: (( persistent_disk_overrides.tcp_router_z1 || 1024 ))
     resource_pool: tcp_router_z1
     networks:
-      - name: router1
+      - name: public-router1
         static_ips: (( static_ips(0) ))
     update:
       serial: true
@@ -85,7 +85,7 @@ jobs:
     persistent_disk: (( persistent_disk_overrides.tcp_router_z2 || 1024 ))
     resource_pool: tcp_router_z2
     networks:
-      - name: router2
+      - name: public-router2
         static_ips: (( static_ips(0) ))
     update:
       serial: true
@@ -96,7 +96,7 @@ jobs:
     persistent_disk: (( persistent_disk_overrides.tcp_router_z3 || 1024 ))
     resource_pool: tcp_router_z3
     networks:
-      - name: router3
+      - name: public-router3
         static_ips: (( static_ips(0) ))
     update:
       serial: true
