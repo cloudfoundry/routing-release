@@ -1,0 +1,60 @@
+---
+packages:
+- name: acceptance_tests
+  version: 3eecc8952fe2a60a6f0158c05ea6acd0165549eb
+  fingerprint: 3eecc8952fe2a60a6f0158c05ea6acd0165549eb
+  sha1: a4ca0b67357f0769d97bb755398e029aa5db6a17
+  dependencies:
+  - golang_1.4
+- name: golang_1.4
+  version: 714698bc352d2a1dbe321376f0676037568147bb
+  fingerprint: 714698bc352d2a1dbe321376f0676037568147bb
+  sha1: e7ab69527ef77a0f8d272789835aedc4ab2709cd
+  dependencies: []
+- name: haproxy
+  version: cfbf611621acbcc12fa0df04a33ae2c51c789e5b
+  fingerprint: cfbf611621acbcc12fa0df04a33ae2c51c789e5b
+  sha1: 79b75b820177428b5cb5bc78901dceb6ff2d93f5
+  dependencies: []
+- name: pid_utils
+  version: 8307d708c008715bc32b991fd93f93eccfdd6c76
+  fingerprint: 8307d708c008715bc32b991fd93f93eccfdd6c76
+  sha1: 5d84071f0ac5988b543ba75767afaf5818aa3c3e
+  dependencies: []
+- name: router_configurer
+  version: 21f427226e5cb43c7f4a0655d195938c481c7b41
+  fingerprint: 21f427226e5cb43c7f4a0655d195938c481c7b41
+  sha1: af04854da14687fb08053e07f36dc020311414d3
+  dependencies:
+  - golang_1.4
+- name: tcp_emitter
+  version: fe8e21fe0dd0a9dd0279152314b2c92e16544110
+  fingerprint: fe8e21fe0dd0a9dd0279152314b2c92e16544110
+  sha1: 850d49aa585eb7dd0ca422681d2cdfb6a6455b18
+  dependencies:
+  - golang_1.4
+jobs:
+- name: acceptance_tests
+  version: 8c40e4a48633b169778446699243fe665306c98d
+  fingerprint: 8c40e4a48633b169778446699243fe665306c98d
+  sha1: 25335f612ac0340c28fc62e41fa787c8f54dc726
+- name: haproxy
+  version: 2dc0851d3e5bdc7d41c7d286d5f6bece5616e756
+  fingerprint: 2dc0851d3e5bdc7d41c7d286d5f6bece5616e756
+  sha1: edfd33eeba681f5e78d2e22c817382d1553404ea
+- name: router_configurer
+  version: db63f66fbb80ca71e1888df74797be6797e92ba4
+  fingerprint: db63f66fbb80ca71e1888df74797be6797e92ba4
+  sha1: 6e39ff3b87a401ffcfaa035016421656c0c4a23c
+- name: tcp_emitter
+  version: c3504a0db0a5394b410cbf5d4ae144627a54bba3
+  fingerprint: c3504a0db0a5394b410cbf5d4ae144627a54bba3
+  sha1: aa2aa7ca9600b11dff93bc95c89a6089e3721223
+license:
+  version: 9841d3f4cf3430748ecd6b1c6308345f8bf9404a
+  fingerprint: 9841d3f4cf3430748ecd6b1c6308345f8bf9404a
+  sha1: fe031105547bdf52d046364ece11d0308169b5dd
+commit_hash: f78bac1b
+uncommitted_changes: true
+name: cf-routing
+version: 0.121.0
