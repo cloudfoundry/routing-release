@@ -29,18 +29,6 @@ networks:
 - name: router3
   type: manual
   subnets: (( iaas_settings.subnet_configs.router3.subnets ))
-- name: public-router1
-  type: manual
-  subnets: (( iaas_settings.subnet_configs.public-router1.subnets ))
-- name: public-router2
-  type: manual
-  subnets: (( iaas_settings.subnet_configs.public-router2.subnets ))
-- name: public-router3
-  type: manual
-  subnets: (( iaas_settings.subnet_configs.public-router3.subnets ))
-- name: public
-  type: vip
-
 
 resource_pools:
   - name: tcp_router_z1
@@ -86,11 +74,8 @@ jobs:
     persistent_disk: (( persistent_disk_overrides.tcp_router_z1 || 1024 ))
     resource_pool: tcp_router_z1
     networks:
-      - name: public-router1
+      - name: router1
         static_ips: (( static_ips(0) ))
-        default: [dns, gateway]
-      - name: public
-        static_ips: 52.3.41.164
     update:
       serial: true
       max_in_flight: 1
@@ -100,11 +85,8 @@ jobs:
     persistent_disk: (( persistent_disk_overrides.tcp_router_z2 || 1024 ))
     resource_pool: tcp_router_z2
     networks:
-      - name: public-router2
+      - name: router2
         static_ips: (( static_ips(0) ))
-        default: [dns, gateway]
-      - name: public
-        static_ips: 52.20.20.215
     update:
       serial: true
       max_in_flight: 1
@@ -114,7 +96,7 @@ jobs:
     persistent_disk: (( persistent_disk_overrides.tcp_router_z3 || 1024 ))
     resource_pool: tcp_router_z3
     networks:
-      - name: public-router3
+      - name: router3
         static_ips: (( static_ips(0) ))
     update:
       serial: true
