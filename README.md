@@ -37,7 +37,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
     If you do not wish to use direnv, you can simply `source` the `.envrc` file in the root of the release repo.  You may manually need to update your `$GOPATH` and `$PATH` variables as you switch in and out of the directory.
 
 
-1. Initialize and sync submodules.
+1. Initialize and sync submodules
 
 
     ```
