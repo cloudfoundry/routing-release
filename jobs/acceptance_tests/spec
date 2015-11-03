@@ -55,3 +55,7 @@ properties:
   router.acceptance_tests.uaa_port:
     description: "Port on which UAA is running."
     default: "8080"
+
+  router.acceptance_tests.elb_address:
+    description: "(Optional) ELB Address to check connectivity through load balancer"
+    default: ""
