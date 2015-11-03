@@ -17,6 +17,6 @@ defaults
 
 frontend http-in
     mode http
-    bind :<%= p("router.haproxy.faux_port") %>
+    bind :<%= p("router.haproxy.health_check_port") %>
     option forwardfor
     reqadd X-Forwarded-Proto:\ http

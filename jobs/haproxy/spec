@@ -17,6 +17,6 @@ properties:
     description: "Server and client timeouts in seconds"
     default: 300
 
-  router.haproxy.faux_port:
-    description: "Port that HAProxy listens on when it comes up for first time to make sure HAProxy process is started"
-    default: 1234
+  router.haproxy.health_check_port:
+    description: "Port that is used to check the health of HA-proxy"
+    default: 80

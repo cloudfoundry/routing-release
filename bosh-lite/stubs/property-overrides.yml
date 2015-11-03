@@ -9,7 +9,7 @@ property_overrides:
     log_level: debug
     debug_addr: ~
   haproxy:
-    faux_port: 1234
+    health_check_port: 80
   acceptance_tests:
     router_api_addresses:
       - "10.244.8.2"
