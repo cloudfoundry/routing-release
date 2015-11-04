@@ -92,6 +92,12 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
             bosh -n upload release
             bosh -n deploy
 
+1. (Optional) Check TCP Router health
+  ```
+  nc -z 10.2.44.8.2 80
+  ```
+  By default the health check port is 80. This port can be configured using the *haproxy.health_check_port* property in the property-overrides.yml stub file.
+
 ## Running Acceptance tests
 
 ### Using a BOSH errand on BOSH-Lite
