@@ -92,11 +92,18 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
             bosh -n upload release
             bosh -n deploy
 
-1. (Optional) Check TCP Router health
+## Deploying for High Availabilty
+
+The TCP Router, TCP Emitter, and Routing API are stateless and horizontally scalable. Routing API depends on a clustered etcd data store. For high availability, deploy multiple instances of each job, distributed across regions of your infrastructure. 
+
+### Configuring Your Load Balancer to Health Check TCP Routers
+
+In order to determine whether TCP Router instances are eligable for routing requests to, configure your load balancer to periodically check the health of each instance by attempting a TCP connection. By default the health check port is 80. This port can be configured using the `haproxy.health_check_port` property in the property-overrides.yml stub file.
+
+To simulate this health check manually on BOSH-lite:
   ```
   nc -z 10.2.44.8.2 80
   ```
-  By default the health check port is 80. This port can be configured using the *haproxy.health_check_port* property in the property-overrides.yml stub file.
 
 ## Running Acceptance tests
 
