@@ -5,8 +5,6 @@ dependencies:
   - golang_1.4
   
 files:
-  - github.com/cloudfoundry-incubator/tcp-emitter/cmd/tcp-emitter/*.go # gosub
-  - github.com/cloudfoundry-incubator/tcp-emitter/cmd/tcp-emitter/testrunner/*.go # gosub
   - github.com/bmizerany/pat/*.go # gosub
   - github.com/cloudfoundry-incubator/bbs/*.go # gosub
   - github.com/cloudfoundry-incubator/bbs/encryption/*.go # gosub
@@ -21,10 +19,12 @@ files:
   - github.com/cloudfoundry-incubator/locket/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/db/*.go # gosub
+  - github.com/cloudfoundry-incubator/routing-info/tcp_routes/*.go # gosub
+  - github.com/cloudfoundry-incubator/tcp-emitter/cmd/tcp-emitter/*.go # gosub
+  - github.com/cloudfoundry-incubator/tcp-emitter/cmd/tcp-emitter/testrunner/*.go # gosub
   - github.com/cloudfoundry-incubator/tcp-emitter/config/*.go # gosub
   - github.com/cloudfoundry-incubator/tcp-emitter/routing_table/*.go # gosub
   - github.com/cloudfoundry-incubator/tcp-emitter/syncer/*.go # gosub
-  - github.com/cloudfoundry-incubator/tcp-emitter/tcp_routes/*.go # gosub
   - github.com/cloudfoundry-incubator/tcp-emitter/watcher/*.go # gosub
   - github.com/cloudfoundry-incubator/trace-logger/*.go # gosub
   - github.com/cloudfoundry-incubator/uaa-token-fetcher/*.go # gosub
@@ -50,15 +50,6 @@ files:
   - github.com/gogo/protobuf/sortkeys/*.go # gosub
   - github.com/hashicorp/consul/api/*.go # gosub
   - github.com/nu7hatch/gouuid/*.go # gosub
-  - github.com/pivotal-golang/clock/*.go # gosub
-  - github.com/pivotal-golang/lager/*.go # gosub
-  - github.com/tedsuo/ifrit/*.go # gosub
-  - github.com/tedsuo/ifrit/grouper/*.go # gosub
-  - github.com/tedsuo/ifrit/http_server/*.go # gosub
-  - github.com/tedsuo/ifrit/sigmon/*.go # gosub
-  - github.com/tedsuo/rata/*.go # gosub
-  - github.com/ugorji/go/codec/*.go # gosub
-  - github.com/vito/go-sse/sse/*.go # gosub
   - github.com/onsi/ginkgo/*.go # gosub
   - github.com/onsi/ginkgo/config/*.go # gosub
   - github.com/onsi/ginkgo/internal/codelocation/*.go # gosub
@@ -87,4 +78,13 @@ files:
   - github.com/onsi/gomega/matchers/support/goraph/node/*.go # gosub
   - github.com/onsi/gomega/matchers/support/goraph/util/*.go # gosub
   - github.com/onsi/gomega/types/*.go # gosub
+  - github.com/pivotal-golang/clock/*.go # gosub
+  - github.com/pivotal-golang/lager/*.go # gosub
+  - github.com/tedsuo/ifrit/*.go # gosub
   - github.com/tedsuo/ifrit/ginkgomon/*.go # gosub
+  - github.com/tedsuo/ifrit/grouper/*.go # gosub
+  - github.com/tedsuo/ifrit/http_server/*.go # gosub
+  - github.com/tedsuo/ifrit/sigmon/*.go # gosub
+  - github.com/tedsuo/rata/*.go # gosub
+  - github.com/ugorji/go/codec/*.go # gosub
+  - github.com/vito/go-sse/sse/*.go # gosub
