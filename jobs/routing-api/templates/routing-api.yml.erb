@@ -1,5 +1,5 @@
 ---
-log_guid: <%= name %>_<%= index %>
+log_guid: "routing-api"
 <% if p("routing-api.auth_disabled") == false %>
 uaa_verification_key: |
 <%= "  " + properties.uaa.jwt.verification_key.gsub("\n", "\n  ") %>
