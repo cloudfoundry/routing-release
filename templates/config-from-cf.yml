@@ -18,3 +18,5 @@ config_from_cf:
     clients:
       gorouter:
         secret: (( merge ))
+      tcp_emitter:
+        secret: (( merge ))

@@ -181,7 +181,7 @@ properties:
       debug_addr: (( property_overrides.tcp_emitter.debug_addr ))
       log_level: (( property_overrides.tcp_emitter.log_level ))
       uaa_port: (( config_from_cf.uaa.port ))
-      gorouter_secret: (( config_from_cf.uaa.clients.gorouter.secret ))
+      tcp_emitter_secret: (( config_from_cf.uaa.clients.tcp_emitter.secret ))
       lock_ttl: (( property_overrides.tcp_emitter.lock_ttl || nil ))
       lock_retry_interval: (( property_overrides.tcp_emitter.lock_retry_interval || nil ))
       session_name: (( property_overrides.tcp_emitter.session_name || nil ))
