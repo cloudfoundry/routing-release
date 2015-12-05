@@ -20,6 +20,8 @@ config_from_cf:
         secret: (( properties.uaa.clients.gorouter.secret ))
       tcp_emitter:
         secret: (( properties.uaa.clients.tcp_emitter.secret ))
+      tcp_router:
+        secret: (( properties.uaa.clients.tcp_router.secret ))
 
 # The keys below should not be included in the final stub
 name: (( merge ))
@@ -45,4 +47,6 @@ properties:
       gorouter:
         secret:
       tcp_emitter:
+        secret:
+      tcp_router:
         secret:

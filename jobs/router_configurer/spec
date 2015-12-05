@@ -34,8 +34,8 @@ properties:
     description: "auth disabled setting of routing api"
     default: false
 
-  router.router_configurer.gorouter_secret:
-    description: "Password for UAA client for the gorouter."
+  router.router_configurer.tcp_router_secret:
+    description: "Password for UAA client for tcp router."
 
   router.router_configurer.uaa_port:
     description: "Port on which UAA is running."

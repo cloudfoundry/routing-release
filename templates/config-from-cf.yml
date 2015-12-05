@@ -20,3 +20,5 @@ config_from_cf:
         secret: (( merge ))
       tcp_emitter:
         secret: (( merge ))
+      tcp_router:
+        secret: (( merge ))

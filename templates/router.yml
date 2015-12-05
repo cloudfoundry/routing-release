@@ -168,7 +168,7 @@ properties:
       tcp_config_file: (( property_overrides.router_configurer.tcp_config_file ))
       tcp_config_file_template: (( property_overrides.router_configurer.tcp_config_file_template ))
       uaa_port: (( config_from_cf.uaa.port ))
-      gorouter_secret: (( config_from_cf.uaa.clients.gorouter.secret ))
+      tcp_router_secret: (( config_from_cf.uaa.clients.tcp_router.secret ))
       log_level: (( property_overrides.router_configurer.log_level ))
       routing_api_auth_disabled: (( config_from_cf.routing-api.auth_disabled))
     tcp_emitter:
