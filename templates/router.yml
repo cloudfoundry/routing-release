@@ -79,6 +79,9 @@ jobs:
     update:
       serial: true
       max_in_flight: 1
+    properties:
+      metron_agent:
+        zone: z1
   - name: tcp_router_z2
     templates: (( base_job_templates.tcp_router ))
     instances: (( instance_count_overrides.tcp_router_z2.instances || 0 ))
@@ -90,6 +93,9 @@ jobs:
     update:
       serial: true
       max_in_flight: 1
+    properties:
+      metron_agent:
+        zone: z2
   - name: tcp_router_z3
     templates: (( base_job_templates.tcp_router ))
     instances: (( instance_count_overrides.tcp_router_z3.instances || 0 ))
@@ -101,6 +107,9 @@ jobs:
     update:
       serial: true
       max_in_flight: 1
+    properties:
+      metron_agent:
+        zone: z3
   - name: tcp_emitter_z1
     templates: (( base_job_templates.tcp_emitter ))
     instances: (( instance_count_overrides.tcp_emitter_z1.instances || 1 ))
@@ -112,6 +121,9 @@ jobs:
     update:
       serial: true
       max_in_flight: 1
+    properties:
+      metron_agent:
+        zone: z1
   - name: tcp_emitter_z2
     templates: (( base_job_templates.tcp_emitter ))
     instances: (( instance_count_overrides.tcp_emitter_z2.instances || 0 ))
@@ -123,6 +135,9 @@ jobs:
     update:
       serial: true
       max_in_flight: 1
+    properties:
+      metron_agent:
+        zone: z2
   - name: tcp_emitter_z3
     templates: (( base_job_templates.tcp_emitter ))
     instances: (( instance_count_overrides.tcp_emitter_z3.instances || 0 ))
@@ -134,6 +149,9 @@ jobs:
     update:
       serial: true
       max_in_flight: 1
+    properties:
+      metron_agent:
+        zone: z3
   - name: router_acceptance_tests
     templates: (( base_job_templates.acceptance_tests_errand ))
     lifecycle: errand
@@ -150,6 +168,13 @@ config_from_cf: (( merge ))
 config_from_diego: (( merge ))
 
 properties:
+  metron_agent:
+    deployment: (( name ))
+  metron_endpoint:
+    shared_secret: (( config_from_cf.metron_endpoint.shared_secret ))
+  loggregator:
+    etcd:
+      machines: (( config_from_cf.loggregator.etcd_machines ))
   consul:
     agent:
       log_level: (( config_from_cf.consul.log_level ))
@@ -209,10 +234,14 @@ base_job_templates:
       release: cf-routing
     - name: consul_agent
       release: cf
+    - name: metron_agent
+      release: cf
   tcp_emitter:
     - name: tcp_emitter
       release: cf-routing
     - name: consul_agent
+      release: cf
+    - name: metron_agent
       release: cf
   acceptance_tests_errand:
     - name: acceptance_tests

@@ -13,6 +13,10 @@ config_from_cf:
   routing-api:
     port: (( properties.routing-api.port ))
     auth_disabled: (( properties.routing-api.auth_disabled ))
+  loggregator:
+    etcd_machines: (( properties.loggregator.etcd.machines ))
+  metron_endpoint:
+    shared_secret: (( properties.metron_endpoint.shared_secret ))
   uaa:
     port: (( properties.uaa.port ))
     clients:
@@ -41,6 +45,11 @@ properties:
   routing-api:
     port:
     auth_disabled:
+  loggregator:
+    etcd:
+      machines: (( merge ))
+  metron_endpoint:
+    shared_secret: (( merge ))
   uaa:
     port:
     clients:

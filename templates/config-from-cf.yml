@@ -13,6 +13,10 @@ config_from_cf:
   routing-api:
     port: (( merge ))
     auth_disabled: (( merge ))
+  loggregator:
+    etcd_machines: (( merge ))
+  metron_endpoint:
+    shared_secret: (( merge ))
   uaa:
     port: (( merge ))
     clients:
