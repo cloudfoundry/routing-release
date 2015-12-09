@@ -218,7 +218,7 @@ properties:
       router_api_addresses: (( property_overrides.acceptance_tests.router_api_addresses ))
       router_api_port: (( property_overrides.acceptance_tests.router_api_port ))
       uaa_port: (( config_from_cf.uaa.port ))
-      gorouter_secret: (( config_from_cf.uaa.clients.gorouter.secret ))
+      tcp_emitter_secret: (( config_from_cf.uaa.clients.tcp_emitter.secret ))
       bbs:
         api_location: (( "bbs.service.cf.internal:8889" ))
         ca_cert: (( config_from_diego.bbs.ca_cert ))

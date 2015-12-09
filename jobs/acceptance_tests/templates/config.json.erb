@@ -14,8 +14,8 @@
   "routing_api_url": "http://routing-api.service.cf.internal:3000",
   "oauth": {
     "token_endpoint": "http://uaa.service.cf.internal",
-    "client_name": "gorouter",
-    "client_secret": "<%= p("router.acceptance_tests.gorouter_secret") %>",
+    "client_name": "tcp_emitter",
+    "client_secret": "<%= p("router.acceptance_tests.tcp_emitter_secret") %>",
     "port": <%= p("router.acceptance_tests.uaa_port") %>
   }
 }
