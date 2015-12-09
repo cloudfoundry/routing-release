@@ -103,3 +103,9 @@
 [submodule "src/github.com/cloudfoundry-incubator/routing-info"]
 	path = src/github.com/cloudfoundry-incubator/routing-info
 	url = http://github.com/cloudfoundry-incubator/routing-info
+[submodule "src/github.com/cloudfoundry-incubator/routing-api-cli"]
+	path = src/github.com/cloudfoundry-incubator/routing-api-cli
+	url = https://github.com/cloudfoundry-incubator/routing-api-cli
+[submodule "src/github.com/codegangsta/cli"]
+	path = src/github.com/codegangsta/cli
+	url = https://github.com/codegangsta/cli
