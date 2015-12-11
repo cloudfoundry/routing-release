@@ -76,3 +76,4 @@ files:
   - github.com/cloudfoundry/storeadapter/etcdstoreadapter/*.go # gosub
   - github.com/coreos/go-etcd/etcd/*.go # gosub
   - github.com/ugorji/go/codec/*.go # gosub
+  - github.com/pivotal-golang/clock/*.go # gosub
