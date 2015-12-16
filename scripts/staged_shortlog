@@ -32,3 +32,7 @@ locations.each do |location, shas|
     end
   end
 end
+
+ARGV.each do|a|
+    puts "[finishes ##{a}]"
+end
