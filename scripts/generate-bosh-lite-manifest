@@ -19,9 +19,17 @@ if [ ! -z "$3" ]; then
   usage
 fi
 
+if [ -z "${cf_manifest_file}" ]; then
+  cf_manifest_file=$HOME/workspace/cf-release/bosh-lite/deployments/cf.yml
+fi
+
 if [ ! -f "${cf_manifest_file}" ]; then
   >&2 echo "CF release manifest ${cf_manifest_file} does not exist"
   usage
+fi
+
+if [ -z "${diego_manifest_file}" ]; then
+  diego_manifest_file=$HOME/workspace/diego-release/bosh-lite/deployments/diego.yml
 fi
 
 if [ ! -f "${diego_manifest_file}" ]; then
@@ -30,9 +38,10 @@ if [ ! -f "${diego_manifest_file}" ]; then
 fi
 
 root_dir=$(dirname $0)
+bosh_lite_dir=${root_dir}/../bosh-lite
 
-mkdir -p ${root_dir}/manifests
+mkdir -p ${bosh_lite_dir}/deployments
 
-${root_dir}/../scripts/generate-manifest ${root_dir}/stubs ${cf_manifest_file} ${diego_manifest_file} > ${root_dir}/manifests/cf-routing-manifest.yml
+${root_dir}/generate-manifest ${bosh_lite_dir}/stubs ${cf_manifest_file} ${diego_manifest_file} > ${bosh_lite_dir}/deployments/cf-routing-manifest.yml
 
-bosh deployment ${root_dir}/manifests/cf-routing-manifest.yml
+bosh deployment ${bosh_lite_dir}/deployments/cf-routing-manifest.yml

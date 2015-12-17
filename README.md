@@ -76,7 +76,10 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 1. Generate and target router's manifest:
 
         cd ~/workspace/cf-routing-release
-        ./bosh-lite/make_manifest <cf_deployment_manifest> <diego_deployment_manifest>
+        ./scripts/generate-bosh-lite-manifest
+    It expects `cf.yml` to be present in `~/workspace/cf-release/bosh-lite/deployments` and `diego.yml` to be present in `~/workspace/diego-release/bosh-lite/deployments`. These are the default locations for the bosh lite manifest for these releases, if you use its bosh-lite manifest generation script. However, if you have your cf and diego manifests in different location then specify them as parameter to this script as follows:
+
+        ./scripts/generate-bosh-lite-manifest <cf_deployment_manifest> <diego_deployment_manifest>
 
 1. Create and upload cf-routing release, either by using a final release or creating your own development release as described below:
 

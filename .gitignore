@@ -19,6 +19,7 @@ dev_releases
 #*
 
 bosh-lite/manifests
+bosh-lite/deployments
 # gosub and friends
 src/github.com/vito/gosub
 # lol bet you were looking for this
