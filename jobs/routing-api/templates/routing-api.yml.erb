@@ -1,9 +1,5 @@
 ---
 log_guid: "routing-api"
-<% if p("routing-api.auth_disabled") == false %>
-uaa_verification_key: |
-<%= "  " + properties.uaa.jwt.verification_key.gsub("\n", "\n  ") %>
-<% end %>
 <% if_p("metron_endpoint.host", "metron_endpoint.dropsonde_port") do |host, port| %>
 metron_config:
   address: <%= host %>
@@ -11,6 +7,7 @@ metron_config:
 <% end %>
 metrics_reporting_interval: <%= p("routing-api.metrics_reporting_interval") %>
 statsd_endpoint: <%= p("routing-api.statsd_endpoint") %>
+uaa_url: http://uaa.service.cf.internal:<%= p("uaa.port") %>
 debug_address: <%= p("routing-api.debug_address") %>
 max_concurrent_etcd_requests: <%= p("routing-api.max_concurrent_etcd_requests") %>
 statsd_client_flush_interval: <%= p("routing-api.statsd_client_flush_interval") %>
