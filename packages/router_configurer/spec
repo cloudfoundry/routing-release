@@ -15,6 +15,8 @@ files:
   - github.com/cloudfoundry-incubator/cf-tcp-router/config/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router/configurer/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router/configurer/haproxy/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-tcp-router/metrics_reporter/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-tcp-router/metrics_reporter/haproxy_client/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router/models/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router/routing_table/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router/syncer/*.go # gosub

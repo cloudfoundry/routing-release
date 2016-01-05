@@ -192,6 +192,8 @@ properties:
       debug_addr: (( property_overrides.router_configurer.debug_addr ))
       tcp_config_file: (( property_overrides.router_configurer.tcp_config_file ))
       tcp_config_file_template: (( property_overrides.router_configurer.tcp_config_file_template ))
+      tcp_stats_unix_socket: (( property_overrides.router_configurer.tcp_stats_unix_socket ))
+      tcp_stats_collection_interval: (( property_overrides.router_configurer.tcp_stats_collection_interval ))
       uaa_port: (( config_from_cf.uaa.port ))
       tcp_router_secret: (( config_from_cf.uaa.clients.tcp_router.secret ))
       log_level: (( property_overrides.router_configurer.log_level ))

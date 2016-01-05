@@ -25,6 +25,7 @@ files:
   - github.com/onsi/ginkgo/config/*.go # gosub
   - github.com/onsi/gomega/*.go # gosub
   - github.com/onsi/gomega/gexec/*.go # gosub
+  - github.com/pivotal-golang/clock/*.go # gosub
   - github.com/pivotal-golang/lager/*.go # gosub
   - github.com/pivotal-golang/lager/lagertest/*.go # gosub
   - github.com/tedsuo/ifrit/*.go # gosub
@@ -76,4 +77,3 @@ files:
   - github.com/cloudfoundry/storeadapter/etcdstoreadapter/*.go # gosub
   - github.com/coreos/go-etcd/etcd/*.go # gosub
   - github.com/ugorji/go/codec/*.go # gosub
-  - github.com/pivotal-golang/clock/*.go # gosub

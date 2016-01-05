@@ -23,6 +23,8 @@ case $1 in
       -tcpLoadBalancerConfig=<%= p("router.router_configurer.tcp_config_file") %> \
       -tcpLoadBalancerBaseConfig=<%= p("router.router_configurer.tcp_config_file_template") %> \
       -config=$CONF_DIR/router_configurer.yml \
+      -tcpLoadBalancerStatsUnixSocket=<%= p("router.router_configurer.tcp_stats_unix_socket") %> \
+      -statsCollectionInterval=<%= p("router.router_configurer.tcp_stats_collection_interval") %> \
       2>> $LOG_DIR/router_configurer.stderr.log \
       1> >(tee -a $LOG_DIR/router_configurer.stdout.log | logger -t vcap.router_configurer)
 

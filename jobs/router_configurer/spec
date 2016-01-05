@@ -26,6 +26,14 @@ properties:
     description: "Config file of underlying tcp proxy"
     default: "/var/vcap/jobs/haproxy/config/haproxy.conf"
 
+  router.router_configurer.tcp_stats_unix_socket:
+    description: "Unix socket exposed by the the underlying tcp proxy to gather statistic metrics from"
+    default: "/var/vcap/jobs/haproxy/config/haproxy.sock"
+
+  router.router_configurer.tcp_stats_collection_interval:
+    description: "String representing interval for collecting statistic metrics from tcp proxy. Units: ms, s, m h"
+    default: "1m"
+
   router.router_configurer.routing_api_port:
     description: "Port of routing api"
     default: "3000"
