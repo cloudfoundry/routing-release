@@ -105,7 +105,7 @@ In order to determine whether TCP Router instances are eligible for routing requ
 
 To simulate this health check manually on BOSH-lite:
   ```
-  nc -z 10.2.44.8.2 80
+  nc -z 10.244.8.2 80
   ```
 
 ## Running Acceptance tests
