@@ -9,9 +9,8 @@ templates:
   bbs_client.key.erb: config/certs/bbs/client.key
 
 packages:
- - golang_1.4
+ - golang1.5
  - acceptance_tests
- - golang_1.4
  - tcp_emitter
 
 properties:

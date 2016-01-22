@@ -2,7 +2,7 @@
 name: acceptance_tests
 
 dependencies:
-  - golang_1.4
+  - golang1.5
 
 files:
   - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/bin/*

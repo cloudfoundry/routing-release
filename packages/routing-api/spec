@@ -2,7 +2,7 @@
 name: routing-api
 
 dependencies:
-  - golang_1.4
+  - golang1.5
 
 files:
   - github.com/cloudfoundry-incubator/routing-api/cmd/routing-api/*.go # gosub
