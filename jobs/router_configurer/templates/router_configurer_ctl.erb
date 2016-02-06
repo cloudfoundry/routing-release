@@ -17,6 +17,9 @@ case $1 in
 
     echo $$ > /var/vcap/sys/run/router_configurer/router_configurer.pid
 
+    # Work around for GOLANG 1.5.3 DNS bug
+    export GODEBUG=netdns=cgo
+
     exec /var/vcap/packages/router_configurer/bin/router-configurer \
       -debugAddr=<%= p("router.router_configurer.debug_addr") %> \
       -logLevel=<%= p("router.router_configurer.log_level") %> \
