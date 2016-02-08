@@ -7,9 +7,9 @@ bin_dir=$(dirname $0)/../bin
 tmpdir=$(mktemp -d /tmp/cf-routing-downloads.XXXX)
 
 if uname -a | grep Darwin; then os=darwin; else os=linux; fi
-curl -L -o ${tmpdir}/consul-0.5.2.zip "https://dl.bintray.com/mitchellh/consul/0.5.2_${os}_amd64.zip"
-unzip -o ${tmpdir}/consul-0.5.2.zip -d ./${bin_dir}
-rm ${tmpdir}/consul-0.5.2.zip
+curl -L -o ${tmpdir}/consul-0.6.3.zip "https://releases.hashicorp.com/consul/0.6.3/consul_0.6.3_${os}_amd64.zip"
+unzip -o ${tmpdir}/consul-0.6.3.zip -d ./${bin_dir}
+rm ${tmpdir}/consul-0.6.3.zip
 
 pushd src/github.com/coreos/etcd
   go install .
