@@ -109,3 +109,6 @@
 [submodule "src/github.com/codegangsta/cli"]
 	path = src/github.com/codegangsta/cli
 	url = https://github.com/codegangsta/cli
+[submodule "src/github.com/cloudfoundry-incubator/uaa-go-client"]
+	path = src/github.com/cloudfoundry-incubator/uaa-go-client
+	url = https://github.com/cloudfoundry-incubator/uaa-go-client
