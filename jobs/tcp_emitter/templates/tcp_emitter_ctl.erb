@@ -29,9 +29,6 @@ case $1 in
 
     echo $$ > /var/vcap/sys/run/tcp_emitter/tcp_emitter.pid
 
-    # Work around for GOLANG 1.5.3 DNS bug
-    export GODEBUG=netdns=cgo
-
     exec /var/vcap/packages/tcp_emitter/bin/tcp-emitter ${bbs_sec_flags} \
       -lockTTL=<%= p("router.tcp_emitter.lock_ttl") %> \
       -lockRetryInterval=<%= p("router.tcp_emitter.lock_retry_interval") %> \
