@@ -230,19 +230,19 @@ properties:
 
 base_job_templates:
   tcp_router:
+    - name: consul_agent
+      release: cf
     - name: haproxy
       release: cf-routing
     - name: router_configurer
       release: cf-routing
-    - name: consul_agent
-      release: cf
     - name: metron_agent
       release: cf
   tcp_emitter:
-    - name: tcp_emitter
-      release: cf-routing
     - name: consul_agent
       release: cf
+    - name: tcp_emitter
+      release: cf-routing
     - name: metron_agent
       release: cf
   acceptance_tests_errand:
@@ -250,5 +250,3 @@ base_job_templates:
       release: cf-routing
     - name: consul_agent
       release: cf
-
-

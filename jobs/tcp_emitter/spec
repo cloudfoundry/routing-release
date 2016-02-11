@@ -69,3 +69,7 @@ properties:
   router.tcp_emitter.session_name:
     description: "consul session name"
     default: "tcp-emitter"
+
+  dns_health_check_host:
+    description: "Host to ping for confirmation of DNS resolution"
+    default: consul.service.cf.internal

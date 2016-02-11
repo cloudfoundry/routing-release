@@ -48,4 +48,6 @@ properties:
 
   system_domain:
     description: "Domain reserved for CF operator; base URL where the UAA, Cloud Controller, and other non-user apps listen"
-
+  dns_health_check_host:
+    description: "Host to ping for confirmation of DNS resolution"
+    default: consul.service.cf.internal

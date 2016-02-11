@@ -48,3 +48,7 @@ properties:
   router.router_configurer.uaa_port:
     description: "Port on which UAA is running."
     default: "8080"
+
+  dns_health_check_host:
+    description: "Host to ping for confirmation of DNS resolution"
+    default: consul.service.cf.internal
