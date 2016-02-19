@@ -34,7 +34,9 @@ properties:
   routing-api.statsd_client_flush_interval:
     description: "Buffered statsd client flush interval"
     default: "300ms"
-  etcd.machines:
+  routing-api.system_domain:
+    description: "Domain reserved for CF operator; base URL where the UAA, Cloud Controller, and other non-user apps listen"
+  routing-api.etcd_machines:
     description: "The IPs of etcd hosts"
   metron_endpoint.host:
     description: "The host used to emit messages to the Metron agent."
@@ -46,8 +48,6 @@ properties:
     description: "Port on which UAA is running."
     default: "8080"
 
-  system_domain:
-    description: "Domain reserved for CF operator; base URL where the UAA, Cloud Controller, and other non-user apps listen"
   dns_health_check_host:
     description: "Host to ping for confirmation of DNS resolution"
     default: consul.service.cf.internal

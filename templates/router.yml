@@ -31,6 +31,21 @@ networks:
   subnets: (( iaas_settings.subnet_configs.router3.subnets ))
 
 resource_pools:
+  - name: routing_api_z1
+    network: router1
+    stemcell: (( iaas_settings.stemcell ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.routing_api_z1.cloud_properties ))
+
+  - name: routing_api_z2
+    network: router2
+    stemcell: (( iaas_settings.stemcell ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.routing_api_z2.cloud_properties ))
+
+  - name: routing_api_z3
+    network: router3
+    stemcell: (( iaas_settings.stemcell ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.routing_api_z3.cloud_properties ))
+
   - name: tcp_router_z1
     network: router1
     stemcell: (( iaas_settings.stemcell ))
@@ -152,6 +167,60 @@ jobs:
     properties:
       metron_agent:
         zone: z3
+  - name: routing_api_z1
+    templates: (( base_job_templates.routing_api ))
+    instances: (( instance_count_overrides.routing_api_z1.instances || 1 ))
+    persistent_disk: (( persistent_disk_overrides.routing_api_z1 || 1024 ))
+    resource_pool: routing_api_z1
+    networks:
+      - name: router1
+        static_ips: (( static_ips(2) ))
+    update:
+      serial: true
+      max_in_flight: 1
+    properties:
+      consul:
+        agent:
+          services:
+            routing-api: {}
+      metron_agent:
+        zone: z1
+  - name: routing_api_z2
+    templates: (( base_job_templates.routing_api ))
+    instances: (( instance_count_overrides.routing_api_z2.instances || 0 ))
+    persistent_disk: (( persistent_disk_overrides.routing_api_z2 || 1024 ))
+    resource_pool: routing_api_z2
+    networks:
+      - name: router2
+        static_ips: (( static_ips(2) ))
+    update:
+      serial: true
+      max_in_flight: 1
+    properties:
+      consul:
+        agent:
+          services:
+            routing-api: {}
+      metron_agent:
+        zone: z2
+  - name: routing_api_z3
+    templates: (( base_job_templates.routing_api ))
+    instances: (( instance_count_overrides.routing_api_z3.instances || 0 ))
+    persistent_disk: (( persistent_disk_overrides.routing_api_z3 || 1024 ))
+    resource_pool: routing_api_z3
+    networks:
+      - name: router3
+        static_ips: (( static_ips(2) ))
+    update:
+      serial: true
+      max_in_flight: 1
+    properties:
+      consul:
+        agent:
+          services:
+            routing-api: {}
+      metron_agent:
+        zone: z3
   - name: router_acceptance_tests
     templates: (( base_job_templates.acceptance_tests_errand ))
     lifecycle: errand
@@ -187,6 +256,11 @@ properties:
     require_ssl: (( config_from_cf.consul.require_ssl ))
     server_cert: (( config_from_cf.consul.server_cert ))
     server_key: (( config_from_cf.consul.server_key ))
+  routing-api:
+    port: (( property_overrides.routing-api.port || 3000 ))
+    auth_disabled: (( property_overrides.routing-api.auth_disabled || false ))
+    system_domain: (( config_from_cf.system_domain ))
+    etcd_machines: (( config_from_cf.etcd.machines ))
   router:
     router_configurer:
       debug_addr: (( property_overrides.router_configurer.debug_addr ))
@@ -197,7 +271,8 @@ properties:
       uaa_port: (( config_from_cf.uaa.port ))
       tcp_router_secret: (( config_from_cf.uaa.clients.tcp_router.secret ))
       log_level: (( property_overrides.router_configurer.log_level ))
-      routing_api_auth_disabled: (( config_from_cf.routing-api.auth_disabled))
+      routing_api_auth_disabled: (( properties.routing-api.auth_disabled ))
+      routing_api_port: (( properties.routing-api.port ))
     tcp_emitter:
       bbs:
         api_location: (( "bbs.service.cf.internal:8889" ))
@@ -212,7 +287,8 @@ properties:
       lock_ttl: (( property_overrides.tcp_emitter.lock_ttl || nil ))
       lock_retry_interval: (( property_overrides.tcp_emitter.lock_retry_interval || nil ))
       session_name: (( property_overrides.tcp_emitter.session_name || nil ))
-      routing_api_auth_disabled: (( config_from_cf.routing-api.auth_disabled))
+      routing_api_auth_disabled: (( properties.routing-api.auth_disabled ))
+      routing_api_port: (( properties.routing-api.port ))
     haproxy:
       request_timeout_in_seconds: (( property_overrides.haproxy.request_timeout_in_seconds || 300 ))
       health_check_port: (( property_overrides.haproxy.health_check_port || 80 ))
@@ -229,6 +305,13 @@ properties:
         client_key: (( property_overrides.bbs.client_key ))
 
 base_job_templates:
+  routing_api:
+    - name: consul_agent
+      release: cf
+    - name: routing-api
+      release: cf-routing
+    - name: metron_agent
+      release: cf
   tcp_router:
     - name: consul_agent
       release: cf

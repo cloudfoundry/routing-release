@@ -1,5 +1,6 @@
 config_from_cf:
   cf_deployment_name: (( merge ))
+  system_domain: (( merge ))
   consul:
     log_level: (( merge ))
     lan_servers: (( merge ))
@@ -10,13 +11,12 @@ config_from_cf:
     require_ssl: (( merge ))
     server_cert: (( merge ))
     server_key: (( merge ))
-  routing-api:
-    port: (( merge ))
-    auth_disabled: (( merge ))
   loggregator:
     etcd_machines: (( merge ))
   metron_endpoint:
     shared_secret: (( merge ))
+  etcd:
+    machines: (( merge ))
   uaa:
     port: (( merge ))
     clients:

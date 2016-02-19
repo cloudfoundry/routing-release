@@ -52,8 +52,8 @@ case $1 in
          -port <%= p("routing-api.port") %> \
          -maxTTL <%= p("routing-api.max_ttl") %> \
          -ip <%= my_ip %> \
-         -systemDomain <%= p("system_domain") %> <% if p("routing-api.auth_disabled") == true %> -devMode <% end %> \
-         <%= p("etcd.machines").map{|addr| "http://#{addr}:4001"}.join(" ")%> \
+         -systemDomain <%= p("routing-api.system_domain") %> <% if p("routing-api.auth_disabled") == true %> -devMode <% end %> \
+         <%= p("routing-api.etcd_machines").map{|addr| "http://#{addr}:4001"}.join(" ")%> \
          1> >(tee -a $LOG_DIR/routing-api.log | logger -t vcap.routing-api) 2>&1
 
     ;;
