@@ -81,6 +81,8 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 
         ./scripts/generate-bosh-lite-manifest <cf_deployment_manifest> <diego_deployment_manifest>
 
+  See [the diego-release README](https://github.com/cloudfoundry-incubator/diego-release/blob/develop/README.md) for instructions on generating the required manifest files.
+
 1. Create and upload cf-routing release, either by using a final release or creating your own development release as described below:
 
     * Upload the final available release
