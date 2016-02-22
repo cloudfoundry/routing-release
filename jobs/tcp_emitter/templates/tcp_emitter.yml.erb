@@ -1,8 +1,9 @@
 oauth:
-  token_endpoint: http://uaa.service.cf.internal
+  token_endpoint: uaa.service.cf.internal
   client_name: "tcp_emitter"
   client_secret: <%= p("router.tcp_emitter.tcp_emitter_secret") %>
-  port: <%= p("router.tcp_emitter.uaa_port") %>
+  port: <%= p("router.tcp_emitter.uaa_ssl_port") %>
+  skip_oauth_tls_verification: <%= p("router.tcp_emitter.skip_oauth_tls_verification") %>
 
 routing_api:
   uri: http://routing-api.service.cf.internal

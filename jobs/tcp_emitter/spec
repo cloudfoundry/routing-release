@@ -70,6 +70,13 @@ properties:
     description: "consul session name"
     default: "tcp-emitter"
 
+  router.tcp_emitter.skip_oauth_tls_verification:
+    description: Skip TLS verification when talking to UAA
+    default: false
+
   dns_health_check_host:
     description: "Host to ping for confirmation of DNS resolution"
     default: consul.service.cf.internal
+
+  router.tcp_emitter.uaa_ssl_port:
+    description: "Secure Port on which UAA is running."

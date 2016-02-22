@@ -10,6 +10,8 @@ property_overrides:
   tcp_emitter:
     log_level: debug
     debug_addr: ~
+    skip_oauth_tls_verification: true
+
   haproxy:
     health_check_port: 80
   acceptance_tests:

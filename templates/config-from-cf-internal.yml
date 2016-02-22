@@ -19,6 +19,8 @@ config_from_cf:
   system_domain: (( properties.system_domain ))
   uaa:
     port: (( properties.uaa.port ))
+    ssl:
+      port: (( properties.uaa.ssl.port ))
     clients:
       gorouter:
         secret: (( properties.uaa.clients.gorouter.secret ))
@@ -52,6 +54,8 @@ properties:
     shared_secret: (( merge ))
   uaa:
     port:
+    ssl:
+      port:
     clients:
       gorouter:
         secret:

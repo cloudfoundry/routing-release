@@ -283,6 +283,8 @@ properties:
       debug_addr: (( property_overrides.tcp_emitter.debug_addr ))
       log_level: (( property_overrides.tcp_emitter.log_level ))
       uaa_port: (( config_from_cf.uaa.port ))
+      uaa_ssl_port: (( config_from_cf.uaa.ssl.port ))
+      skip_oauth_tls_verification: (( property_overrides.tcp_emitter.skip_oauth_tls_verification))
       tcp_emitter_secret: (( config_from_cf.uaa.clients.tcp_emitter.secret ))
       lock_ttl: (( property_overrides.tcp_emitter.lock_ttl || nil ))
       lock_retry_interval: (( property_overrides.tcp_emitter.lock_retry_interval || nil ))

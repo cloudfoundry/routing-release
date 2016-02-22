@@ -19,6 +19,8 @@ config_from_cf:
     machines: (( merge ))
   uaa:
     port: (( merge ))
+    ssl:
+      port: (( merge ))
     clients:
       gorouter:
         secret: (( merge ))

@@ -27,7 +27,9 @@ files:
   - github.com/cloudfoundry-incubator/tcp-emitter/syncer/*.go # gosub
   - github.com/cloudfoundry-incubator/tcp-emitter/watcher/*.go # gosub
   - github.com/cloudfoundry-incubator/trace-logger/*.go # gosub
-  - github.com/cloudfoundry-incubator/uaa-token-fetcher/*.go # gosub
+  - github.com/cloudfoundry-incubator/uaa-go-client/*.go # gosub
+  - github.com/cloudfoundry-incubator/uaa-go-client/config/*.go # gosub
+  - github.com/cloudfoundry-incubator/uaa-go-client/schema/*.go # gosub
   - github.com/cloudfoundry/dropsonde/*.go # gosub
   - github.com/cloudfoundry/dropsonde/emitter/*.go # gosub
   - github.com/cloudfoundry/dropsonde/factories/*.go # gosub
@@ -50,6 +52,16 @@ files:
   - github.com/gogo/protobuf/sortkeys/*.go # gosub
   - github.com/hashicorp/consul/api/*.go # gosub
   - github.com/nu7hatch/gouuid/*.go # gosub
+  - github.com/dgrijalva/jwt-go/*.go # gosub
+  - github.com/pivotal-golang/clock/*.go # gosub
+  - github.com/pivotal-golang/lager/*.go # gosub
+  - github.com/tedsuo/ifrit/*.go # gosub
+  - github.com/tedsuo/ifrit/grouper/*.go # gosub
+  - github.com/tedsuo/ifrit/http_server/*.go # gosub
+  - github.com/tedsuo/ifrit/sigmon/*.go # gosub
+  - github.com/tedsuo/rata/*.go # gosub
+  - github.com/ugorji/go/codec/*.go # gosub
+  - github.com/vito/go-sse/sse/*.go # gosub
   - github.com/onsi/ginkgo/*.go # gosub
   - github.com/onsi/ginkgo/config/*.go # gosub
   - github.com/onsi/ginkgo/internal/codelocation/*.go # gosub
