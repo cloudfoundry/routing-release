@@ -272,7 +272,8 @@ properties:
       tcp_router_secret: (( config_from_cf.uaa.clients.tcp_router.secret ))
       log_level: (( property_overrides.router_configurer.log_level ))
       routing_api_auth_disabled: (( properties.routing-api.auth_disabled ))
-      routing_api_port: (( properties.routing-api.port ))
+      uaa_ssl_port: (( config_from_cf.uaa.ssl.port ))
+      skip_oauth_tls_verification: (( property_overrides.router_configurer.skip_oauth_tls_verification))
     tcp_emitter:
       bbs:
         api_location: (( "bbs.service.cf.internal:8889" ))

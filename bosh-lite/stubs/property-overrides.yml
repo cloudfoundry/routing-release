@@ -7,6 +7,7 @@ property_overrides:
     log_level: info
     debug_addr: ~
     starting_external_port: 50000
+    skip_oauth_tls_verification: true
   tcp_emitter:
     log_level: debug
     debug_addr: ~
