@@ -36,7 +36,7 @@ sync_package router_configurer              -app  github.com/cloudfoundry-incuba
 sync_package tcp_emitter                    -app  github.com/cloudfoundry-incubator/tcp-emitter/cmd/... &
 sync_package routing-api                    -app  github.com/cloudfoundry-incubator/routing-api/cmd/... &
 sync_package acceptance_tests \
-  -test github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/... \
+  -test github.com/cloudfoundry-incubator/cf-router-acceptance-tests/... \
   -app github.com/onsi/ginkgo/ginkgo &
 
 wait

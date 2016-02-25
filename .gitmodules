@@ -37,9 +37,6 @@
 [submodule "src/github.com/cloudfoundry-incubator/cf-tcp-router"]
 	path = src/github.com/cloudfoundry-incubator/cf-tcp-router
 	url = https://github.com/cloudfoundry-incubator/cf-tcp-router
-[submodule "src/github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests"]
-	path = src/github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests
-	url = https://github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests
 [submodule "src/github.com/cloudfoundry-incubator/tcp-emitter"]
 	path = src/github.com/cloudfoundry-incubator/tcp-emitter
 	url = https://github.com/cloudfoundry-incubator/tcp-emitter
@@ -112,3 +109,6 @@
 [submodule "src/github.com/cloudfoundry-incubator/uaa-go-client"]
 	path = src/github.com/cloudfoundry-incubator/uaa-go-client
 	url = https://github.com/cloudfoundry-incubator/uaa-go-client
+[submodule "src/github.com/cloudfoundry-incubator/cf-router-acceptance-tests"]
+	path = src/github.com/cloudfoundry-incubator/cf-router-acceptance-tests
+	url = https://github.com/cloudfoundry-incubator/cf-router-acceptance-tests

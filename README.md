@@ -124,7 +124,7 @@ bosh run errand router_acceptance_tests
 ```
 
 ### Manually 
-See the README for [Router Acceptance Tests](https://github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests)
+See the README for [Router Acceptance Tests](https://github.com/cloudfoundry-incubator/cf-router-acceptance-tests)
 
 ## Router API
 
@@ -138,7 +138,7 @@ These instructions assume the release has been deployed to bosh-lite
 
 1. Start the `tcp-sample-listener` on your local workstation
 	```
-	$ src/github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/tcp-sample-receiver/tcp-sample-receiver --address HOST:PORT
+	$ src/github.com/cloudfoundry-incubator/cf-router-acceptance-tests/assets/tcp-sample-receiver/tcp-sample-receiver --address HOST:PORT
 	```
 	Substitute your workstation IP and a port of your choosing for `HOST:PORT` (e.g. 10.80.130.159:3333)
 
@@ -163,7 +163,7 @@ These instructions assume the release has been deployed to bosh-lite
 	```
 	On the listener side, we see:
 	```
-	$  src/github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/tcp-sample-receiver/tcp-sample-receiver --address 10.80.130.159:3333
+	$  src/github.com/cloudfoundry-incubator/cf-router-acceptance-tests/assets/tcp-sample-receiver/tcp-sample-receiver --address 10.80.130.159:3333
 	Listening on 10.80.130.159:3333
 	isn't
 	this

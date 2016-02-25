@@ -5,7 +5,7 @@ dependencies:
   - golang1.5
 
 files:
-  - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/bin/*
+  - github.com/cloudfoundry-incubator/cf-router-acceptance-tests/bin/*
   - github.com/bmizerany/pat/*.go # gosub
   - github.com/cloudfoundry-incubator/bbs/*.go # gosub
   - github.com/cloudfoundry-incubator/bbs/encryption/*.go # gosub
@@ -13,13 +13,14 @@ files:
   - github.com/cloudfoundry-incubator/bbs/format/*.go # gosub
   - github.com/cloudfoundry-incubator/bbs/models/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-lager/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/diego-client/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/tcp-droplet-receiver/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/tcp-sample-receiver/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/tcp-sample-receiver/testrunner/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/assets/tcp-sample-sender/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/helpers/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-tcp-router-acceptance-tests/router/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-router-acceptance-tests/assets/diego-client/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-router-acceptance-tests/assets/tcp-droplet-receiver/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-router-acceptance-tests/assets/tcp-sample-receiver/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-router-acceptance-tests/assets/tcp-sample-receiver/testrunner/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-router-acceptance-tests/assets/tcp-sample-sender/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-router-acceptance-tests/helpers/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-router-acceptance-tests/router/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-router-acceptance-tests/routing_api/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router/testutil/*.go # gosub
   - github.com/cloudfoundry-incubator/cf_http/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/*.go # gosub
