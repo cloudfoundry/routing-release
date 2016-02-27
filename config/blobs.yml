@@ -19,3 +19,7 @@ rtr-linux-amd64.tgz:
   object_id: 1d862dbc-9f4b-495b-9c12-839e4a29ce64
   sha: d98c42cbd73c59852d6252b0fd15440d7471a821
   size: 2199020
+rtr/rtr-linux-amd64.tgz:
+  object_id: 197a112c-7edd-4dd8-b807-3ede313c2509
+  sha: d98c42cbd73c59852d6252b0fd15440d7471a821
+  size: 2199020
