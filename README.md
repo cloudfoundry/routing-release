@@ -70,7 +70,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 
 1. Clone this repo and sync submodules; see [Get the code](#get-the-code).
 
-1. Upload cf-routing-release to BOSH, generate a manifest, and deploy
+1. Upload cf-routing-release to BOSH and generate a deployment manifest
 
     * Deploy the latest final release (master branch)
 
@@ -89,10 +89,30 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
             ./scripts/generate-bosh-lite-manifest
             bosh -n deploy
 
-The `generate-bosh-lite-manifest` script expects `cf.yml` to be present in `~/workspace/cf-release/bosh-lite/deployments` and `diego.yml` to be present in `~/workspace/diego-release/bosh-lite/deployments`. This assumes the analagous generate-manifest scripts have been run for those releases. If cf and diego manifests are in a different location then you may specify them as arguments:
+	The `generate-bosh-lite-manifest` script expects `cf.yml` to be present in `~/workspace/cf-release/bosh-lite/deployments` and `diego.yml` to be present in `~/workspace/diego-release/bosh-lite/deployments`. This assumes the analagous generate-manifest scripts have been run for those releases. If cf and diego manifests are in a different location then you may specify them as arguments:
 
         ./scripts/generate-bosh-lite-manifest <cf_deployment_manifest> <diego_deployment_manifest>
 
+1. Finally, update your cf-release deployment to enable support for the Routing API, included in this release.
+	
+		cd ~/workspace/cf-release
+
+	Open ~/workspace/cf-release/bosh-lite/stubs/property-overrides.yml in an editor an add the `router.enable_routing_api:true` under `properties`. 
+
+		properties:
+		  router:
+		    enable_routing_api: true
+
+	While you're at it, make your life easier by setting Diego as the default backend. TCP Routing is supported for applications on Diego only.
+	
+		properties:
+		  cc:
+		    default_to_diego_backend: true
+
+	Then generate a new manifest for cf-release and re-deploy it.
+
+		./scripts/generate-bosh-lite-manifest
+		bosh -n deploy
 
 ## Deploying for High Availabilty
 
