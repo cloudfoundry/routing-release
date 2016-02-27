@@ -1,4 +1,4 @@
-# Cloud Foundry Routers [BOSH release]
+# Cloud Foundry Routing [BOSH release]
 
 This repo is a [BOSH](https://github.com/cloudfoundry/bosh) release for deploying TCP Router and associated tasks.
 
@@ -54,7 +54,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 
         ./scripts/run-unit-tests
 
-## Deploying TCP Router to a local BOSH-Lite instance
+## Deploying cf-routing-release to a local BOSH-Lite instance
 
 1. Install and start [BOSH Lite](https://github.com/cloudfoundry/bosh-lite). Instructions can be found on that repo's README.
 
