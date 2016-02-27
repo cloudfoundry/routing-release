@@ -151,7 +151,52 @@ For details refer to [Routing API](https://github.com/cloudfoundry-incubator/rou
 
 ## Testing the TCP Router Service manually
 
-These instructions assume the release has been deployed to bosh-lite
+These instructions assume the release has been deployed to bosh-lite, along with cf-release and diego-release. See [Deploying cf-routing-release to a local BOSH-Lite instance](#deploying-tcp-router-to-a-local-bosh-lite-instance) above.
+
+### Using CF 
+
+The [lattice-app](https://github.com/cloudfoundry-samples/lattice-app) can be configured to listen on any port. The curl commands below will eventually be replaced with user-friendly commands in the [cf CLI](https://github.com/cloudfoundry/cli).
+
+1. Push lattice app with no route, no start, and a custom start command that tells the app what ports to listen on
+`$ cf p lattice -c "lattice-app --ports=7777,8888" --no-route --no-start`
+- Use curl to change the app ports to the same the app will listen on. This will open these ports on the container.
+`$ cf curl /v2/apps/4a10e0c9-0dd5-4d35-befe-619d28523504 -X PUT -d '{"ports":[7777,8888]}'`
+- Start the app
+`$ cf start lattice`
+- As admin, create a shared-domain for the TCP router group
+` $ cf create-shared-domain tcp.superman.cf-app.com --router-group default-tcp`
+- Use curl to create a TCP route with a random port; the response includes the generated port.
+` $ cf curl /v2/routes?generate_port=true -X POST -d '{"space_guid":"9723f7f2-e9ec-46dd-a4b9-26afed48f849","domain_guid":"6c2ea463-6c40-4c3e-ad14-74c6c9b3a529"}'`
+- Use curl to map the route to the app, and specify the app port 7777
+`$ cf curl /v2/route_mappings -X POST -d '{"route_guid":"e0a74cd6-b7de-4042-8da4-9dc45386b0e4","app_guid":"4a10e0c9-0dd5-4d35-befe-619d28523504","app_port":7777}'`
+- curl the lattice app on the `/port` endpoint and it will return the local port it received the request on. Or you can add the domain you created above to your `/etc/hosts` file, resolving to the IP of the TCP Router.
+
+	Ask BOSH what the IP of `tcp_router_z1` is
+
+		bosh vms cf-warden-routing
+	
+	Now curl the app on that IP, with the port you received when creating the route, and the `/port` endpoint.
+	 
+		curl <ip of tcp router>:<port provided by CF>/port
+
+### Using Diego API
+
+With the [diego-release](https://github.com/cloudfoundry-incubator/diego-release) and this release deployed, use the  [Veritas](https://github.com/pivotal-cf-experimental/veritas) CLI to create an LRP. Follow the instructions on that projects README for creating an LRP (see the example JSON for Redis, which listens for TCP requests).
+
+Once deployed, use Veritas to find out the host IP and port where the LRP is running:
+
+```
+$ veritas get-actual-lrp redis-1
+```
+
+Then test that TCP routing is functional with `nc` or the Redis CLI:
+
+```
+$ nc -v <host IP> <host port>
+
+$ homebrew install redis
+$ redis-cli -h <host IP> -p <host port> ping
+```
 
 ### Using Routing API
 
@@ -189,88 +234,6 @@ These instructions assume the release has been deployed to bosh-lite
 	cool?
 	```
 	
-### Using Diego API
-
-With the [diego-release](https://github.com/cloudfoundry-incubator/diego-release) and this release deployed, use the  [Veritas](https://github.com/pivotal-cf-experimental/veritas) CLI to create an LRP. Follow the instructions on that projects README for creating an LRP (see the example JSON for Redis, which listens for TCP requests).
-
-Once deployed, use Veritas to find out the host IP and port where the LRP is running:
-
-```
-$ veritas get-actual-lrp redis-1
-```
-
-Then test that TCP routing is functional with `nc` or the Redis CLI:
-
-```
-$ nc -v <host IP> <host port>
-
-$ homebrew install redis
-$ redis-cli -h <host IP> -p <host port> ping
-```
-
-### Using CF 
-
-The [lattice-app](https://github.com/cloudfoundry-samples/lattice-app) can be configured to listen on any port.
-
-1. Push lattice app with no route, no start, and a custom start command that tells the app what ports to listen on
-`$ cf p lattice -c "lattice-app --ports=7777,8888" --no-route --no-start`
-- Use curl to change the app ports to the same the app will listen on. This will open these ports on the container.
-`$ cf curl /v2/apps/4a10e0c9-0dd5-4d35-befe-619d28523504 -X PUT -d '{"ports":[7777,8888]}'`
-- Start the app
-`$ cf start lattice`
-- As admin, create a shared-domain for the TCP router group
-` $ cf create-shared-domain tcp.superman.cf-app.com --router-group default-tcp`
-- Use curl to create a TCP route
-` $ cf curl /v2/routes?generate_port=true -X POST -d '{"space_guid":"9723f7f2-e9ec-46dd-a4b9-26afed48f849","domain_guid":"6c2ea463-6c40-4c3e-ad14-74c6c9b3a529"}'`
-- Use curl to map the route to the app, and specify the app port 7777
-`$ cf curl /v2/route_mappings -X POST -d '{"route_guid":"e0a74cd6-b7de-4042-8da4-9dc45386b0e4","app_guid":"4a10e0c9-0dd5-4d35-befe-619d28523504","app_port":7777}'`
-- curl the app
-`$ curl lattice.superman.cf-app.com`
-- Gorouter reports the route is mapped to host port 60116
-```
-$ curl http://REDACTED:REDACTED@10.0.32.15:8080/routes | jq .
-...
-  "lattice-scoen.superman.cf-app.com": [
-    {
-      "ttl": 0,
-      "address": "10.0.48.66:60116"
-    }
-  ],
-```
-- Diego reports that port 60116 is mapped to container port 7777
-```
-$ veritas get-actual-lrp 4a10e0c9-0dd5-4d35-befe-619d28523504-95edeece-bf75-4497-9c57-2ee4eda3e699
-{
-  "process_guid": "4a10e0c9-0dd5-4d35-befe-619d28523504-95edeece-bf75-4497-9c57-2ee4eda3e699",
-  "index": 0,
-  "domain": "cf-apps",
-  "instance_guid": "b722a146-e0c3-497a-6ff0-b5cb756900e6",
-  "cell_id": "cell_z1-0",
-  "address": "10.0.48.66",
-  "ports": [
-    {
-      "container_port": 7777,
-      "host_port": 60116
-    },
-    {
-      "container_port": 8888,
-      "host_port": 60117
-    },
-    {
-      "container_port": 2222,
-      "host_port": 60118
-    }
-  ],
-  "crash_count": 0,
-  "state": "RUNNING",
-  "since": 1454107129333700355,
-  "modification_tag": {
-    "epoch": "ee4934ce-2773-4a2c-7f29-910326347ef1",
-    "index": 2
-  }
-}
-````
-
 
 
 
