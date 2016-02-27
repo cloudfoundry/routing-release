@@ -66,34 +66,38 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 	curl -L -J -O https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent
 	bosh upload stemcell bosh-warden-boshlite-ubuntu-trusty-go_agent
 	```
-	
-1. Clone the repo and sync submodules
-
-   See [Get the code](#get-the-code)
 
 1. Install spiff, a tool for generating BOSH manifests. spiff is required for running the scripts in later steps. Stable binaries can be downloaded from [Spiff Releases](https://github.com/cloudfoundry-incubator/spiff/releases).
 
-1. Generate and target router's manifest:
+1. Deploy [cf-release](https://github.com/cloudfoundry/cf-release), and [diego-release](https://github.com/cloudfoundry-incubator/diego-release). Instructions can be found in on those repo's READMEs.
 
-        cd ~/workspace/cf-routing-release
-        ./scripts/generate-bosh-lite-manifest
-    It expects `cf.yml` to be present in `~/workspace/cf-release/bosh-lite/deployments` and `diego.yml` to be present in `~/workspace/diego-release/bosh-lite/deployments`. These are the default locations for the bosh lite manifest for these releases, if you use its bosh-lite manifest generation script. However, if you have your cf and diego manifests in different location then specify them as parameter to this script as follows:
+1. Clone this repo and sync submodules
 
-        ./scripts/generate-bosh-lite-manifest <cf_deployment_manifest> <diego_deployment_manifest>
+   See [Get the code](#get-the-code)
 
-1. Create and upload cf-routing release, either by using a final release or creating your own development release as described below:
+1. Upload cf-routing-release to BOSH, generate a manifest, and deploy
 
-    * Upload the final available release
+    * Deploy the latest final release (master branch)
 
             cd ~/workspace/cf-routing-release
             bosh -n upload release releases/cf-routing-<lastest_version>.yml
+            ./scripts/generate-bosh-lite-manifest
             bosh -n deploy
 
-    * Or create and upload your release
+    * Or deploy from some other branch. The `release_candidate` branch can be considered "edge" as it has passed tests. The `update` script handles syncing submodules, among other things.
 
+            cd ~/workspace/cf-routing-release
+            git checkout release_candidate
+            ./scripts/update
             bosh create release --force
             bosh -n upload release
+            ./scripts/generate-bosh-lite-manifest
             bosh -n deploy
+
+The `generate-bosh-lite-manifest` script expects `cf.yml` to be present in `~/workspace/cf-release/bosh-lite/deployments` and `diego.yml` to be present in `~/workspace/diego-release/bosh-lite/deployments`. This assumes the analagous generate-manifest scripts have been run for those releases. If cf and diego manifests are in a different location then you may specify them as arguments:
+
+        ./scripts/generate-bosh-lite-manifest <cf_deployment_manifest> <diego_deployment_manifest>
+
 
 ## Deploying for High Availabilty
 
