@@ -56,24 +56,19 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 
 ## Deploying TCP Router to a local BOSH-Lite instance
 
-1. Install and start [BOSH-Lite](https://github.com/cloudfoundry/bosh-lite),
-   following its
-   [README](https://github.com/cloudfoundry/bosh-lite/blob/master/README.md).
+1. Install and start [BOSH Lite](https://github.com/cloudfoundry/bosh-lite). Instructions can be found on that repo's README.
 
-1. Download the latest Warden Trusty Go-Agent stemcell and upload it to BOSH-lite.
+1. Upload the latest Warden Trusty Go-Agent stemcell to BOSH Lite. You can download it first if you prefer.
 
 	```
-	curl -L -J -O https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent
-	bosh upload stemcell bosh-warden-boshlite-ubuntu-trusty-go_agent
+	bosh upload stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent
 	```
 
 1. Install spiff, a tool for generating BOSH manifests. spiff is required for running the scripts in later steps. Stable binaries can be downloaded from [Spiff Releases](https://github.com/cloudfoundry-incubator/spiff/releases).
 
-1. Deploy [cf-release](https://github.com/cloudfoundry/cf-release), and [diego-release](https://github.com/cloudfoundry-incubator/diego-release). Instructions can be found in on those repo's READMEs.
+1. Deploy [cf-release](https://github.com/cloudfoundry/cf-release) and [diego-release](https://github.com/cloudfoundry-incubator/diego-release). Instructions can be found on those repo's READMEs.
 
-1. Clone this repo and sync submodules
-
-   See [Get the code](#get-the-code)
+1. Clone this repo and sync submodules; see [Get the code](#get-the-code).
 
 1. Upload cf-routing-release to BOSH, generate a manifest, and deploy
 
