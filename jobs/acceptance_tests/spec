@@ -12,6 +12,7 @@ packages:
  - golang1.5
  - acceptance_tests
  - tcp_emitter
+ - rtr
 
 properties:
   router.acceptance_tests.nodes:

@@ -8,6 +8,8 @@ export PATH=${GOROOT}/bin:${PATH}
 export GOPATH=/var/vcap/packages/acceptance_tests
 export PATH=${GOPATH}/bin:${PATH}
 
+export PATH=/var/vcap/packages/rtr/bin:${PATH} # put the routing-api cli on the path
+
 export GOPATH=${PWD}/Godeps/_workspace:${GOPATH}
 export PATH=${PWD}/Godeps/_workspace/bin:${PATH}
 
