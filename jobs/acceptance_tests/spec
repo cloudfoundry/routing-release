@@ -32,6 +32,9 @@ properties:
     default: 9999
     description: "Router API IP Port"
 
+  routing-api.system_domain:
+    description: "The system domain for your CF release"
+
   router.acceptance_tests.bbs.api_location:
     description: "Diego BBS Server endpoint url"
     default: "https://bbs.service.cf.internal:8889"

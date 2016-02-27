@@ -10,6 +10,7 @@
   "bbs_require_ssl": <%= properties.router.acceptance_tests.bbs.require_ssl %>,
   "bbs_client_cert": "/var/vcap/jobs/acceptance_tests/config/certs/bbs/client.crt",
   "bbs_client_key": "/var/vcap/jobs/acceptance_tests/config/certs/bbs/client.key",
+  "system_domain": "<%= p("routing-api.system_domain")%>",
   "bbs_ca_cert": "/var/vcap/jobs/acceptance_tests/config/certs/bbs/ca.crt",
   "routing_api_url": "http://routing-api.service.cf.internal:3000",
   "oauth": {
