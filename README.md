@@ -97,7 +97,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 	
 		cd ~/workspace/cf-release
 
-	Open ~/workspace/cf-release/bosh-lite/stubs/property-overrides.yml in an editor an add the `router.enable_routing_api:true` under `properties`. 
+	Open ~/workspace/cf-release/bosh-lite/stubs/property_overrides.yml in an editor an add the `router.enable_routing_api:true` under `properties`. 
 
 		properties:
 		  router:
