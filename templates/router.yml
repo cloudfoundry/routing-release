@@ -261,6 +261,7 @@ properties:
     auth_disabled: (( property_overrides.routing-api.auth_disabled || false ))
     system_domain: (( config_from_cf.system_domain ))
     etcd_machines: (( config_from_cf.etcd.machines ))
+    uaa_ssl_port: (( config_from_cf.uaa.ssl.port ))
   router:
     router_configurer:
       debug_addr: (( property_overrides.router_configurer.debug_addr ))
