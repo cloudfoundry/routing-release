@@ -12,7 +12,6 @@ files:
   - github.com/cloudfoundry-incubator/cf-lager/*.go # gosub
   - github.com/cloudfoundry-incubator/cf_http/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/*.go # gosub
-  - github.com/cloudfoundry-incubator/routing-api/authentication/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/cmd/routing-api/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/cmd/routing-api/testrunner/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/config/*.go # gosub
@@ -21,6 +20,9 @@ files:
   - github.com/cloudfoundry-incubator/routing-api/helpers/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/metrics/*.go # gosub
   - github.com/cloudfoundry-incubator/trace-logger/*.go # gosub
+  - github.com/cloudfoundry-incubator/uaa-go-client/*.go # gosub
+  - github.com/cloudfoundry-incubator/uaa-go-client/config/*.go # gosub
+  - github.com/cloudfoundry-incubator/uaa-go-client/schema/*.go # gosub
   - github.com/cloudfoundry/dropsonde/*.go # gosub
   - github.com/cloudfoundry/dropsonde/emitter/*.go # gosub
   - github.com/cloudfoundry/dropsonde/factories/*.go # gosub
@@ -70,6 +72,7 @@ files:
   - github.com/onsi/gomega/matchers/support/goraph/node/*.go # gosub
   - github.com/onsi/gomega/matchers/support/goraph/util/*.go # gosub
   - github.com/onsi/gomega/types/*.go # gosub
+  - github.com/pivotal-golang/clock/*.go # gosub
   - github.com/pivotal-golang/lager/*.go # gosub
   - github.com/tedsuo/ifrit/*.go # gosub
   - github.com/tedsuo/ifrit/ginkgomon/*.go # gosub
