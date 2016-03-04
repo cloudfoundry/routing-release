@@ -14,8 +14,9 @@
   "bbs_ca_cert": "/var/vcap/jobs/acceptance_tests/config/certs/bbs/ca.crt",
   "routing_api_url": "http://routing-api.service.cf.internal:3000",
   "oauth": {
-    "token_endpoint": "http://uaa.service.cf.internal",
+    "token_endpoint": "https://uaa.service.cf.internal",
     "client_name": "tcp_emitter",
+    "skip_oauth_tls_verification": <%= p("router.acceptance_tests.skip_oauth_tls_verification") %>,
     "client_secret": "<%= p("router.acceptance_tests.tcp_emitter_secret") %>",
     "port": <%= p("router.acceptance_tests.uaa_port") %>
   }

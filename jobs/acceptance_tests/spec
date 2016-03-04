@@ -55,6 +55,10 @@ properties:
   router.acceptance_tests.tcp_emitter_secret:
     description: "Password for UAA client for the tcp emitter."
 
+  router.acceptance_tests.skip_oauth_tls_verification:
+    description: "Skip OAuth TLS verification when communicating with UAA"
+    default: "false"
+
   router.acceptance_tests.uaa_port:
     description: "Port on which UAA is running."
     default: "8080"
