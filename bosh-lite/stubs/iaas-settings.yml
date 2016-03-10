@@ -44,6 +44,21 @@ iaas_settings:
         reserved:
         - 10.244.8.25
         static: []
+      - cloud_properties: {}
+        range: 10.244.8.28/30
+        reserved:
+        - 10.244.8.29
+        static: []
+      - cloud_properties: {}
+        range: 10.244.8.32/30
+        reserved:
+        - 10.244.8.33
+        static: []
+      - cloud_properties: {}
+        range: 10.244.8.36/30
+        reserved:
+        - 10.244.8.37
+        static: []
     - name: router2
       type: manual
       subnets:
