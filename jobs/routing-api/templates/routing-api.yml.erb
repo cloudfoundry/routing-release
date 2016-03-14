@@ -7,8 +7,10 @@ metron_config:
 <% end %>
 metrics_reporting_interval: <%= p("routing-api.metrics_reporting_interval") %>
 statsd_endpoint: <%= p("routing-api.statsd_endpoint") %>
-uaa_url: https://uaa.service.cf.internal:<%= p("routing-api.uaa_ssl_port") %>
-skip_oauth_tls_verification: <%= p("routing-api.skip_oauth_tls_verification") %>
+oauth:
+  token_endpoint: uaa.service.cf.internal
+  port: <%= p("routing-api.uaa_ssl_port") %>
+  skip_oauth_tls_verification: <%= p("routing-api.skip_oauth_tls_verification") %>
 debug_address: <%= p("routing-api.debug_address") %>
 max_concurrent_etcd_requests: <%= p("routing-api.max_concurrent_etcd_requests") %>
 statsd_client_flush_interval: <%= p("routing-api.statsd_client_flush_interval") %>
