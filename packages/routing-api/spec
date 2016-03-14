@@ -19,6 +19,7 @@ files:
   - github.com/cloudfoundry-incubator/routing-api/handlers/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/helpers/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/metrics/*.go # gosub
+  - github.com/cloudfoundry-incubator/routing-api/models/*.go # gosub
   - github.com/cloudfoundry-incubator/trace-logger/*.go # gosub
   - github.com/cloudfoundry-incubator/uaa-go-client/*.go # gosub
   - github.com/cloudfoundry-incubator/uaa-go-client/config/*.go # gosub

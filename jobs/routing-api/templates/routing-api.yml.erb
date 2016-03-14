@@ -14,3 +14,4 @@ oauth:
 debug_address: <%= p("routing-api.debug_address") %>
 max_concurrent_etcd_requests: <%= p("routing-api.max_concurrent_etcd_requests") %>
 statsd_client_flush_interval: <%= p("routing-api.statsd_client_flush_interval") %>
+router_groups: <%= p("routing-api.router_groups").to_yaml.gsub("---","") %>

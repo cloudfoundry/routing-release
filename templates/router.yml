@@ -236,6 +236,12 @@ persistent_disk_overrides: (( merge ))
 config_from_cf: (( merge ))
 config_from_diego: (( merge ))
 
+meta:
+  default_router_groups:
+    - name: default-tcp
+      type: tcp
+      reservable_ports: 1024-65535
+
 properties:
   metron_agent:
     deployment: (( name ))
@@ -263,6 +269,7 @@ properties:
     etcd_machines: (( config_from_cf.etcd.machines ))
     uaa_ssl_port: (( config_from_cf.uaa.ssl.port ))
     skip_oauth_tls_verification: (( property_overrides.routing-api.skip_oauth_tls_verification || nil ))
+    router_groups: (( property_overrides.routing-api.router_groups || meta.default_router_groups))
   router:
     router_configurer:
       debug_addr: (( property_overrides.router_configurer.debug_addr ))
