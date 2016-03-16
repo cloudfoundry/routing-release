@@ -25,7 +25,7 @@ properties:
 
   router.acceptance_tests.router_api_addresses:
     default:
-      - "10.244.8.2"
+      - "10.244.14.2"
     description: "Router API IP Address"
 
   router.acceptance_tests.router_api_port:

@@ -19,7 +19,7 @@ property_overrides:
     health_check_port: 80
   acceptance_tests:
     router_api_addresses:
-      - "10.244.8.2"
+      - "10.244.14.2"
     router_api_port: 9999
   bbs:
     client_cert: |

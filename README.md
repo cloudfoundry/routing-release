@@ -123,7 +123,7 @@ In order to determine whether TCP Router instances are eligible for routing requ
 
 To simulate this health check manually on BOSH-lite:
   ```
-  nc -z 10.244.8.2 80
+  nc -z 10.244.14.2 80
   ```
 
 ## Running Acceptance tests
@@ -216,7 +216,7 @@ $ redis-cli -h <host IP> -p <host port> ping
 	
 3. You can then use netcat to send messages to the external port on the router, and verify they are received by `tcp-sample-listener`.
 	```
-	$ nc 10.244.8.2 60000
+	$ nc 10.244.14.2 60000
 	isn't
 	isn't
 	this
