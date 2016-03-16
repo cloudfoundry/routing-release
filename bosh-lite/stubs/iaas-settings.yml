@@ -7,57 +7,57 @@ iaas_settings:
       type: manual
       subnets:
       - cloud_properties: {}
-        range: 10.244.8.0/30
+        range: 10.244.14.0/30
         reserved:
-        - 10.244.8.1
+        - 10.244.14.1
         static:
-        - 10.244.8.2
+        - 10.244.14.2
       - cloud_properties: {}
-        range: 10.244.8.4/30
+        range: 10.244.14.4/30
         reserved:
-        - 10.244.8.5
+        - 10.244.14.5
         static:
-        - 10.244.8.6
+        - 10.244.14.6
       - cloud_properties: {}
-        range: 10.244.8.8/30
+        range: 10.244.14.8/30
         reserved:
-        - 10.244.8.9
+        - 10.244.14.9
         static:
-        - 10.244.8.10
+        - 10.244.14.10
       - cloud_properties: {}
-        range: 10.244.8.12/30
+        range: 10.244.14.12/30
         reserved:
-        - 10.244.8.13
+        - 10.244.14.13
         static: []
       - cloud_properties: {}
-        range: 10.244.8.16/30
+        range: 10.244.14.16/30
         reserved:
-        - 10.244.8.17
+        - 10.244.14.17
         static: []
       - cloud_properties: {}
-        range: 10.244.8.20/30
+        range: 10.244.14.20/30
         reserved:
-        - 10.244.8.21
+        - 10.244.14.21
         static: []
       - cloud_properties: {}
-        range: 10.244.8.24/30
+        range: 10.244.14.24/30
         reserved:
-        - 10.244.8.25
+        - 10.244.14.25
         static: []
       - cloud_properties: {}
-        range: 10.244.8.28/30
+        range: 10.244.14.28/30
         reserved:
-        - 10.244.8.29
+        - 10.244.14.29
         static: []
       - cloud_properties: {}
-        range: 10.244.8.32/30
+        range: 10.244.14.32/30
         reserved:
-        - 10.244.8.33
+        - 10.244.14.33
         static: []
       - cloud_properties: {}
-        range: 10.244.8.36/30
+        range: 10.244.14.36/30
         reserved:
-        - 10.244.8.37
+        - 10.244.14.37
         static: []
     - name: router2
       type: manual
