@@ -9,7 +9,7 @@ releases:
 compilation:
   network: router1
   reuse_compilation_vms: true
-  workers: 6
+  workers: (( iaas_settings.compilation_workers || 6))
   cloud_properties: (( iaas_settings.compilation_cloud_properties ))
 
 update:
