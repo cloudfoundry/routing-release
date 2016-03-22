@@ -252,6 +252,7 @@ properties:
       machines: (( config_from_cf.loggregator.etcd_machines ))
   consul:
     agent:
+      domain: (( config_from_cf.consul.domain ))
       log_level: (( config_from_cf.consul.log_level ))
       servers:
         lan: (( config_from_cf.consul.lan_servers ))

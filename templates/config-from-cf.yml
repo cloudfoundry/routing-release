@@ -2,6 +2,7 @@ config_from_cf:
   cf_deployment_name: (( merge ))
   system_domain: (( merge ))
   consul:
+    domain: (( merge ))
     log_level: (( merge ))
     lan_servers: (( merge ))
     ca_cert: (( merge ))

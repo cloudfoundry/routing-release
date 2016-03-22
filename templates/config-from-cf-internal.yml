@@ -1,6 +1,7 @@
 config_from_cf:
   cf_deployment_name: (( name ))
   consul:
+    domain: (( properties.consul.agent.domain ))
     log_level: (( properties.consul.agent.log_level ))
     lan_servers: (( properties.consul.agent.servers.lan ))
     ca_cert: (( properties.consul.ca_cert ))
@@ -35,6 +36,7 @@ properties:
   system_domain: (( merge ))
   consul:
     agent:
+      domain: (( merge ))
       log_level: (( merge ))
       servers:
         lan: (( merge ))
