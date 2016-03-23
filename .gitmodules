@@ -109,3 +109,9 @@
 [submodule "src/github.com/cloudfoundry-incubator/cf-routing-acceptance-tests"]
 	path = src/github.com/cloudfoundry-incubator/cf-routing-acceptance-tests
 	url = https://github.com/cloudfoundry-incubator/cf-routing-acceptance-tests.git
+[submodule "src/github.com/cloudfoundry-incubator/cf-test-helpers"]
+	path = src/github.com/cloudfoundry-incubator/cf-test-helpers
+	url = https://github.com/cloudfoundry-incubator/cf-test-helpers
+[submodule "src/github.com/cloudfoundry-incubator/cf-routing-test-helpers"]
+	path = src/github.com/cloudfoundry-incubator/cf-routing-test-helpers
+	url = https://github.com/cloudfoundry-incubator/cf-routing-test-helpers
