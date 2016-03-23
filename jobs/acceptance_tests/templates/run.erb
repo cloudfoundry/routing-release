@@ -13,7 +13,7 @@ export PATH=/var/vcap/packages/rtr/bin:${PATH} # put the routing-api cli on the 
 export GOPATH=${PWD}/Godeps/_workspace:${GOPATH}
 export PATH=${PWD}/Godeps/_workspace/bin:${PATH}
 
-export ROUTER_API_CONFIG=/var/vcap/jobs/acceptance_tests/bin/config.json
+export CONFIG=/var/vcap/jobs/acceptance_tests/bin/config.json
 
 mkdir -p /var/vcap/sys/log/acceptance_tests
 cd /var/vcap/packages/acceptance_tests/src/github.com/cloudfoundry-incubator/cf-routing-acceptance-tests
