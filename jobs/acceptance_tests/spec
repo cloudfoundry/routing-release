@@ -13,56 +13,66 @@ packages:
  - acceptance_tests
  - tcp_emitter
  - rtr
+ - cf-cli
 
 properties:
-  router.acceptance_tests.nodes:
+  acceptance_tests.nodes:
     default: 4
     description: "The number of parallel test executors to spawn. The larger the number the higher the stress on the system."
 
-  router.acceptance_tests.verbose:
+  acceptance_tests.verbose:
     default: false
     description: "Whether to pass the -v flag to router acceptance tests"
 
-  router.acceptance_tests.router_api_addresses:
+  acceptance_tests.addresses:
     default:
       - "10.244.14.2"
-    description: "Router API IP Address"
+    description: "A list of addresses which will be checked for TCP connectivity and features"
 
-  router.acceptance_tests.router_api_port:
-    default: 9999
-    description: "Router API IP Port"
+  acceptance_tests.api:
+    description: The Elastic Runtime API endpoint URL
 
-  routing-api.system_domain:
-    description: "The system domain for your CF release"
+  acceptance_tests.apps_domain:
+    description: The Elastic Runtime Application Domain
 
-  router.acceptance_tests.bbs.api_location:
+  acceptance_tests.admin_user:
+    description: The Elastic Runtime API admin user
+
+  acceptance_tests.admin_password:
+    description: The Elastic Runtime API admin user's password
+
+  acceptance_tests.skip_ssl_validation:
+    default: false
+    description: Toggles cli verification of the Elastic Runtime API SSL certificate
+
+  acceptance_tests.use_http:
+    default: false
+    description: Flag for using HTTP when making api and application requests rather than the default HTTPS
+
+  acceptance_tests.bbs.api_location:
     description: "Diego BBS Server endpoint url"
     default: "https://bbs.service.cf.internal:8889"
 
-  router.acceptance_tests.bbs.ca_cert:
+  acceptance_tests.bbs.ca_cert:
     description: "PEM-encoded CA certificate"
 
-  router.acceptance_tests.bbs.client_cert:
+  acceptance_tests.bbs.client_cert:
     description: "PEM-encoded client certificate"
 
-  router.acceptance_tests.bbs.client_key:
+  acceptance_tests.bbs.client_key:
     description: "PEM-encoded client key"
 
-  router.acceptance_tests.bbs.require_ssl:
+  acceptance_tests.bbs.require_ssl:
     description: "enable ssl for all communication with the bbs"
     default: true
 
-  router.acceptance_tests.tcp_emitter_secret:
+  acceptance_tests.tcp_emitter_secret:
     description: "Password for UAA client for the tcp emitter."
 
-  router.acceptance_tests.skip_oauth_tls_verification:
+  acceptance_tests.skip_oauth_tls_verification:
     description: "Skip OAuth TLS verification when communicating with UAA"
     default: "false"
 
-  router.acceptance_tests.uaa_port:
+  acceptance_tests.uaa_port:
     description: "Port on which UAA is running."
     default: "8080"
-
-  router.acceptance_tests.elb_address:
-    description: "(Optional) ELB Address to check connectivity through load balancer"
-    default: ""

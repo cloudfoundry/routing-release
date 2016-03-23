@@ -18,9 +18,14 @@ property_overrides:
   haproxy:
     health_check_port: 80
   acceptance_tests:
-    router_api_addresses:
+    addresses:
       - "10.244.14.2"
-    router_api_port: 9999
+    api: api.bosh-lite.com
+    admin_user: admin
+    admin_password: admin
+    apps_domain: bosh-lite.com
+    skip_ssl_validation: true
+    use_http: true
   bbs:
     client_cert: |
       -----BEGIN CERTIFICATE-----

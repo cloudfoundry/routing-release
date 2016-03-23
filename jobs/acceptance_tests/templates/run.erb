@@ -9,6 +9,7 @@ export GOPATH=/var/vcap/packages/acceptance_tests
 export PATH=${GOPATH}/bin:${PATH}
 
 export PATH=/var/vcap/packages/rtr/bin:${PATH} # put the routing-api cli on the path
+export PATH=/var/vcap/packages/cf-cli/bin:${PATH} # put the cf cli on the path
 
 export GOPATH=${PWD}/Godeps/_workspace:${GOPATH}
 export PATH=${PWD}/Godeps/_workspace/bin:${PATH}
@@ -19,9 +20,9 @@ mkdir -p /var/vcap/sys/log/acceptance_tests
 cd /var/vcap/packages/acceptance_tests/src/github.com/cloudfoundry-incubator/cf-routing-acceptance-tests
 
 EXITSTATUS=0
-nodes=<%= properties.router.acceptance_tests.nodes %>
-verbose=<%= properties.router.acceptance_tests.verbose ? "-v" : "" %>
-bin/test -randomizeAllSpecs $verbose -skipPackage=$packagesToSkip -nodes=$nodes -keepGoing || EXITSTATUS=$?
+nodes=<%= properties.acceptance_tests.nodes %>
+verbose=<%= properties.acceptance_tests.verbose ? "-v" : "" %>
+bin/test -randomizeAllSpecs $verbose -skipPackage=$packagesToSkip -nodes=$nodes -keepGoing router || EXITSTATUS=$?
 
 echo "Acceptance Tests Complete; exit status: $EXITSTATUS"
 

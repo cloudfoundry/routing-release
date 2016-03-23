@@ -7,6 +7,10 @@ dependencies:
 
 files:
   - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/bin/*
+  - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/assets/diego-client/*/*
+  - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/assets/tcp-droplet-receiver/*
+  - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/assets/tcp-droplet-receiver/Godeps/*/*
+  - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/assets/tcp-sample-receiver/Dockerfile
   - github.com/bmizerany/pat/*.go # gosub
   - github.com/cloudfoundry-incubator/bbs/*.go # gosub
   - github.com/cloudfoundry-incubator/bbs/encryption/*.go # gosub

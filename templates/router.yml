@@ -305,18 +305,24 @@ properties:
     haproxy:
       request_timeout_in_seconds: (( property_overrides.haproxy.request_timeout_in_seconds || 300 ))
       health_check_port: (( property_overrides.haproxy.health_check_port || 80 ))
-    acceptance_tests:
-      router_api_addresses: (( property_overrides.acceptance_tests.router_api_addresses ))
-      router_api_port: (( property_overrides.acceptance_tests.router_api_port ))
-      uaa_port: (( config_from_cf.uaa.ssl.port ))
-      tcp_emitter_secret: (( config_from_cf.uaa.clients.tcp_emitter.secret ))
-      skip_oauth_tls_verification: (( property_overrides.routing-api.skip_oauth_tls_verification || nil ))
-      bbs:
-        api_location: (( "bbs.service.cf.internal:8889" ))
-        ca_cert: (( config_from_diego.bbs.ca_cert ))
-        require_ssl: (( config_from_diego.bbs.require_ssl || nil ))
-        client_cert: (( property_overrides.bbs.client_cert ))
-        client_key: (( property_overrides.bbs.client_key ))
+
+  acceptance_tests:
+    addresses: (( property_overrides.acceptance_tests.addresses ))
+    api: (( property_overrides.acceptance_tests.api ))
+    admin_user: (( property_overrides.acceptance_tests.admin_user ))
+    admin_password: (( property_overrides.acceptance_tests.admin_password ))
+    apps_domain: (( property_overrides.acceptance_tests.apps_domain ))
+    skip_ssl_validation: (( property_overrides.acceptance_tests.skip_ssl_validation ))
+    use_http: (( property_overrides.acceptance_tests.use_http ))
+    uaa_port: (( config_from_cf.uaa.ssl.port ))
+    tcp_emitter_secret: (( config_from_cf.uaa.clients.tcp_emitter.secret ))
+    skip_oauth_tls_verification: (( property_overrides.routing-api.skip_oauth_tls_verification || nil ))
+    bbs:
+      api_location: (( "bbs.service.cf.internal:8889" ))
+      ca_cert: (( config_from_diego.bbs.ca_cert ))
+      require_ssl: (( config_from_diego.bbs.require_ssl || nil ))
+      client_cert: (( property_overrides.bbs.client_cert ))
+      client_key: (( property_overrides.bbs.client_key ))
 
 base_job_templates:
   routing_api:
