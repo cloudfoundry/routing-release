@@ -1,4 +1,11 @@
 config_from_cf:
+  acceptance_tests:
+    apps_domain: (( merge ))
+    api: (( merge ))
+    admin_user: (( merge ))
+    admin_password: (( merge ))
+    skip_ssl_validation: (( merge ))
+    use_http: (( merge ))
   cf_deployment_name: (( merge ))
   system_domain: (( merge ))
   consul:

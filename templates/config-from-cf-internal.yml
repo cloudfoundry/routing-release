@@ -1,4 +1,11 @@
 config_from_cf:
+  acceptance_tests:
+    apps_domain: (( properties.acceptance_tests.apps_domain ))
+    api: (( properties.acceptance_tests.api ))
+    admin_user: (( properties.acceptance_tests.admin_user ))
+    admin_password: (( properties.acceptance_tests.admin_password ))
+    skip_ssl_validation: (( properties.acceptance_tests.skip_ssl_validation ))
+    use_http: (( properties.acceptance_tests.use_http ))
   cf_deployment_name: (( name ))
   consul:
     domain: (( properties.consul.agent.domain ))
@@ -33,6 +40,7 @@ config_from_cf:
 # The keys below should not be included in the final stub
 name: (( merge ))
 properties:
+  acceptance_tests: (( merge ))
   system_domain: (( merge ))
   consul:
     agent:

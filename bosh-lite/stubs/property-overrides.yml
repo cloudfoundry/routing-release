@@ -20,12 +20,6 @@ property_overrides:
   acceptance_tests:
     addresses:
       - "10.244.14.2"
-    api: api.bosh-lite.com
-    admin_user: admin
-    admin_password: admin
-    apps_domain: bosh-lite.com
-    skip_ssl_validation: true
-    use_http: true
   bbs:
     client_cert: |
       -----BEGIN CERTIFICATE-----
