@@ -100,7 +100,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 		properties:
 		  router:
 		    enable_routing_api: true
-		  routing-api:
+		  routing_api:
 		    enabled: true
 		  uaa:
 		    ssl:
