@@ -1,25 +1,32 @@
-{
-  "addresses": <%= properties.acceptance_tests.addresses %>,
-  <% if p("acceptance_tests.bbs.require_ssl") %>
-  "bbs_api_url": "<%= "https://" + p("acceptance_tests.bbs.api_location") %>",
-  <% else %>
-  "bbs_api_url": "<%= "http://" + p("acceptance_tests.bbs.api_location") %>",
-  <% end %>
-  "bbs_require_ssl": <%= properties.acceptance_tests.bbs.require_ssl %>,
-  "bbs_client_cert": "/var/vcap/jobs/acceptance_tests/config/certs/bbs/client.crt",
-  "bbs_client_key": "/var/vcap/jobs/acceptance_tests/config/certs/bbs/client.key",
-  "bbs_ca_cert": "/var/vcap/jobs/acceptance_tests/config/certs/bbs/ca.crt",
-  "api": "<%= p("acceptance_tests.api") %>",
-  "apps_domain": "<%= p("acceptance_tests.apps_domain") %>",
-  "admin_user": "<%= p("acceptance_tests.admin_user") %>",
-  "admin_password": "<%= p("acceptance_tests.admin_password") %>",
-  "use_http": <%= p("acceptance_tests.use_http") %>,
-  "skip_ssl_validation": <%= p("acceptance_tests.skip_ssl_validation") %>,
-  "oauth": {
-    "token_endpoint": "https://uaa.service.cf.internal",
-    "client_name": "tcp_emitter",
-    "skip_oauth_tls_verification": <%= p("acceptance_tests.skip_oauth_tls_verification") %>,
-    "client_secret": "<%= p("acceptance_tests.tcp_emitter_secret") %>",
-    "port": <%= p("acceptance_tests.uaa_port") %>
+<%
+  require 'json'
+
+bbs_api_url = if p("acceptance_tests.bbs.require_ssl")
+                "https://" + p("acceptance_tests.bbs.api_location")
+              else
+                "http://" + p("acceptance_tests.bbs.api_location")
+              end
+config = {
+  addresses: p("acceptance_tests.addresses"),
+  bbs_api_url: bbs_api_url,
+  bbs_require_ssl: p("acceptance_tests.bbs.require_ssl"),
+  bbs_client_cert: "/var/vcap/jobs/acceptance_tests/config/certs/bbs/client.crt",
+  bbs_client_key: "/var/vcap/jobs/acceptance_tests/config/certs/bbs/client.key",
+  bbs_ca_cert: "/var/vcap/jobs/acceptance_tests/config/certs/bbs/ca.crt",
+  api: p("acceptance_tests.api"),
+  apps_domain: Array(p("acceptance_tests.apps_domain")).first,
+  admin_user: p("acceptance_tests.admin_user"),
+  admin_password: p("acceptance_tests.admin_password"),
+  use_http: p("acceptance_tests.use_http"),
+  skip_ssl_validation: p("acceptance_tests.skip_ssl_validation"),
+  oauth: {
+    token_endpoint: "https://uaa.service.cf.internal",
+    client_name: "tcp_emitter",
+    skip_oauth_tls_verification: p("acceptance_tests.skip_oauth_tls_verification"),
+    client_secret: p("acceptance_tests.tcp_emitter_secret"),
+    port: p("acceptance_tests.uaa_port")
   }
 }
+%>
+
+<%= JSON.pretty_generate(config) %>
