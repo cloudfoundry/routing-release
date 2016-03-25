@@ -79,10 +79,10 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
             ./scripts/generate-bosh-lite-manifest
             bosh -n deploy
 
-    * Or deploy from some other branch. The `release_candidate` branch can be considered "edge" as it has passed tests. The `update` script handles syncing submodules, among other things.
+    * Or deploy from some other branch. The `release-candidate` branch can be considered "edge" as it has passed tests. The `update` script handles syncing submodules, among other things.
 
             cd ~/workspace/cf-routing-release
-            git checkout release_candidate
+            git checkout release-candidate
             ./scripts/update
             bosh create release --force
             bosh -n upload release
