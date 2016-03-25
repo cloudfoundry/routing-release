@@ -183,7 +183,7 @@ bosh run errand router_acceptance_tests
 ```
 
 ### Manually 
-See the README for [Router Acceptance Tests](https://github.com/cloudfoundry-incubator/cf-routing-acceptance-tests)
+See the README for [Routing Acceptance Tests](https://github.com/cloudfoundry-incubator/cf-routing-acceptance-tests)
 
 ## Router API
 
