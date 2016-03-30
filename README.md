@@ -95,7 +95,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 
 1. Finally, update your cf-release deployment to enable support for the Routing API, included in this release.
 	
-	Open ~/workspace/cf-release/bosh-lite/stubs/property_overrides.yml in an editor an add the following properties under the root level `properties`.
+	If you don't already have one, create a file for overriding property of cf-release. In the context of manifest generation, we call this file a stub. The name of the file doesn't matter; you could call it `cf-boshlite-stub.yml`. Add the following to this file.
 
 		properties:
 		  router:
@@ -151,7 +151,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 	Then generate a new manifest for cf-release and re-deploy it.
 
 		cd ~/workspace/cf-release
-		./scripts/generate-bosh-lite-dev-manifest
+		./scripts/generate-bosh-lite-dev-manifest <path-to-your-stub>
 		bosh -n deploy
 
 ## Deploying for High Availabilty
