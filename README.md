@@ -95,7 +95,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 
 1. Finally, update your cf-release deployment to enable support for the Routing API, included in this release.
 	
-	If you don't already have one, create a file for overriding property of cf-release. In the context of manifest generation, we call this file a stub. The name of the file doesn't matter; you could call it `cf-boshlite-stub.yml`. Add the following to this file.
+	If you don't already have one, create a file for overriding manifest properties of cf-release. In the context of manifest generation, we call this file a stub; you could name it `cf-boshlite-stub.yml`. Add the following properties to this file. When you re-generate the manifest, these values will override the defaults in the manifest.
 
 		properties:
 		  router:
