@@ -1,0 +1,3 @@
+properties:
+  routing_api:
+    enabled: true
