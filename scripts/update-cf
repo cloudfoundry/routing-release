@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e
+
+scripts_path=./$(dirname $0)
+eval $($scripts_path/get_paths.sh)
+echo "WARNING!!: Script redpeloys cf-warden with routing-api enabled"
+
+root_dir=$(dirname $0)
+bosh_lite_dir=${root_dir}/../bosh-lite
+
+spiff merge ${CF_MANIFESTS_DIR}/cf.yml ${bosh_lite_dir}/stubs/cf/property_overrides.yml > ${CF_MANIFEST_DIR}/cf.yml
+bosh -n deployment ${CF_MANIFESTS_DIR}/cf.yml
+bosh -n deploy
