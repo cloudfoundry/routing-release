@@ -16,9 +16,9 @@ golang/go1.5.3.linux-amd64.tar.gz:
   sha: c5377eca4837968d043b681f00a852a262f0f5f6
   size: 80147269
 rtr/rtr-linux-amd64.tgz:
-  object_id: 03bb99ea-42a2-4197-abd2-f90fcd4de4a7
-  sha: d58a4cb646cc402ae131711b8ee692b18b0dc742
-  size: 8898560
+  object_id: 4a131d23-7f4f-4811-88cb-c6401171b11d
+  sha: 4d39d58a8dae9ed8505955e6811176af0fc86005
+  size: 2593243
 cf-cli/cf-linux-amd64.tgz:
   object_id: f4197c67-fff8-4762-94a8-8f5cf6413448
   sha: ad1782a564c5bf47270e1bfbe0fdd1298394a1d0
