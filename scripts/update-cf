@@ -4,7 +4,7 @@ set -e
 
 scripts_path=./$(dirname $0)
 eval $($scripts_path/get_paths.sh)
-echo "WARNING!!: Script redpeloys cf-warden with routing-api enabled"
+echo "WARNING!!: Script redeploys cf-warden with routing-api enabled"
 
 root_dir=$(dirname $0)
 bosh_lite_dir=${root_dir}/../bosh-lite
