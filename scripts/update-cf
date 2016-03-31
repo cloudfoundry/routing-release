@@ -2,13 +2,20 @@
 
 set -e
 
-scripts_path=./$(dirname $0)
-eval $($scripts_path/get_paths.sh)
+if [[ -z $1 ]]; then
+    echo "Must provide cf release manifest"
+    exit 1
+fi
+CF_MANIFEST=$1
+
 echo "WARNING!!: Script redeploys cf-warden with routing-api enabled"
 
 root_dir=$(dirname $0)
 bosh_lite_dir=${root_dir}/../bosh-lite
+deployment_dir=${bosh_lite_dir}/deployments
 
-spiff merge ${CF_MANIFESTS_DIR}/cf.yml ${bosh_lite_dir}/stubs/cf/property_overrides.yml > ${CF_MANIFEST_DIR}/cf.yml
-bosh -n deployment ${CF_MANIFESTS_DIR}/cf.yml
+mkdir -p $deployment_dir
+
+spiff merge ${CF_MANIFEST} ${bosh_lite_dir}/stubs/cf/property_overrides.yml > ${deployment_dir}/cf.yml
+bosh -n deployment ${deployment_dir}/cf.yml
 bosh -n deploy

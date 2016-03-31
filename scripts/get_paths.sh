@@ -8,7 +8,7 @@ scripts_path=$(absolute_path `dirname $0`)
 
 ROUTING_RELEASE_DIR=${ROUTING_RELEASE_DIR:-$(absolute_path $scripts_path/..)}
 DIEGO_RELEASE_DIR=${DIEGO_RELEASE_DIR:-$(absolute_path $ROUTING_RELEASE_DIR/../diego-release)}
-CF_RELEASE_DIR=${CF_RELEASE_DIR:-$(absolute_path $DIEGO_RELEASE_DIR/../cf-release)}
+CF_RELEASE_DIR=${CF_RELEASE_DIR:-$(absolute_path $ROUTING_RELEASE_DIR/../cf-release)}
 
 ROUTING_MANIFESTS_DIR=$ROUTING_RELEASE_DIR/bosh-lite/deployments
 CF_MANIFESTS_DIR=$CF_RELEASE_DIR/bosh-lite/deployments
