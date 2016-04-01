@@ -98,8 +98,6 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 	If you don't already have one, create a file for overriding manifest properties of cf-release. In the context of manifest generation, we call this file a stub; you could name it `cf-boshlite-stub.yml`. Add the following properties to this file. When you re-generate the manifest, these values will override the defaults in the manifest.
 
 		properties:
-		  router:
-		    enable_routing_api: true
 		  routing_api:
 		    enabled: true
 		  uaa:

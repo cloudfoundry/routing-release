@@ -1,5 +1,3 @@
 properties:
   routing_api:
     enabled: true
-  router:
-    enable_routing_api: true
