@@ -19,6 +19,7 @@ files:
   - github.com/cloudfoundry-incubator/locket/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/models/*.go # gosub
+  - github.com/cloudfoundry-incubator/routing-info/cfroutes/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-info/tcp_routes/*.go # gosub
   - github.com/cloudfoundry-incubator/tcp-emitter/cmd/tcp-emitter/*.go # gosub
   - github.com/cloudfoundry-incubator/tcp-emitter/cmd/tcp-emitter/testrunner/*.go # gosub
