@@ -23,7 +23,6 @@ files:
   - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/assets/diego-client/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/assets/tcp-droplet-receiver/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/assets/tcp-sample-receiver/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/assets/tcp-sample-receiver/testrunner/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/assets/tcp-sample-sender/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/helpers/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/helpers/assets/*.go # gosub
