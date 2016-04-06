@@ -12,7 +12,6 @@ files:
   - github.com/cloudfoundry-incubator/cf-lager/*.go # gosub
   - github.com/cloudfoundry-incubator/cf_http/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/*.go # gosub
-  - github.com/cloudfoundry-incubator/routing-api/authentication/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/cmd/routing-api/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/cmd/routing-api/testrunner/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/config/*.go # gosub
@@ -20,11 +19,13 @@ files:
   - github.com/cloudfoundry-incubator/routing-api/handlers/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/helpers/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/metrics/*.go # gosub
+  - github.com/cloudfoundry-incubator/routing-api/models/*.go # gosub
   - github.com/cloudfoundry-incubator/trace-logger/*.go # gosub
+  - github.com/cloudfoundry-incubator/uaa-go-client/*.go # gosub
+  - github.com/cloudfoundry-incubator/uaa-go-client/config/*.go # gosub
+  - github.com/cloudfoundry-incubator/uaa-go-client/schema/*.go # gosub
   - github.com/cloudfoundry/dropsonde/*.go # gosub
   - github.com/cloudfoundry/dropsonde/emitter/*.go # gosub
-  - github.com/cloudfoundry/dropsonde/envelope_sender/*.go # gosub
-  - github.com/cloudfoundry/dropsonde/envelopes/*.go # gosub
   - github.com/cloudfoundry/dropsonde/factories/*.go # gosub
   - github.com/cloudfoundry/dropsonde/instrumented_handler/*.go # gosub
   - github.com/cloudfoundry/dropsonde/instrumented_round_tripper/*.go # gosub
@@ -72,6 +73,7 @@ files:
   - github.com/onsi/gomega/matchers/support/goraph/node/*.go # gosub
   - github.com/onsi/gomega/matchers/support/goraph/util/*.go # gosub
   - github.com/onsi/gomega/types/*.go # gosub
+  - github.com/pivotal-golang/clock/*.go # gosub
   - github.com/pivotal-golang/lager/*.go # gosub
   - github.com/tedsuo/ifrit/*.go # gosub
   - github.com/tedsuo/ifrit/ginkgomon/*.go # gosub
@@ -79,4 +81,5 @@ files:
   - github.com/tedsuo/ifrit/http_server/*.go # gosub
   - github.com/tedsuo/ifrit/sigmon/*.go # gosub
   - github.com/tedsuo/rata/*.go # gosub
+  - github.com/ugorji/go/codec/*.go # gosub
   - github.com/vito/go-sse/sse/*.go # gosub
