@@ -98,17 +98,15 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 	If you don't already have one, create a file for overriding manifest properties of cf-release. In the context of manifest generation, we call this file a stub; you could name it `cf-boshlite-stub.yml`. Add the following properties to this file. When you re-generate the manifest, these values will override the defaults in the manifest.
 
 		properties:
+		  cc:
+		    default_to_diego_backend: true
 		  routing_api:
 		    enabled: true
 		  uaa:
 		    ssl:
 		      port: 8443
 
-	While you're at it, make your life easier by setting Diego as the default backend. TCP Routing is supported for applications on Diego only.
-	
-		properties:
-		  cc:
-		    default_to_diego_backend: true
+	Setting Diego as the default backend isn't strictly necessary, but is a timesaver as TCP Routing is supported for applications on Diego only.
 
 	Then generate a new manifest for cf-release and re-deploy it.
 
