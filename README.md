@@ -103,42 +103,6 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 		  uaa:
 		    ssl:
 		      port: 8443
-		    sslCertificate: |
-		      -----BEGIN CERTIFICATE-----
-		      MIIDAjCCAmugAwIBAgIJAJtrcBsKNfWDMA0GCSqGSIb3DQEBCwUAMIGZMQswCQYD
-		      VQQGEwJVUzETMBEGA1UECAwKQ2FsaWZvcm5pYTEWMBQGA1UEBwwNU2FuIEZyYW5j
-		      aXNjbzEQMA4GA1UECgwHUGl2b3RhbDERMA8GA1UECwwISWRlbnRpdHkxFjAUBgNV
-		      BAMMDU1hcmlzc2EgS29hbGExIDAeBgkqhkiG9w0BCQEWEW1rb2FsYUBwaXZvdGFs
-		      LmlvMB4XDTE1MDczMDE5Mzk0NVoXDTI1MDcyOTE5Mzk0NVowgZkxCzAJBgNVBAYT
-		      AlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRYwFAYDVQQHDA1TYW4gRnJhbmNpc2Nv
-		      MRAwDgYDVQQKDAdQaXZvdGFsMREwDwYDVQQLDAhJZGVudGl0eTEWMBQGA1UEAwwN
-		      TWFyaXNzYSBLb2FsYTEgMB4GCSqGSIb3DQEJARYRbWtvYWxhQHBpdm90YWwuaW8w
-		      gZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAPVOIGvG8MFbkqi+ytdBHVbEGde4
-		      jaCphmvGm89/4Ks0r+041VsS55XNYnHsxXTlh1FiB2KcbrDb33pgvuAIYpcAO2I0
-		      gqGeRoS2hNsxzcFdkgSZn1umDAeoE4bCATrquN93KMcw/coY5jacUfb9P2CQztkS
-		      e2o+QWtIaWYAvI3bAgMBAAGjUDBOMB0GA1UdDgQWBBTkEjA4CEjevAGfnPBciyXC
-		      3v4zMzAfBgNVHSMEGDAWgBTkEjA4CEjevAGfnPBciyXC3v4zMzAMBgNVHRMEBTAD
-		      AQH/MA0GCSqGSIb3DQEBCwUAA4GBAIEd8U32tkcvwG9qCOfe5raBENHM4ltTuhju
-		      zZWIM5Ik1bFf6+rA71HVDD1Z5fRozidhMOl6mrrGShfu6VUjtqzctJeSjaOPIJL+
-		      wvrXXcAkCYZ9QKf0sqlUWcIRy90nqrD5sL/rHAjNjxQ3lqIOj7yWOgty4LUzFQNr
-		      FHiyd3T6
-		      -----END CERTIFICATE-----
-		    sslPrivateKey: |
-		      -----BEGIN RSA PRIVATE KEY-----
-		      MIICXwIBAAKBgQD1TiBrxvDBW5KovsrXQR1WxBnXuI2gqYZrxpvPf+CrNK/tONVb
-		      EueVzWJx7MV05YdRYgdinG6w2996YL7gCGKXADtiNIKhnkaEtoTbMc3BXZIEmZ9b
-		      pgwHqBOGwgE66rjfdyjHMP3KGOY2nFH2/T9gkM7ZEntqPkFrSGlmALyN2wIDAQAB
-		      AoGBAPBvfz+kYt5iz0EuoMqTPBqLY3kZn1fWUbbZmGatxJyKq9UsW5NE2FDwWomn
-		      tXJ6d0PBfdOd2LDpEgZ1RSF5lobXn2m2+YeEso7A7yMiBRW8CIrkUn8wVA0s42t+
-		      osElfvj73G2ZjCqQm6BLCjtFYnalmZIzfOCB26xRWaf0MJ7hAkEA/XaqnosJfmRp
-		      kmvto81LEvjVVlSvpo+6rt66ykywEv9daHWZZBrrwVz3Iu4oXlwPuF8bcO8JMLRf
-		      OH98T1+1PQJBAPfCj0r3fRhmBZMWqf2/tbeQPvIQzqSXfYroFgnKIKxVCV8Bkm3q
-		      1rP4c0XDHEWYIwvMWBTOmVSZqfSxtwIicPcCQQDCcRqK7damo5lpvmpb0s3ZDBN9
-		      WxI1EOYB6NQbBaG9sTGTRUQbS5u4hv0ASvulB7L3md6PUJEYUAcMbKCMs7txAkEA
-		      7C8pwHJba0XebJB/bqkxxpKYntPM2fScNi32zFBGg2HxNANgnq3vDNN8t/U+X02f
-		      oyCimvs0CgUOknhTmJJSkwJBAPaI298JxTnWncC3Zu7d5QYCJXjU403Aj4LdcVeI
-		      6A15MzQdj5Hm82vlmpC4LzXofLjiN4E5ZLluzEw+1TjRE7c=
-		      -----END RSA PRIVATE KEY-----
 
 	While you're at it, make your life easier by setting Diego as the default backend. TCP Routing is supported for applications on Diego only.
 	
