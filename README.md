@@ -81,7 +81,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 	
 	Though not strictly required, we recommend configuring Diego as your default backend, as TCP Routing is only supported for Diego.
 	
-	Then generate a new manifest for cf-release and re-deploy it.
+	Then generate a new manifest for cf-release and deploy it.
 
 		cd ~/workspace/cf-release
 		./scripts/generate-bosh-lite-dev-manifest <path-to-your-stub>
