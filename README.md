@@ -77,7 +77,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 		    ssl:
 		      port: 8443
 
-	`uaa.ssl.port` is a prerequisite, as the manifest for cf-routing-release will be generated so that the routing components use this port. SSL certificates for UAA are included for you when creating a manifest for BOSH Lite. 
+	`uaa.ssl.port` is a prerequisite, as the manifest for cf-routing-release will be generated so that the routing components use the same port. SSL certificates for UAA are included for you when creating a manifest for BOSH Lite. 
 	
 	Though not strictly required, we recommend configuring Diego as your default backend, as TCP Routing is only supported for Diego.
 	
