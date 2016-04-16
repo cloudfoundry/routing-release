@@ -66,7 +66,28 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 
 1. Install spiff, a tool for generating BOSH manifests. spiff is required for running the scripts in later steps. Stable binaries can be downloaded from [Spiff Releases](https://github.com/cloudfoundry-incubator/spiff/releases).
 
-1. Deploy [cf-release](https://github.com/cloudfoundry/cf-release) and [diego-release](https://github.com/cloudfoundry-incubator/diego-release). Instructions can be found on those repo's READMEs.
+1. Deploy [cf-release](https://github.com/cloudfoundry/cf-release) with the following modifications to the BOSH deployment manifest. 
+  
+	If you don't already have one, create a file for overriding manifest properties of cf-release. In the context of manifest generation, we call this file a stub; you could name it `cf-boshlite-stub.yml`. Add the following properties to this file. When you re-generate the manifest, these values will override the defaults in the manifest.
+
+		properties:
+		  cc:
+		    default_to_diego_backend: true
+		  uaa:
+		    ssl:
+		      port: 8443
+
+	`uaa.ssl.port` is a prerequisite, as the manifest for cf-routing-release will be generated so that the routing components use this port. SSL certificates for UAA are included for you when creating a manifest for BOSH Lite. 
+	
+	Though not strictly required, we recommend configuring Diego as your default backend, as TCP Routing is only supported for Diego.
+	
+	Then generate a new manifest for cf-release and re-deploy it.
+
+		cd ~/workspace/cf-release
+		./scripts/generate-bosh-lite-dev-manifest <path-to-your-stub>
+		bosh -n deploy
+
+1. Deploy [diego-release](https://github.com/cloudfoundry-incubator/diego-release)
 
 1. Clone this repo and sync submodules; see [Get the code](#get-the-code).
 
@@ -93,20 +114,11 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 
         ./scripts/generate-bosh-lite-manifest <cf_deployment_manifest> <diego_deployment_manifest>
 
-1. Finally, update your cf-release deployment to enable support for the Routing API, included in this release.
+1. Finally, update your cf-release deployment by adding the following property to the stub you created above.
 	
-	If you don't already have one, create a file for overriding manifest properties of cf-release. In the context of manifest generation, we call this file a stub; you could name it `cf-boshlite-stub.yml`. Add the following properties to this file. When you re-generate the manifest, these values will override the defaults in the manifest.
-
 		properties:
-		  cc:
-		    default_to_diego_backend: true
 		  routing_api:
 		    enabled: true
-		  uaa:
-		    ssl:
-		      port: 8443
-
-	Setting Diego as the default backend isn't strictly necessary, but is a timesaver as TCP Routing is supported for applications on Diego only.
 
 	Then generate a new manifest for cf-release and re-deploy it.
 
