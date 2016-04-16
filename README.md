@@ -110,7 +110,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
             ./scripts/generate-bosh-lite-manifest
             bosh -n deploy
 
-	The `generate-bosh-lite-manifest` script expects `cf.yml` to be present in `~/workspace/cf-release/bosh-lite/deployments` and `diego.yml` to be present in `~/workspace/diego-release/bosh-lite/deployments`. This assumes the analagous generate-manifest scripts have been run for those releases. If cf and diego manifests are in a different location then you may specify them as arguments:
+	The `generate-bosh-lite-manifest` script expects the cf-release and diego-release manifests to be at `~/workspace/cf-release/bosh-lite/deployments/cf.yml` and `~/workspace/diego-release/bosh-lite/deployments/diego.yml`; the BOSH Lite manifest generation scripts for those releases will put them there by default. If cf and diego manifests are in a different location then you may specify them as arguments:
 
         ./scripts/generate-bosh-lite-manifest <cf_deployment_manifest> <diego_deployment_manifest>
 
