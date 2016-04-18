@@ -56,4 +56,8 @@ properties:
     default: consul.service.cf.internal
 
   routing-api.router_groups:
-    description: "Array of router groups that will be seeded into routing-api database upon first startup. Changes to router_groups after they have been seeded will not take affect"
+    description: "Array of router groups that will be seeded into routing_api database. Once some value is included with a deploy, subsequent changes to this property will be ignored. TCP Routing requires a router group of type: tcp."
+    example: |
+      - name: default-tcp
+        reservable_ports: 1024-10000,12000
+        type: tcp
