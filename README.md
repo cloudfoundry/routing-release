@@ -112,7 +112,24 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 		./scripts/generate-bosh-lite-dev-manifest <path-to-your-stub>
 		bosh -n deploy
 
-## Deploying for High Availabilty
+## Deploying for Production
+
+BOSH Lite is a single VM environment intended for development. When deploying this release alongside Cloud Foundry in a distributed configuration, where jobs run on their own VMs, consider the following.
+
+### UAA SSL must be enabled before deploying this release
+
+The BOSH Lite manifest generation scripts use templates that have enabled the following properties by default. When generating a manifest for any other environment, you'll need to update your cf-release deployment with these manifest properties before deploying this release.
+
+		properties:
+		  uaa:
+		    ssl:
+		      port: <choose a port for UAA to listen to SSL on; e.g. 8443> 
+		    sslCertificate: |
+		      <insert certificate>
+		    sslPrivateKey: | 
+		      <insert private key>
+
+### Horizontal Scalability
 
 The TCP Router, TCP Emitter, and Routing API are stateless and horizontally scalable. Routing API depends on a clustered etcd data store. For high availability, deploy multiple instances of each job, distributed across regions of your infrastructure. 
 
