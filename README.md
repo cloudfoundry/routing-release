@@ -114,7 +114,7 @@ BOSH Lite is a single VM environment intended for development. When deploying th
 
 ### UAA SSL must be enabled before deploying this release
 
-The BOSH Lite manifest generation scripts use templates that have enabled the following properties by default. When generating a manifest for any other environment, you'll need to update your cf-release deployment with these manifest properties before deploying this release.
+The BOSH Lite manifest generation scripts use templates that have enabled the following properties by default. When generating a manifest for any other environment, you'll need to update your cf-release deployment with these manifest properties before generating the manifest for this release. This release's manifest generation scripts pull the value of `uaa.ssl.port` from the cf-release manifest.
 
 		properties:
 		  uaa:
