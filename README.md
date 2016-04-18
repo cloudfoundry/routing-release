@@ -54,7 +54,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 
         ./scripts/run-unit-tests
 
-## Deploying cf-routing-release to BOSH-Lite 
+## Deploying to BOSH-Lite 
 
 1. Install and start [BOSH Lite](https://github.com/cloudfoundry/bosh-lite). Instructions can be found on that repo's README.
 
