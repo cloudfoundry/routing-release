@@ -12,7 +12,9 @@ unzip -o ${tmpdir}/consul-0.6.3.zip -d ./${bin_dir}
 rm ${tmpdir}/consul-0.6.3.zip
 
 pushd src/github.com/coreos/etcd
+  git checkout v2.1.1
   go install .
+  git checkout -
 popd
 
 export PATH=$PATH:$PWD/bin
