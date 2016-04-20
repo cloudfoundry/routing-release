@@ -24,7 +24,12 @@ files:
   - github.com/cloudfoundry-incubator/tcp-emitter/cmd/tcp-emitter/*.go # gosub
   - github.com/cloudfoundry-incubator/tcp-emitter/cmd/tcp-emitter/testrunner/*.go # gosub
   - github.com/cloudfoundry-incubator/tcp-emitter/config/*.go # gosub
+  - github.com/cloudfoundry-incubator/tcp-emitter/emitter/*.go # gosub
   - github.com/cloudfoundry-incubator/tcp-emitter/routing_table/*.go # gosub
+  - github.com/cloudfoundry-incubator/tcp-emitter/routing_table/schema/*.go # gosub
+  - github.com/cloudfoundry-incubator/tcp-emitter/routing_table/schema/endpoint/*.go # gosub
+  - github.com/cloudfoundry-incubator/tcp-emitter/routing_table/schema/event/*.go # gosub
+  - github.com/cloudfoundry-incubator/tcp-emitter/routing_table/util/*.go # gosub
   - github.com/cloudfoundry-incubator/tcp-emitter/syncer/*.go # gosub
   - github.com/cloudfoundry-incubator/tcp-emitter/watcher/*.go # gosub
   - github.com/cloudfoundry-incubator/trace-logger/*.go # gosub

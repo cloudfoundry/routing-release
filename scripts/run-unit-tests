@@ -6,6 +6,18 @@ bin_dir=$(dirname $0)/../bin
 
 tmpdir=$(mktemp -d /tmp/cf-routing-downloads.XXXX)
 
+run_go_vet() {
+  for component in "$@"
+  do
+    pushd $component
+      for file in $(find . -name "*.go" -not -iname "*test.go")
+        do
+          go tool vet -v -all -shadow=true $file
+        done
+    popd
+  done
+}
+
 if uname -a | grep Darwin; then os=darwin; else os=linux; fi
 curl -L -o ${tmpdir}/consul-0.6.3.zip "https://releases.hashicorp.com/consul/0.6.3/consul_0.6.3_${os}_amd64.zip"
 unzip -o ${tmpdir}/consul-0.6.3.zip -d ./${bin_dir}
@@ -23,6 +35,8 @@ if [ -n "$PACKAGE" ]; then
   ginkgo -r -p "$@" "./src/${PACKAGE}"
 else
   pushd src/github.com/cloudfoundry-incubator/
+    run_go_vet tcp-emitter
+
     ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress \
       uaa-go-client routing-api routing-api-cli cf-tcp-router tcp-emitter "$@"
   popd
