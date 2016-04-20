@@ -13,7 +13,7 @@ Run the individual component unit tests as you work on them using
 
 Commits to this repo (including Pull Requests) should be made on the Develop branch.
 
-##<a name="get-the-code"></a> Get the code
+### Get the code
 
 1. Fetch release repo
 
@@ -43,8 +43,8 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
     ```
     ./scripts/update
     ```
-    
-## Running Unit Tests
+
+### Running Unit Tests
 
 1. Install ginkgo
 
