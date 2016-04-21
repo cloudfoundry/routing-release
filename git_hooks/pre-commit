@@ -1,0 +1,3 @@
+#!/bin/sh -e
+
+./scripts/sync-package-specs
