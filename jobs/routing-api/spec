@@ -40,6 +40,9 @@ properties:
     default: false
   routing-api.uaa_ssl_port:
     description: "Secure Port on which UAA is running."
+  routing-api.log_level:
+    description: "Log level"
+    default: "info"
 
   metron_endpoint.host:
     description: "The host used to emit messages to the Metron agent."

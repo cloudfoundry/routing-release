@@ -266,6 +266,7 @@ properties:
   routing-api:
     port: (( property_overrides.routing-api.port || 3000 ))
     auth_disabled: (( property_overrides.routing-api.auth_disabled || false ))
+    log_level: (( property_overrides.routing-api.log_level || nil ))
     system_domain: (( config_from_cf.system_domain ))
     etcd_machines: (( config_from_cf.etcd.machines ))
     uaa_ssl_port: (( config_from_cf.uaa.ssl.port ))
