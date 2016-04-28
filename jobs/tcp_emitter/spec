@@ -77,6 +77,14 @@ properties:
   router.tcp_emitter.uaa_ssl_port:
     description: "Secure Port on which UAA is running."
 
+  router.tcp_emitter.sync_interval:
+    description: "Interval to sync with BBS to get latest route information."
+    default: "60s"
+
+  router.tcp_emitter.route_ttl:
+    description: "TTL for tcp route"
+    default: "120s"
+
   dns_health_check_host:
     description: "Host to ping for confirmation of DNS resolution"
     default: consul.service.cf.internal

@@ -272,6 +272,7 @@ properties:
     uaa_ssl_port: (( config_from_cf.uaa.ssl.port ))
     skip_oauth_tls_verification: (( property_overrides.routing-api.skip_oauth_tls_verification || nil ))
     router_groups: (( property_overrides.routing-api.router_groups || meta.default_router_groups))
+    max_ttl: (( property_overrides.routing-api.max_ttl || nil ))
   router:
     router_configurer:
       debug_addr: (( property_overrides.router_configurer.debug_addr ))
@@ -299,6 +300,8 @@ properties:
       skip_oauth_tls_verification: (( property_overrides.tcp_emitter.skip_oauth_tls_verification || nil ))
       tcp_emitter_secret: (( config_from_cf.uaa.clients.tcp_emitter.secret ))
       lock_ttl: (( property_overrides.tcp_emitter.lock_ttl || nil ))
+      sync_interval: (( property_overrides.tcp_emitter.sync_interval || nil ))
+      route_ttl: (( property_overrides.tcp_emitter.route_ttl || nil ))
       lock_retry_interval: (( property_overrides.tcp_emitter.lock_retry_interval || nil ))
       session_name: (( property_overrides.tcp_emitter.session_name || nil ))
       routing_api_auth_disabled: (( properties.routing-api.auth_disabled ))

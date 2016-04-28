@@ -13,6 +13,7 @@ files:
   - github.com/cloudfoundry-incubator/cf_http/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/cmd/routing-api/*.go # gosub
+  - github.com/cloudfoundry-incubator/routing-api/cmd/routing-api/test_helpers/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/cmd/routing-api/testrunner/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/config/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/db/*.go # gosub

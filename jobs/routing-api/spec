@@ -12,7 +12,7 @@ packages:
 properties:
   routing-api.max_ttl:
     description: "The maximum ttl"
-    default: 60
+    default: "120s"
   routing-api.port:
     description: "The port to run the routing api on"
     default: 3000
