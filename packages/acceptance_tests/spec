@@ -32,6 +32,7 @@ files:
   - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/tcp_routing/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-routing-test-helpers/helpers/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-routing-test-helpers/schema/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-tcp-router/models/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router/testutil/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-test-helpers/cf/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-test-helpers/generator/*.go # gosub
