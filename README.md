@@ -105,6 +105,12 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 		cd ~/workspace/cf-release
 		./scripts/generate-bosh-lite-dev-manifest <path-to-your-stub>
 		bosh -n deploy
+
+    Note: After enabling the routing api and when using the CF CLI, if you receive this error:
+      `FAILED This command requires the Routing API. Your targeted endpoint reports it is not enabled`.
+      This is due to the CF CLI's `~/.cf/config.json` having an old cached `RoutingEndpoint` value.
+      To fix this, just do a cf login again and this error should go away.
+
 - Create a shared domain for the TCP router group; see [Testing the TCP Routing manually](#testing-tcp-routing-manually)
 
 
