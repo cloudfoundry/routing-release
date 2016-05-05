@@ -35,6 +35,9 @@ case $1 in
     mkdir -p $RUN_DIR
     mkdir -p $LOG_DIR
 
+    chown -R vcap:vcap $RUN_DIR
+    chown -R vcap:vcap $LOG_DIR
+
     echo $$ > /var/vcap/sys/run/tcp_emitter/tcp_emitter.pid
 
     exec chpst -u vcap:vcap /var/vcap/packages/tcp_emitter/bin/tcp-emitter ${bbs_sec_flags} \
@@ -47,7 +50,7 @@ case $1 in
       -logLevel=<%= p("router.tcp_emitter.log_level") %> \
       -config=$CONF_DIR/tcp_emitter.yml \
       2>> $LOG_DIR/tcp_emitter.stderr.log \
-      1> >(tee -a $LOG_DIR/tcp_emitter.stdout.log | logger -t vcap.tcp_emitter)
+      1> >(chpst -u vcap:vcap tee -a $LOG_DIR/tcp_emitter.stdout.log | chpst -u vcap:vcap logger -t vcap.tcp_emitter)
 
     ;;
 

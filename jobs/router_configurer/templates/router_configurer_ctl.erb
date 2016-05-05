@@ -23,6 +23,9 @@ case $1 in
     mkdir -p $RUN_DIR
     mkdir -p $LOG_DIR
 
+    chown -R vcap:vcap $RUN_DIR
+    chown -R vcap:vcap $LOG_DIR
+
     echo $$ > /var/vcap/sys/run/router_configurer/router_configurer.pid
 
     exec chpst -u vcap:vcap /var/vcap/packages/router_configurer/bin/router-configurer \
@@ -34,7 +37,7 @@ case $1 in
       -tcpLoadBalancerStatsUnixSocket=<%= p("router.router_configurer.tcp_stats_unix_socket") %> \
       -statsCollectionInterval=<%= p("router.router_configurer.tcp_stats_collection_interval") %> \
       2>> $LOG_DIR/router_configurer.stderr.log \
-      1> >(tee -a $LOG_DIR/router_configurer.stdout.log | logger -t vcap.router_configurer)
+      1> >(chpst -u vcap:vcap tee -a $LOG_DIR/router_configurer.stdout.log | chpst -u vcap:vcap logger -t vcap.router_configurer)
 
     ;;
 
