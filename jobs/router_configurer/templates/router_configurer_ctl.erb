@@ -25,7 +25,7 @@ case $1 in
 
     echo $$ > /var/vcap/sys/run/router_configurer/router_configurer.pid
 
-    exec /var/vcap/packages/router_configurer/bin/router-configurer \
+    exec chpst -u vcap:vcap /var/vcap/packages/router_configurer/bin/router-configurer \
       -debugAddr=<%= p("router.router_configurer.debug_addr") %> \
       -logLevel=<%= p("router.router_configurer.log_level") %> \
       -tcpLoadBalancerConfig=<%= p("router.router_configurer.tcp_config_file") %> \

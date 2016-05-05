@@ -44,6 +44,7 @@ start_haproxy() {
     else
         RETVAL=0
         ensure_dirs
+        chown -R "${USER}":"${USER}" "$(dirname "${CONFIG}")"
         echo "$("${TIMESTAMP}"): Starting HAProxy"
         set +e
         "${DAEMON}" -f "${CONFIG}" -D -p "${PID_FILE}" 0<&-
