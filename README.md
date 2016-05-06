@@ -56,6 +56,8 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 
 ## Deploying to BOSH-Lite 
 
+### Prerequisites
+
 1. Install and start [BOSH Lite](https://github.com/cloudfoundry/bosh-lite). Instructions can be found on that repo's README.
 - Upload the latest Warden Trusty Go-Agent stemcell to BOSH Lite. You can download it first if you prefer.
 
@@ -63,8 +65,10 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 	bosh upload stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent
 	```
 - Install spiff, a tool for generating BOSH manifests. spiff is required for running the scripts in later steps. Stable binaries can be downloaded from [Spiff Releases](https://github.com/cloudfoundry-incubator/spiff/releases).
-- Deploy [cf-release](https://github.com/cloudfoundry/cf-release) and [diego-release](https://github.com/cloudfoundry-incubator/diego-release)
-- Clone this repo and sync submodules; see [Get the code](#get-the-code).
+- Deploy [cf-release](https://github.com/cloudfoundry/cf-release) and [diego-release](https://github.com/cloudfoundry-incubator/diego-release). Note: for IAAS other than BOSH Lite, cf-release must be configured so that UAA terminates SSL; see [Deploying to Other IAAS](#deploying-to-other-iaas). 
+
+### Upload Release, Generate Manifest, and Deploy
+1. Clone this repo and sync submodules; see [Get the code](#get-the-code).
 - Upload cf-routing-release to BOSH and generate a deployment manifest
 
     * Deploy the latest final release (master branch)
@@ -87,31 +91,64 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 	The `generate-bosh-lite-manifest` script expects the cf-release and diego-release manifests to be at `~/workspace/cf-release/bosh-lite/deployments/cf.yml` and `~/workspace/diego-release/bosh-lite/deployments/diego.yml`; the BOSH Lite manifest generation scripts for those releases will put them there by default. If cf and diego manifests are in a different location then you may specify them as arguments:
 
         ./scripts/generate-bosh-lite-manifest <cf_deployment_manifest> <diego_deployment_manifest>
-- Finally, update your cf-release deployment to enable the Routing API included in this release.
+        
+  Note: for IAAS other than BOSH Lite, consider whether the reservable port range should be modified; see [Deploying to Other IAAS](#deploying-to-other-iaas).
 
-	If you don't already have one, create a file for overriding manifest properties of cf-release. In the context of manifest generation, we call this file a stub; you could name it `cf-boshlite-stub.yml`. Add the following properties to this file. When you re-generate the manifest, these values will override the defaults in the manifest.
+### Redeploy cf-release to Enable the Routing API
 
-		properties:
-		  cc:
-		    default_to_diego_backend: true
-		  routing_api:
-		    enabled: true
+Finally, update your cf-release deployment to enable the Routing API included in this release.
 
+1. If you don't already have one, create a file for overriding manifest properties of cf-release. In the context of manifest generation, we call this file a stub; you could name it `cf-boshlite-stub.yml`. Add the following properties to this file. When you re-generate the manifest, these values will override the defaults in the manifest.
 
+	```
+	properties:
+	  cc:
+	    default_to_diego_backend: true
+	  routing_api:
+	    enabled: true
+	```
 	Though not strictly required, we recommend configuring Diego as your default backend, as TCP Routing is only supported for Diego.
-
-	Then generate a new manifest for cf-release and re-deploy it.
+- Then generate a new manifest for cf-release and re-deploy it.
 
 		cd ~/workspace/cf-release
 		./scripts/generate-bosh-lite-dev-manifest <path-to-your-stub>
 		bosh -n deploy
 
-    Note: After enabling the routing api and when using the CF CLI, if you receive this error:
-      `FAILED This command requires the Routing API. Your targeted endpoint reports it is not enabled`.
-      This is due to the CF CLI's `~/.cf/config.json` having an old cached `RoutingEndpoint` value.
-      To fix this, just do a cf login again and this error should go away.
+### Post Deploy Configuration
 
-- Create a shared domain for the TCP router group; see [Testing the TCP Routing manually](#testing-tcp-routing-manually)
+Now that the release is deployed, you need to create a Shared Domain in CF and associate it with the TCP router group deployed with this release. The CLI commands below require version 6.17 of the [cf CLI](https://github.com/cloudfoundry/cli).
+
+1. As admin, list available router-groups
+
+	```
+	$ cf router-groups
+	Getting router groups as admin ...
+	
+	name          type
+	default-tcp   tcp
+	```
+- As admin, create a shared-domain for the TCP router group
+
+	```
+	$ cf create-shared-domain tcp.bosh-lite.com --router-group default-tcp
+	Creating shared domain tcp.bosh-lite.com as admin...
+	OK
+	```
+
+Note: If you receive this error: `FAILED This command requires the Routing API. Your targeted endpoint reports it is not enabled`. This is due to the CF CLI's `~/.cf/config.json` having an old cached `RoutingEndpoint` value. To fix this, just do a cf login again and this error should go away.
+
+### Create a TCP Route
+	
+1. Now you can create TCP Routes. The simplest way to verify this is by pushing your app. By specifying the TCP domain and including the `--random-route` option, a TCP route will be created with a reserved port and the route mapped to your app.
+
+	`$ cf p myapp -d tcp.bosh-lite.com --random-route`
+- Send a request to your app using the TCP shared domain and the port reserved for your route.
+
+	```
+	$ curl tcp.bosh-lite.com:60073
+	OK!
+	```
+
 
 
 ## Deploying to other IAAS
@@ -144,6 +181,32 @@ To simulate this health check manually on BOSH-lite:
   nc -z 10.244.14.2 80
   ```
 
+### Configuring Port Ranges and DNS 
+1. Configure your load balancer to forward a range of ports to the IPs of the TCP Router instances. By default, this release assumes the range 1024-65535 will be forwarded. 
+- If your load balancer is not configured to forward ports 1024-65535, you must configure this release with the available port range using deployment manifest property `routing-api.router_groups.reservable_ports`
+- Configure DNS to resolve a domain name to the load balancer.  
+- After deploying this release you must configure the DNS name in CF as a Shared Domain as an admin user, associating it with the Router Group. 
+  ```
+  Getting router groups as admin ...
+
+  name          type
+  default-tcp   tcp
+
+  $ cf create-shared-domain tcp.cfapps.example.com --router-group default-tcp
+  ```
+
+#### Capacity Limits for Ports and TCP Routes
+One port is dedicated for each TCP route in CF; in other words, TCP routes may not share ports. 
+
+A Router Group represents a horizontally scalable cluster of identically configured routers. A router group is limited to maximum port range 1024-65535. Currently this release supports one router group, so the maximum number of TCP routes than can be created in CF is 64511 (65535-1024). Eventually we may support multiple router groups and/or TCP routes that share a port.
+
+#### Using Multiple Load Balancers to Maximize Port Capacity
+Operators may not be able to offer 65535 ports on a given load balancer. The load balancer may support other systems in addition to Cloud Foundry. AWS ELBs can be configured to listen on a maximum of 100 ports. 
+
+Multiple load balancers may be used to contribute to the pool of ports available for creating TCP routes. E.g. LB1 listens on ports 1024-29999, LB2 listens on ports 30000-65535, both load balancers forward requests for these ports to the instances of the router group. Configure `routing-api.router_groups.reservable_ports` manifest property with the combined port range. Ports must not overlap.
+
+You must configure a DNS name to resolve to each load balancer you use for TCP routing. E.g. `tcp1.cfapps.example.com` resolves to LB1, `tcp2.cfapps.example.com` resolves to LB2. Each domain name must be added as a Shared Domain to CF, for developers to create routes from.
+
 ## Running Acceptance tests
 
 ### Using a BOSH errand on BOSH-Lite
@@ -161,36 +224,6 @@ bosh run errand router_acceptance_tests
 
 ### Manually 
 See the README for [Routing Acceptance Tests](https://github.com/cloudfoundry-incubator/cf-routing-acceptance-tests)
-
-## Testing TCP Routing manually
-
-These instructions assume the release has been deployed to bosh-lite, along with cf-release and diego-release. See [Deploying cf-routing-release to a local BOSH-Lite instance](#deploying-tcp-router-to-a-local-bosh-lite-instance) above. The CLI commands below require version 6.17 of the [cf CLI](https://github.com/cloudfoundry/cli).
-
-1. As admin, list available router-groups
-
-	```
-	$ cf router-groups
-	Getting router groups as admin ...
-	
-	name          type
-	default-tcp   tcp
-	```
-- As admin, create a shared-domain for the TCP router group
-
-	```
-	$ cf create-shared-domain tcp.bosh-lite.com --router-group default-tcp
-	Creating shared domain tcp.bosh-lite.com as admin...
-	OK
-	```
-- Push your app, specifying the TCP domain and `--random-route`. A TCP port will be reserved for you.
-
-	`$ cf p myapp -d tcp.bosh-lite.com --random-route`
-- Send a request to your app using the TCP shared domain and the port reserved for your route.
-
-	```
-	$ curl tcp.bosh-lite.com:60073
-	OK!
-	```
 
 ## Routing API
 
