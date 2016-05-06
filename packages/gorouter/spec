@@ -1,0 +1,9 @@
+---
+name: gorouter
+dependencies:
+- golang1.5
+files:
+- routing-release/src/github.com/cloudfoundry/gorouter/**/*.{go,golden,proto,c,h,}
+- routing-release/src/github.com/cloudfoundry/gorouter/**/Makefile
+- routing-release/src/github.com/cloudfoundry/gorouter/LICENSE
+- routing-release/src/github.com/cloudfoundry/gorouter/NOTICE

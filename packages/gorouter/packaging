@@ -1,0 +1,16 @@
+set -e -x
+
+export GOROOT=$(readlink -nf /var/vcap/packages/golang1.5)
+export PATH=$GOROOT/bin:$PATH
+
+mkdir -p ${BOSH_INSTALL_TARGET}/src
+
+ls -a ./routing-release/src
+
+cp -a ./routing-release/src/* ${BOSH_INSTALL_TARGET}/src
+
+ls $BOSH_INSTALL_TARGET/src
+
+export GOPATH=${BOSH_INSTALL_TARGET}/src/github.com/cloudfoundry/gorouter/Godeps/_workspace:${BOSH_INSTALL_TARGET}
+
+go install github.com/cloudfoundry/gorouter
