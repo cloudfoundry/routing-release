@@ -116,9 +116,11 @@ Finally, update your cf-release deployment to enable the Routing API included in
 
 ### Post Deploy Configuration
 
-Now that the release is deployed, you need to create a Shared Domain in CF and associate it with the TCP router group deployed with this release. The CLI commands below require version 6.17 of the [cf CLI](https://github.com/cloudfoundry/cli).
+Now that the release is deployed, you need to create a Shared Domain in CF and associate it with the TCP router group deployed with this release. You'll also need to update a quota to allow creation of TCP Routes.
 
-1. As admin, list available router-groups
+The CLI commands below require version 6.17 of the [cf CLI](https://github.com/cloudfoundry/cli), and must be run as admin.
+
+1. List available router-groups
 
 	```
 	$ cf router-groups
@@ -127,19 +129,32 @@ Now that the release is deployed, you need to create a Shared Domain in CF and a
 	name          type
 	default-tcp   tcp
 	```
-- As admin, create a shared-domain for the TCP router group
+- Create a shared-domain for the TCP router group
 
 	```
 	$ cf create-shared-domain tcp.bosh-lite.com --router-group default-tcp
 	Creating shared domain tcp.bosh-lite.com as admin...
 	OK
 	```
+- Update the default quota to allow creation of unlimited TCP Routes
 
+	Get the guid of the default org quota
+	```
+	$ cf curl /v2/quota_definitions?q=name:default
+	```
+	Update this quota definition to set `"total_reserved_route_ports": -1`
+	```
+	$ cf curl /v2/quota_definitions/44dff27d-96a2-44ed-8904-fb5ca8cbb298 -X PUT -d '{"total_reserved_route_ports": -1}'
+	```
+	
+	
 Note: If you receive this error: `FAILED This command requires the Routing API. Your targeted endpoint reports it is not enabled`. This is due to the CF CLI's `~/.cf/config.json` having an old cached `RoutingEndpoint` value. To fix this, just do a cf login again and this error should go away.
 
 ### Create a TCP Route
-	
-1. Now you can create TCP Routes. The simplest way to verify this is by pushing your app. By specifying the TCP domain and including the `--random-route` option, a TCP route will be created with a reserved port and the route mapped to your app.
+
+The CLI commands below require version 6.17 of the [cf CLI](https://github.com/cloudfoundry/cli), and can be run as a user with the SpaceDeveloper role.
+
+1. The simplest way to test TCP Routing is by pushing your app. By specifying the TCP domain and including the `--random-route` option, a TCP route will be created with a reserved port and the route mapped to your app.
 
 	`$ cf p myapp -d tcp.bosh-lite.com --random-route`
 - Send a request to your app using the TCP shared domain and the port reserved for your route.
