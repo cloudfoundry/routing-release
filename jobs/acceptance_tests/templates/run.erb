@@ -22,7 +22,7 @@ cd /var/vcap/packages/acceptance_tests/src/github.com/cloudfoundry-incubator/cf-
 EXITSTATUS=0
 nodes=<%= properties.acceptance_tests.nodes %>
 verbose=<%= properties.acceptance_tests.verbose ? "-v" : "" %>
-bin/test -randomizeAllSpecs $verbose -skipPackage=$packagesToSkip -nodes=$nodes -keepGoing || EXITSTATUS=$?
+bin/test -randomizeAllSpecs $verbose -skipPackage=$packagesToSkip -nodes=$nodes -keepGoing router || EXITSTATUS=$?
 
 echo "Acceptance Tests Complete; exit status: $EXITSTATUS"
 
