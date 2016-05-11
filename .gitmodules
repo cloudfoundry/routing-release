@@ -127,3 +127,12 @@
 [submodule "src/github.com/rcrowley/go-metrics"]
 	path = src/github.com/rcrowley/go-metrics
 	url = https://github.com/rcrowley/go-metrics
+[submodule "src/golang.org/x/crypto"]
+	path = src/golang.org/x/crypto
+	url = https://github.com/golang/crypto
+[submodule "src/github.com/nats-io/gnatsd"]
+	path = src/github.com/nats-io/gnatsd
+	url = https://github.com/nats-io/gnatsd
+[submodule "src/github.com/nats-io/nuid"]
+	path = src/github.com/nats-io/nuid
+	url = https://github.com/nats-io/nuid
