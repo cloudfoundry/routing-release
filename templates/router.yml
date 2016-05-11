@@ -221,7 +221,7 @@ jobs:
             routing-api: {}
       metron_agent:
         zone: z3
-  - name: router_acceptance_tests
+  - name: routing_acceptance_tests
     templates: (( base_job_templates.acceptance_tests_errand ))
     lifecycle: errand
     instances: (( instance_count_overrides.small_errand.instances || 1 ))
@@ -321,12 +321,6 @@ properties:
     uaa_port: (( config_from_cf.uaa.ssl.port ))
     tcp_emitter_secret: (( config_from_cf.uaa.clients.tcp_emitter.secret ))
     skip_oauth_tls_verification: (( property_overrides.routing-api.skip_oauth_tls_verification || nil ))
-    bbs:
-      api_location: (( "bbs.service.cf.internal:8889" ))
-      ca_cert: (( config_from_diego.bbs.ca_cert ))
-      require_ssl: (( config_from_diego.bbs.require_ssl || nil ))
-      client_cert: (( property_overrides.bbs.client_cert ))
-      client_key: (( property_overrides.bbs.client_key ))
 
 base_job_templates:
   routing_api:

@@ -4,9 +4,6 @@ name: acceptance_tests
 templates:
   run.erb: bin/run
   config.json.erb: bin/config.json
-  bbs_ca.crt.erb: config/certs/bbs/ca.crt
-  bbs_client.crt.erb: config/certs/bbs/client.crt
-  bbs_client.key.erb: config/certs/bbs/client.key
 
 packages:
  - golang1.5
@@ -48,23 +45,6 @@ properties:
   acceptance_tests.use_http:
     default: false
     description: Flag for using HTTP when making api and application requests rather than the default HTTPS
-
-  acceptance_tests.bbs.api_location:
-    description: "Diego BBS Server endpoint url"
-    default: "https://bbs.service.cf.internal:8889"
-
-  acceptance_tests.bbs.ca_cert:
-    description: "PEM-encoded CA certificate"
-
-  acceptance_tests.bbs.client_cert:
-    description: "PEM-encoded client certificate"
-
-  acceptance_tests.bbs.client_key:
-    description: "PEM-encoded client key"
-
-  acceptance_tests.bbs.require_ssl:
-    description: "enable ssl for all communication with the bbs"
-    default: true
 
   acceptance_tests.tcp_emitter_secret:
     description: "Password for UAA client for the tcp emitter."

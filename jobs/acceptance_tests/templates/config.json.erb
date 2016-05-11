@@ -1,18 +1,8 @@
 <%
   require 'json'
 
-bbs_api_url = if p("acceptance_tests.bbs.require_ssl")
-                "https://" + p("acceptance_tests.bbs.api_location")
-              else
-                "http://" + p("acceptance_tests.bbs.api_location")
-              end
 config = {
   addresses: p("acceptance_tests.addresses"),
-  bbs_api_url: bbs_api_url,
-  bbs_require_ssl: p("acceptance_tests.bbs.require_ssl"),
-  bbs_client_cert: "/var/vcap/jobs/acceptance_tests/config/certs/bbs/client.crt",
-  bbs_client_key: "/var/vcap/jobs/acceptance_tests/config/certs/bbs/client.key",
-  bbs_ca_cert: "/var/vcap/jobs/acceptance_tests/config/certs/bbs/ca.crt",
   api: p("acceptance_tests.api"),
   apps_domain: Array(p("acceptance_tests.apps_domain")).first,
   admin_user: p("acceptance_tests.admin_user"),

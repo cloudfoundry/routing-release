@@ -11,9 +11,3 @@ cp -a . ${GOPATH}/src
 cd ${GOPATH}/src/github.com/cloudfoundry-incubator/cf-routing-acceptance-tests
 
 go install github.com/onsi/ginkgo/ginkgo
-
-go test -c ./router
-
-# clean up artifacts
-rm *.test
-rm -rf ${GOPATH}/pkg
