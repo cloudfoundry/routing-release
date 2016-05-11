@@ -35,6 +35,7 @@ function sync_package() {
 sync_package router_configurer              -app  github.com/cloudfoundry-incubator/cf-tcp-router/cmd/... &
 sync_package tcp_emitter                    -app  github.com/cloudfoundry-incubator/tcp-emitter/cmd/... &
 sync_package routing-api                    -app  github.com/cloudfoundry-incubator/routing-api/cmd/... &
+sync_package gorouter                       -app  github.com/cloudfoundry/gorouter/... &
 sync_package acceptance_tests \
   -test github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/... \
   -app github.com/onsi/ginkgo/ginkgo &
