@@ -118,3 +118,12 @@
 [submodule "src/github.com/cloudfoundry/gorouter"]
 	path = src/github.com/cloudfoundry/gorouter
 	url = https://github.com/cloudfoundry/gorouter
+[submodule "src/github.com/nats-io/nats"]
+	path = src/github.com/nats-io/nats
+	url = https://github.com/nats-io/nats
+[submodule "src/github.com/pivotal-golang/localip"]
+	path = src/github.com/pivotal-golang/localip
+	url = https://github.com/pivotal-golang/localip
+[submodule "src/github.com/rcrowley/go-metrics"]
+	path = src/github.com/rcrowley/go-metrics
+	url = https://github.com/rcrowley/go-metrics

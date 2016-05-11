@@ -41,4 +41,10 @@ else
     # Run go vet after ginkgo so that all necessary packages are compiled
     run_go_vet tcp-emitter
   popd
+  pushd src/github.com/cloudfoundry
+    ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress \
+      gorouter "$@"
+
+    #run_go_vet gorouter
+  popd
 fi
