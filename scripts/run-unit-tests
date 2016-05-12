@@ -42,7 +42,7 @@ else
     run_go_vet tcp-emitter
   popd
   pushd src/github.com/cloudfoundry/gorouter
-    ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress \
+    ginkgo -r -keepGoing -trace -randomizeAllSpecs -progress \
       "$@"
 
     go tool vet -v -all -shadow=true main.go
