@@ -26,6 +26,8 @@ case $1 in
     chown -R vcap:vcap $RUN_DIR
     chown -R vcap:vcap $LOG_DIR
 
+    tee_output_to_sys_log "${LOG_DIR}"
+
     echo $$ > /var/vcap/sys/run/router_configurer/router_configurer.pid
 
     exec chpst -u vcap:vcap /var/vcap/packages/router_configurer/bin/router-configurer \
@@ -35,9 +37,7 @@ case $1 in
       -tcpLoadBalancerBaseConfig=<%= p("router.router_configurer.tcp_config_file_template") %> \
       -config=$CONF_DIR/router_configurer.yml \
       -tcpLoadBalancerStatsUnixSocket=<%= p("router.router_configurer.tcp_stats_unix_socket") %> \
-      -statsCollectionInterval=<%= p("router.router_configurer.tcp_stats_collection_interval") %> \
-      2>> $LOG_DIR/router_configurer.stderr.log \
-      1> >(chpst -u vcap:vcap tee -a $LOG_DIR/router_configurer.stdout.log | chpst -u vcap:vcap logger -t vcap.router_configurer)
+      -statsCollectionInterval=<%= p("router.router_configurer.tcp_stats_collection_interval") %>
 
     ;;
 
