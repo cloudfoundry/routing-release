@@ -14,7 +14,7 @@ templates:
   key.pem.erb: config/key.pem
 
 packages:
-  - common
+  - routing_utils
   - gorouter
 
 properties:

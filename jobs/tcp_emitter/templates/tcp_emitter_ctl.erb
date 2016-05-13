@@ -5,7 +5,7 @@ LOG_DIR=/var/vcap/sys/log/tcp_emitter
 CONF_DIR=/var/vcap/jobs/tcp_emitter/config
 PIDFILE=$RUN_DIR/tcp_emitter.pid
 
-source /var/vcap/packages/pid_utils/pid_utils.sh
+source /var/vcap/packages/routing_utils/pid_utils.sh
 
 <% if p("router.tcp_emitter.bbs.require_ssl") %>
   bbs_sec_flags=" \
@@ -18,6 +18,7 @@ source /var/vcap/packages/pid_utils/pid_utils.sh
   bbs_sec_flags=""
   bbs_api_url="<%= "http://" + p("router.tcp_emitter.bbs.api_location") %>"
 <% end %>
+
 
 case $1 in
 
@@ -38,6 +39,8 @@ case $1 in
     chown -R vcap:vcap $RUN_DIR
     chown -R vcap:vcap $LOG_DIR
 
+    tee_output_to_sys_log "${LOG_DIR}"
+
     echo $$ > /var/vcap/sys/run/tcp_emitter/tcp_emitter.pid
 
     exec chpst -u vcap:vcap /var/vcap/packages/tcp_emitter/bin/tcp-emitter ${bbs_sec_flags} \
@@ -48,9 +51,7 @@ case $1 in
       -bbsAddress=${bbs_api_url} \
       -debugAddr=<%= p("router.tcp_emitter.debug_addr") %> \
       -logLevel=<%= p("router.tcp_emitter.log_level") %> \
-      -config=$CONF_DIR/tcp_emitter.yml \
-      2>> $LOG_DIR/tcp_emitter.stderr.log \
-      1> >(chpst -u vcap:vcap tee -a $LOG_DIR/tcp_emitter.stdout.log | chpst -u vcap:vcap logger -t vcap.tcp_emitter)
+      -config=$CONF_DIR/tcp_emitter.yml
 
     ;;
 

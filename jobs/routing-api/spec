@@ -7,7 +7,7 @@ templates:
 
 packages:
 - routing-api
-- common
+- routing_utils
 
 properties:
   routing-api.max_ttl:

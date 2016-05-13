@@ -6,7 +6,7 @@ templates:
   router_configurer.yml.erb: config/router_configurer.yml
 
 packages:
-  - pid_utils
+  - routing_utils
   - router_configurer
 
 properties:

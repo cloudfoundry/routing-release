@@ -4,7 +4,7 @@ RUN_DIR=/var/vcap/sys/run/gorouter
 LOG_DIR=/var/vcap/sys/log/gorouter
 PIDFILE=$RUN_DIR/gorouter.pid
 
-source /var/vcap/packages/common/utils.sh
+source /var/vcap/packages/routing_utils/pid_utils.sh
 
 case $1 in
 

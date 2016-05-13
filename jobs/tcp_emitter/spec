@@ -9,7 +9,7 @@ templates:
   tcp_emitter.yml.erb: config/tcp_emitter.yml
 
 packages:
-  - pid_utils
+  - routing_utils
   - tcp_emitter
   - router_configurer
 

@@ -4,7 +4,7 @@ RUN_DIR=/var/vcap/sys/run/routing-api
 LOG_DIR=/var/vcap/sys/log/routing-api
 PIDFILE=$RUN_DIR/routing-api.pid
 
-source /var/vcap/packages/common/utils.sh
+source /var/vcap/packages/routing_utils/pid_utils.sh
 
 <%
   def discover_external_ip
