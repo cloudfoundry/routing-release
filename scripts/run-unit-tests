@@ -42,6 +42,10 @@ else
     run_go_vet tcp-emitter
   popd
   pushd src/github.com/cloudfoundry/gorouter
+
+  # install gnatsd
+    go get -v github.com/nats-io/gnatsd
+
     ginkgo -r -p -keepGoing -trace -randomizeAllSpecs -progress \
       "$@"
 
