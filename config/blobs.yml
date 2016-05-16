@@ -1,8 +1,4 @@
 ---
-golang/go1.4.3.linux-amd64.tar.gz:
-  object_id: f91bea2e-2a34-4b95-859a-ac540981257d
-  sha: 332b64236d30a8805fc8dd8b3a269915b4c507fe
-  size: 61210288
 haproxy/haproxy-1.5.12.tar.gz:
   object_id: 59097996-16c1-4f42-9188-0d59cbfbc139
   sha: c488f7f108ddefb558bd86e7cbc1b71636ada856
