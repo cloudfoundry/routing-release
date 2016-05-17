@@ -2,4 +2,4 @@
 name: routing_utils
 
 files:
-  - routing_utils/pid_utils.sh
+  - routing-release/src/routing_utils/pid_utils.sh
