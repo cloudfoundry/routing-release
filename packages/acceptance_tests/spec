@@ -6,20 +6,15 @@ dependencies:
   - rtr
 
 files:
-  - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/bin/*
-  - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/assets/tcp-droplet-receiver/*
-  - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/assets/tcp-droplet-receiver/Godeps/*/*
-  - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/assets/tcp-sample-receiver/Dockerfile
-  - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/assets/tcp-sample-receiver/Godeps/*/*
-  - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/assets/tcp-sample-receiver/Dockerfile
+  - github.com/cloudfoundry-incubator/routing-acceptance-tests/bin/*
+  - github.com/cloudfoundry-incubator/routing-acceptance-tests/assets/tcp-droplet-receiver/*
+  - github.com/cloudfoundry-incubator/routing-acceptance-tests/assets/tcp-droplet-receiver/Godeps/*/*
+  - github.com/cloudfoundry-incubator/routing-acceptance-tests/assets/tcp-sample-receiver/Dockerfile
+  - github.com/cloudfoundry-incubator/routing-acceptance-tests/assets/tcp-sample-receiver/Godeps/*/*
+  - github.com/cloudfoundry-incubator/routing-acceptance-tests/assets/tcp-sample-receiver/Dockerfile
   - github.com/bmizerany/pat/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/assets/tcp-droplet-receiver/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/assets/tcp-sample-receiver/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/assets/tcp-sample-receiver/testrunner/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/helpers/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/helpers/assets/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/routing_api/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-routing-acceptance-tests/tcp_routing/*.go # gosub
+  - github.com/cloudfoundry-incubator/routing-acceptance-tests/helpers/*.go # gosub
+  - github.com/cloudfoundry-incubator/routing-acceptance-tests/helpers/assets/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-routing-test-helpers/helpers/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-routing-test-helpers/schema/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-test-helpers/cf/*.go # gosub
@@ -27,6 +22,13 @@ files:
   - github.com/cloudfoundry-incubator/cf-test-helpers/helpers/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-test-helpers/runner/*.go # gosub
   - github.com/cloudfoundry-incubator/cf_http/*.go # gosub
+  - github.com/cloudfoundry-incubator/routing-acceptance-tests/assets/tcp-droplet-receiver/*.go # gosub
+  - github.com/cloudfoundry-incubator/routing-acceptance-tests/assets/tcp-sample-receiver/*.go # gosub
+  - github.com/cloudfoundry-incubator/routing-acceptance-tests/assets/tcp-sample-receiver/testrunner/*.go # gosub
+  - github.com/cloudfoundry-incubator/routing-acceptance-tests/helpers/*.go # gosub
+  - github.com/cloudfoundry-incubator/routing-acceptance-tests/helpers/assets/*.go # gosub
+  - github.com/cloudfoundry-incubator/routing-acceptance-tests/routing_api/*.go # gosub
+  - github.com/cloudfoundry-incubator/routing-acceptance-tests/tcp_routing/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/models/*.go # gosub
   - github.com/cloudfoundry-incubator/trace-logger/*.go # gosub
