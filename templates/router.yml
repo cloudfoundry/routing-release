@@ -1,4 +1,4 @@
-name: routing
+name: (( config_from_cf.cf_deployment_name "-routing" ))
 
 releases:
 - name: routing
