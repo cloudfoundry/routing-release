@@ -10,5 +10,5 @@ eval $($scripts_path/get_paths.sh)
 bosh --parallel 10 sync blobs
 bosh create release --force
 bosh -t 192.168.50.4 -n upload release
-bosh -t 192.168.50.4 -d $ROUTING_MANIFESTS_DIR/cf-routing-manifest.yml -n deploy
+bosh -t 192.168.50.4 -d $ROUTING_MANIFESTS_DIR/routing-manifest.yml -n deploy
 bosh -n cleanup
