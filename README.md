@@ -20,8 +20,8 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
     ```
     mkdir -p ~/workspace
     cd ~/workspace
-    git clone https://github.com/cloudfoundry-incubator/cf-routing-release.git
-    cd cf-routing-release/
+    git clone https://github.com/cloudfoundry-incubator/routing-release.git
+    cd routing-release/
     ```
 
     
@@ -69,18 +69,18 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 
 ### Upload Release, Generate Manifest, and Deploy
 1. Clone this repo and sync submodules; see [Get the code](#get-the-code).
-- Upload cf-routing-release to BOSH and generate a deployment manifest
+- Upload routing-release to BOSH and generate a deployment manifest
 
     * Deploy the latest final release (master branch)
 
-            cd ~/workspace/cf-routing-release
+            cd ~/workspace/routing-release
             bosh -n upload release releases/cf-routing-<lastest_version>.yml
             ./scripts/generate-bosh-lite-manifest
             bosh -n deploy
 
     * Or deploy from some other branch. The `release-candidate` branch can be considered "edge" as it has passed tests. The `update` script handles syncing submodules, among other things.
 
-            cd ~/workspace/cf-routing-release
+            cd ~/workspace/routing-release
             git checkout release-candidate
             ./scripts/update
             bosh create release --force
@@ -229,7 +229,7 @@ You must configure a DNS name to resolve to each load balancer you use for TCP r
 Before running the acceptance tests errand, make sure to have the following setup.
 
 1. bosh is targeted to your local bosh-lite
-1. cf-routing-release [deployed](#deploying-tcp-router-to-a-local-bosh-lite-instance) on bosh-lite 
+1. routing-release [deployed](#deploying-tcp-router-to-a-local-bosh-lite-instance) on bosh-lite
 
 Run the following commands to execute the acceptance tests as an errand on bosh-lite
 
