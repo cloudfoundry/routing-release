@@ -42,6 +42,6 @@ bosh_lite_dir=${root_dir}/../bosh-lite
 
 mkdir -p ${bosh_lite_dir}/deployments
 
-${root_dir}/generate-manifest ${bosh_lite_dir}/stubs ${cf_manifest_file} ${diego_manifest_file} > ${bosh_lite_dir}/deployments/cf-routing-manifest.yml
+${root_dir}/generate-manifest ${bosh_lite_dir}/stubs ${cf_manifest_file} ${diego_manifest_file} > ${bosh_lite_dir}/deployments/routing-manifest.yml
 
-bosh deployment ${bosh_lite_dir}/deployments/cf-routing-manifest.yml
+bosh deployment ${bosh_lite_dir}/deployments/routing-manifest.yml

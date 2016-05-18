@@ -1,5 +1,5 @@
 ---
-final_name: cf-routing
+final_name: routing
 blobstore:
   provider: s3
   options:

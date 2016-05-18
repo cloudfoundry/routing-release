@@ -1,7 +1,7 @@
-name: (( config_from_cf.cf_deployment_name "-routing" ))
+name: routing
 
 releases:
-- name: cf-routing
+- name: routing
   version: latest
 - name: cf
   version: latest
@@ -327,27 +327,27 @@ base_job_templates:
     - name: consul_agent
       release: cf
     - name: routing-api
-      release: cf-routing
+      release: routing
     - name: metron_agent
       release: cf
   tcp_router:
     - name: consul_agent
       release: cf
     - name: haproxy
-      release: cf-routing
+      release: routing
     - name: router_configurer
-      release: cf-routing
+      release: routing
     - name: metron_agent
       release: cf
   tcp_emitter:
     - name: consul_agent
       release: cf
     - name: tcp_emitter
-      release: cf-routing
+      release: routing
     - name: metron_agent
       release: cf
   acceptance_tests_errand:
     - name: acceptance_tests
-      release: cf-routing
+      release: routing
     - name: consul_agent
       release: cf
