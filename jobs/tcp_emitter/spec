@@ -24,7 +24,7 @@ properties:
 
   router.tcp_emitter.bbs.api_location:
     description: "Diego BBS Server endpoint url"
-    default: "http://bbs.service.cf.internal:8889"
+    default: "bbs.service.cf.internal:8889"
 
   router.tcp_emitter.bbs.ca_cert:
     description: "PEM-encoded CA certificate"
