@@ -3,119 +3,121 @@ name: gorouter
 dependencies:
 - golang1.5
 files:
-- routing-release/src/github.com/cloudfoundry/gorouter/**/*.{go,golden,proto,c,h,}
-- routing-release/src/github.com/cloudfoundry/gorouter/LICENSE
-- routing-release/src/github.com/cloudfoundry/gorouter/NOTICE
-- routing-release/src/github.com/bmizerany/pat/*.go # gosub
-- routing-release/src/github.com/cloudfoundry-incubator/candiedyaml/*.go # gosub
-- routing-release/src/github.com/cloudfoundry-incubator/cf-debug-server/*.go # gosub
-- routing-release/src/github.com/cloudfoundry-incubator/cf-lager/*.go # gosub
-- routing-release/src/github.com/cloudfoundry-incubator/cf_http/*.go # gosub
-- routing-release/src/github.com/cloudfoundry-incubator/routing-api/*.go # gosub
-- routing-release/src/github.com/cloudfoundry-incubator/routing-api/models/*.go # gosub
-- routing-release/src/github.com/cloudfoundry-incubator/trace-logger/*.go # gosub
-- routing-release/src/github.com/cloudfoundry-incubator/uaa-go-client/*.go # gosub
-- routing-release/src/github.com/cloudfoundry-incubator/uaa-go-client/config/*.go # gosub
-- routing-release/src/github.com/cloudfoundry-incubator/uaa-go-client/schema/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/dropsonde/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/dropsonde/emitter/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/dropsonde/envelope_sender/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/dropsonde/envelopes/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/dropsonde/factories/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/dropsonde/instrumented_handler/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/dropsonde/instrumented_round_tripper/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/dropsonde/log_sender/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/dropsonde/logs/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/dropsonde/metric_sender/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/dropsonde/metricbatcher/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/dropsonde/metrics/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/dropsonde/runtime_stats/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/access_log/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/access_log/fakes/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/access_log/schema/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/common/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/common/health/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/common/http/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/common/schema/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/common/secure/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/common/secure/fakes/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/common/spec/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/config/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/metrics/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/metrics/reporter/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/metrics/reporter/fakes/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/proxy/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/proxy/handler/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/proxy/round_tripper/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/proxy/round_tripper/fakes/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/proxy/test_helpers/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/proxy/utils/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/proxy/utils/fakes/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/registry/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/registry/container/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/registry/fakes/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/route/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/route/fakes/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/route_fetcher/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/route_service/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/route_service/header/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/router/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/stats/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/stats/container/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/test/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/test/common/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/test_util/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/test_util/rss/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/test_util/rss/commands/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/test_util/rss/common/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gorouter/varz/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gosteno/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/gosteno/syslog/*.go # gosub
-- routing-release/src/github.com/cloudfoundry/sonde-go/events/*.go # gosub
-- routing-release/src/github.com/codegangsta/cli/*.go # gosub
-- routing-release/src/github.com/dgrijalva/jwt-go/*.go # gosub
-- routing-release/src/github.com/gogo/protobuf/proto/*.go # gosub
-- routing-release/src/github.com/nats-io/nats/*.go # gosub
-- routing-release/src/github.com/nats-io/nats/encoders/builtin/*.go # gosub
-- routing-release/src/github.com/nats-io/nuid/*.go # gosub
-- routing-release/src/github.com/nu7hatch/gouuid/*.go # gosub
-- routing-release/src/github.com/onsi/ginkgo/*.go # gosub
-- routing-release/src/github.com/onsi/ginkgo/config/*.go # gosub
-- routing-release/src/github.com/onsi/ginkgo/internal/codelocation/*.go # gosub
-- routing-release/src/github.com/onsi/ginkgo/internal/containernode/*.go # gosub
-- routing-release/src/github.com/onsi/ginkgo/internal/failer/*.go # gosub
-- routing-release/src/github.com/onsi/ginkgo/internal/leafnodes/*.go # gosub
-- routing-release/src/github.com/onsi/ginkgo/internal/remote/*.go # gosub
-- routing-release/src/github.com/onsi/ginkgo/internal/spec/*.go # gosub
-- routing-release/src/github.com/onsi/ginkgo/internal/specrunner/*.go # gosub
-- routing-release/src/github.com/onsi/ginkgo/internal/suite/*.go # gosub
-- routing-release/src/github.com/onsi/ginkgo/internal/testingtproxy/*.go # gosub
-- routing-release/src/github.com/onsi/ginkgo/internal/writer/*.go # gosub
-- routing-release/src/github.com/onsi/ginkgo/reporters/*.go # gosub
-- routing-release/src/github.com/onsi/ginkgo/reporters/stenographer/*.go # gosub
-- routing-release/src/github.com/onsi/ginkgo/types/*.go # gosub
-- routing-release/src/github.com/onsi/gomega/*.go # gosub
-- routing-release/src/github.com/onsi/gomega/format/*.go # gosub
-- routing-release/src/github.com/onsi/gomega/gbytes/*.go # gosub
-- routing-release/src/github.com/onsi/gomega/gexec/*.go # gosub
-- routing-release/src/github.com/onsi/gomega/internal/assertion/*.go # gosub
-- routing-release/src/github.com/onsi/gomega/internal/asyncassertion/*.go # gosub
-- routing-release/src/github.com/onsi/gomega/internal/testingtsupport/*.go # gosub
-- routing-release/src/github.com/onsi/gomega/matchers/*.go # gosub
-- routing-release/src/github.com/onsi/gomega/matchers/support/goraph/bipartitegraph/*.go # gosub
-- routing-release/src/github.com/onsi/gomega/matchers/support/goraph/edge/*.go # gosub
-- routing-release/src/github.com/onsi/gomega/matchers/support/goraph/node/*.go # gosub
-- routing-release/src/github.com/onsi/gomega/matchers/support/goraph/util/*.go # gosub
-- routing-release/src/github.com/onsi/gomega/types/*.go # gosub
-- routing-release/src/github.com/pivotal-golang/clock/*.go # gosub
-- routing-release/src/github.com/pivotal-golang/lager/*.go # gosub
-- routing-release/src/github.com/pivotal-golang/localip/*.go # gosub
-- routing-release/src/github.com/rcrowley/go-metrics/*.go # gosub
-- routing-release/src/github.com/tedsuo/ifrit/*.go # gosub
-- routing-release/src/github.com/tedsuo/ifrit/grouper/*.go # gosub
-- routing-release/src/github.com/tedsuo/ifrit/http_server/*.go # gosub
-- routing-release/src/github.com/tedsuo/ifrit/sigmon/*.go # gosub
-- routing-release/src/github.com/tedsuo/rata/*.go # gosub
-- routing-release/src/github.com/vito/go-sse/sse/*.go # gosub
-- routing-release/src/golang.org/x/crypto/pbkdf2/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/**/*.{go,golden,proto,c,h,}
+  - routing-release/src/github.com/cloudfoundry/gorouter/LICENSE
+  - routing-release/src/github.com/cloudfoundry/gorouter/NOTICE
+  - routing-release/src/github.com/bmizerany/pat/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry-incubator/candiedyaml/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry-incubator/cf-debug-server/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry-incubator/cf-lager/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry-incubator/cf_http/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry-incubator/routing-api/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry-incubator/routing-api/models/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry-incubator/trace-logger/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry-incubator/uaa-go-client/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry-incubator/uaa-go-client/config/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry-incubator/uaa-go-client/schema/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/dropsonde/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/dropsonde/emitter/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/dropsonde/envelope_sender/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/dropsonde/envelopes/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/dropsonde/factories/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/dropsonde/instrumented_handler/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/dropsonde/instrumented_round_tripper/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/dropsonde/log_sender/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/dropsonde/logs/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/dropsonde/metric_sender/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/dropsonde/metricbatcher/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/dropsonde/metrics/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/dropsonde/runtime_stats/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/access_log/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/access_log/fakes/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/access_log/schema/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/common/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/common/health/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/common/http/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/common/schema/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/common/secure/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/common/secure/fakes/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/common/spec/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/config/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/metrics/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/metrics/reporter/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/metrics/reporter/fakes/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/proxy/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/proxy/handler/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/proxy/round_tripper/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/proxy/round_tripper/fakes/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/proxy/test_helpers/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/proxy/utils/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/proxy/utils/fakes/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/registry/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/registry/container/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/registry/fakes/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/route/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/route/fakes/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/route_fetcher/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/route_service/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/route_service/header/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/router/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/stats/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/stats/container/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/test/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/test/common/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/test_util/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/test_util/rss/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/test_util/rss/commands/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/test_util/rss/common/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/varz/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gosteno/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gosteno/syslog/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/sonde-go/events/*.go # gosub
+  - routing-release/src/github.com/codegangsta/cli/*.go # gosub
+  - routing-release/src/github.com/dgrijalva/jwt-go/*.go # gosub
+  - routing-release/src/github.com/gogo/protobuf/gogoproto/*.go # gosub
+  - routing-release/src/github.com/gogo/protobuf/proto/*.go # gosub
+  - routing-release/src/github.com/gogo/protobuf/protoc-gen-gogo/descriptor/*.go # gosub
+  - routing-release/src/github.com/nats-io/nats/*.go # gosub
+  - routing-release/src/github.com/nats-io/nats/encoders/builtin/*.go # gosub
+  - routing-release/src/github.com/nats-io/nuid/*.go # gosub
+  - routing-release/src/github.com/nu7hatch/gouuid/*.go # gosub
+  - routing-release/src/github.com/onsi/ginkgo/*.go # gosub
+  - routing-release/src/github.com/onsi/ginkgo/config/*.go # gosub
+  - routing-release/src/github.com/onsi/ginkgo/internal/codelocation/*.go # gosub
+  - routing-release/src/github.com/onsi/ginkgo/internal/containernode/*.go # gosub
+  - routing-release/src/github.com/onsi/ginkgo/internal/failer/*.go # gosub
+  - routing-release/src/github.com/onsi/ginkgo/internal/leafnodes/*.go # gosub
+  - routing-release/src/github.com/onsi/ginkgo/internal/remote/*.go # gosub
+  - routing-release/src/github.com/onsi/ginkgo/internal/spec/*.go # gosub
+  - routing-release/src/github.com/onsi/ginkgo/internal/specrunner/*.go # gosub
+  - routing-release/src/github.com/onsi/ginkgo/internal/suite/*.go # gosub
+  - routing-release/src/github.com/onsi/ginkgo/internal/testingtproxy/*.go # gosub
+  - routing-release/src/github.com/onsi/ginkgo/internal/writer/*.go # gosub
+  - routing-release/src/github.com/onsi/ginkgo/reporters/*.go # gosub
+  - routing-release/src/github.com/onsi/ginkgo/reporters/stenographer/*.go # gosub
+  - routing-release/src/github.com/onsi/ginkgo/types/*.go # gosub
+  - routing-release/src/github.com/onsi/gomega/*.go # gosub
+  - routing-release/src/github.com/onsi/gomega/format/*.go # gosub
+  - routing-release/src/github.com/onsi/gomega/gbytes/*.go # gosub
+  - routing-release/src/github.com/onsi/gomega/gexec/*.go # gosub
+  - routing-release/src/github.com/onsi/gomega/internal/assertion/*.go # gosub
+  - routing-release/src/github.com/onsi/gomega/internal/asyncassertion/*.go # gosub
+  - routing-release/src/github.com/onsi/gomega/internal/testingtsupport/*.go # gosub
+  - routing-release/src/github.com/onsi/gomega/matchers/*.go # gosub
+  - routing-release/src/github.com/onsi/gomega/matchers/support/goraph/bipartitegraph/*.go # gosub
+  - routing-release/src/github.com/onsi/gomega/matchers/support/goraph/edge/*.go # gosub
+  - routing-release/src/github.com/onsi/gomega/matchers/support/goraph/node/*.go # gosub
+  - routing-release/src/github.com/onsi/gomega/matchers/support/goraph/util/*.go # gosub
+  - routing-release/src/github.com/onsi/gomega/types/*.go # gosub
+  - routing-release/src/github.com/pivotal-golang/clock/*.go # gosub
+  - routing-release/src/github.com/pivotal-golang/lager/*.go # gosub
+  - routing-release/src/github.com/pivotal-golang/localip/*.go # gosub
+  - routing-release/src/github.com/rcrowley/go-metrics/*.go # gosub
+  - routing-release/src/github.com/tedsuo/ifrit/*.go # gosub
+  - routing-release/src/github.com/tedsuo/ifrit/grouper/*.go # gosub
+  - routing-release/src/github.com/tedsuo/ifrit/http_server/*.go # gosub
+  - routing-release/src/github.com/tedsuo/ifrit/sigmon/*.go # gosub
+  - routing-release/src/github.com/tedsuo/rata/*.go # gosub
+  - routing-release/src/github.com/vito/go-sse/sse/*.go # gosub
+  - routing-release/src/golang.org/x/crypto/pbkdf2/*.go # gosub

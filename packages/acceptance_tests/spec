@@ -13,8 +13,6 @@ files:
   - github.com/cloudfoundry-incubator/routing-acceptance-tests/assets/tcp-sample-receiver/Godeps/*/*
   - github.com/cloudfoundry-incubator/routing-acceptance-tests/assets/tcp-sample-receiver/Dockerfile
   - github.com/bmizerany/pat/*.go # gosub
-  - github.com/cloudfoundry-incubator/routing-acceptance-tests/helpers/*.go # gosub
-  - github.com/cloudfoundry-incubator/routing-acceptance-tests/helpers/assets/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-routing-test-helpers/helpers/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-routing-test-helpers/schema/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-test-helpers/cf/*.go # gosub
