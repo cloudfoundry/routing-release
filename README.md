@@ -1,8 +1,6 @@
 # Cloud Foundry Routing [BOSH release]
 
-This repo is a [BOSH](https://github.com/cloudfoundry/bosh) release for deploying TCP Router and associated tasks.
-
-The TCP Router adds non-HTTP routing capabilities to Cloud Foundry.
+This repo is a [BOSH release](https://github.com/cloudfoundry/bosh) that delivers HTTP and TCP routing for Cloud Foundry. 
 
 ## Developer Workflow
 
