@@ -5,7 +5,7 @@ global
     group vcap
     maxconn 64000
     spread-checks 4
-    stats socket /var/vcap/jobs/haproxy/config/haproxy.sock mode 600 level operator
+    stats socket /var/vcap/jobs/haproxy/config/haproxy.sock user vcap mode 600 level operator
 
 defaults
     log global
