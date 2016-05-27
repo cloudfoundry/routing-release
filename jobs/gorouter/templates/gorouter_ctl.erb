@@ -71,6 +71,8 @@ case $1 in
       set -e
     <% end %>
 
+    export GODEBUG=netdns=cgo
+
     exec chpst -u vcap:vcap /var/vcap/packages/gorouter/bin/gorouter \
          -c /var/vcap/jobs/gorouter/config/gorouter.yml
 
