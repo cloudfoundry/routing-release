@@ -1,13 +1,13 @@
 oauth:
   token_endpoint: uaa.service.cf.internal
   client_name: "tcp_router"
-  client_secret: <%= p("router.router_configurer.tcp_router_secret") %>
-  port: <%= p("router.router_configurer.uaa_ssl_port") %>
-  skip_oauth_tls_verification: <%= p("router.router_configurer.skip_oauth_tls_verification") %>
+  client_secret: <%= p("router_configurer.oauth_secret") %>
+  port: <%= p("uaa.tls_port") %>
+  skip_oauth_tls_verification: <%= p("skip_ssl_validation") %>
 
 routing_api:
   uri: http://routing-api.service.cf.internal
-  port: <%= p("router.router_configurer.routing_api_port") %>
-  auth_disabled: <%= p("router.router_configurer.routing_api_auth_disabled") %>
+  port: 3000
+  auth_disabled: <%= p("routing_api.auth_disabled") %>
 
 

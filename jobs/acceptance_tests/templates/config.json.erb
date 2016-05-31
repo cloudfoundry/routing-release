@@ -3,18 +3,18 @@
 
 config = {
   addresses: p("acceptance_tests.addresses"),
-  api: p("acceptance_tests.api"),
-  apps_domain: Array(p("acceptance_tests.apps_domain")).first,
-  admin_user: p("acceptance_tests.admin_user"),
-  admin_password: p("acceptance_tests.admin_password"),
-  use_http: p("acceptance_tests.use_http"),
-  skip_ssl_validation: p("acceptance_tests.skip_ssl_validation"),
+  api: p("acceptance_tests.cloud_controller.api"),
+  apps_domain: Array(p("acceptance_tests.cloud_controller.apps_domain")).first,
+  admin_user: p("acceptance_tests.cloud_controller.admin_user"),
+  admin_password: p("acceptance_tests.cloud_controller.admin_password"),
+  use_http: p("acceptance_tests.cloud_controller.use_http"),
+  skip_ssl_validation: p("acceptance_tests.cloud_controller.skip_ssl_validation"),
   oauth: {
     token_endpoint: "https://uaa.service.cf.internal",
     client_name: "tcp_emitter",
-    skip_oauth_tls_verification: p("acceptance_tests.skip_oauth_tls_verification"),
-    client_secret: p("acceptance_tests.tcp_emitter_secret"),
-    port: p("acceptance_tests.uaa_port")
+    skip_oauth_tls_verification: p("skip_ssl_validation"),
+    client_secret: p("tcp_emitter.oauth_secret"),
+    port: p("uaa.tls_port")
   }
 }
 %>

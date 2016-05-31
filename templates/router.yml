@@ -263,64 +263,54 @@ properties:
     require_ssl: (( config_from_cf.consul.require_ssl ))
     server_cert: (( config_from_cf.consul.server_cert ))
     server_key: (( config_from_cf.consul.server_key ))
-  routing-api:
-    port: (( property_overrides.routing-api.port || 3000 ))
-    auth_disabled: (( property_overrides.routing-api.auth_disabled || false ))
-    log_level: (( property_overrides.routing-api.log_level || nil ))
+  routing_api:
+    auth_disabled: (( property_overrides.routing_api.auth_disabled || false ))
+    log_level: (( property_overrides.routing_api.log_level || nil ))
     system_domain: (( config_from_cf.system_domain ))
-    etcd_machines: (( config_from_cf.etcd.machines ))
-    uaa_ssl_port: (( config_from_cf.uaa.ssl.port ))
-    skip_oauth_tls_verification: (( property_overrides.routing-api.skip_oauth_tls_verification || nil ))
-    router_groups: (( property_overrides.routing-api.router_groups || meta.default_router_groups))
-    max_ttl: (( property_overrides.routing-api.max_ttl || nil ))
-  router:
-    router_configurer:
-      debug_addr: (( property_overrides.router_configurer.debug_addr ))
-      tcp_config_file: (( property_overrides.router_configurer.tcp_config_file ))
-      tcp_config_file_template: (( property_overrides.router_configurer.tcp_config_file_template ))
-      tcp_stats_unix_socket: (( property_overrides.router_configurer.tcp_stats_unix_socket ))
-      tcp_stats_collection_interval: (( property_overrides.router_configurer.tcp_stats_collection_interval ))
-      uaa_port: (( config_from_cf.uaa.port ))
-      tcp_router_secret: (( config_from_cf.uaa.clients.tcp_router.secret ))
-      log_level: (( property_overrides.router_configurer.log_level || nil ))
-      routing_api_auth_disabled: (( properties.routing-api.auth_disabled ))
-      uaa_ssl_port: (( config_from_cf.uaa.ssl.port ))
-      skip_oauth_tls_verification: (( property_overrides.router_configurer.skip_oauth_tls_verification || nil ))
-    tcp_emitter:
-      bbs:
-        api_location: (( "bbs.service.cf.internal:8889" ))
-        ca_cert: (( config_from_diego.bbs.ca_cert ))
-        require_ssl: (( config_from_diego.bbs.require_ssl || nil ))
-        client_cert: (( property_overrides.bbs.client_cert ))
-        client_key: (( property_overrides.bbs.client_key ))
-      debug_addr: (( property_overrides.tcp_emitter.debug_addr ))
-      log_level: (( property_overrides.tcp_emitter.log_level || nil ))
-      uaa_port: (( config_from_cf.uaa.port ))
-      uaa_ssl_port: (( config_from_cf.uaa.ssl.port ))
-      skip_oauth_tls_verification: (( property_overrides.tcp_emitter.skip_oauth_tls_verification || nil ))
-      tcp_emitter_secret: (( config_from_cf.uaa.clients.tcp_emitter.secret ))
-      lock_ttl: (( property_overrides.tcp_emitter.lock_ttl || nil ))
-      sync_interval: (( property_overrides.tcp_emitter.sync_interval || nil ))
-      route_ttl: (( property_overrides.tcp_emitter.route_ttl || nil ))
-      lock_retry_interval: (( property_overrides.tcp_emitter.lock_retry_interval || nil ))
-      session_name: (( property_overrides.tcp_emitter.session_name || nil ))
-      routing_api_auth_disabled: (( properties.routing-api.auth_disabled ))
-      routing_api_port: (( properties.routing-api.port ))
-    haproxy:
-      request_timeout_in_seconds: (( property_overrides.haproxy.request_timeout_in_seconds || 300 ))
-      health_check_port: (( property_overrides.haproxy.health_check_port || 80 ))
-
+    router_groups: (( property_overrides.routing_api.router_groups || meta.default_router_groups))
+    max_ttl: (( property_overrides.routing_api.max_ttl || nil ))
+  router_configurer:
+    debug_addr: (( property_overrides.router_configurer.debug_addr ))
+    tcp_stats_unix_socket: (( property_overrides.router_configurer.tcp_stats_unix_socket ))
+    tcp_stats_collection_interval: (( property_overrides.router_configurer.tcp_stats_collection_interval ))
+    oauth_secret: (( config_from_cf.uaa.clients.tcp_router.secret ))
+    log_level: (( property_overrides.router_configurer.log_level || nil ))
+  tcp_emitter:
+    bbs:
+      client_cert: (( property_overrides.tcp_emitter.bbs.client_cert ))
+      client_key: (( property_overrides.tcp_emitter.bbs.client_key ))
+    debug_addr: (( property_overrides.tcp_emitter.debug_addr ))
+    log_level: (( property_overrides.tcp_emitter.log_level || nil ))
+    uaa_port: (( config_from_cf.uaa.port ))
+    oauth_secret: (( config_from_cf.uaa.clients.tcp_emitter.secret ))
+    lock_ttl: (( property_overrides.tcp_emitter.lock_ttl || nil ))
+    sync_interval: (( property_overrides.tcp_emitter.sync_interval || nil ))
+    route_ttl: (( property_overrides.tcp_emitter.route_ttl || nil ))
+    lock_retry_interval: (( property_overrides.tcp_emitter.lock_retry_interval || nil ))
+    session_name: (( property_overrides.tcp_emitter.session_name || nil ))
+  haproxy:
+    request_timeout_in_seconds: (( property_overrides.haproxy.request_timeout_in_seconds || 300 ))
+    health_check_port: (( property_overrides.haproxy.health_check_port || 80 ))
+  skip_ssl_validation: (( property_overrides.skip_ssl_validation || nil ))
+  etcd:
+    servers: (( config_from_cf.etcd.machines ))
+  bbs:
+    api_location: (( "bbs.service.cf.internal:8889" ))
+    ca_cert: (( config_from_diego.bbs.ca_cert ))
+    require_ssl: (( config_from_diego.bbs.require_ssl || nil ))
+  uaa:
+    tls_port: (( config_from_cf.uaa.ssl.port ))
   acceptance_tests:
     addresses: (( property_overrides.acceptance_tests.addresses ))
-    apps_domain: (( config_from_cf.acceptance_tests.apps_domain ))
-    api: (( config_from_cf.acceptance_tests.api ))
-    admin_user: (( config_from_cf.acceptance_tests.admin_user ))
-    admin_password: (( config_from_cf.acceptance_tests.admin_password ))
-    skip_ssl_validation: (( config_from_cf.acceptance_tests.skip_ssl_validation ))
-    use_http: (( config_from_cf.acceptance_tests.use_http ))
-    uaa_port: (( config_from_cf.uaa.ssl.port ))
-    tcp_emitter_secret: (( config_from_cf.uaa.clients.tcp_emitter.secret ))
-    skip_oauth_tls_verification: (( property_overrides.routing-api.skip_oauth_tls_verification || nil ))
+    tcp_emitter:
+      oauth_secret: (( config_from_cf.uaa.clients.tcp_emitter.secret ))
+    cloud_controller:
+      apps_domain: (( config_from_cf.acceptance_tests.apps_domain ))
+      api: (( config_from_cf.acceptance_tests.api ))
+      admin_user: (( config_from_cf.acceptance_tests.admin_user ))
+      admin_password: (( config_from_cf.acceptance_tests.admin_password ))
+      use_http: (( config_from_cf.acceptance_tests.use_http ))
+      skip_ssl_validation: (( config_from_cf.acceptance_tests.skip_ssl_validation ))
 
 base_job_templates:
   routing_api:

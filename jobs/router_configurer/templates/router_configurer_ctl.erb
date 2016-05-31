@@ -31,13 +31,13 @@ case $1 in
     echo $$ > /var/vcap/sys/run/router_configurer/router_configurer.pid
 
     exec chpst -u vcap:vcap /var/vcap/packages/router_configurer/bin/router-configurer \
-      -debugAddr=<%= p("router.router_configurer.debug_addr") %> \
-      -logLevel=<%= p("router.router_configurer.log_level") %> \
-      -tcpLoadBalancerConfig=<%= p("router.router_configurer.tcp_config_file") %> \
-      -tcpLoadBalancerBaseConfig=<%= p("router.router_configurer.tcp_config_file_template") %> \
+      -debugAddr=<%= p("router_configurer.debug_addr") %> \
+      -logLevel=<%= p("router_configurer.log_level") %> \
+      -tcpLoadBalancerConfig="/var/vcap/jobs/haproxy/config/haproxy.conf.template" \
+      -tcpLoadBalancerBaseConfig="/var/vcap/jobs/haproxy/config/haproxy.conf" \
       -config=$CONF_DIR/router_configurer.yml \
-      -tcpLoadBalancerStatsUnixSocket=<%= p("router.router_configurer.tcp_stats_unix_socket") %> \
-      -statsCollectionInterval=<%= p("router.router_configurer.tcp_stats_collection_interval") %>
+      -tcpLoadBalancerStatsUnixSocket=<%= p("router_configurer.tcp_stats_unix_socket") %> \
+      -statsCollectionInterval=<%= p("router_configurer.tcp_stats_collection_interval") %>
 
     ;;
 

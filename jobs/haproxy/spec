@@ -13,10 +13,10 @@ templates:
   haproxy_ctl: bin/haproxy_ctl
 
 properties:
-  router.haproxy.request_timeout_in_seconds:
+  haproxy.request_timeout_in_seconds:
     description: "Server and client timeouts in seconds"
     default: 300
 
-  router.haproxy.health_check_port:
+  haproxy.health_check_port:
     description: "Port that is used to check the health of HA-proxy"
     default: 80

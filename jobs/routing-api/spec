@@ -10,44 +10,43 @@ packages:
 - routing_utils
 
 properties:
-  routing-api.max_ttl:
+  routing_api.max_ttl:
     description: "The maximum ttl"
     default: "120s"
-  routing-api.port:
-    description: "The port to run the routing api on"
-    default: 3000
-  routing-api.auth_disabled:
+  routing_api.auth_disabled:
     description: "Disables UAA authentication"
     default: false
-  routing-api.metrics_reporting_interval:
+  routing_api.metrics_reporting_interval:
     description: "String representing interval for reporting metrics. Units: ms, s, m h"
     default: "30s"
-  routing-api.statsd_endpoint:
+  routing_api.statsd_endpoint:
     description: "The endpoint for the statsd server, defaults to the local metron agent"
     default: "localhost:8125"
-  routing-api.debug_address:
+  routing_api.debug_address:
     description: "Address at which to serve debug info"
     default: "0.0.0.0:17002"
-  routing-api.statsd_client_flush_interval:
+  routing_api.statsd_client_flush_interval:
     description: "Buffered statsd client flush interval"
     default: "300ms"
-  routing-api.system_domain:
+  routing_api.system_domain:
     description: "Domain reserved for CF operator; base URL where the UAA, Cloud Controller, and other non-user apps listen"
-  routing-api.etcd_machines:
-    description: "The IPs of etcd hosts"
-  routing-api.skip_oauth_tls_verification:
+  skip_ssl_validation:
     description: Skip TLS verification when talking to UAA
     default: false
-  routing-api.uaa_ssl_port:
-    description: "Secure Port on which UAA is running."
-  routing-api.log_level:
+  routing_api.log_level:
     description: "Log level"
     default: "info"
 
-  metron_endpoint.host:
+  etcd.servers:
+    description: "The IPs of etcd hosts"
+  etcd.max_concurrent_requests:
+    decsription: "Max concurrent requests to etcd hosts"
+    default: 10
+
+  metron.host:
     description: "The host used to emit messages to the Metron agent."
     default: "127.0.0.1"
-  metron_endpoint.dropsonde_port:
+  metron.port:
     description: "The port used to emit dropsonde messages to the Metron agent."
     default: 3457
 
@@ -55,7 +54,10 @@ properties:
     description: "Host to ping for confirmation of DNS resolution"
     default: consul.service.cf.internal
 
-  routing-api.router_groups:
+  uaa.tls_port:
+    description: "Secure Port on which UAA is running."
+
+  routing_api.router_groups:
     description: "Array of router groups that will be seeded into routing_api database. Once some value is included with a deploy, subsequent changes to this property will be ignored. TCP Routing requires a router group of type: tcp."
     example: |
       - name: default-tcp

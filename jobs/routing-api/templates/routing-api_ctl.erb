@@ -49,14 +49,15 @@ case $1 in
     # Allowed number of open file descriptors
     # ulimit -n 100000
 
+    routing_port=3000
     exec chpst -u vcap:vcap /var/vcap/packages/routing-api/bin/routing-api \
          -config /var/vcap/jobs/routing-api/config/routing-api.yml \
-         -port <%= p("routing-api.port") %> \
-         -logLevel=<%= p("routing-api.log_level") %> \
-         -maxTTL <%= p("routing-api.max_ttl") %> \
+         -port $routing_port \
+         -logLevel=<%= p("routing_api.log_level") %> \
+         -maxTTL <%= p("routing_api.max_ttl") %> \
          -ip <%= my_ip %> \
-         -systemDomain <%= p("routing-api.system_domain") %> <% if p("routing-api.auth_disabled") == true %> -devMode <% end %> \
-         <%= p("routing-api.etcd_machines").map{|addr| "http://#{addr}:4001"}.join(" ")%>
+         -systemDomain <%= p("routing_api.system_domain") %> <% if p("routing_api.auth_disabled") == true %> -devMode <% end %> \
+         <%= p("etcd.servers").map{|addr| "http://#{addr}:4001"}.join(" ")%>
 
     ;;
 

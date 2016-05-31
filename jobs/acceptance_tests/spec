@@ -26,33 +26,33 @@ properties:
       - "10.244.14.2"
     description: "A list of addresses which will be checked for TCP connectivity and features"
 
-  acceptance_tests.api:
+  acceptance_tests.cloud_controller.api:
     description: The Elastic Runtime API endpoint URL
 
-  acceptance_tests.apps_domain:
+  acceptance_tests.cloud_controller.apps_domain:
     description: The Elastic Runtime Application Domain
 
-  acceptance_tests.admin_user:
+  acceptance_tests.cloud_controller.admin_user:
     description: The Elastic Runtime API admin user
 
-  acceptance_tests.admin_password:
+  acceptance_tests.cloud_controller.admin_password:
     description: The Elastic Runtime API admin user's password
 
-  acceptance_tests.skip_ssl_validation:
+  acceptance_tests.cloud_controller.skip_ssl_validation:
     default: false
     description: Toggles cli verification of the Elastic Runtime API SSL certificate
 
-  acceptance_tests.use_http:
+  acceptance_tests.cloud_controller.use_http:
     default: false
     description: Flag for using HTTP when making api and application requests rather than the default HTTPS
 
-  acceptance_tests.tcp_emitter_secret:
+  tcp_emitter.oauth_secret:
     description: "Password for UAA client for the tcp emitter."
 
-  acceptance_tests.skip_oauth_tls_verification:
+  skip_ssl_validation:
     description: "Skip OAuth TLS verification when communicating with UAA"
     default: "false"
 
-  acceptance_tests.uaa_port:
+  uaa.tls_port:
     description: "Port on which UAA is running."
     default: "8080"

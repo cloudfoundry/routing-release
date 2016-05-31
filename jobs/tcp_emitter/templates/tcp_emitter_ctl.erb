@@ -7,16 +7,16 @@ PIDFILE=$RUN_DIR/tcp_emitter.pid
 
 source /var/vcap/packages/routing_utils/pid_utils.sh
 
-<% if p("router.tcp_emitter.bbs.require_ssl") %>
+<% if p("bbs.require_ssl") %>
   bbs_sec_flags=" \
    -bbsClientCert=${CONF_DIR}/certs/bbs/client.crt \
    -bbsClientKey=${CONF_DIR}/certs/bbs/client.key \
    -bbsCACert=${CONF_DIR}/certs/bbs/ca.crt"
 
-  bbs_api_url="<%= "https://" + p("router.tcp_emitter.bbs.api_location") %>"
+  bbs_api_url="<%= "https://" + p("bbs.api_location") %>"
 <% else %>
   bbs_sec_flags=""
-  bbs_api_url="<%= "http://" + p("router.tcp_emitter.bbs.api_location") %>"
+  bbs_api_url="<%= "http://" + p("bbs.api_location") %>"
 <% end %>
 
 
@@ -44,13 +44,13 @@ case $1 in
     echo $$ > /var/vcap/sys/run/tcp_emitter/tcp_emitter.pid
 
     exec chpst -u vcap:vcap /var/vcap/packages/tcp_emitter/bin/tcp-emitter ${bbs_sec_flags} \
-      -lockTTL=<%= p("router.tcp_emitter.lock_ttl") %> \
-      -lockRetryInterval=<%= p("router.tcp_emitter.lock_retry_interval") %> \
-      -consulCluster=<%= p("router.tcp_emitter.consul_cluster") %> \
-      -sessionName=<%= p("router.tcp_emitter.session_name") %> \
+      -lockTTL=<%= p("tcp_emitter.lock_ttl") %> \
+      -lockRetryInterval=<%= p("tcp_emitter.lock_retry_interval") %> \
+      -consulCluster=<%= p("consul.servers") %> \
+      -sessionName=<%= p("tcp_emitter.consul.session_name") %> \
       -bbsAddress=${bbs_api_url} \
-      -debugAddr=<%= p("router.tcp_emitter.debug_addr") %> \
-      -logLevel=<%= p("router.tcp_emitter.log_level") %> \
+      -debugAddr=<%= p("tcp_emitter.debug_addr") %> \
+      -logLevel=<%= p("tcp_emitter.log_level") %> \
       -config=$CONF_DIR/tcp_emitter.yml
 
     ;;

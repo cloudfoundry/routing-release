@@ -14,76 +14,74 @@ packages:
   - router_configurer
 
 properties:
-  router.tcp_emitter.debug_addr:
+  tcp_emitter.debug_addr:
     description: "Address at which to serve debug info"
     default: "0.0.0.0:17016"
 
-  router.tcp_emitter.log_level:
+  tcp_emitter.log_level:
     description: "Log level"
     default: "info"
 
-  router.tcp_emitter.bbs.api_location:
-    description: "Diego BBS Server endpoint url"
-    default: "http://bbs.service.cf.internal:8889"
-
-  router.tcp_emitter.bbs.ca_cert:
-    description: "PEM-encoded CA certificate"
-
-  router.tcp_emitter.bbs.client_cert:
+  tcp_emitter.bbs.client_cert:
     description: "PEM-encoded client certificate"
 
-  router.tcp_emitter.bbs.client_key:
+  tcp_emitter.bbs.client_key:
     description: "PEM-encoded client key"
 
-  router.tcp_emitter.bbs.require_ssl:
-    description: "enable ssl for all communication with the bbs"
-    default: true
-
-  router.tcp_emitter.routing_api_port:
+  tcp_emitter.routing_api_port:
     description: "Port of routing api"
     default: "3000"
 
-  router.tcp_emitter.routing_api_auth_disabled:
+  routing_api.auth_disabled:
     description: "auth disabled setting of routing api"
     default: false
 
-  router.tcp_emitter.tcp_emitter_secret:
+  tcp_emitter.oauth_secret:
     description: "Password for UAA client for tcp emitter."
 
-  router.tcp_emitter.uaa_port:
+  tcp_emitter.uaa_port:
     description: "Port on which UAA is running."
     default: "8080"
 
-  router.tcp_emitter.consul_cluster:
-    description: "comma-separated list of consul server URLs (scheme://ip:port)"
-    default: "http://127.0.0.1:8500"
-
-  router.tcp_emitter.lock_ttl:
+  tcp_emitter.lock_ttl:
     description: "TTL for service lock"
     default: "10s"
 
-  router.tcp_emitter.lock_retry_interval:
+  tcp_emitter.lock_retry_interval:
     description: "interval to wait before retrying a failed lock acquisition"
     default: "5s"
 
-  router.tcp_emitter.session_name:
+  tcp_emitter.consul.session_name:
     description: "consul session name"
     default: "tcp-emitter"
 
-  router.tcp_emitter.skip_oauth_tls_verification:
+  skip_ssl_validation:
     description: Skip TLS verification when talking to UAA
     default: false
 
-  router.tcp_emitter.uaa_ssl_port:
+  uaa.tls_port:
     description: "Secure Port on which UAA is running."
 
-  router.tcp_emitter.sync_interval:
+  tcp_emitter.sync_interval:
     description: "Interval to sync with BBS to get latest route information."
     default: "60s"
 
-  router.tcp_emitter.route_ttl:
+  tcp_emitter.route_ttl:
     description: "TTL for tcp route"
     default: "120s"
+
+  bbs.api_location:
+    description: "Diego BBS Server endpoint url"
+    default: "http://bbs.service.cf.internal:8889"
+  bbs.require_ssl:
+    description: "enable ssl for all communication with the bbs"
+    default: true
+  bbs.ca_cert:
+    description: "PEM-encoded CA certificate"
+
+  consul.servers:
+    description: "comma-separated list of consul server URLs (scheme://ip:port)"
+    default: "http://127.0.0.1:8500"
 
   dns_health_check_host:
     description: "Host to ping for confirmation of DNS resolution"

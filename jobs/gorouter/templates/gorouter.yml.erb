@@ -50,8 +50,8 @@ oauth:
 <% if p("routing_api.enabled") %>
 routing_api:
   uri: http://routing-api.service.cf.internal
-  port: <%= p("routing-api.port") %>
-  auth_disabled: <%= p("routing-api.auth_disabled") %>
+  port: <%= p("routing_api.port") %>
+  auth_disabled: <%= p("routing_api.auth_disabled") %>
 <% end %>
 
 drain_wait: <%= p("router.drain_wait") %>

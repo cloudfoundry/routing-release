@@ -1,16 +1,16 @@
 ---
 log_guid: "routing_api"
-<% if_p("metron_endpoint.host", "metron_endpoint.dropsonde_port") do |host, port| %>
+<% if_p("metron.host", "metron.port") do |host, port| %>
 metron_config:
   address: <%= host %>
   port: <%= port %>
 <% end %>
-metrics_reporting_interval: <%= p("routing-api.metrics_reporting_interval") %>
-statsd_endpoint: <%= p("routing-api.statsd_endpoint") %>
+metrics_reporting_interval: <%= p("routing_api.metrics_reporting_interval") %>
+statsd_endpoint: <%= p("routing_api.statsd_endpoint") %>
 oauth:
   token_endpoint: uaa.service.cf.internal
-  port: <%= p("routing-api.uaa_ssl_port") %>
-  skip_oauth_tls_verification: <%= p("routing-api.skip_oauth_tls_verification") %>
-debug_address: <%= p("routing-api.debug_address") %>
-statsd_client_flush_interval: <%= p("routing-api.statsd_client_flush_interval") %>
-router_groups: <%= p("routing-api.router_groups").to_yaml.gsub("---","") %>
+  port: <%= p("uaa.tls_port") %>
+  skip_oauth_tls_verification: <%= p("skip_ssl_validation") %>
+debug_address: <%= p("routing_api.debug_address") %>
+statsd_client_flush_interval: <%= p("routing_api.statsd_client_flush_interval") %>
+router_groups: <%= p("routing_api.router_groups").to_yaml.gsub("---","") %>

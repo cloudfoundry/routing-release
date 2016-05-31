@@ -10,49 +10,33 @@ packages:
   - router_configurer
 
 properties:
-  router.router_configurer.debug_addr:
+  router_configurer.debug_addr:
     description: "Address at which to serve debug info"
     default: "0.0.0.0:17014"
 
-  router.router_configurer.log_level:
+  router_configurer.log_level:
     description: "Log level"
     default: "info"
 
-  router.router_configurer.tcp_config_file_template:
-    description: "Base Config file of underlying tcp proxy"
-    default: "/var/vcap/jobs/haproxy/config/haproxy.conf.template"
-
-  router.router_configurer.tcp_config_file:
-    description: "Config file of underlying tcp proxy"
-    default: "/var/vcap/jobs/haproxy/config/haproxy.conf"
-
-  router.router_configurer.tcp_stats_unix_socket:
+  router_configurer.tcp_stats_unix_socket:
     description: "Unix socket exposed by the the underlying tcp proxy to gather statistic metrics from"
     default: "/var/vcap/jobs/haproxy/config/haproxy.sock"
 
-  router.router_configurer.tcp_stats_collection_interval:
+  router_configurer.tcp_stats_collection_interval:
     description: "String representing interval for collecting statistic metrics from tcp proxy. Units: ms, s, m h"
     default: "1m"
 
-  router.router_configurer.routing_api_port:
-    description: "Port of routing api"
-    default: "3000"
-
-  router.router_configurer.routing_api_auth_disabled:
+  routing_api.auth_disabled:
     description: "auth disabled setting of routing api"
     default: false
 
-  router.router_configurer.tcp_router_secret:
-    description: "Password for UAA client for tcp router."
+  router_configurer.oauth_secret:
+    description: "Password for UAA client for tcp "
 
-  router.router_configurer.uaa_port:
-    description: "Port on which UAA is running."
-    default: "8080"
-
-  router.router_configurer.uaa_ssl_port:
+  uaa.tls_port:
     description: "Secure Port on which UAA is running."
 
-  router.router_configurer.skip_oauth_tls_verification:
+  skip_ssl_validation:
     description: Skip TLS verification when talking to UAA
     default: false
 
