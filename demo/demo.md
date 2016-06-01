@@ -27,7 +27,7 @@ This web app subscribes to `accelerometer` topic of MQTT broker and displays the
 1. Verify that the app is successfully deployed and running by hitting endpoint `mqttsub.<app-domain>`. You should see web page like this:
 
 ![Image of mqttsubscriber landing page]
-(https://github.com/cloudfoundry-incubator/routing-release/images/mqttsub_landing_page.png)
+(https://github.com/cloudfoundry-incubator/routing-release/demo/images/mqttsub_landing_page.png)
 
 ## Installing MQTT publisher android app
 This android app registers itself to accelerometer sensor of the device and publishes y-axis acceleration to `accelerometer` topic of MQTT broker. 
@@ -47,7 +47,7 @@ This android app registers itself to accelerometer sensor of the device and publ
 1. Verify that the app is successfully installed and running by tapping the `Accelerometer` icon on your smartphone. You should see something like this:
 
 ![Image of android app landing page]
-(https://github.com/cloudfoundry-incubator/routing-release/images/android_landing_page.png)
+(https://github.com/cloudfoundry-incubator/routing-release/demo/images/android_landing_page.png)
 
 ## Pushing MQTT broker as CF app
 We will be using [mosquitto](http://mosquitto.org/) broker's docker image to push mqtt broker as CF app. We will use [toke/mosquitto](https://github.com/toke/docker-mosquitto) docker image.
@@ -72,15 +72,15 @@ This is where we tie together the subscriber web app, android app and mqtt broke
 1. Enter `<tcp-domain>` as host name on landing page of web app and port of tcp route as `port`. You should see an empty chart as follows:
 
 	![Image of empty chart of web app]
-	(https://github.com/cloudfoundry-incubator/routing-release/images/mqttsub_empty_chart_page.png)
+	(https://github.com/cloudfoundry-incubator/routing-release/demo/images/mqttsub_empty_chart_page.png)
 
 1. Now enter same information on android accelerometer app. You should see the next screen on android app indicating the y-axis acceleration:
 
 	![Image of android app connected page]
-	(https://github.com/cloudfoundry-incubator/routing-release/images/android_connected_page.png)
+	(https://github.com/cloudfoundry-incubator/routing-release/demo/images/android_connected_page.png)
 
 1. The y-axis acceleration of your device should now start showing up on chart on web app:
 
 	![Image of chart of web app]
-	(https://github.com/cloudfoundry-incubator/routing-release/images/mqttsub_chart_page.png)
+	(https://github.com/cloudfoundry-incubator/routing-release/demo/images/mqttsub_chart_page.png)
 
