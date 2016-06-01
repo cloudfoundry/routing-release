@@ -281,7 +281,6 @@ properties:
       client_key: (( property_overrides.tcp_emitter.bbs.client_key ))
     debug_addr: (( property_overrides.tcp_emitter.debug_addr ))
     log_level: (( property_overrides.tcp_emitter.log_level || nil ))
-    uaa_port: (( config_from_cf.uaa.port ))
     oauth_secret: (( config_from_cf.uaa.clients.tcp_emitter.secret ))
     lock_ttl: (( property_overrides.tcp_emitter.lock_ttl || nil ))
     sync_interval: (( property_overrides.tcp_emitter.sync_interval || nil ))
