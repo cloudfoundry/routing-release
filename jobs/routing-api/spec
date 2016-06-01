@@ -40,7 +40,7 @@ properties:
   etcd.servers:
     description: "The IPs of etcd hosts"
   etcd.max_concurrent_requests:
-    decsription: "Max concurrent requests to etcd hosts"
+    description: "Max concurrent requests to etcd hosts"
     default: 10
 
   metron.host:
