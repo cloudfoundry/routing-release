@@ -243,4 +243,4 @@ See the README for [Routing Acceptance Tests](https://github.com/cloudfoundry-in
 For details refer to [Routing API](https://github.com/cloudfoundry-incubator/routing-api/blob/master/README.md).
 
 ## TCP Router demo
-For step by step instructions on TCP router demo done at Cloud Foundry Summit 2016, refer to [TCP Router demo](https://github.com/cloudfoundry-incubator/routing-release/demo/demo.md)
+For step by step instructions on TCP router demo done at Cloud Foundry Summit 2016, refer to [TCP Router demo](demo/demo.md)
