@@ -181,6 +181,32 @@ The BOSH Lite manifest generation scripts use templates that have enabled the fo
 		    sslPrivateKey: | 
 		      <insert private key>
 
+### OAuth clients in UAA
+
+The following clients must be configured in UAA. If you're using the manifest generation scripts for cf-release, you can skip this step as the necessary clients are in the Spiff templates. If you're handrolling your manifest for cf-release, you'll need to add them.
+
+```
+properties:
+  uaa:
+    clients:
+      cc_routing:
+        authorities: routing.router_groups.read
+        authorized-grant-types: client_credentials
+        secret: <your-secret>
+      gorouter:
+        authorities: routing.routes.read
+        authorized-grant-types: client_credentials,refresh_token
+        secret: <your-secret>
+      tcp_emitter:
+        authorities: routing.routes.write,routing.routes.read,routing.router_groups.read
+        authorized-grant-types: client_credentials,refresh_token
+        secret: <your-secret>
+      tcp_router:
+        authorities: routing.routes.read,routing.router_groups.read
+        authorized-grant-types: client_credentials,refresh_token
+        secret: <your-secret>
+```
+
 ### Horizontal Scalability
 
 The TCP Router, TCP Emitter, and Routing API are stateless and horizontally scalable. Routing API depends on a clustered etcd data store. For high availability, deploy multiple instances of each job, distributed across regions of your infrastructure. 
