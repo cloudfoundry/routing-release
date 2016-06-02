@@ -12,7 +12,7 @@ config = {
   oauth: {
     token_endpoint: "https://uaa.service.cf.internal",
     client_name: "tcp_emitter",
-    skip_oauth_tls_verification: p("skip_ssl_validation"),
+    skip_ssl_validation: p("skip_ssl_validation"),
     client_secret: p("tcp_emitter.oauth_secret"),
     port: p("uaa.tls_port")
   }
