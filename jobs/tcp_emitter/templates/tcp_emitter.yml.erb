@@ -3,7 +3,7 @@ oauth:
   client_name: "tcp_emitter"
   client_secret: <%= p("tcp_emitter.oauth_secret") %>
   port: <%= p("uaa.tls_port") %>
-  skip_oauth_tls_verification: <%= p("skip_ssl_validation") %>
+  skip_ssl_validation: <%= p("skip_ssl_validation") %>
 
 routing_api:
   uri: http://routing-api.service.cf.internal
