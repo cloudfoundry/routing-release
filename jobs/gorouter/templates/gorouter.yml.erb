@@ -45,7 +45,7 @@ oauth:
   client_name: "gorouter"
   client_secret: <%= p("uaa.clients.gorouter.secret") %>
   port: <%= p("uaa.ssl.port") %>
-  skip_oauth_tls_verification: <%= p("router.skip_oauth_tls_verification") %>
+  skip_ssl_validation: <%= p("router.ssl_skip_validation") %>
 
 <% if p("routing_api.enabled") %>
 routing_api:
@@ -60,7 +60,7 @@ endpoint_timeout: <%= p("request_timeout_in_seconds") %>
 start_response_delay_interval: <%= p("router.requested_route_registration_interval_in_seconds") %>
 
 enable_ssl: <%= p("router.enable_ssl") %>
-ssl_skip_validation: <%= p("router.ssl_skip_validation") %>
+skip_ssl_validation: <%= p("router.ssl_skip_validation") %>
 ssl_cert_path: /var/vcap/jobs/gorouter/config/cert.pem
 ssl_key_path: /var/vcap/jobs/gorouter/config/key.pem
 cipher_suites: <%= p("router.cipher_suites") %>
