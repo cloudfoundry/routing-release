@@ -58,7 +58,7 @@ if [ ! -f "${iaas_settings}" ]; then
   usage
 fi
 
-tmpdir=$(mktemp -d /tmp/router-manifest.XXXXX)
+tmpdir=$(mktemp -d /tmp/routing-manifest.XXXXX)
 director_uuid=${tmpdir}/director.yml
 printf "director_uuid: %s" $(bosh status --uuid) > ${director_uuid}
 
@@ -75,17 +75,17 @@ spiff merge \
   > ${tmpdir}/config-from-diego.yml
 
 spiff merge \
-  ${templates}/router.yml \
+  ${templates}/routing.yml \
   ${property_overrides} \
   ${instance_counts} \
   ${persistent_disk} \
   ${iaas_settings} \
   ${tmpdir}/config-from-cf.yml \
   ${tmpdir}/config-from-diego.yml \
-  > ${tmpdir}/router.yml
+  > ${tmpdir}/routing.yml
 
   spiff merge \
-  ${templates}/router-deployment.yml \
+  ${templates}/routing-deployment.yml \
   ${director_uuid} \
-  ${tmpdir}/router.yml
+  ${tmpdir}/routing.yml
 
