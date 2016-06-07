@@ -3,9 +3,9 @@
 set -e
 
 scripts_path=./$(dirname $0)
-eval $($scripts_path/get_paths.sh)
+source $scripts_path/get_paths.sh
 
-./$scripts_path/generate-bosh-lite-manifest $CF_MANIFESTS_DIR/cf.yml $DIEGO_MANIFESTS_DIR/diego.yml
+$scripts_path/generate-bosh-lite-manifest $CF_MANIFESTS_DIR/cf.yml $DIEGO_MANIFESTS_DIR/diego.yml
 
 bosh --parallel 10 sync blobs
 bosh create release --force
