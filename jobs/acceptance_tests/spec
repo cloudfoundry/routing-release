@@ -54,5 +54,4 @@ properties:
     default: "false"
 
   uaa.tls_port:
-    description: "Port on which UAA is running."
-    default: "8080"
+    description: "Port on which UAA is terminating TLS."
