@@ -86,3 +86,7 @@ properties:
   dns_health_check_host:
     description: "Host to ping for confirmation of DNS resolution"
     default: consul.service.cf.internal
+
+  metron.port:
+    description: "The port used to emit dropsonde messages to the Metron agent."
+    default: 3457

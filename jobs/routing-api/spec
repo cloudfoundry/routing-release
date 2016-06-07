@@ -43,9 +43,6 @@ properties:
     description: "Max concurrent requests to etcd hosts"
     default: 10
 
-  metron.host:
-    description: "The host used to emit messages to the Metron agent."
-    default: "127.0.0.1"
   metron.port:
     description: "The port used to emit dropsonde messages to the Metron agent."
     default: 3457

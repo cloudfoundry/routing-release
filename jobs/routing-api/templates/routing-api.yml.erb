@@ -1,10 +1,8 @@
 ---
 log_guid: "routing_api"
-<% if_p("metron.host", "metron.port") do |host, port| %>
 metron_config:
-  address: <%= host %>
-  port: <%= port %>
-<% end %>
+  address: "localhost"
+  port: <%= p("metron.port") %>
 metrics_reporting_interval: <%= p("routing_api.metrics_reporting_interval") %>
 statsd_endpoint: <%= p("routing_api.statsd_endpoint") %>
 oauth:

@@ -114,9 +114,10 @@ properties:
   request_timeout_in_seconds:
     description: "Timeout in seconds for Router -> Endpoint roundtrip."
     default: 900
-  metron_endpoint.host:
-    description: "The host used to emit messages to the Metron agent."
-    default: "127.0.0.1"
+
+  metron.port:
+    description: "The port used to emit dropsonde messages to the Metron agent."
+    default: 3457
 
   uaa.clients.gorouter.secret:
     description: "Password for UAA client for the gorouter."
@@ -126,10 +127,10 @@ properties:
   uaa.ssl.port:
     description: "Secure Port on which UAA is running."
 
-  routing-api.port:
+  routing_api.port:
     description: "Port on which routing-api is running."
     default: 3000
-  routing-api.auth_disabled:
+  routing_api.auth_disabled:
     description: "Disables UAA authentication"
     default: false
   routing_api.enabled:
