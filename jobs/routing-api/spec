@@ -3,6 +3,9 @@ name: routing-api
 templates:
   routing-api_ctl.erb: bin/routing-api_ctl
   dns_health_check.erb: bin/dns_health_check
+  etcd_ca.crt.erb: config/certs/etcd/ca.crt
+  etcd_client.crt.erb: config/certs/etcd/client.crt
+  etcd_client.key.erb: config/certs/etcd/client.key
   routing-api.yml.erb: config/routing-api.yml
 
 packages:
@@ -39,6 +42,18 @@ properties:
 
   etcd.servers:
     description: "The IPs of etcd hosts"
+  etcd.client_cert:
+    description: "Client certificate for communication between clients and etcd"
+    default: ""
+  etcd.client_key:
+    description: "Client key for communication between clients and etcd"
+    default: ""
+  etcd.ca_cert:
+    description: "Certificate authority for communication between clients and etcd"
+    default: ""
+  etcd.require_ssl:
+    description: "Require SSL/TLS communication between clients and etcd"
+    default: false
   etcd.max_concurrent_requests:
     description: "Max concurrent requests to etcd hosts"
     default: 10

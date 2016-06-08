@@ -45,6 +45,7 @@ files:
   - github.com/coreos/etcd/Godeps/_workspace/src/golang.org/x/net/context/*.go # gosub
   - github.com/coreos/etcd/client/*.go # gosub
   - github.com/coreos/etcd/pkg/pathutil/*.go # gosub
+  - github.com/coreos/etcd/pkg/transport/*.go # gosub
   - github.com/coreos/etcd/pkg/types/*.go # gosub
   - github.com/dgrijalva/jwt-go/*.go # gosub
   - github.com/gogo/protobuf/gogoproto/*.go # gosub
