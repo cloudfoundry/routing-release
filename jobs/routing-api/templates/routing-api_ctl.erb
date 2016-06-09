@@ -57,7 +57,7 @@ case $1 in
          -maxTTL <%= p("routing_api.max_ttl") %> \
          -ip <%= my_ip %> \
          -systemDomain <%= p("routing_api.system_domain") %> <% if p("routing_api.auth_disabled") == true %> -devMode <% end %> \
-         <%= p("etcd.servers").map{|addr| "#{p("etcd.require_ssl") ? "https" : "http"}://#{addr}:4001"}.join(" ")%>
+         <%= p("routing.etcd.servers").map{|addr| "#{p("routing.etcd.require_ssl") ? "https" : "http"}://#{addr}:4001"}.join(" ")%>
 
     ;;
 

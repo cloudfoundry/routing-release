@@ -291,12 +291,13 @@ properties:
     request_timeout_in_seconds: (( property_overrides.haproxy.request_timeout_in_seconds || 300 ))
     health_check_port: (( property_overrides.haproxy.health_check_port || 80 ))
   skip_ssl_validation: (( property_overrides.skip_ssl_validation || nil ))
-  etcd:
-    servers: (( property_overrides.etcd.machines || config_from_cf.etcd.machines ))
-    ca_cert: (( property_overrides.etcd.ca_cert || nil ))
-    client_cert: (( property_overrides.etcd.client_cert || nil ))
-    client_key: (( property_overrides.etcd.client_key || nil ))
-    require_ssl: (( property_overrides.etcd.require_ssl || nil ))
+  routing:
+    etcd:
+      servers: (( property_overrides.etcd.machines || config_from_cf.etcd.machines ))
+      ca_cert: (( property_overrides.etcd.ca_cert || nil ))
+      client_cert: (( property_overrides.etcd.client_cert || nil ))
+      client_key: (( property_overrides.etcd.client_key || nil ))
+      require_ssl: (( property_overrides.etcd.require_ssl || nil ))
   bbs:
     api_location: (( "bbs.service.cf.internal:8889" ))
     ca_cert: (( config_from_diego.bbs.ca_cert ))

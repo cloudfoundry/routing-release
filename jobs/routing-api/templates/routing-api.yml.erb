@@ -14,7 +14,7 @@ statsd_client_flush_interval: <%= p("routing_api.statsd_client_flush_interval") 
 router_groups: <%= p("routing_api.router_groups").to_yaml.gsub("---","") %>
 
 etcd:
-  require_ssl: <%= p("etcd.require_ssl") %>
+  require_ssl: <%= p("routing.etcd.require_ssl") %>
   ca_file: "/var/vcap/jobs/routing-api/config/certs/etcd/ca.crt"
   cert_file: "/var/vcap/jobs/routing-api/config/certs/etcd/client.crt"
   key_file: "/var/vcap/jobs/routing-api/config/certs/etcd/client.key"

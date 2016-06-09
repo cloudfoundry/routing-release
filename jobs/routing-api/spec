@@ -40,23 +40,20 @@ properties:
     description: "Log level"
     default: "info"
 
-  etcd.servers:
+  routing.etcd.servers:
     description: "The IPs of etcd hosts"
-  etcd.client_cert:
+  routing.etcd.client_cert:
     description: "Client certificate for communication between clients and etcd"
     default: ""
-  etcd.client_key:
+  routing.etcd.client_key:
     description: "Client key for communication between clients and etcd"
     default: ""
-  etcd.ca_cert:
+  routing.etcd.ca_cert:
     description: "Certificate authority for communication between clients and etcd"
     default: ""
-  etcd.require_ssl:
+  routing.etcd.require_ssl:
     description: "Require SSL/TLS communication between clients and etcd"
     default: false
-  etcd.max_concurrent_requests:
-    description: "Max concurrent requests to etcd hosts"
-    default: 10
 
   metron.port:
     description: "The port used to emit dropsonde messages to the Metron agent."
