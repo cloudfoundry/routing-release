@@ -5,6 +5,7 @@ description: "The tcp proxy layer used by router to achieve tcp routing function
 
 packages:
   - routing_utils
+  - haproxy-monitor
   - haproxy
 
 templates:

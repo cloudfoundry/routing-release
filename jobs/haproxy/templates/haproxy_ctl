@@ -1,20 +1,25 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
-PATH=/var/vcap/packages/haproxy/bin:$PATH
+source /var/vcap/packages/routing_utils/pid_utils.sh
+
+PATH=/var/vcap/packages/haproxy/bin:/var/vcap/packages/haproxy-monitor/bin:$PATH
 
 NAME=haproxy
 DAEMON=$(which haproxy)
+MONITOR=$(which haproxy-monitor)
 CONFIG=/var/vcap/jobs/haproxy/config/haproxy.conf
 DESC="HAProxy"
 USER=vcap
 
-PID_FILE=/var/vcap/sys/run/haproxy/pid
+HAPROXY_PID_FILE=/var/vcap/sys/run/haproxy/pid
+MONITOR_PID_FILE=/var/vcap/sys/run/haproxy-monitor/pid
 
 TIMESTAMP=$(which date)
 
 test -x "${DAEMON}"
+test -x "${MONITOR}"
 test -f "${CONFIG}"
 
 RETVAL=0
@@ -29,12 +34,13 @@ ensure_dir() {
 }
 
 ensure_dirs() {
-    ensure_dir "$(dirname "${PID_FILE}")"
+    ensure_dir "$(dirname "${HAPROXY_PID_FILE}")"
+    ensure_dir "$(dirname "${MONITOR_PID_FILE}")"
 }
 
 remove_pid() {
-    rm -f "${PID_FILE}"
-    rmdir "$(dirname "${PID_FILE}")" || :
+    rm -f "${HAPROXY_PID_FILE}"
+    rmdir "$(dirname "${HAPROXY_PID_FILE}")" || :
 }
 
 start_haproxy() {
@@ -47,7 +53,7 @@ start_haproxy() {
         chown -R "${USER}":"${USER}" "$(dirname "${CONFIG}")"
         echo "$("${TIMESTAMP}"): Starting HAProxy"
         set +e
-        "${DAEMON}" -f "${CONFIG}" -D -p "${PID_FILE}" 0<&-
+        "${DAEMON}" -f "${CONFIG}" -D -p "${HAPROXY_PID_FILE}" 0<&-
         RETVAL=$?
         set -e
         case "${RETVAL}" in
@@ -70,7 +76,7 @@ stop_haproxy() {
     status_haproxy
     if [ "${RETVAL}" = 0 ]; then
         set +e
-        for pid in $(cat "${PID_FILE}"); do
+        for pid in $(cat "${HAPROXY_PID_FILE}"); do
             kill ${pid} || RETVAL=$?
         done
         set -e
@@ -86,13 +92,13 @@ stop_haproxy() {
 
 # RETVAL = 0 if running, != 0 if stopped
 status_haproxy() {
-    if [ -f "${PID_FILE}" ]; then
+    if [ -f "${HAPROXY_PID_FILE}" ]; then
         RETVAL=0
         set +e
-        for pid in $(cat "${PID_FILE}"); do
+        for pid in $(cat "${HAPROXY_PID_FILE}"); do
             kill -0 "${pid}" > /dev/null 2>&1 || RETVAL=3
         done
-        kill -0 $(cat "${PID_FILE}") > /dev/null 2>&1
+        kill -0 $(cat "${HAPROXY_PID_FILE}") > /dev/null 2>&1
         if [ $? != 0 ]; then
             RETVAL=3
         fi
@@ -114,7 +120,7 @@ reload_haproxy() {
         ensure_dirs
         echo "$("${TIMESTAMP}"): reloading HAProxy"
         set +e
-        "${DAEMON}" -f "${CONFIG}" -p "${PID_FILE}" -D -sf $(cat $PID_FILE) 0<&-
+        "${DAEMON}" -f "${CONFIG}" -p "${HAPROXY_PID_FILE}" -D -sf $(cat $HAPROXY_PID_FILE) 0<&-
         RETVAL=$?
         set -e
         case "${RETVAL}" in
@@ -139,11 +145,17 @@ case "$1" in
     start)
         echo -n "Starting ${DESC}: "
         start_haproxy
+
+        pid_guard ${MONITOR_PID_FILE}
+        echo $$ > ${MONITOR_PID_FILE}
+        exec chpst -u vcap:vcap ${MONITOR} --pidFile ${HAPROXY_PID_FILE}
+
         echo "${NAME}."
         ;;
     stop)
         echo -n "Stopping ${DESC}: "
         stop_haproxy
+        kill_and_wait ${MONITOR_PID_FILE}
         echo "${NAME}."
         ;;
     status)
