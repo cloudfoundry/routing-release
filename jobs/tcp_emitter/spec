@@ -28,20 +28,12 @@ properties:
   tcp_emitter.bbs.client_key:
     description: "PEM-encoded client key"
 
-  tcp_emitter.routing_api_port:
-    description: "Port of routing api"
-    default: "3000"
-
   routing_api.auth_disabled:
     description: "auth disabled setting of routing api"
     default: false
 
   tcp_emitter.oauth_secret:
     description: "Password for UAA client for tcp emitter."
-
-  tcp_emitter.uaa_port:
-    description: "Port on which UAA is running."
-    default: "8080"
 
   tcp_emitter.lock_ttl:
     description: "TTL for service lock"
