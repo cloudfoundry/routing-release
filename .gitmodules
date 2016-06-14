@@ -139,3 +139,6 @@
 [submodule "src/github.com/cloudfoundry-incubator/routing-acceptance-tests"]
 	path = src/github.com/cloudfoundry-incubator/routing-acceptance-tests
 	url = https://github.com/cloudfoundry-incubator/routing-acceptance-tests
+[submodule "src/github.com/armon/go-proxyproto"]
+	path = src/github.com/armon/go-proxyproto
+	url = https://github.com/armon/go-proxyproto.git
