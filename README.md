@@ -1,6 +1,6 @@
 # Cloud Foundry Routing [BOSH release]
 
-This repo is a [BOSH release](https://github.com/cloudfoundry/bosh) that delivers HTTP and TCP routing for Cloud Foundry. 
+This repo is a [BOSH release](https://github.com/cloudfoundry/bosh) that delivers HTTP and TCP routing for Cloud Foundry.
 
 ## Developer Workflow
 
@@ -22,7 +22,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
     cd routing-release/
     ```
 
-    
+
 1. Automate `$GOPATH` and `$PATH` setup
 
     This BOSH release doubles as a `$GOPATH`. It will automatically be set up for you if you have [direnv](http://direnv.net) installed.
@@ -31,7 +31,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
     ```
     direnv allow
     ```
-    
+
     If you do not wish to use direnv, you can simply `source` the `.envrc` file in the root of the release repo.  You may manually need to update your `$GOPATH` and `$PATH` variables as you switch in and out of the directory.
 
 
@@ -52,7 +52,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 
         ./scripts/run-unit-tests
 
-## Deploying to BOSH-Lite 
+## Deploying to BOSH-Lite
 
 ### Prerequisites
 
@@ -63,7 +63,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 	bosh upload stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent
 	```
 - Install spiff, a tool for generating BOSH manifests. spiff is required for running the scripts in later steps. Stable binaries can be downloaded from [Spiff Releases](https://github.com/cloudfoundry-incubator/spiff/releases).
-- Deploy [cf-release](https://github.com/cloudfoundry/cf-release) and [diego-release](https://github.com/cloudfoundry-incubator/diego-release). Note: for IAAS other than BOSH Lite, cf-release must be configured so that UAA terminates SSL; see [Deploying to Other IAAS](#deploying-to-other-iaas). 
+- Deploy [cf-release](https://github.com/cloudfoundry/cf-release) and [diego-release](https://github.com/cloudfoundry-incubator/diego-release). Note: for IAAS other than BOSH Lite, cf-release must be configured so that UAA terminates SSL; see [Deploying to Other IAAS](#deploying-to-other-iaas).
 
 ### Upload Release, Generate Manifest, and Deploy
 1. Clone this repo and sync submodules; see [Get the code](#get-the-code).
@@ -89,7 +89,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 	The `generate-bosh-lite-manifest` script expects the cf-release and diego-release manifests to be at `~/workspace/cf-release/bosh-lite/deployments/cf.yml` and `~/workspace/diego-release/bosh-lite/deployments/diego.yml`; the BOSH Lite manifest generation scripts for those releases will put them there by default. If cf and diego manifests are in a different location then you may specify them as arguments:
 
         ./scripts/generate-bosh-lite-manifest <cf_deployment_manifest> <diego_deployment_manifest>
-        
+
   Note: for IAAS other than BOSH Lite, consider whether the reservable port range should be modified; see [Deploying to Other IAAS](#deploying-to-other-iaas).
 
 ### Redeploy cf-release to Enable the Routing API
@@ -123,7 +123,7 @@ The CLI commands below require version 6.17 of the [cf CLI](https://github.com/c
 	```
 	$ cf router-groups
 	Getting router groups as admin ...
-	
+
 	name          type
 	default-tcp   tcp
 	```
@@ -144,8 +144,8 @@ The CLI commands below require version 6.17 of the [cf CLI](https://github.com/c
 	```
 	$ cf curl /v2/quota_definitions/44dff27d-96a2-44ed-8904-fb5ca8cbb298 -X PUT -d '{"total_reserved_route_ports": -1}'
 	```
-	
-	
+
+
 Note: If you receive this error: `FAILED This command requires the Routing API. Your targeted endpoint reports it is not enabled`. This is due to the CF CLI's `~/.cf/config.json` having an old cached `RoutingEndpoint` value. To fix this, just do a cf login again and this error should go away.
 
 ### Create a TCP Route
@@ -175,10 +175,10 @@ The BOSH Lite manifest generation scripts use templates that have enabled the fo
 		properties:
 		  uaa:
 		    ssl:
-		      port: <choose a port for UAA to listen to SSL on; e.g. 8443> 
+		      port: <choose a port for UAA to listen to SSL on; e.g. 8443>
 		    sslCertificate: |
 		      <insert certificate>
-		    sslPrivateKey: | 
+		    sslPrivateKey: |
 		      <insert private key>
 
 ### OAuth clients in UAA
@@ -209,7 +209,7 @@ properties:
 
 ### Horizontal Scalability
 
-The TCP Router, TCP Emitter, and Routing API are stateless and horizontally scalable. Routing API depends on a clustered etcd data store. For high availability, deploy multiple instances of each job, distributed across regions of your infrastructure. 
+The TCP Router, TCP Emitter, and Routing API are stateless and horizontally scalable. Routing API depends on a clustered etcd data store. For high availability, deploy multiple instances of each job, distributed across regions of your infrastructure.
 
 ### Configuring Your Load Balancer to Health Check TCP Routers
 
@@ -220,11 +220,11 @@ To simulate this health check manually on BOSH-lite:
   nc -z 10.244.14.2 80
   ```
 
-### Configuring Port Ranges and DNS 
-1. Configure your load balancer to forward a range of ports to the IPs of the TCP Router instances. By default, this release assumes the range 1024-65535 will be forwarded. 
+### Configuring Port Ranges and DNS
+1. Configure your load balancer to forward a range of ports to the IPs of the TCP Router instances. By default, this release assumes the range 1024-65535 will be forwarded.
 - If your load balancer is not configured to forward ports 1024-65535, you must configure this release with the available port range using deployment manifest property `routing-api.router_groups.reservable_ports`
 - Configure DNS to resolve a domain name to the load balancer.  
-- After deploying this release you must configure the DNS name in CF as a Shared Domain as an admin user, associating it with the Router Group. 
+- After deploying this release you must configure the DNS name in CF as a Shared Domain as an admin user, associating it with the Router Group.
   ```
   Getting router groups as admin ...
 
@@ -235,12 +235,12 @@ To simulate this health check manually on BOSH-lite:
   ```
 
 #### Capacity Limits for Ports and TCP Routes
-One port is dedicated for each TCP route in CF; in other words, TCP routes may not share ports. 
+One port is dedicated for each TCP route in CF; in other words, TCP routes may not share ports.
 
 A Router Group represents a horizontally scalable cluster of identically configured routers. A router group is limited to maximum port range 1024-65535. Currently this release supports one router group, so the maximum number of TCP routes than can be created in CF is 64511 (65535-1024). Eventually we may support multiple router groups and/or TCP routes that share a port.
 
 #### Using Multiple Load Balancers to Maximize Port Capacity
-Operators may not be able to offer 65535 ports on a given load balancer. The load balancer may support other systems in addition to Cloud Foundry. AWS ELBs can be configured to listen on a maximum of 100 ports. 
+Operators may not be able to offer 65535 ports on a given load balancer. The load balancer may support other systems in addition to Cloud Foundry. AWS ELBs can be configured to listen on a maximum of 100 ports.
 
 Multiple load balancers may be used to contribute to the pool of ports available for creating TCP routes. E.g. LB1 listens on ports 1024-29999, LB2 listens on ports 30000-65535, both load balancers forward requests for these ports to the instances of the router group. Configure `routing-api.router_groups.reservable_ports` manifest property with the combined port range. Ports must not overlap.
 
@@ -261,7 +261,7 @@ Run the following commands to execute the acceptance tests as an errand on bosh-
 bosh run errand router_acceptance_tests
 ```
 
-### Manually 
+### Manually
 See the README for [Routing Acceptance Tests](https://github.com/cloudfoundry-incubator/routing-acceptance-tests)
 
 ## Routing API
@@ -269,4 +269,4 @@ See the README for [Routing Acceptance Tests](https://github.com/cloudfoundry-in
 For details refer to [Routing API](https://github.com/cloudfoundry-incubator/routing-api/blob/master/README.md).
 
 ## TCP Router demo
-For step by step instructions on TCP router demo done at Cloud Foundry Summit 2016, refer to [TCP Router demo](demo/demo.md)
+For step by step instructions on TCP router demo done at Cloud Foundry Summit 2016, refer to [TCP Router demo](docs/demo.md)
