@@ -121,3 +121,4 @@ files:
   - routing-release/src/github.com/tedsuo/rata/*.go # gosub
   - routing-release/src/github.com/vito/go-sse/sse/*.go # gosub
   - routing-release/src/golang.org/x/crypto/pbkdf2/*.go # gosub
+  - routing-release/src/github.com/armon/go-proxyproto/*.go # gosub
