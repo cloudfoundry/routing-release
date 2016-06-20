@@ -40,20 +40,20 @@ properties:
     description: "Log level"
     default: "info"
 
-  routing.etcd.servers:
-    description: "The IPs of etcd hosts"
-  routing.etcd.client_cert:
-    description: "Client certificate for communication between clients and etcd"
-    default: ""
-  routing.etcd.client_key:
-    description: "Client key for communication between clients and etcd"
-    default: ""
-  routing.etcd.ca_cert:
-    description: "Certificate authority for communication between clients and etcd"
-    default: ""
-  routing.etcd.require_ssl:
-    description: "Require SSL/TLS communication between clients and etcd"
-    default: false
+  routing_api.etcd.servers:
+    description: "When require_ssl:false this should be an array of IP addresses for the etcd cluster. When require_ssl:true, this should be the internal DNS name for the etcd cluster."
+  routing_api.etcd.client_cert:
+     description: "Client certificate for communication between clients and etcd"
+     default: ""
+  routing_api.etcd.client_key:
+     description: "Client key for communication between clients and etcd"
+     default: ""
+  routing_api.etcd.ca_cert:
+     description: "Certificate authority used to sign cert hosted by etcd"
+     default: ""
+  routing_api.etcd.require_ssl:
+     description: "etcd requires client to communicate via TLS"
+     default: false
 
   metron.port:
     description: "The port used to emit dropsonde messages to the Metron agent."

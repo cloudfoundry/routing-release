@@ -1,5 +1,5 @@
 property_overrides:
-  routing:
+  routing_api:
     etcd:
       ca_cert: |-
         -----BEGIN CERTIFICATE-----
@@ -150,7 +150,6 @@ property_overrides:
         XCAuu6OuNcVb7RktBAzVJksp+fT5BeyYYm3KviaD2eXmRnJtpUSzN12VieyBX7Fx
         BSgiGpK7DUMYgC6mggfL8bPrhWG3B39Q+VC8B6K/Y29xe8HZQThhick=
         -----END RSA PRIVATE KEY-----
-  routing_api:
   skip_ssl_validation: true
   haproxy:
     health_check_port: 80

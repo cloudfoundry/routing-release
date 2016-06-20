@@ -269,6 +269,12 @@ properties:
     system_domain: (( config_from_cf.system_domain ))
     router_groups: (( property_overrides.routing_api.router_groups || meta.default_router_groups))
     max_ttl: (( property_overrides.routing_api.max_ttl || nil ))
+    etcd:
+      servers: (( property_overrides.routing_api.etcd.servers || config_from_cf.etcd.machines ))
+      ca_cert: (( property_overrides.routing_api.etcd.ca_cert || nil ))
+      client_cert: (( property_overrides.routing_api.etcd.client_cert || nil ))
+      client_key: (( property_overrides.routing_api.etcd.client_key || nil ))
+      require_ssl: (( property_overrides.routing_api.etcd.require_ssl || nil ))
   router_configurer:
     debug_addr: (( property_overrides.router_configurer.debug_addr ))
     tcp_stats_unix_socket: (( property_overrides.router_configurer.tcp_stats_unix_socket ))
@@ -291,13 +297,6 @@ properties:
     request_timeout_in_seconds: (( property_overrides.haproxy.request_timeout_in_seconds || 300 ))
     health_check_port: (( property_overrides.haproxy.health_check_port || 80 ))
   skip_ssl_validation: (( property_overrides.skip_ssl_validation || nil ))
-  routing:
-    etcd:
-      servers: (( property_overrides.etcd.machines || config_from_cf.etcd.machines ))
-      ca_cert: (( property_overrides.etcd.ca_cert || nil ))
-      client_cert: (( property_overrides.etcd.client_cert || nil ))
-      client_key: (( property_overrides.etcd.client_key || nil ))
-      require_ssl: (( property_overrides.etcd.require_ssl || nil ))
   bbs:
     api_location: (( "bbs.service.cf.internal:8889" ))
     ca_cert: (( config_from_diego.bbs.ca_cert ))
