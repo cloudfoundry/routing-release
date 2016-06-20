@@ -49,8 +49,8 @@ properties:
   tcp_emitter.oauth_secret:
     description: "Password for UAA client for the tcp emitter."
 
-  skip_ssl_validation:
-    description: "Skip OAuth TLS verification when communicating with UAA"
+  acceptance_tests.uaa.skip_ssl_validation:
+    description: "Skip TLS verification when communicating with UAA system domain"
     default: "false"
 
   acceptance_tests.system_domain:

@@ -309,6 +309,8 @@ properties:
     system_domain: (( config_from_cf.system_domain ))
     tcp_emitter:
       oauth_secret: (( config_from_cf.uaa.clients.tcp_emitter.secret ))
+    uaa:
+      skip_ssl_validation: (( config_from_cf.acceptance_tests.skip_ssl_validation ))
     cloud_controller:
       apps_domain: (( config_from_cf.acceptance_tests.apps_domain ))
       api: (( config_from_cf.acceptance_tests.api ))
