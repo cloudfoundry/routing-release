@@ -8,7 +8,6 @@ if [ "$1" == "--help" ]; then
   exit 0
 fi
 
-set -e
 set -x
 
 function has_upstream() {
@@ -16,6 +15,9 @@ function has_upstream() {
 }
 
 has_upstream && git pull
+
+# Do not set -e until after has_upstream check so that we always update submodules
+set -e
 
 if [[ "$(git --version | grep 'version 1.7')x" != "x" ]]; then
   git submodule foreach --recursive git submodule sync && git submodule update --init --recursive
