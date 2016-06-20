@@ -306,6 +306,7 @@ properties:
     tls_port: (( config_from_cf.uaa.ssl.port ))
   acceptance_tests:
     addresses: (( property_overrides.acceptance_tests.addresses ))
+    system_domain: (( config_from_cf.system_domain ))
     tcp_emitter:
       oauth_secret: (( config_from_cf.uaa.clients.tcp_emitter.secret ))
     cloud_controller:

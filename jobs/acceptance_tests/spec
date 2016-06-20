@@ -3,7 +3,6 @@ name: acceptance_tests
 
 templates:
   run.erb: bin/run
-  uaa_ca.crt.erb: config/certs/uaa/ca.crt
   config.json.erb: bin/config.json
 
 packages:
@@ -54,9 +53,5 @@ properties:
     description: "Skip OAuth TLS verification when communicating with UAA"
     default: "false"
 
-  uaa.tls_port:
-    description: "Port on which UAA is terminating TLS."
-
-  uaa.ca_cert:
-    decription : "Certificate authority for communication between clients and uaa."
-    default: ""
+  acceptance_tests.system_domain:
+    decription : "Domain for system components, e.g. bosh-lite.com"

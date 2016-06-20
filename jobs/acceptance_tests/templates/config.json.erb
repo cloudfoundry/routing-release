@@ -10,16 +10,13 @@ config = {
   use_http: p("acceptance_tests.cloud_controller.use_http"),
   skip_ssl_validation: p("acceptance_tests.cloud_controller.skip_ssl_validation"),
   oauth: {
-    token_endpoint: "https://uaa.service.cf.internal",
+    token_endpoint: 'https://uaa.' + p("acceptance_tests.system_domain"),
     client_name: "tcp_emitter",
     skip_ssl_validation: p("skip_ssl_validation"),
     client_secret: p("tcp_emitter.oauth_secret"),
-    port: p("uaa.tls_port"),
+    port: 443,
   }
 }
-if p("uaa.ca_cert") != ""
-  config["ca_certs"] = "/var/vcap/jobs/acceptance_tests/config/certs/uaa/ca.crt"
-end
 %>
 
 <%= JSON.pretty_generate(config) %>
