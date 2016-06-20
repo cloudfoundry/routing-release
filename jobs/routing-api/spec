@@ -5,6 +5,7 @@ templates:
   dns_health_check.erb: bin/dns_health_check
   etcd_ca.crt.erb: config/certs/etcd/ca.crt
   etcd_client.crt.erb: config/certs/etcd/client.crt
+  uaa_ca.crt.erb: config/certs/uaa/ca.crt
   etcd_client.key.erb: config/certs/etcd/client.key
   routing-api.yml.erb: config/routing-api.yml
 
@@ -62,6 +63,10 @@ properties:
   dns_health_check_host:
     description: "Host to ping for confirmation of DNS resolution"
     default: consul.service.cf.internal
+
+  uaa.ca_cert:
+    decription : "Certificate authority for communication between clients and uaa."
+    default: ""
 
   uaa.tls_port:
     description: "Secure Port on which UAA is running."

@@ -9,6 +9,9 @@ oauth:
   token_endpoint: uaa.service.cf.internal
   port: <%= p("uaa.tls_port") %>
   skip_ssl_validation: <%= p("skip_ssl_validation") %>
+  <% if p("uaa.ca_cert") != "" %>
+  ca_certs: "/var/vcap/jobs/routing-api/config/certs/uaa/ca.crt"
+  <% end %>
 debug_address: <%= p("routing_api.debug_address") %>
 statsd_client_flush_interval: <%= p("routing_api.statsd_client_flush_interval") %>
 router_groups: <%= p("routing_api.router_groups").to_yaml.gsub("---","") %>

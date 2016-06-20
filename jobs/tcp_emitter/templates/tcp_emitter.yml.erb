@@ -4,7 +4,9 @@ oauth:
   client_secret: <%= p("tcp_emitter.oauth_secret") %>
   port: <%= p("uaa.tls_port") %>
   skip_ssl_validation: <%= p("skip_ssl_validation") %>
-
+  <% if p("uaa.ca_cert") != "" %>
+  ca_certs: "/var/vcap/jobs/tcp_emitter/config/certs/uaa/ca.crt"
+  <% end %>
 routing_api:
   uri: http://routing-api.service.cf.internal
   port: 3000

@@ -302,6 +302,7 @@ properties:
     ca_cert: (( config_from_diego.bbs.ca_cert ))
     require_ssl: (( config_from_diego.bbs.require_ssl || nil ))
   uaa:
+    ca_cert: (( config_from_cf.uaa.ca_cert ))
     tls_port: (( config_from_cf.uaa.ssl.port ))
   acceptance_tests:
     addresses: (( property_overrides.acceptance_tests.addresses ))

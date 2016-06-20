@@ -7,6 +7,7 @@ templates:
   bbs_client.crt.erb: config/certs/bbs/client.crt
   bbs_client.key.erb: config/certs/bbs/client.key
   tcp_emitter.yml.erb: config/tcp_emitter.yml
+  uaa_ca.crt.erb: config/certs/uaa/ca.crt
 
 packages:
   - routing_utils
@@ -82,3 +83,7 @@ properties:
   metron.port:
     description: "The port used to emit dropsonde messages to the Metron agent."
     default: 3457
+
+  uaa.ca_cert:
+    decription: "Certificate authority for communication between clients and uaa."
+    default: ""

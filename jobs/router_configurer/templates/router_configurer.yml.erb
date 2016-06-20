@@ -4,6 +4,9 @@ oauth:
   client_secret: <%= p("router_configurer.oauth_secret") %>
   port: <%= p("uaa.tls_port") %>
   skip_ssl_validation: <%= p("skip_ssl_validation") %>
+  <% if p("uaa.ca_cert") != "" %>
+  ca_certs: "/var/vcap/jobs/router_configurer/config/certs/uaa/ca.crt"
+  <% end %>
 
 routing_api:
   uri: http://routing-api.service.cf.internal

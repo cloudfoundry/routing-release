@@ -45,6 +45,9 @@ oauth:
   client_secret: <%= p("uaa.clients.gorouter.secret") %>
   port: <%= p("uaa.ssl.port") %>
   skip_ssl_validation: <%= p("router.ssl_skip_validation") %>
+  <% if p("uaa.ca_cert") != "" %>
+  ca_certs: "/var/vcap/jobs/routing-api/config/certs/uaa/ca.crt"
+  <% end %>
 
 <% if p("routing_api.enabled") %>
 routing_api:

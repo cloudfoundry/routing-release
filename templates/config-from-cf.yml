@@ -26,6 +26,7 @@ config_from_cf:
   etcd:
     machines: (( merge ))
   uaa:
+    ca_cert: (( merge || nil ))
     port: (( merge ))
     ssl:
       port: (( merge ))

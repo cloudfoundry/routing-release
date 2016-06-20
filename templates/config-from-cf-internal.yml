@@ -26,6 +26,7 @@ config_from_cf:
     shared_secret: (( properties.metron_endpoint.shared_secret ))
   system_domain: (( properties.system_domain ))
   uaa:
+    ca_cert: (( properties.uaa.ca_cert ))
     port: (( properties.uaa.port ))
     ssl:
       port: (( properties.uaa.ssl.port ))
@@ -63,6 +64,7 @@ properties:
   metron_endpoint:
     shared_secret: (( merge ))
   uaa:
+    ca_cert:
     port:
     ssl:
       port:
