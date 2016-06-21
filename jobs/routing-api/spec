@@ -15,16 +15,16 @@ packages:
 
 properties:
   routing_api.max_ttl:
-    description: "The maximum ttl"
+    description: "String representing the maximum TTL a client can request for route registration."
     default: "120s"
   routing_api.auth_disabled:
     description: "Disables UAA authentication"
     default: false
   routing_api.metrics_reporting_interval:
-    description: "String representing interval for reporting metrics. Units: ms, s, m h"
+    description: "String representing interval for reporting the following metrics: total_http_subscriptions, total_http_routes, total_tcp_subscriptions, total_tcp_routes, total_token_errors, key_refresh_events. Units: ms, s, m h"
     default: "30s"
   routing_api.statsd_endpoint:
-    description: "The endpoint for the statsd server, defaults to the local metron agent"
+    description: "The endpoint for the statsd server used to translate the following metrics from statsd to dropsonde: total_http_subscriptions, total_http_routes, total_tcp_subscriptions, total_tcp_routes, total_token_errors, key_refresh_events."
     default: "localhost:8125"
   routing_api.debug_address:
     description: "Address at which to serve debug info"
@@ -65,11 +65,11 @@ properties:
     default: consul.service.cf.internal
 
   uaa.ca_cert:
-    decription : "Certificate authority for communication between clients and uaa."
+    decription : "Certificate authority for communication between clients and UAA."
     default: ""
 
   uaa.tls_port:
-    description: "Secure Port on which UAA is running."
+    description: "Port on which UAA is listening for TLS connections. This is required for obtaining a key to verify client OAuth tokens."
 
   routing_api.router_groups:
     description: "Array of router groups that will be seeded into routing_api database. Once some value is included with a deploy, subsequent changes to this property will be ignored. TCP Routing requires a router group of type: tcp."

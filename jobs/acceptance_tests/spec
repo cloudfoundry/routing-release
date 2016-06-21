@@ -27,20 +27,20 @@ properties:
     description: "A list of addresses which will be checked for TCP connectivity and features"
 
   acceptance_tests.cloud_controller.api:
-    description: The Elastic Runtime API endpoint URL
+    description: "URL of the Cloud Controller API"
 
   acceptance_tests.cloud_controller.apps_domain:
-    description: The Elastic Runtime Application Domain
+    description: "App domain that will be created"
 
   acceptance_tests.cloud_controller.admin_user:
-    description: The Elastic Runtime API admin user
+    description: "Cloud Controller admin user"
 
   acceptance_tests.cloud_controller.admin_password:
-    description: The Elastic Runtime API admin user's password
+    description: "Cloud Controller admin user's password"
 
   acceptance_tests.cloud_controller.skip_ssl_validation:
     default: false
-    description: Toggles cli verification of the Elastic Runtime API SSL certificate
+    description: "When true, CF CLI will be run with --skip-ssl-validation"
 
   acceptance_tests.cloud_controller.use_http:
     default: false
@@ -51,7 +51,7 @@ properties:
 
   acceptance_tests.uaa.skip_ssl_validation:
     description: "Skip TLS verification when communicating with UAA system domain"
-    default: "false"
+    default: false
 
   acceptance_tests.system_domain:
     decription : "Domain for system components, e.g. bosh-lite.com"
