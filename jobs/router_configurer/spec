@@ -28,7 +28,7 @@ properties:
     default: "1m"
 
   routing_api.auth_disabled:
-    description: "auth disabled setting of routing api"
+    description: "When false, routing_api requires oauth tokens for authentication."
     default: false
 
   router_configurer.oauth_secret:
