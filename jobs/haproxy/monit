@@ -1,9 +1,3 @@
-check file haproxy_config
-  with path /var/vcap/jobs/haproxy/config/haproxy.conf
-  if changed sha1 checksum then exec "/var/vcap/jobs/haproxy/bin/haproxy_ctl reload"
-  group vcap
-  depends on haproxy
-
 check process haproxy
   with pidfile /var/vcap/sys/run/haproxy-monitor/pid
   start program "/var/vcap/jobs/haproxy/bin/haproxy_ctl start"

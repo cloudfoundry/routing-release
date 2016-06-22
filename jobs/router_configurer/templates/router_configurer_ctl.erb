@@ -37,6 +37,7 @@ case $1 in
       -tcpLoadBalancerBaseConfig="/var/vcap/jobs/haproxy/config/haproxy.conf.template" \
       -config=$CONF_DIR/router_configurer.yml \
       -tcpLoadBalancerStatsUnixSocket=<%= p("router_configurer.tcp_stats_unix_socket") %> \
+      -haproxyReloader="/var/vcap/jobs/router_configurer/bin/haproxy_reloader" \
       -statsCollectionInterval=<%= p("router_configurer.tcp_stats_collection_interval") %> \
       -dropsondePort=<%=p("metron.port") %>
 

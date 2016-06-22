@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+
+PATH=/var/vcap/packages/haproxy/bin:/var/vcap/packages/haproxy-monitor/bin:$PATH
+DAEMON=$(which haproxy)
+CONFIG=/var/vcap/jobs/haproxy/config/haproxy.conf
+HAPROXY_PID_FILE=/var/vcap/sys/run/haproxy/pid
+
+test -x "${DAEMON}"
+test -f "${CONFIG}"
+
+"${DAEMON}" -f "${CONFIG}" -p "${HAPROXY_PID_FILE}" -D -sf $(cat $HAPROXY_PID_FILE) 0<&-

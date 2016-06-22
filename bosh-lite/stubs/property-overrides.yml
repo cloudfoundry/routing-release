@@ -151,8 +151,6 @@ property_overrides:
         BSgiGpK7DUMYgC6mggfL8bPrhWG3B39Q+VC8B6K/Y29xe8HZQThhick=
         -----END RSA PRIVATE KEY-----
   skip_ssl_validation: true
-  haproxy:
-    health_check_port: 80
   acceptance_tests:
     addresses:
       - "10.244.14.2"

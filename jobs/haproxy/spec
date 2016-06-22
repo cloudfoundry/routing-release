@@ -20,4 +20,4 @@ properties:
 
   haproxy.health_check_port:
     description: "Port that is used to check the health of HA-proxy"
-    default: 80
+    default: 8080

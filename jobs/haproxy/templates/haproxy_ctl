@@ -53,7 +53,7 @@ start_haproxy() {
         chown -R "${USER}":"${USER}" "$(dirname "${CONFIG}")"
         echo "$("${TIMESTAMP}"): Starting HAProxy"
         set +e
-        "${DAEMON}" -f "${CONFIG}" -D -p "${HAPROXY_PID_FILE}" 0<&-
+        exec chpst -u vcap:vcap "${DAEMON}" -f "${CONFIG}" -D -p "${HAPROXY_PID_FILE}" 0<&-
         RETVAL=$?
         set -e
         case "${RETVAL}" in
@@ -120,7 +120,7 @@ reload_haproxy() {
         ensure_dirs
         echo "$("${TIMESTAMP}"): reloading HAProxy"
         set +e
-        "${DAEMON}" -f "${CONFIG}" -p "${HAPROXY_PID_FILE}" -D -sf $(cat $HAPROXY_PID_FILE) 0<&-
+        exec chpst -u vcap:vcap "${DAEMON}" -f "${CONFIG}" -p "${HAPROXY_PID_FILE}" -D -sf $(cat $HAPROXY_PID_FILE) 0<&-
         RETVAL=$?
         set -e
         case "${RETVAL}" in

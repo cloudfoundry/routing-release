@@ -295,7 +295,7 @@ properties:
     session_name: (( property_overrides.tcp_emitter.session_name || nil ))
   haproxy:
     request_timeout_in_seconds: (( property_overrides.haproxy.request_timeout_in_seconds || 300 ))
-    health_check_port: (( property_overrides.haproxy.health_check_port || 80 ))
+    health_check_port: (( property_overrides.haproxy.health_check_port || nil ))
   skip_ssl_validation: (( property_overrides.skip_ssl_validation || nil ))
   bbs:
     api_location: (( "bbs.service.cf.internal:8889" ))
