@@ -69,7 +69,7 @@ properties:
     default: ""
 
   uaa.tls_port:
-    description: "Secure Port on which UAA is running."
+    description: "Port on which to connect via TLS to UAA to obtain token verification key."
 
   routing_api.router_groups:
     description: "Array of router groups that will be seeded into routing_api database. Once some value is included with a deploy, subsequent changes to this property will be ignored. TCP Routing requires a router group of type: tcp."
