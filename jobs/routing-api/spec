@@ -15,7 +15,7 @@ packages:
 
 properties:
   routing_api.max_ttl:
-    description: "The maximum ttl"
+    description: "String representing the maximum ttl a client can request for route registration."
     default: "120s"
   routing_api.auth_disabled:
     description: "Disables UAA authentication"
