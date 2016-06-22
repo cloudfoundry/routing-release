@@ -53,7 +53,7 @@ properties:
     default: false
 
   uaa.tls_port:
-    description: "Secure Port on which UAA is running."
+    description: "Port on which to connect via TLS to UAA to obtain token for Routing API."
 
   tcp_emitter.sync_interval:
     description: "Interval to sync with BBS to get latest route information."
