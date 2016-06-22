@@ -21,10 +21,10 @@ properties:
     description: "Disables UAA authentication"
     default: false
   routing_api.metrics_reporting_interval:
-    description: "String representing interval for reporting metrics. Units: ms, s, m h"
+    description: "String representing interval for reporting the following metrics: total_http_subscriptions, total_http_routes, total_tcp_subscriptions, total_tcp_routes, total_token_errors, key_refresh_events. Units: ms, s, m h"
     default: "30s"
   routing_api.statsd_endpoint:
-    description: "The endpoint for the statsd server, defaults to the local metron agent"
+    description: "The endpoint for the statsd server used to translate the following metrics from statsd to dropsonde: total_http_subscriptions, total_http_routes, total_tcp_subscriptions, total_tcp_routes, total_token_errors, key_refresh_events"
     default: "localhost:8125"
   routing_api.debug_address:
     description: "Address at which to serve debug info"
