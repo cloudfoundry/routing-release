@@ -67,7 +67,7 @@ properties:
     description: "Diego BBS Server endpoint url"
     default: "http://bbs.service.cf.internal:8889"
   bbs.require_ssl:
-    description: "enable ssl for all communication with the bbs"
+    description: "Enables mutual-TLS communication with Diego BBS"
     default: true
   bbs.ca_cert:
     description: "PEM-encoded CA certificate used to sign TLS certificate hosted by Diego BBS."
