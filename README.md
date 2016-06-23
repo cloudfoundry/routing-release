@@ -114,7 +114,7 @@ Finally, update your cf-release deployment to enable the Routing API included in
 
 ### Post Deploy Configuration
 
-Now that the release is deployed, you need to create a Shared Domain in CF and associate it with the TCP router group deployed with this release. You'll also need to update a quota to allow creation of TCP Routes.
+Now that the release is deployed, you need to create a Shared Domain in CF and associate it with the TCP router group deployed with this release.
 
 The CLI commands below require version 6.17 of the [cf CLI](https://github.com/cloudfoundry/cli), and must be run as admin.
 
@@ -134,6 +134,9 @@ The CLI commands below require version 6.17 of the [cf CLI](https://github.com/c
 	Creating shared domain tcp.bosh-lite.com as admin...
 	OK
 	```
+
+Note: For IAAS other than BOSH Lite, you will need to update a quota to grant permission for creating TCP routes. See [Deploying to Other IAAS](#deploying-to-other-iaas)
+
 - Update the default quota to allow creation of unlimited TCP Routes
 
 	Get the guid of the default org quota
@@ -144,7 +147,6 @@ The CLI commands below require version 6.17 of the [cf CLI](https://github.com/c
 	```
 	$ cf curl /v2/quota_definitions/44dff27d-96a2-44ed-8904-fb5ca8cbb298 -X PUT -d '{"total_reserved_route_ports": -1}'
 	```
-
 
 Note: If you receive this error: `FAILED This command requires the Routing API. Your targeted endpoint reports it is not enabled`. This is due to the CF CLI's `~/.cf/config.json` having an old cached `RoutingEndpoint` value. To fix this, just do a cf login again and this error should go away.
 
