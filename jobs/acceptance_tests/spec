@@ -51,7 +51,7 @@ properties:
 
   acceptance_tests.uaa.skip_ssl_validation:
     description: "Skip TLS verification when communicating with UAA system domain"
-    default: "false"
+    default: false
 
   acceptance_tests.system_domain:
     decription : "Domain for system components, e.g. bosh-lite.com"
