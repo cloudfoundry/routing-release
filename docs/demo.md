@@ -3,6 +3,23 @@ This page gives step by step instructions to do the TCP routing demo as done in 
 
 The demo at Cloud Foundry Summit 2016 was to push MQTT broker (`mosquitto`) as CF app and create and bind a TCP route to it. To showcase that MQTT broker running as CF app is accessible for publishing and subscribing using TCP route, a subscriber web app and publisher android app was used.
 
+## Pushing MQTT broker as CF app
+We will be using [mosquitto](http://mosquitto.org/) broker's docker image to push mqtt broker as CF app. We will use [toke/mosquitto](https://github.com/toke/docker-mosquitto) docker image.
+
+1. Make sure you have created tcp domain:
+    ```
+    cf create-shared-domain <tcp-domain> --router-group default-tcp
+    ```
+   Replace `<tcp-domain>` with the name of the domain you want to give to your tcp domain. Of course, here we are assuming that dns entries for above created tcp domain will resolve to load balancer in front of tcp router groups or if tcp routers have public IP addresses then it will resolve to tcp routers. This has to be done by the operator/administrator of your Cloud Foundry deployment.
+
+1. Push mosquitto as CF app as follows:
+    ```
+    cf push mqttbroker --docker-image toke/mosquitto -d <tcp-domain> --random-route
+    ```
+    This will download the required docker image and push it as CF app and create and bind a tcp route.
+
+1. Now you are ready to supply this tcp route information to your publisher and subscriber.
+
 ## Pushing MQTT subscriber app
 This web app subscribes to `accelerometer` topic of MQTT broker and displays the data published on this topic in a chart. It expects numeric data to be published on this topic.
 
@@ -48,22 +65,6 @@ This android app registers itself to accelerometer sensor of the device and publ
 
     <img src="images/android_landing_page.png" alt="Image of android app landing page" width="200px" height="300px"/>
 
-## Pushing MQTT broker as CF app
-We will be using [mosquitto](http://mosquitto.org/) broker's docker image to push mqtt broker as CF app. We will use [toke/mosquitto](https://github.com/toke/docker-mosquitto) docker image.
-
-1. Make sure you have created tcp domain:
-    ```
-    cf create-shared-domain <tcp-domain> --router-group default-tcp
-    ```
-   Replace `<tcp-domain>` with the name of the domain you want to give to your tcp domain. Of course, here we are assuming that dns entries for above created tcp domain will resolve to load balancer in front of tcp router groups or if tcp routers have public IP addresses then it will resolve to tcp routers. This has to be done by the operator/administrator of your Cloud Foundry deployment.
-
-1. Push mosquitto as CF app as follows:
-    ```
-    cf push mqttbroker --docker-image toke/mosquitto -d <tcp-domain> --random-route
-    ```
-    This will download the required docker image and push it as CF app and create and bind a tcp route.
-
-1. Now you are ready to supply this tcp route information to your publisher and subscriber.
 
 ## Putting it all together
 This is where we tie together the subscriber web app, android app and mqtt broker.
