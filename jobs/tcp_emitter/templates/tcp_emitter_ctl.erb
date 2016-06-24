@@ -51,6 +51,8 @@ case $1 in
       -bbsAddress=${bbs_api_url} \
       -debugAddr=<%= p("tcp_emitter.debug_addr") %> \
       -logLevel=<%= p("tcp_emitter.log_level") %> \
+      -routeTTL=<%= p("tcp_emitter.route_ttl")%> \
+      -syncInterval=<%= p("tcp_emitter.sync_interval")%> \
       -config=$CONF_DIR/tcp_emitter.yml \
       -dropsondePort=<%= p("metron.port") %>
 
