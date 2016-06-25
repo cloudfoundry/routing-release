@@ -6,7 +6,18 @@ The demo at Cloud Foundry Summit 2016 was to push MQTT broker (`mosquitto`) as C
 ## Pushing MQTT broker as CF app
 We will be using [mosquitto](http://mosquitto.org/) broker's docker image to push mqtt broker as CF app. We will use [toke/mosquitto](https://github.com/toke/docker-mosquitto) docker image.
 
-1. Make sure you have created tcp domain:
+1. Create a tcp domain if you don't have one.
+
+    To discover whether you have a TCP domain available:
+    ```
+    cf domains
+    Getting domains in org my-org as my-user...
+    name                                       status   type
+    example.com                                shared
+    tcp.example.com                            shared   tcp
+    ```
+    
+    If you don't find a domain of type tcp, create one as admin user:
     ```
     cf create-shared-domain <tcp-domain> --router-group default-tcp
     ```
@@ -31,14 +42,25 @@ This web app subscribes to `accelerometer` topic of MQTT broker and displays the
     cd sample-mqtt-subscriber/
     ```
 
-1. Build the project as follows:
+1. Build the project as follows.
+    
+    Install maven if you don't already have it. Maven require java:
+
+    ```
+    brew install Caskroom/cask/java
+    brew install maven
+    ```
+    
+    Once you have maven installed:
     ```
     mvn clean package
     ```
+    
+    
 
 1. Push the resulting jar as CF app
     ```
-    cf push mqttsub target/mqttsubscriber-0.0.1-SNAPSHOT.jar
+    cf push mqttsub -p target/mqttsubscriber-0.0.1-SNAPSHOT.jar
     ```
 
 1. Verify that the app is successfully deployed and running by hitting endpoint `mqttsub.<app-domain>`. You should see web page like this:
