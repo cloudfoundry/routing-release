@@ -90,11 +90,11 @@ property_overrides:
     tcp_stats_unix_socket: /var/vcap/jobs/haproxy/config/haproxy.sock
     tcp_stats_collection_interval: 1m
     log_level: info
-    debug_addr: ~
+    debug_address: ~
     starting_external_port: 50000
   tcp_emitter:
     log_level: debug
-    debug_addr: ~
+    debug_address: ~
     bbs:
       client_cert: |
         -----BEGIN CERTIFICATE-----

@@ -31,7 +31,7 @@ case $1 in
     echo $$ > /var/vcap/sys/run/router_configurer/router_configurer.pid
 
     exec chpst -u vcap:vcap /var/vcap/packages/router_configurer/bin/router-configurer \
-      -debugAddr=<%= p("router_configurer.debug_addr") %> \
+      -debugAddr=<%= p("router_configurer.debug_address") %> \
       -logLevel=<%= p("router_configurer.log_level") %> \
       -tcpLoadBalancerConfig="/var/vcap/jobs/haproxy/config/haproxy.conf" \
       -tcpLoadBalancerBaseConfig="/var/vcap/jobs/haproxy/config/haproxy.conf.template" \

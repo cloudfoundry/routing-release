@@ -11,7 +11,7 @@ packages:
   - router_configurer
 
 properties:
-  router_configurer.debug_addr:
+  router_configurer.debug_address:
     description: "Address at which to serve debug info"
     default: "0.0.0.0:17014"
 

@@ -276,7 +276,7 @@ properties:
       client_key: (( property_overrides.routing_api.etcd.client_key || nil ))
       require_ssl: (( property_overrides.routing_api.etcd.require_ssl || nil ))
   router_configurer:
-    debug_addr: (( property_overrides.router_configurer.debug_addr ))
+    debug_address: (( property_overrides.router_configurer.debug_address ))
     tcp_stats_unix_socket: (( property_overrides.router_configurer.tcp_stats_unix_socket ))
     tcp_stats_collection_interval: (( property_overrides.router_configurer.tcp_stats_collection_interval ))
     oauth_secret: (( config_from_cf.uaa.clients.tcp_router.secret ))
@@ -285,7 +285,7 @@ properties:
     bbs:
       client_cert: (( property_overrides.tcp_emitter.bbs.client_cert ))
       client_key: (( property_overrides.tcp_emitter.bbs.client_key ))
-    debug_addr: (( property_overrides.tcp_emitter.debug_addr ))
+    debug_address: (( property_overrides.tcp_emitter.debug_address ))
     log_level: (( property_overrides.tcp_emitter.log_level || nil ))
     oauth_secret: (( config_from_cf.uaa.clients.tcp_emitter.secret ))
     lock_ttl: (( property_overrides.tcp_emitter.lock_ttl || nil ))

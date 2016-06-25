@@ -15,7 +15,7 @@ packages:
   - router_configurer
 
 properties:
-  tcp_emitter.debug_addr:
+  tcp_emitter.debug_address:
     description: "Address at which to serve debug info"
     default: "0.0.0.0:17016"
 

@@ -49,7 +49,7 @@ case $1 in
       -consulCluster=<%= p("consul.servers") %> \
       -sessionName=<%= p("tcp_emitter.consul.session_name") %> \
       -bbsAddress=${bbs_api_url} \
-      -debugAddr=<%= p("tcp_emitter.debug_addr") %> \
+      -debugAddr=<%= p("tcp_emitter.debug_address") %> \
       -logLevel=<%= p("tcp_emitter.log_level") %> \
       -routeTTL=<%= p("tcp_emitter.route_ttl")%> \
       -syncInterval=<%= p("tcp_emitter.sync_interval")%> \
