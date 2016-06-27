@@ -307,8 +307,6 @@ properties:
   acceptance_tests:
     addresses: (( property_overrides.acceptance_tests.addresses ))
     system_domain: (( config_from_cf.system_domain ))
-    tcp_emitter:
-      oauth_secret: (( config_from_cf.uaa.clients.tcp_emitter.secret ))
     uaa:
       skip_ssl_validation: (( config_from_cf.acceptance_tests.skip_ssl_validation ))
     cloud_controller:
