@@ -87,7 +87,6 @@ property_overrides:
         -----END RSA PRIVATE KEY-----
       require_ssl: false
   router_configurer:
-    tcp_stats_unix_socket: /var/vcap/jobs/haproxy/config/haproxy.sock
     tcp_stats_collection_interval: 1m
     log_level: info
     debug_address: ~

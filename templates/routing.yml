@@ -277,7 +277,6 @@ properties:
       require_ssl: (( property_overrides.routing_api.etcd.require_ssl || nil ))
   router_configurer:
     debug_address: (( property_overrides.router_configurer.debug_address ))
-    tcp_stats_unix_socket: (( property_overrides.router_configurer.tcp_stats_unix_socket ))
     tcp_stats_collection_interval: (( property_overrides.router_configurer.tcp_stats_collection_interval ))
     oauth_secret: (( config_from_cf.uaa.clients.tcp_router.secret ))
     log_level: (( property_overrides.router_configurer.log_level || nil ))
