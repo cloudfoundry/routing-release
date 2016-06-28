@@ -19,5 +19,5 @@ properties:
     default: 300
 
   haproxy.health_check_port:
-    description: "Port that is used to check the health of HA-proxy"
+    description: "Load balancer in front of TCP Routers should be configured to check the health of TCP Router instances by establishing a TCP connection on this port"
     default: 1024
