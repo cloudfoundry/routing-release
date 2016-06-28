@@ -44,10 +44,6 @@ properties:
     description: "interval to wait before retrying a failed lock acquisition"
     default: "5s"
 
-  tcp_emitter.consul.session_name:
-    description: "consul session name"
-    default: "tcp-emitter"
-
   skip_ssl_validation:
     description: Skip TLS verification when talking to UAA
     default: false

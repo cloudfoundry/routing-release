@@ -47,7 +47,6 @@ case $1 in
       -lockTTL=<%= p("tcp_emitter.lock_ttl") %> \
       -lockRetryInterval=<%= p("tcp_emitter.lock_retry_interval") %> \
       -consulCluster=<%= p("consul.servers") %> \
-      -sessionName=<%= p("tcp_emitter.consul.session_name") %> \
       -bbsAddress=${bbs_api_url} \
       -debugAddr=<%= p("tcp_emitter.debug_address") %> \
       -logLevel=<%= p("tcp_emitter.log_level") %> \
