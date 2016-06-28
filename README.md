@@ -63,7 +63,11 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 	bosh upload stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent
 	```
 - Install spiff, a tool for generating BOSH manifests. spiff is required for running the scripts in later steps. Stable binaries can be downloaded from [Spiff Releases](https://github.com/cloudfoundry-incubator/spiff/releases).
-- Deploy [cf-release](https://github.com/cloudfoundry/cf-release) and [diego-release](https://github.com/cloudfoundry-incubator/diego-release). Note: for IAAS other than BOSH Lite, cf-release must be configured so that UAA terminates SSL; see [Deploying to Other IAAS](#deploying-to-other-iaas).
+- Deploy [cf-release](https://github.com/cloudfoundry/cf-release) and [diego-release](https://github.com/cloudfoundry-incubator/diego-release).
+
+> **Note**: for IAAS other than BOSH Lite, cf-release must be configured so
+> that UAA terminates SSL; see [Deploying to Other
+> IAAS](#deploying-to-other-iaas).
 
 ### Upload Release, Generate Manifest, and Deploy
 1. Clone this repo and sync submodules; see [Get the code](#get-the-code).
