@@ -90,7 +90,9 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 
         ./scripts/generate-bosh-lite-manifest <cf_deployment_manifest> <diego_deployment_manifest>
 
-  Note: for IAAS other than BOSH Lite, consider whether the reservable port range should be modified; see [Deploying to Other IAAS](#deploying-to-other-iaas).
+> **Note**: for IAAS other than BOSH Lite, consider whether the reservable port
+> range should be modified; see [Deploying to Other
+> IAAS](#deploying-to-other-iaas).
 
 ### Redeploy cf-release to Enable the Routing API
 
@@ -135,7 +137,9 @@ The CLI commands below require version 6.17 of the [cf CLI](https://github.com/c
 	OK
 	```
 
-Note: For IAAS other than BOSH Lite, you will need to update a quota to grant permission for creating TCP routes. See [Deploying to Other IAAS](#deploying-to-other-iaas)
+> **Note**: For IAAS other than BOSH Lite, you will need to update a quota to
+> grant permission for creating TCP routes. See [Deploying to Other
+> IAAS](#deploying-to-other-iaas)
 
 - Update the default quota to allow creation of unlimited TCP Routes
 
@@ -148,7 +152,10 @@ Note: For IAAS other than BOSH Lite, you will need to update a quota to grant pe
 	$ cf curl /v2/quota_definitions/44dff27d-96a2-44ed-8904-fb5ca8cbb298 -X PUT -d '{"total_reserved_route_ports": -1}'
 	```
 
-Note: If you receive this error: `FAILED This command requires the Routing API. Your targeted endpoint reports it is not enabled`. This is due to the CF CLI's `~/.cf/config.json` having an old cached `RoutingEndpoint` value. To fix this, just do a cf login again and this error should go away.
+> **Note**: If you receive this error: `FAILED This command requires the
+> Routing API. Your targeted endpoint reports it is not enabled`. This is due
+> to the CF CLI's `~/.cf/config.json` having an old cached `RoutingEndpoint`
+> value. To fix this, just do a cf login again and this error should go away.
 
 ### Create a TCP Route
 
