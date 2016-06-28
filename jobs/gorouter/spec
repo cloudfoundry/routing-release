@@ -135,10 +135,10 @@ properties:
     description: "Port on which routing-api is running."
     default: 3000
   routing_api.auth_disabled:
-    description: "Disables UAA authentication"
+    description: "When false, routing_api requires oauth tokens for authentication."
     default: false
   routing_api.enabled:
-    description: "Enable the GoRouter to receive routes from the Routing API"
+    description: "When enabled, GoRouter will fetch HTTP routes from the Routing API in addition to routes obtained via NATS"
     default: false
   router.enable_access_log_streaming:
     description: "Enables streaming of access log to syslog. Warning: this comes with a performance cost; due to higher I/O, max request rate is reduced."

@@ -49,24 +49,24 @@ properties:
     default: false
 
   uaa.tls_port:
-    description: "Secure Port on which UAA is running."
+    description: "Port on which to connect via TLS to UAA to obtain token for Routing API."
 
   tcp_emitter.sync_interval:
     description: "Interval to sync with BBS to get latest route information."
     default: "60s"
 
   tcp_emitter.route_ttl:
-    description: "TTL for tcp route"
+    description: "TTL used for routes registered with routing api"
     default: "120s"
 
   bbs.api_location:
     description: "Diego BBS Server endpoint url"
     default: "http://bbs.service.cf.internal:8889"
   bbs.require_ssl:
-    description: "enable ssl for all communication with the bbs"
+    description: "Enables mutual-TLS communication with Diego BBS"
     default: true
   bbs.ca_cert:
-    description: "PEM-encoded CA certificate"
+    description: "PEM-encoded CA certificate used to sign TLS certificate hosted by Diego BBS."
 
   consul.servers:
     description: "comma-separated list of consul server URLs (scheme://ip:port)"
