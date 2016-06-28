@@ -234,10 +234,15 @@ To simulate this health check manually on BOSH-lite:
   ```
 
 ### Configuring Port Ranges and DNS
-1. Configure your load balancer to forward a range of ports to the IPs of the TCP Router instances. By default, this release assumes the range 1024-65535 will be forwarded.
-- If your load balancer is not configured to forward ports 1024-65535, you must configure this release with the available port range using deployment manifest property `routing-api.router_groups.reservable_ports`
-- Configure DNS to resolve a domain name to the load balancer.  
-- After deploying this release you must configure the DNS name in CF as a Shared Domain as an admin user, associating it with the Router Group.
+1. Configure your load balancer to forward a range of ports to the IPs of the
+   TCP Router instances. By default, this release assumes the range 1025-65535
+   will be forwarded.
+- If your load balancer is not configured to forward ports 1025-65535, you must
+  configure this release with the available port range using deployment
+  manifest property `routing-api.router_groups.reservable_ports`
+- Configure DNS to resolve a domain name to the load balancer.
+- After deploying this release you must configure the DNS name in CF as a
+  Shared Domain as an admin user, associating it with the Router Group.
   ```
   Getting router groups as admin ...
 
@@ -248,19 +253,28 @@ To simulate this health check manually on BOSH-lite:
   ```
 
 > **WARNING**: Configuring an app to use the same port as the HAProxy health
-> check port will result in periodic 503 errors from the TCP router when trying
-> to reach the app. Ensure the reservable port range does not include the
-> HAProxy health check port.
+> check port (default 1024) will result in periodic 503 errors from the TCP
+> router when trying to reach the app. Ensure the reservable port range does
+> not include the HAProxy health check port.
 
 #### Capacity Limits for Ports and TCP Routes
 One port is dedicated for each TCP route in CF; in other words, TCP routes may not share ports.
 
-A Router Group represents a horizontally scalable cluster of identically configured routers. A router group is limited to maximum port range 1024-65535. Currently this release supports one router group, so the maximum number of TCP routes than can be created in CF is 64511 (65535-1024). Eventually we may support multiple router groups and/or TCP routes that share a port.
+A Router Group represents a horizontally scalable cluster of identically
+configured routers. A router group is limited to maximum port range 1025-65535.
+Currently this release supports one router group, so the maximum number of TCP
+routes than can be created in CF is 64510 (65535-1025). Eventually we may
+support multiple router groups and/or TCP routes that share a port.
 
 #### Using Multiple Load Balancers to Maximize Port Capacity
 Operators may not be able to offer 65535 ports on a given load balancer. The load balancer may support other systems in addition to Cloud Foundry. AWS ELBs can be configured to listen on a maximum of 100 ports.
 
-Multiple load balancers may be used to contribute to the pool of ports available for creating TCP routes. E.g. LB1 listens on ports 1024-29999, LB2 listens on ports 30000-65535, both load balancers forward requests for these ports to the instances of the router group. Configure `routing-api.router_groups.reservable_ports` manifest property with the combined port range. Ports must not overlap.
+Multiple load balancers may be used to contribute to the pool of ports
+available for creating TCP routes. E.g. LB1 listens on ports 1025-29999, LB2
+listens on ports 30000-65535, both load balancers forward requests for these
+ports to the instances of the router group. Configure
+`routing-api.router_groups.reservable_ports` manifest property with the
+combined port range. Ports must not overlap.
 
 You must configure a DNS name to resolve to each load balancer you use for TCP routing. E.g. `tcp1.cfapps.example.com` resolves to LB1, `tcp2.cfapps.example.com` resolves to LB2. Each domain name must be added as a Shared Domain to CF, for developers to create routes from.
 
