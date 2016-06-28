@@ -236,6 +236,11 @@ To simulate this health check manually on BOSH-lite:
   $ cf create-shared-domain tcp.cfapps.example.com --router-group default-tcp
   ```
 
+> **WARNING**: Configuring an app to use the same port as the HAProxy health
+> check port will result in periodic 503 errors from the TCP router when trying
+> to reach the app. Ensure the reservable port range does not include the
+> HAProxy health check port.
+
 #### Capacity Limits for Ports and TCP Routes
 One port is dedicated for each TCP route in CF; in other words, TCP routes may not share ports.
 
