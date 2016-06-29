@@ -311,8 +311,16 @@ bosh run errand router_acceptance_tests
 See the README for [Routing Acceptance Tests](https://github.com/cloudfoundry-incubator/routing-acceptance-tests)
 
 ## Routing API
-
 For details refer to [Routing API](https://github.com/cloudfoundry-incubator/routing-api/blob/master/README.md).
 
 ## TCP Router demo
 For step by step instructions on TCP router demo done at Cloud Foundry Summit 2016, refer to [TCP Router demo](docs/demo.md)
+
+## Metrics Documentation
+For documentation on metrics available for streaming from Routing components
+through the Loggregator
+[Firehose](https://docs.cloudfoundry.org/loggregator/architecture.html), visit
+the [CloudFoundry
+Documentation](http://docs.cloudfoundry.org/loggregator/all_metrics.html#routing).
+You can use the [NOAA Firehose sample app](https://github.com/cloudfoundry/noaa)
+to quickly consume metrics from the Firehose.
