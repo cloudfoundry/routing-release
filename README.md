@@ -181,6 +181,20 @@ The CLI commands below require version 6.17 of the [cf CLI](https://github.com/c
 
 BOSH Lite is a single VM environment intended for development. When deploying this release alongside Cloud Foundry in a distributed configuration, where jobs run on their own VMs, consider the following.
 
+### UAA configuration
+
+UAA needs to be configured with correct hostname so that routing components can
+contact it. If you are using the manifest generation scripts for cf-release on
+BOSH Lite, the following properties have been enabled by default.
+
+```
+properties:
+  zones:
+    internal:
+      hostnames:
+      - uaa.service.cf.internal
+```
+
 ### UAA SSL must be enabled before deploying this release
 
 The BOSH Lite manifest generation scripts use templates that have enabled the following properties by default. When generating a manifest for any other environment, you'll need to update your cf-release deployment with these manifest properties before generating the manifest for this release. This release's manifest generation scripts pull the value of `uaa.ssl.port` from the cf-release manifest.
