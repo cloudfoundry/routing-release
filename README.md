@@ -76,7 +76,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
     * Deploy the latest final release (master branch)
 
             cd ~/workspace/routing-release
-            bosh -n upload release releases/cf-routing-<lastest_version>.yml
+            bosh -n upload release releases/routing-<lastest_version>.yml
             ./scripts/generate-bosh-lite-manifest
             bosh -n deploy
 
