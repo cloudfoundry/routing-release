@@ -42,7 +42,7 @@ properties:
     default: "info"
 
   routing_api.etcd.servers:
-    description: "When require_ssl:false this should be an array of IP addresses for the etcd cluster. When require_ssl:true, this should be the internal DNS name for the etcd cluster."
+    description: "Must be the internal DNS name for the etcd cluster when require_ssl:true. Otherwise an array of IP addresses is supported. "
   routing_api.etcd.client_cert:
      description: "Client certificate for communication between clients and etcd"
      default: ""
