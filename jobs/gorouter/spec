@@ -96,7 +96,7 @@ properties:
     description: "Log level for router"
     default: "info"
   router.enable_proxy:
-    description: "Enables support for the commonly implemented PROXY protocol, allowing TCP proxies to pass along upstream client information."
+    description: "Enables support for the popular PROXY protocol, allowing downstream load balancers that do not support HTTP to pass along client information."
     default: false
 
   nats.user:
