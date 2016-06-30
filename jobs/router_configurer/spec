@@ -4,6 +4,7 @@ name: router_configurer
 templates:
   router_configurer_ctl.erb: bin/router_configurer_ctl
   haproxy_reloader: bin/haproxy_reloader
+  pre-start: bin/pre-start
   router_configurer.yml.erb: config/router_configurer.yml
   uaa_ca.crt.erb: config/certs/uaa/ca.crt
 

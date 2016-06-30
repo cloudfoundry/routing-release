@@ -3,6 +3,7 @@ name: tcp_emitter
 
 templates:
   tcp_emitter_ctl.erb: bin/tcp_emitter_ctl
+  pre-start: bin/pre-start
   bbs_ca.crt.erb: config/certs/bbs/ca.crt
   bbs_client.crt.erb: config/certs/bbs/client.crt
   bbs_client.key.erb: config/certs/bbs/client.key

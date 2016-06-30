@@ -6,6 +6,7 @@ CONF_DIR=/var/vcap/jobs/tcp_emitter/config
 PIDFILE=$RUN_DIR/tcp_emitter.pid
 
 source /var/vcap/packages/routing_utils/pid_utils.sh
+source /var/vcap/packages/routing_utils/syslog_utils.sh
 
 <% if p("bbs.require_ssl") %>
   bbs_sec_flags=" \
@@ -33,17 +34,11 @@ case $1 in
 
     pid_guard $PIDFILE "tcp_emitter"
 
-    mkdir -p $RUN_DIR
-    mkdir -p $LOG_DIR
-
-    chown -R vcap:vcap $RUN_DIR
-    chown -R vcap:vcap $LOG_DIR
-
-    tee_output_to_sys_log "${LOG_DIR}"
+    tee_output_to_sys_log "${LOG_DIR}" "tcp_emitter"
 
     echo $$ > /var/vcap/sys/run/tcp_emitter/tcp_emitter.pid
 
-    exec chpst -u vcap:vcap /var/vcap/packages/tcp_emitter/bin/tcp-emitter ${bbs_sec_flags} \
+    exec /var/vcap/packages/tcp_emitter/bin/tcp-emitter ${bbs_sec_flags} \
       -lockTTL=<%= p("tcp_emitter.lock_ttl") %> \
       -lockRetryInterval=<%= p("tcp_emitter.lock_retry_interval") %> \
       -consulCluster=<%= p("consul.servers") %> \

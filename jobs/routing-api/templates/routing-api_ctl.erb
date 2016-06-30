@@ -5,6 +5,7 @@ LOG_DIR=/var/vcap/sys/log/routing-api
 PIDFILE=$RUN_DIR/routing-api.pid
 
 source /var/vcap/packages/routing_utils/pid_utils.sh
+source /var/vcap/packages/routing_utils/syslog_utils.sh
 
 <%
   def discover_external_ip
@@ -28,13 +29,7 @@ case $1 in
   start)
     pid_guard $PIDFILE "routing-api"
 
-    mkdir -p $RUN_DIR
-    mkdir -p $LOG_DIR
-
-    chown -R vcap:vcap $RUN_DIR
-    chown -R vcap:vcap $LOG_DIR
-
-    tee_output_to_sys_log "${LOG_DIR}"
+    tee_output_to_sys_log "${LOG_DIR}" "routing_api"
 
     set +e
     host <%= p("dns_health_check_host") %>
@@ -50,7 +45,7 @@ case $1 in
     # ulimit -n 100000
 
     routing_port=3000
-    exec chpst -u vcap:vcap /var/vcap/packages/routing-api/bin/routing-api \
+    exec /var/vcap/packages/routing-api/bin/routing-api \
          -config /var/vcap/jobs/routing-api/config/routing-api.yml \
          -port $routing_port \
          -logLevel=<%= p("routing_api.log_level") %> \

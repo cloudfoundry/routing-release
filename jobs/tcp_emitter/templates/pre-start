@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -e
+
+RUN_DIR=/var/vcap/sys/run/tcp_emitter
+LOG_DIR=/var/vcap/sys/log/tcp_emitter
+
+function create_directories() {
+    mkdir -p $RUN_DIR
+    chown -R vcap:vcap $RUN_DIR
+
+    mkdir -p $LOG_DIR
+    chown -R vcap:vcap $LOG_DIR
+}
+
+create_directories
+
+exit 0

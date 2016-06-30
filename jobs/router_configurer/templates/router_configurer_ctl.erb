@@ -6,6 +6,7 @@ CONF_DIR=/var/vcap/jobs/router_configurer/config
 PIDFILE=$RUN_DIR/router_configurer.pid
 
 source /var/vcap/packages/routing_utils/pid_utils.sh
+source /var/vcap/packages/routing_utils/syslog_utils.sh
 
 case $1 in
 
@@ -20,17 +21,16 @@ case $1 in
 
     pid_guard $PIDFILE "router_configurer"
 
-    mkdir -p $RUN_DIR
-    mkdir -p $LOG_DIR
+    SCRIPT=$(basename $0)
 
-    chown -R vcap:vcap $RUN_DIR
-    chown -R vcap:vcap $LOG_DIR
+    exec 1>> $LOG_DIR/$SCRIPT.log
+    exec 2>> $LOG_DIR/$SCRIPT.err.log
 
-    tee_output_to_sys_log "${LOG_DIR}"
+    tee_output_to_sys_log "${LOG_DIR}" "router_configurer"
 
     echo $$ > /var/vcap/sys/run/router_configurer/router_configurer.pid
 
-    exec chpst -u vcap:vcap /var/vcap/packages/router_configurer/bin/router-configurer \
+    exec /var/vcap/packages/router_configurer/bin/router-configurer \
       -debugAddr=<%= p("router_configurer.debug_address") %> \
       -logLevel=<%= p("router_configurer.log_level") %> \
       -tcpLoadBalancerConfig="/var/vcap/jobs/haproxy/config/haproxy.conf" \
