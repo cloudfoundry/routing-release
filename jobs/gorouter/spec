@@ -4,7 +4,8 @@ name: gorouter
 description: "The Router maintains a list of live routes for the applications running on each DEA. The Router load balances requests (based on their Host header) between each application instance registered for a specific route. It requires to be behind a load balancer that can terminate SSL connections."
 
 templates:
-  gorouter_ctl.erb: bin/gorouter_ctl
+  gorouter_ctl: bin/gorouter_ctl
+  run_gorouter.erb: bin/run_gorouter
   dns_health_check.erb: bin/dns_health_check
   gorouter.yml.erb: config/gorouter.yml
   gorouter_logrotate.cron.erb: config/gorouter_logrotate.cron
