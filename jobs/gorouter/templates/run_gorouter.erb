@@ -6,9 +6,6 @@ PIDFILE=$RUN_DIR/gorouter.pid
 
 source /var/vcap/packages/routing_utils/syslog_utils.sh
 
-mkdir -p $RUN_DIR
-mkdir -p $LOG_DIR
-
 <% if p("routing_api.enabled") %>
   set +e
 

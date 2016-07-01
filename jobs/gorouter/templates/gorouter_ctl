@@ -1,6 +1,8 @@
 #!/bin/bash -e
 
-PIDFILE=/var/vcap/sys/run/gorouter/gorouter.pid
+RUN_DIR=/var/vcap/sys/run/gorouter
+LOG_DIR=/var/vcap/sys/log/gorouter
+PIDFILE=${RUN_DIR}/gorouter.pid
 
 source /var/vcap/packages/routing_utils/pid_utils.sh
 
@@ -8,6 +10,11 @@ case $1 in
 
   start)
     pid_guard $PIDFILE "gorouter"
+
+    mkdir -p $RUN_DIR
+    chown -R vcap:vcap $RUN_DIR
+    mkdir -p $LOG_DIR
+    chown -R vcap:vcap $LOG_DIR
 
     if running_in_container; then
         echo "Not setting /proc/sys/net/ipv4 parameters, since I'm running inside a linux container"
