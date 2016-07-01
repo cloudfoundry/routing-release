@@ -240,18 +240,19 @@ The TCP Router, TCP Emitter, and Routing API are stateless and horizontally scal
 
 ### Configuring Your Load Balancer to Health Check TCP Routers
 
-In order to determine whether TCP Router instances are eligible for routing requests to, configure your load balancer to periodically check the health of each instance by attempting a TCP connection. By default the health check port is 80. This port can be configured using the `haproxy.health_check_port` property in the property-overrides.yml stub file.
+In order to determine whether TCP Router instances are eligible for routing requests to, configure your load balancer to periodically check the health of each instance by attempting a TCP connection. By default the health check port is 1024. This port can be configured using the `haproxy.health_check_port` property in the `property-overrides.yml` stub file.
 
-To simulate this health check manually on BOSH-lite:
+To simulate this health check manually:
   ```
-  nc -z 10.244.14.2 80
+  nc -vz <tcp router IP> 1024
+  Connection to <tcp router IP> 1024 port [tcp/*] succeeded!
   ```
 
 ### Configuring Port Ranges and DNS
 1. Configure your load balancer to forward a range of ports to the IPs of the
-   TCP Router instances. By default, this release assumes the range 1025-65535
+   TCP Router instances. By default, this release assumes the range 1024-65535
    will be forwarded.
-- If your load balancer is not configured to forward ports 1025-65535, you must
+- If your load balancer is not configured to forward ports 1024-65535, you must
   configure this release with the available port range using deployment
   manifest property `routing-api.router_groups.reservable_ports`
 - Configure DNS to resolve a domain name to the load balancer.
@@ -275,16 +276,16 @@ To simulate this health check manually on BOSH-lite:
 One port is dedicated for each TCP route in CF; in other words, TCP routes may not share ports.
 
 A Router Group represents a horizontally scalable cluster of identically
-configured routers. A router group is limited to maximum port range 1025-65535.
+configured routers. A router group is limited to maximum port range 1024-65535.
 Currently this release supports one router group, so the maximum number of TCP
-routes than can be created in CF is 64510 (65535-1025). Eventually we may
+routes than can be created in CF is 64512 (65535-1024). Eventually we may
 support multiple router groups and/or TCP routes that share a port.
 
 #### Using Multiple Load Balancers to Maximize Port Capacity
-Operators may not be able to offer 65535 ports on a given load balancer. The load balancer may support other systems in addition to Cloud Foundry. AWS ELBs can be configured to listen on a maximum of 100 ports.
+Operators may not be able to offer 64512 ports on a given load balancer. The load balancer may support other systems in addition to Cloud Foundry. AWS ELBs can be configured to listen on a maximum of 100 ports.
 
 Multiple load balancers may be used to contribute to the pool of ports
-available for creating TCP routes. E.g. LB1 listens on ports 1025-29999, LB2
+available for creating TCP routes. E.g. LB1 listens on ports 1024-29999, LB2
 listens on ports 30000-65535, both load balancers forward requests for these
 ports to the instances of the router group. Configure
 `routing-api.router_groups.reservable_ports` manifest property with the
