@@ -240,12 +240,12 @@ The TCP Router, TCP Emitter, and Routing API are stateless and horizontally scal
 
 ### Configuring Your Load Balancer to Health Check TCP Routers
 
-In order to determine whether TCP Router instances are eligible for routing requests to, configure your load balancer to periodically check the health of each instance by attempting a TCP connection. By default the health check port is 1024. This port can be configured using the `haproxy.health_check_port` property in the `property-overrides.yml` stub file.
+In order to determine whether TCP Router instances are eligible for routing requests to, configure your load balancer to periodically check the health of each instance by attempting a TCP connection. By default the health check port is 80. This port can be configured using the `haproxy.health_check_port` property in the `property-overrides.yml` stub file.
 
 To simulate this health check manually:
   ```
-  nc -vz <tcp router IP> 1024
-  Connection to <tcp router IP> 1024 port [tcp/*] succeeded!
+  nc -vz <tcp router IP> 80
+  Connection to <tcp router IP> port 80 [tcp/http] succeeded!
   ```
 
 ### Configuring Port Ranges and DNS
