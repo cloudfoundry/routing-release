@@ -7,10 +7,6 @@ haproxy/pcre-8.37.tar.gz:
   object_id: 038b1b6f-d7be-4b0d-9260-b2cfc0597480
   sha: 4a24a20c61347d8da4edc86d5475aaf70ac146bb
   size: 2041593
-golang/go1.5.3.linux-amd64.tar.gz:
-  object_id: d4267154-d787-4ecc-935c-22a5fed11f82
-  sha: c5377eca4837968d043b681f00a852a262f0f5f6
-  size: 80147269
 rtr/rtr-linux-amd64.tgz:
   object_id: 4a131d23-7f4f-4811-88cb-c6401171b11d
   sha: 4d39d58a8dae9ed8505955e6811176af0fc86005
