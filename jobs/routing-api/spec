@@ -74,6 +74,7 @@ properties:
 
   routing_api.router_groups:
     description: "Array of router groups that will be seeded into routing_api database. Once some value is included with a deploy, subsequent changes to this property will be ignored. TCP Routing requires a router group of type: tcp."
+    default: []
     example: |
       - name: default-tcp
         reservable_ports: 1025-10000,12000
