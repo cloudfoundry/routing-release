@@ -6,4 +6,6 @@ builds:
     version: 0.133.0
   d0fba107-1949-44d1-84a8-92f09a36c236:
     version: 0.134.0
+  8f421475-bfee-4530-b312-b27eb446b52e:
+    version: 0.135.0
 format-version: '2'
