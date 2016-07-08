@@ -186,15 +186,16 @@ BOSH Lite is a single VM environment intended for development. When deploying th
 UAA needs to be configured with correct hostname so that routing components can
 contact it. If you are using the manifest generation scripts for cf-release on
 BOSH Lite, the following properties have been enabled by default. However, if
-you override the `zones.internal.hostnames` property yourself, make sure to
+you override the `uaa.zones.internal.hostnames` property yourself, make sure to
 include `uaa.service.cf.internal` in your stub.
 
 ```
 properties:
-  zones:
-    internal:
-      hostnames:
-      - uaa.service.cf.internal
+  uaa:
+    zones:
+      internal:
+        hostnames:
+        - uaa.service.cf.internal
 ```
 
 ### UAA SSL must be enabled before deploying this release
