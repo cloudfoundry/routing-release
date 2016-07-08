@@ -1,0 +1,97 @@
+---
+packages:
+- name: routing-api
+  version: 7d598f94139e8f443c83c510e059bfd9c03c8c46
+  fingerprint: 7d598f94139e8f443c83c510e059bfd9c03c8c46
+  sha1: fed24859f6766a76055003d5769a370da5253b22
+  dependencies:
+  - golang1.5
+- name: tcp_emitter
+  version: 5ec2b0413f38e2e2f0af371442f8427a74a0189b
+  fingerprint: 5ec2b0413f38e2e2f0af371442f8427a74a0189b
+  sha1: 28ba6ffb7502374948dacef71444bd2fd0b7da4f
+  dependencies:
+  - golang1.5
+- name: router_configurer
+  version: 787ce40b9fd1fbcad3586abe7f926d3f61dbfd99
+  fingerprint: 787ce40b9fd1fbcad3586abe7f926d3f61dbfd99
+  sha1: 17dcc4d3ba64c106626fec2a9431550714d76d59
+  dependencies:
+  - golang1.5
+- name: acceptance_tests
+  version: b249002ebe8835127161d8917590442b73783a5e
+  fingerprint: b249002ebe8835127161d8917590442b73783a5e
+  sha1: c3b479560afb531f299f0b1f832d6a9af53639b3
+  dependencies:
+  - golang1.5
+  - rtr
+- name: routing_utils
+  version: b0bb90891cffb02c0fdcf6925361b3771541dcd6
+  fingerprint: b0bb90891cffb02c0fdcf6925361b3771541dcd6
+  sha1: 5f75a7c9ba68ff83d80bd3c0d33b162d2316610f
+  dependencies: []
+- name: haproxy-monitor
+  version: 47de244a2ecaf370f05568481119dce37778734c
+  fingerprint: 47de244a2ecaf370f05568481119dce37778734c
+  sha1: ef129d5055f294bd2cce6e3a3e59da21ff6b0162
+  dependencies:
+  - golang1.5
+- name: cf-cli
+  version: f13c72d227e0a123ac098436a9a81a910b123c71
+  fingerprint: f13c72d227e0a123ac098436a9a81a910b123c71
+  sha1: a73b89222093a50d2686871efdc14b2f767e9930
+  dependencies: []
+- name: golang1.5
+  version: aa0ce1faf9c4e89672013c07b186bdc246a90f6a
+  fingerprint: aa0ce1faf9c4e89672013c07b186bdc246a90f6a
+  sha1: 23995c6b4aba6ff79d975fec9d90db10f0c71059
+  dependencies: []
+- name: rtr
+  version: d3abb710830ba9ffb6142ad62d3f63a3a666758b
+  fingerprint: d3abb710830ba9ffb6142ad62d3f63a3a666758b
+  sha1: aad684a3166d973a4d51de4397a4ee9cedb777ac
+  dependencies: []
+- name: haproxy
+  version: cfbf611621acbcc12fa0df04a33ae2c51c789e5b
+  fingerprint: cfbf611621acbcc12fa0df04a33ae2c51c789e5b
+  sha1: 79b75b820177428b5cb5bc78901dceb6ff2d93f5
+  dependencies: []
+- name: gorouter
+  version: 78a86af8c228402cf99ba79086192d85ebfaecbb
+  fingerprint: 78a86af8c228402cf99ba79086192d85ebfaecbb
+  sha1: 43f3445aaf5ad801df7a45557256f33256f7f812
+  dependencies:
+  - golang1.5
+jobs:
+- name: routing-api
+  version: 8ef1a97e9c74aafef800c35534477ac3b12b6744
+  fingerprint: 8ef1a97e9c74aafef800c35534477ac3b12b6744
+  sha1: a869abe7bf74dd8e3fbfd147093a9a6b3ab47354
+- name: tcp_emitter
+  version: c7d9c7f8f9ef230c4465792a0649ee2bab0b53de
+  fingerprint: c7d9c7f8f9ef230c4465792a0649ee2bab0b53de
+  sha1: 03f8fe8331b5bd8ad02dcfc66e88ca0bdd4a9d06
+- name: router_configurer
+  version: f567e6f93d263288e0ccda9e683313223db84780
+  fingerprint: f567e6f93d263288e0ccda9e683313223db84780
+  sha1: 40000ea5df4937cd3c16cdb19c3cea9051f6d6d2
+- name: acceptance_tests
+  version: 149f0b117b87f4a4776277e147e42c8c4749b01d
+  fingerprint: 149f0b117b87f4a4776277e147e42c8c4749b01d
+  sha1: 5a01543178f6e0edb963daebf80c54eae4ee4a65
+- name: haproxy
+  version: b15244dce06866bb8c05fec565b17e26dfba98e9
+  fingerprint: b15244dce06866bb8c05fec565b17e26dfba98e9
+  sha1: 0f72276a4a86cb3e1a097a09fc5bf2c52682560e
+- name: gorouter
+  version: 67409ee42a4b9b10fb5cd213c55e8740f643c950
+  fingerprint: 67409ee42a4b9b10fb5cd213c55e8740f643c950
+  sha1: 182f5a05a301611299832defc50d0e6ec6fd857a
+license:
+  version: 9841d3f4cf3430748ecd6b1c6308345f8bf9404a
+  fingerprint: 9841d3f4cf3430748ecd6b1c6308345f8bf9404a
+  sha1: fe031105547bdf52d046364ece11d0308169b5dd
+commit_hash: 004b5c79
+uncommitted_changes: true
+name: routing
+version: 0.135.0
