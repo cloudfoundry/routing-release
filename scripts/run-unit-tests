@@ -40,13 +40,23 @@ export PATH=$PATH:$PWD/bin
 if [ -n "$PACKAGE" ]; then
   ginkgo -r -p "$@" "./src/${PACKAGE}"
 else
+  pushd src/github.com/cloudfoundry-incubator/uaa-go-client
+    ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress "$@"
+  popd
+
   pushd src/github.com/cloudfoundry-incubator/
     ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress \
-      uaa-go-client routing-api routing-api-cli cf-tcp-router tcp-emitter "$@"
+      routing-api routing-api-cli "$@"
+  popd
+
+  pushd src/github.com/cloudfoundry-incubator/
+    ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress \
+      cf-tcp-router tcp-emitter "$@"
 
     # Run go vet after ginkgo so that all necessary packages are compiled
     run_go_vet tcp-emitter
   popd
+
   pushd src/github.com/cloudfoundry/gorouter
     ginkgo -r -p -keepGoing -trace -randomizeAllSpecs -progress \
       "$@"
