@@ -240,7 +240,7 @@ meta:
   default_router_groups:
     - name: default-tcp
       type: tcp
-      reservable_ports: 1025-65535
+      reservable_ports: 1024-65535
 
 properties:
   syslog_daemon_config: (( property_overrides.syslog_daemon_config || nil ))

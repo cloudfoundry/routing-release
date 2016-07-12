@@ -1,5 +1,10 @@
 property_overrides:
   routing_api:
+    router_groups:
+    - name: default-tcp
+      type: tcp
+      reservable_ports: 1024-1123
+
     etcd:
       ca_cert: |-
         -----BEGIN CERTIFICATE-----
