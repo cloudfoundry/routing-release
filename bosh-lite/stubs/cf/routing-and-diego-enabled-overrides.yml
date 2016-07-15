@@ -1,0 +1,5 @@
+properties:
+  cc:
+    default_to_diego_backend: true
+  routing_api:
+    enabled: true

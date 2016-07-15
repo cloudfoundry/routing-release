@@ -102,7 +102,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 
 Finally, update your cf-release deployment to enable the Routing API included in this release.
 
-1. If you don't already have one, create a file for overriding manifest properties of cf-release. In the context of manifest generation, we call this file a stub; you could name it `cf-boshlite-stub.yml`. Add the following properties to this file. When you re-generate the manifest, these values will override the defaults in the manifest.
+1. If you have a stub for overriding manifest properties of cf-release, add the following properties to this file. A default one is provided. When you re-generate the manifest, these values will override the defaults in the manifest.
 
 	```
 	properties:
@@ -111,11 +111,11 @@ Finally, update your cf-release deployment to enable the Routing API included in
 	  routing_api:
 	    enabled: true
 	```
-	Though not strictly required, we recommend configuring Diego as your default backend, as TCP Routing is only supported for Diego.
+	Though not strictly required, we recommend configuring Diego as your default backend (as configured with `default_to_diego_backend: true` above, as TCP Routing is only supported for Diego.
 - Then generate a new manifest for cf-release and re-deploy it.
 
 		cd ~/workspace/cf-release
-		./scripts/generate-bosh-lite-dev-manifest <path-to-your-stub>
+		./scripts/generate-bosh-lite-dev-manifest ~/workspace/routing-release/bosh-lite/stubs/cf/routing-and-diego-enabled-overrides.yml  # or <path-to-your-stub>
 		bosh -n deploy
 
 ### Post Deploy Configuration
