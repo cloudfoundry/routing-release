@@ -133,6 +133,12 @@ The CLI commands below require version 6.17 of the [cf CLI](https://github.com/c
 	name          type
 	default-tcp   tcp
 	```
+
+> **Note**: If you receive this error: `FAILED This command requires the
+> Routing API. Your targeted endpoint reports it is not enabled`. This is due
+> to the CF CLI's `~/.cf/config.json` having an old cached `RoutingEndpoint`
+> value. To fix this, just do a cf login again and this error should go away.
+
 - Create a shared-domain for the TCP router group
 
 	```
@@ -155,11 +161,6 @@ The CLI commands below require version 6.17 of the [cf CLI](https://github.com/c
 	```
 	$ cf curl /v2/quota_definitions/44dff27d-96a2-44ed-8904-fb5ca8cbb298 -X PUT -d '{"total_reserved_route_ports": -1}'
 	```
-
-> **Note**: If you receive this error: `FAILED This command requires the
-> Routing API. Your targeted endpoint reports it is not enabled`. This is due
-> to the CF CLI's `~/.cf/config.json` having an old cached `RoutingEndpoint`
-> value. To fix this, just do a cf login again and this error should go away.
 
 ### Create a TCP Route
 
