@@ -163,7 +163,7 @@ The CLI commands below require version 6.17 of the [cf CLI](https://github.com/c
 
 ### Create a TCP Route
 
-The CLI commands below require version 6.17 of the [cf CLI](https://github.com/cloudfoundry/cli), and can be run as a user with the SpaceDeveloper role.
+The CLI commands below require version 6.17+ of the [cf CLI](https://github.com/cloudfoundry/cli), and can be run as a user with the SpaceDeveloper role.
 
 1. The simplest way to test TCP Routing is by pushing your app. By specifying the TCP domain and including the `--random-route` option, a TCP route will be created with a reserved port and the route mapped to your app.
 
