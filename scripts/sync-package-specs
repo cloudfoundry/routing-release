@@ -21,10 +21,7 @@ function sync_package() {
 
       for package in $(gosub list "$@"); do
         repo=$(echo ${2} | cut -f1-3 -d/)
-        if [[ "${repo}" == *"gorouter"* ]]; then
-          package="routing-release/src/${package}"
-        fi
-        if [[ "${repo}" == *"route-registrar"* ]]; then
+        if [[ "${repo}" == *"gorouter"* ]] || [[ "${repo}" == *"route-registrar"* ]]; then
           package="routing-release/src/${package}"
         fi
         echo ${package} | sed -e 's/\(.*\)/  - \1\/*.go # gosub/g'
