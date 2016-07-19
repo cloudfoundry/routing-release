@@ -102,7 +102,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 
 Finally, update your cf-release deployment to enable the Routing API included in this release.
 
-1. If you have a stub for overriding manifest properties of cf-release, add the following properties to this file. A default one is provided. When you re-generate the manifest, these values will override the defaults in the manifest.
+1. If you have a stub for overriding manifest properties of cf-release, add the following properties to this file. A [default one](bosh-lite/stubs/cf/routing-and-diego-enabled-overrides.yml) is provided. When you re-generate the manifest, these values will override the defaults in the manifest.
 
 	```
 	properties:
@@ -111,7 +111,7 @@ Finally, update your cf-release deployment to enable the Routing API included in
 	  routing_api:
 	    enabled: true
 	```
-	Though not strictly required, we recommend configuring Diego as your default backend (as configured with `default_to_diego_backend: true` above, as TCP Routing is only supported for Diego.
+	Though not strictly required, we recommend configuring Diego as your default backend (as configured with `default_to_diego_backend: true` above, as TCP Routing is only supported for Diego).
 - Then generate a new manifest for cf-release and re-deploy it.
 
 		cd ~/workspace/cf-release
@@ -185,9 +185,9 @@ BOSH Lite is a single VM environment intended for development. When deploying th
 ### UAA configuration
 
 UAA needs to be configured with correct hostname so that routing components can
-contact it. If you are using the manifest generation scripts for cf-release, the 
-following properties have been enabled by default. However, if you override the 
-`uaa.zones.internal.hostnames` property yourself, make sure to include `uaa.service.cf.internal` 
+contact it. If you are using the manifest generation scripts for cf-release, the
+following properties have been enabled by default. However, if you override the
+`uaa.zones.internal.hostnames` property yourself, make sure to include `uaa.service.cf.internal`
 in your stub.
 
 ```
