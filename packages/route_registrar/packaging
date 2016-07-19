@@ -1,14 +1,13 @@
-#!/usr/bin/env bash
-
-set -eux
-
-mkdir -p ${BOSH_INSTALL_TARGET}/src
-cp -a . ${BOSH_INSTALL_TARGET}/src
-
-export GOPATH=$BOSH_INSTALL_TARGET
+set -e -x
 
 export GOROOT=$(readlink -nf /var/vcap/packages/golang1.5)
 export PATH=$GOROOT/bin:$PATH
+
+mkdir -p ${BOSH_INSTALL_TARGET}/src
+
+cp -a ./routing-release/src/* ${BOSH_INSTALL_TARGET}/src
+
+export GOPATH=${BOSH_INSTALL_TARGET}
 
 go install github.com/cloudfoundry-incubator/route-registrar
 

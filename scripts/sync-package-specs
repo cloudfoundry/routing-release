@@ -24,6 +24,9 @@ function sync_package() {
         if [[ "${repo}" == *"gorouter"* ]]; then
           package="routing-release/src/${package}"
         fi
+        if [[ "${repo}" == *"route-registrar"* ]]; then
+          package="routing-release/src/${package}"
+        fi
         echo ${package} | sed -e 's/\(.*\)/  - \1\/*.go # gosub/g'
       done
     } > spec.new
@@ -37,6 +40,7 @@ sync_package router_configurer -app github.com/cloudfoundry-incubator/cf-tcp-rou
 sync_package tcp_emitter       -app github.com/cloudfoundry-incubator/tcp-emitter/cmd/... &
 sync_package routing-api       -app github.com/cloudfoundry-incubator/routing-api/cmd/... &
 sync_package gorouter          -app github.com/cloudfoundry/gorouter/... &
+sync_package route_registrar   -app github.com/cloudfoundry-incubator/route-registrar/... &
 sync_package acceptance_tests \
   -test github.com/cloudfoundry-incubator/routing-acceptance-tests/... \
   -app github.com/onsi/ginkgo/ginkgo &
