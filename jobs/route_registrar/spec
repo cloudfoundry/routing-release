@@ -8,6 +8,7 @@ packages:
 - route_registrar
 
 templates:
+  pre-start: bin/pre-start
   route_registrar_ctl.erb: bin/route_registrar_ctl
   registrar_settings.yml.erb: config/registrar_settings.yml
 
