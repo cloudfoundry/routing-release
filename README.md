@@ -122,7 +122,7 @@ Finally, update your cf-release deployment to enable the Routing API included in
 
 Now that the release is deployed, you need to create a Shared Domain in CF and associate it with the TCP router group deployed with this release.
 
-The CLI commands below require version 6.17 of the [cf CLI](https://github.com/cloudfoundry/cli), and must be run as admin.
+The CLI commands below require version 6.17+ of the [cf CLI](https://github.com/cloudfoundry/cli), and must be run as admin.
 
 1. List available router-groups
 
