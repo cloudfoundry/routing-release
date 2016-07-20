@@ -2,7 +2,7 @@
 name: haproxy-monitor
 
 dependencies:
-  - golang1.5
+  - golang
 
 files:
   - github.com/cloudfoundry-incubator/cf-lager/*.go # gosub

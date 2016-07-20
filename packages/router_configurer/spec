@@ -2,7 +2,7 @@
 name: router_configurer
 
 dependencies:
-  - golang1.5
+  - golang
 
 files:
   - github.com/bmizerany/pat/*.go # gosub

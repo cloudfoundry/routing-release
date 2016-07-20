@@ -2,8 +2,8 @@
 name: tcp_emitter
 
 dependencies:
-  - golang1.5
-  
+  - golang
+
 files:
   - github.com/bmizerany/pat/*.go # gosub
   - github.com/cloudfoundry-incubator/bbs/*.go # gosub
