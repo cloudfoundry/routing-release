@@ -306,15 +306,13 @@ properties:
   acceptance_tests:
     addresses: (( property_overrides.acceptance_tests.addresses ))
     system_domain: (( config_from_cf.system_domain ))
-    uaa:
-      skip_ssl_validation: (( config_from_cf.acceptance_tests.skip_ssl_validation ))
+    skip_ssl_validation: (( config_from_cf.acceptance_tests.skip_ssl_validation ))
     cloud_controller:
       apps_domain: (( config_from_cf.acceptance_tests.apps_domain ))
       api: (( config_from_cf.acceptance_tests.api ))
       admin_user: (( config_from_cf.acceptance_tests.admin_user ))
       admin_password: (( config_from_cf.acceptance_tests.admin_password ))
       use_http: (( config_from_cf.acceptance_tests.use_http ))
-      skip_ssl_validation: (( config_from_cf.acceptance_tests.skip_ssl_validation ))
 
 base_job_templates:
   routing_api:

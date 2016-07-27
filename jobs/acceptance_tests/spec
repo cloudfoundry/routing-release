@@ -26,6 +26,10 @@ properties:
       - "10.244.14.2"
     description: "A list of addresses which will be checked for TCP connectivity and features"
 
+  acceptance_tests.skip_ssl_validation:
+    default: false
+    description: "When true, does not verify TLS certificates for any API calls made during the test run"
+
   acceptance_tests.cloud_controller.api:
     description: "URL of the Cloud Controller API"
 
@@ -38,20 +42,12 @@ properties:
   acceptance_tests.cloud_controller.admin_password:
     description: "Cloud Controller admin user's password"
 
-  acceptance_tests.cloud_controller.skip_ssl_validation:
-    default: false
-    description: "When true, CF CLI will be run with --skip-ssl-validation"
-
   acceptance_tests.cloud_controller.use_http:
     default: false
-    description: Flag for using HTTP when making api and application requests rather than the default HTTPS
+    description: Flag for using HTTP when making application requests rather than the default HTTPS
 
   tcp_emitter.oauth_secret:
     description: "Password for UAA client for the tcp emitter."
-
-  acceptance_tests.uaa.skip_ssl_validation:
-    description: "Skip TLS verification when communicating with UAA system domain"
-    default: false
 
   acceptance_tests.system_domain:
     decription : "Domain for system components, e.g. bosh-lite.com"
