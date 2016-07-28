@@ -82,9 +82,6 @@
 [submodule "src/github.com/cloudfoundry/sonde-go"]
 	path = src/github.com/cloudfoundry/sonde-go
 	url = https://github.com/cloudfoundry/sonde-go
-[submodule "src/github.com/cloudfoundry-incubator/candiedyaml"]
-	path = src/github.com/cloudfoundry-incubator/candiedyaml
-	url = https://github.com/cloudfoundry-incubator/candiedyaml
 [submodule "src/github.com/cloudfoundry-incubator/consuladapter"]
 	path = src/github.com/cloudfoundry-incubator/consuladapter
 	url = https://github.com/cloudfoundry-incubator/consuladapter
