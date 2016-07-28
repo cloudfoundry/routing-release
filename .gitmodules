@@ -145,12 +145,6 @@
 [submodule "src/github.com/cloudfoundry/multierror"]
 	path = src/github.com/cloudfoundry/multierror
 	url = https://github.com/cloudfoundry/multierror
-[submodule "src/github.com/imdario/mergo"]
-	path = src/github.com/imdario/mergo
-	url = https://github.com/imdario/mergo
-[submodule "src/github.com/pivotal-cf-experimental/service-config"]
-	path = src/github.com/pivotal-cf-experimental/service-config
-	url = https://github.com/pivotal-cf-experimental/service-config
 [submodule "src/gopkg.in/yaml.v2"]
 	path = src/gopkg.in/yaml.v2
 	url = https://gopkg.in/yaml.v2
