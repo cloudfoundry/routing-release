@@ -11,7 +11,6 @@ files:
   - github.com/cloudfoundry-incubator/bbs/events/*.go # gosub
   - github.com/cloudfoundry-incubator/bbs/format/*.go # gosub
   - github.com/cloudfoundry-incubator/bbs/models/*.go # gosub
-  - github.com/cloudfoundry-incubator/candiedyaml/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-debug-server/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-lager/*.go # gosub
   - github.com/cloudfoundry-incubator/cf_http/*.go # gosub
@@ -96,3 +95,4 @@ files:
   - github.com/tedsuo/ifrit/sigmon/*.go # gosub
   - github.com/tedsuo/rata/*.go # gosub
   - github.com/vito/go-sse/sse/*.go # gosub
+  - gopkg.in/yaml.v2/*.go # gosub

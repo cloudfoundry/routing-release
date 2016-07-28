@@ -19,7 +19,6 @@ files:
   - github.com/cloudfoundry-incubator/cf-test-helpers/generator/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-test-helpers/helpers/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-test-helpers/runner/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf_http/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-acceptance-tests/assets/tcp-droplet-receiver/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-acceptance-tests/assets/tcp-sample-receiver/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-acceptance-tests/assets/tcp-sample-receiver/testrunner/*.go # gosub

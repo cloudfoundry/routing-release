@@ -6,7 +6,6 @@ dependencies:
 
 files:
   - github.com/bmizerany/pat/*.go # gosub
-  - github.com/cloudfoundry-incubator/candiedyaml/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-debug-server/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-lager/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router/*.go # gosub
@@ -22,7 +21,6 @@ files:
   - github.com/cloudfoundry-incubator/cf-tcp-router/syncer/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router/utils/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-tcp-router/watcher/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf_http/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-api/models/*.go # gosub
   - github.com/cloudfoundry-incubator/trace-logger/*.go # gosub
@@ -87,3 +85,4 @@ files:
   - github.com/tedsuo/ifrit/sigmon/*.go # gosub
   - github.com/tedsuo/rata/*.go # gosub
   - github.com/vito/go-sse/sse/*.go # gosub
+  - gopkg.in/yaml.v2/*.go # gosub

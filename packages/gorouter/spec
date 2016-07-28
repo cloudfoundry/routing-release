@@ -6,11 +6,10 @@ files:
   - routing-release/src/github.com/cloudfoundry/gorouter/**/*.{go,golden,proto,c,h,}
   - routing-release/src/github.com/cloudfoundry/gorouter/LICENSE
   - routing-release/src/github.com/cloudfoundry/gorouter/NOTICE
+  - routing-release/src/github.com/armon/go-proxyproto/*.go # gosub
   - routing-release/src/github.com/bmizerany/pat/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry-incubator/candiedyaml/*.go # gosub
   - routing-release/src/github.com/cloudfoundry-incubator/cf-debug-server/*.go # gosub
   - routing-release/src/github.com/cloudfoundry-incubator/cf-lager/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry-incubator/cf_http/*.go # gosub
   - routing-release/src/github.com/cloudfoundry-incubator/routing-api/*.go # gosub
   - routing-release/src/github.com/cloudfoundry-incubator/routing-api/models/*.go # gosub
   - routing-release/src/github.com/cloudfoundry-incubator/trace-logger/*.go # gosub
@@ -43,6 +42,7 @@ files:
   - routing-release/src/github.com/cloudfoundry/gorouter/common/spec/*.go # gosub
   - routing-release/src/github.com/cloudfoundry/gorouter/config/*.go # gosub
   - routing-release/src/github.com/cloudfoundry/gorouter/metrics/*.go # gosub
+  - routing-release/src/github.com/cloudfoundry/gorouter/metrics/monitor/*.go # gosub
   - routing-release/src/github.com/cloudfoundry/gorouter/metrics/reporter/*.go # gosub
   - routing-release/src/github.com/cloudfoundry/gorouter/metrics/reporter/fakes/*.go # gosub
   - routing-release/src/github.com/cloudfoundry/gorouter/proxy/*.go # gosub
@@ -121,4 +121,4 @@ files:
   - routing-release/src/github.com/tedsuo/rata/*.go # gosub
   - routing-release/src/github.com/vito/go-sse/sse/*.go # gosub
   - routing-release/src/golang.org/x/crypto/pbkdf2/*.go # gosub
-  - routing-release/src/github.com/armon/go-proxyproto/*.go # gosub
+  - routing-release/src/gopkg.in/yaml.v2/*.go # gosub
