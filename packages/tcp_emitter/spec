@@ -2,7 +2,7 @@
 name: tcp_emitter
 
 dependencies:
-  - golang
+  - golang1.6
 
 files:
   - github.com/bmizerany/pat/*.go # gosub

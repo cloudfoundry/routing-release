@@ -2,7 +2,7 @@
 name: routing-api
 
 dependencies:
-  - golang
+  - golang1.6
 
 files:
   - github.com/bmizerany/pat/*.go # gosub
