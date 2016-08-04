@@ -144,6 +144,13 @@ properties:
   router.enable_access_log_streaming:
     description: "Enables streaming of access log to syslog. Warning: this comes with a performance cost; due to higher I/O, max request rate is reduced."
     default: false
+  router.suspend_pruning_if_nats_unavailable:
+    description: |
+      Suspend pruning of routes when NATs is unavailable and maintain the
+      current routing table. WARNING: This strategy favors availability over
+      consistency and there is a possibility of routing to an incorrect
+      endpoint in the case of port re-use. To be used with caution."
+    default: false
 
   uaa.ca_cert:
     decription : "Certificate authority for communication between clients and uaa."
