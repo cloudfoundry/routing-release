@@ -9,4 +9,4 @@ cp -a ./routing-release/src/* ${BOSH_INSTALL_TARGET}/src
 
 export GOPATH=${BOSH_INSTALL_TARGET}
 
-go install github.com/cloudfoundry/gorouter
+go install code.cloudfoundry.org/gorouter

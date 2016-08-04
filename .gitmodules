@@ -34,11 +34,11 @@
 [submodule "src/github.com/nu7hatch/gouuid"]
 	path = src/github.com/nu7hatch/gouuid
 	url = https://github.com/nu7hatch/gouuid
-[submodule "src/github.com/cloudfoundry-incubator/cf-tcp-router"]
-	path = src/github.com/cloudfoundry-incubator/cf-tcp-router
+[submodule "src/code.cloudfoundry.org/cf-tcp-router"]
+	path = src/code.cloudfoundry.org/cf-tcp-router
 	url = https://github.com/cloudfoundry-incubator/cf-tcp-router
-[submodule "src/github.com/cloudfoundry-incubator/tcp-emitter"]
-	path = src/github.com/cloudfoundry-incubator/tcp-emitter
+[submodule "src/code.cloudfoundry.org/tcp-emitter"]
+	path = src/code.cloudfoundry.org/tcp-emitter
 	url = https://github.com/cloudfoundry-incubator/tcp-emitter
 [submodule "src/github.com/pivotal-golang/clock"]
 	path = src/github.com/pivotal-golang/clock
@@ -52,14 +52,14 @@
 [submodule "src/github.com/cloudfoundry-incubator/bbs"]
 	path = src/github.com/cloudfoundry-incubator/bbs
 	url = https://github.com/cloudfoundry-incubator/bbs
-[submodule "src/github.com/cloudfoundry-incubator/routing-api"]
-	path = src/github.com/cloudfoundry-incubator/routing-api
+[submodule "src/code.cloudfoundry.org/routing-api"]
+	path = src/code.cloudfoundry.org/routing-api
 	url = https://github.com/cloudfoundry-incubator/routing-api
 [submodule "src/github.com/cactus/go-statsd-client"]
 	path = src/github.com/cactus/go-statsd-client
 	url = https://github.com/cactus/go-statsd-client
-[submodule "src/github.com/cloudfoundry-incubator/trace-logger"]
-	path = src/github.com/cloudfoundry-incubator/trace-logger
+[submodule "src/code.cloudfoundry.org/trace-logger"]
+	path = src/code.cloudfoundry.org/trace-logger
 	url = https://github.com/cloudfoundry-incubator/trace-logger
 [submodule "src/github.com/cloudfoundry/gunk"]
 	path = src/github.com/cloudfoundry/gunk
@@ -91,26 +91,26 @@
 [submodule "src/github.com/cloudfoundry-incubator/locket"]
 	path = src/github.com/cloudfoundry-incubator/locket
 	url = http://github.com/cloudfoundry-incubator/locket
-[submodule "src/github.com/cloudfoundry-incubator/routing-info"]
-	path = src/github.com/cloudfoundry-incubator/routing-info
+[submodule "src/code.cloudfoundry.org/routing-info"]
+	path = src/code.cloudfoundry.org/routing-info
 	url = http://github.com/cloudfoundry-incubator/routing-info
-[submodule "src/github.com/cloudfoundry-incubator/routing-api-cli"]
-	path = src/github.com/cloudfoundry-incubator/routing-api-cli
+[submodule "src/code.cloudfoundry.org/routing-api-cli"]
+	path = src/code.cloudfoundry.org/routing-api-cli
 	url = https://github.com/cloudfoundry-incubator/routing-api-cli
 [submodule "src/github.com/codegangsta/cli"]
 	path = src/github.com/codegangsta/cli
 	url = https://github.com/codegangsta/cli
-[submodule "src/github.com/cloudfoundry-incubator/uaa-go-client"]
-	path = src/github.com/cloudfoundry-incubator/uaa-go-client
+[submodule "src/code.cloudfoundry.org/uaa-go-client"]
+	path = src/code.cloudfoundry.org/uaa-go-client
 	url = https://github.com/cloudfoundry-incubator/uaa-go-client
 [submodule "src/github.com/cloudfoundry-incubator/cf-test-helpers"]
 	path = src/github.com/cloudfoundry-incubator/cf-test-helpers
 	url = https://github.com/cloudfoundry-incubator/cf-test-helpers
-[submodule "src/github.com/cloudfoundry-incubator/cf-routing-test-helpers"]
-	path = src/github.com/cloudfoundry-incubator/cf-routing-test-helpers
+[submodule "src/code.cloudfoundry.org/cf-routing-test-helpers"]
+	path = src/code.cloudfoundry.org/cf-routing-test-helpers
 	url = https://github.com/cloudfoundry-incubator/cf-routing-test-helpers
-[submodule "src/github.com/cloudfoundry/gorouter"]
-	path = src/github.com/cloudfoundry/gorouter
+[submodule "src/code.cloudfoundry.org/gorouter"]
+	path = src/code.cloudfoundry.org/gorouter
 	url = https://github.com/cloudfoundry/gorouter
 [submodule "src/github.com/nats-io/nats"]
 	path = src/github.com/nats-io/nats
@@ -130,17 +130,14 @@
 [submodule "src/github.com/nats-io/nuid"]
 	path = src/github.com/nats-io/nuid
 	url = https://github.com/nats-io/nuid
-[submodule "src/github.com/cloudfoundry/routing-acceptance-tests"]
-	path = src/github.com/cloudfoundry/routing-acceptance-tests
-	url = https://github.com/cloudfoundry-incubator/routing-acceptance-tests
-[submodule "src/github.com/cloudfoundry-incubator/routing-acceptance-tests"]
-	path = src/github.com/cloudfoundry-incubator/routing-acceptance-tests
+[submodule "src/code.cloudfoundry.org/routing-acceptance-tests"]
+	path = src/code.cloudfoundry.org/routing-acceptance-tests
 	url = https://github.com/cloudfoundry-incubator/routing-acceptance-tests
 [submodule "src/github.com/armon/go-proxyproto"]
 	path = src/github.com/armon/go-proxyproto
 	url = https://github.com/armon/go-proxyproto.git
-[submodule "src/github.com/cloudfoundry-incubator/route-registrar"]
-	path = src/github.com/cloudfoundry-incubator/route-registrar
+[submodule "src/code.cloudfoundry.org/route-registrar"]
+	path = src/code.cloudfoundry.org/route-registrar
 	url = https://github.com/cloudfoundry-incubator/route-registrar
 [submodule "src/github.com/cloudfoundry/multierror"]
 	path = src/github.com/cloudfoundry/multierror

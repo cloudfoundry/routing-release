@@ -5,24 +5,24 @@ dependencies:
   - golang1.6
 
 files:
+  - code.cloudfoundry.org/routing-api/*.go # gosub
+  - code.cloudfoundry.org/routing-api/cmd/routing-api/*.go # gosub
+  - code.cloudfoundry.org/routing-api/cmd/routing-api/test_helpers/*.go # gosub
+  - code.cloudfoundry.org/routing-api/cmd/routing-api/testrunner/*.go # gosub
+  - code.cloudfoundry.org/routing-api/config/*.go # gosub
+  - code.cloudfoundry.org/routing-api/db/*.go # gosub
+  - code.cloudfoundry.org/routing-api/handlers/*.go # gosub
+  - code.cloudfoundry.org/routing-api/helpers/*.go # gosub
+  - code.cloudfoundry.org/routing-api/metrics/*.go # gosub
+  - code.cloudfoundry.org/routing-api/models/*.go # gosub
+  - code.cloudfoundry.org/trace-logger/*.go # gosub
+  - code.cloudfoundry.org/uaa-go-client/*.go # gosub
+  - code.cloudfoundry.org/uaa-go-client/config/*.go # gosub
+  - code.cloudfoundry.org/uaa-go-client/schema/*.go # gosub
   - github.com/bmizerany/pat/*.go # gosub
   - github.com/cactus/go-statsd-client/statsd/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-debug-server/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-lager/*.go # gosub
-  - github.com/cloudfoundry-incubator/routing-api/*.go # gosub
-  - github.com/cloudfoundry-incubator/routing-api/cmd/routing-api/*.go # gosub
-  - github.com/cloudfoundry-incubator/routing-api/cmd/routing-api/test_helpers/*.go # gosub
-  - github.com/cloudfoundry-incubator/routing-api/cmd/routing-api/testrunner/*.go # gosub
-  - github.com/cloudfoundry-incubator/routing-api/config/*.go # gosub
-  - github.com/cloudfoundry-incubator/routing-api/db/*.go # gosub
-  - github.com/cloudfoundry-incubator/routing-api/handlers/*.go # gosub
-  - github.com/cloudfoundry-incubator/routing-api/helpers/*.go # gosub
-  - github.com/cloudfoundry-incubator/routing-api/metrics/*.go # gosub
-  - github.com/cloudfoundry-incubator/routing-api/models/*.go # gosub
-  - github.com/cloudfoundry-incubator/trace-logger/*.go # gosub
-  - github.com/cloudfoundry-incubator/uaa-go-client/*.go # gosub
-  - github.com/cloudfoundry-incubator/uaa-go-client/config/*.go # gosub
-  - github.com/cloudfoundry-incubator/uaa-go-client/schema/*.go # gosub
   - github.com/cloudfoundry/dropsonde/*.go # gosub
   - github.com/cloudfoundry/dropsonde/emitter/*.go # gosub
   - github.com/cloudfoundry/dropsonde/envelope_sender/*.go # gosub

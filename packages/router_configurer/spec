@@ -5,28 +5,28 @@ dependencies:
   - golang1.6
 
 files:
+  - code.cloudfoundry.org/cf-tcp-router/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/cmd/router-configurer/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/cmd/router-configurer/testrunner/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/config/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/configurer/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/configurer/haproxy/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/metrics_reporter/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/metrics_reporter/haproxy_client/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/models/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/routing_table/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/syncer/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/utils/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/watcher/*.go # gosub
+  - code.cloudfoundry.org/routing-api/*.go # gosub
+  - code.cloudfoundry.org/routing-api/models/*.go # gosub
+  - code.cloudfoundry.org/trace-logger/*.go # gosub
+  - code.cloudfoundry.org/uaa-go-client/*.go # gosub
+  - code.cloudfoundry.org/uaa-go-client/config/*.go # gosub
+  - code.cloudfoundry.org/uaa-go-client/schema/*.go # gosub
   - github.com/bmizerany/pat/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-debug-server/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-lager/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-tcp-router/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-tcp-router/cmd/router-configurer/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-tcp-router/cmd/router-configurer/testrunner/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-tcp-router/config/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-tcp-router/configurer/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-tcp-router/configurer/haproxy/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-tcp-router/metrics_reporter/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-tcp-router/metrics_reporter/haproxy_client/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-tcp-router/models/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-tcp-router/routing_table/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-tcp-router/syncer/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-tcp-router/utils/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-tcp-router/watcher/*.go # gosub
-  - github.com/cloudfoundry-incubator/routing-api/*.go # gosub
-  - github.com/cloudfoundry-incubator/routing-api/models/*.go # gosub
-  - github.com/cloudfoundry-incubator/trace-logger/*.go # gosub
-  - github.com/cloudfoundry-incubator/uaa-go-client/*.go # gosub
-  - github.com/cloudfoundry-incubator/uaa-go-client/config/*.go # gosub
-  - github.com/cloudfoundry-incubator/uaa-go-client/schema/*.go # gosub
   - github.com/cloudfoundry/dropsonde/*.go # gosub
   - github.com/cloudfoundry/dropsonde/emitter/*.go # gosub
   - github.com/cloudfoundry/dropsonde/envelope_sender/*.go # gosub

@@ -5,6 +5,25 @@ dependencies:
   - golang1.6
 
 files:
+  - code.cloudfoundry.org/routing-api/*.go # gosub
+  - code.cloudfoundry.org/routing-api/models/*.go # gosub
+  - code.cloudfoundry.org/routing-info/cfroutes/*.go # gosub
+  - code.cloudfoundry.org/routing-info/tcp_routes/*.go # gosub
+  - code.cloudfoundry.org/tcp-emitter/cmd/tcp-emitter/*.go # gosub
+  - code.cloudfoundry.org/tcp-emitter/cmd/tcp-emitter/testrunner/*.go # gosub
+  - code.cloudfoundry.org/tcp-emitter/config/*.go # gosub
+  - code.cloudfoundry.org/tcp-emitter/emitter/*.go # gosub
+  - code.cloudfoundry.org/tcp-emitter/routing_table/*.go # gosub
+  - code.cloudfoundry.org/tcp-emitter/routing_table/schema/*.go # gosub
+  - code.cloudfoundry.org/tcp-emitter/routing_table/schema/endpoint/*.go # gosub
+  - code.cloudfoundry.org/tcp-emitter/routing_table/schema/event/*.go # gosub
+  - code.cloudfoundry.org/tcp-emitter/routing_table/util/*.go # gosub
+  - code.cloudfoundry.org/tcp-emitter/syncer/*.go # gosub
+  - code.cloudfoundry.org/tcp-emitter/watcher/*.go # gosub
+  - code.cloudfoundry.org/trace-logger/*.go # gosub
+  - code.cloudfoundry.org/uaa-go-client/*.go # gosub
+  - code.cloudfoundry.org/uaa-go-client/config/*.go # gosub
+  - code.cloudfoundry.org/uaa-go-client/schema/*.go # gosub
   - github.com/bmizerany/pat/*.go # gosub
   - github.com/cloudfoundry-incubator/bbs/*.go # gosub
   - github.com/cloudfoundry-incubator/bbs/encryption/*.go # gosub
@@ -16,25 +35,6 @@ files:
   - github.com/cloudfoundry-incubator/cf_http/*.go # gosub
   - github.com/cloudfoundry-incubator/consuladapter/*.go # gosub
   - github.com/cloudfoundry-incubator/locket/*.go # gosub
-  - github.com/cloudfoundry-incubator/routing-api/*.go # gosub
-  - github.com/cloudfoundry-incubator/routing-api/models/*.go # gosub
-  - github.com/cloudfoundry-incubator/routing-info/cfroutes/*.go # gosub
-  - github.com/cloudfoundry-incubator/routing-info/tcp_routes/*.go # gosub
-  - github.com/cloudfoundry-incubator/tcp-emitter/cmd/tcp-emitter/*.go # gosub
-  - github.com/cloudfoundry-incubator/tcp-emitter/cmd/tcp-emitter/testrunner/*.go # gosub
-  - github.com/cloudfoundry-incubator/tcp-emitter/config/*.go # gosub
-  - github.com/cloudfoundry-incubator/tcp-emitter/emitter/*.go # gosub
-  - github.com/cloudfoundry-incubator/tcp-emitter/routing_table/*.go # gosub
-  - github.com/cloudfoundry-incubator/tcp-emitter/routing_table/schema/*.go # gosub
-  - github.com/cloudfoundry-incubator/tcp-emitter/routing_table/schema/endpoint/*.go # gosub
-  - github.com/cloudfoundry-incubator/tcp-emitter/routing_table/schema/event/*.go # gosub
-  - github.com/cloudfoundry-incubator/tcp-emitter/routing_table/util/*.go # gosub
-  - github.com/cloudfoundry-incubator/tcp-emitter/syncer/*.go # gosub
-  - github.com/cloudfoundry-incubator/tcp-emitter/watcher/*.go # gosub
-  - github.com/cloudfoundry-incubator/trace-logger/*.go # gosub
-  - github.com/cloudfoundry-incubator/uaa-go-client/*.go # gosub
-  - github.com/cloudfoundry-incubator/uaa-go-client/config/*.go # gosub
-  - github.com/cloudfoundry-incubator/uaa-go-client/schema/*.go # gosub
   - github.com/cloudfoundry/dropsonde/*.go # gosub
   - github.com/cloudfoundry/dropsonde/emitter/*.go # gosub
   - github.com/cloudfoundry/dropsonde/envelope_sender/*.go # gosub

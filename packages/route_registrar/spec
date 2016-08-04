@@ -3,16 +3,16 @@ name: route_registrar
 dependencies:
 - golang1.6
 files:
+  - routing-release/src/code.cloudfoundry.org/route-registrar/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/route-registrar/commandrunner/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/route-registrar/commandrunner/fakes/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/route-registrar/config/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/route-registrar/healthchecker/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/route-registrar/healthchecker/fakes/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/route-registrar/messagebus/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/route-registrar/messagebus/fakes/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/route-registrar/registrar/*.go # gosub
   - routing-release/src/github.com/cloudfoundry-incubator/cf-lager/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry-incubator/route-registrar/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry-incubator/route-registrar/commandrunner/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry-incubator/route-registrar/commandrunner/fakes/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry-incubator/route-registrar/config/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry-incubator/route-registrar/healthchecker/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry-incubator/route-registrar/healthchecker/fakes/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry-incubator/route-registrar/messagebus/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry-incubator/route-registrar/messagebus/fakes/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry-incubator/route-registrar/registrar/*.go # gosub
   - routing-release/src/github.com/cloudfoundry/multierror/*.go # gosub
   - routing-release/src/github.com/nats-io/nats/*.go # gosub
   - routing-release/src/github.com/nats-io/nats/encoders/builtin/*.go # gosub

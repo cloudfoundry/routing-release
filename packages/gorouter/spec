@@ -3,19 +3,60 @@ name: gorouter
 dependencies:
 - golang1.6
 files:
-  - routing-release/src/github.com/cloudfoundry/gorouter/**/*.{go,golden,proto,c,h,}
-  - routing-release/src/github.com/cloudfoundry/gorouter/LICENSE
-  - routing-release/src/github.com/cloudfoundry/gorouter/NOTICE
+  - routing-release/src/code.cloudfoundry.org/gorouter/**/*.{go,golden,proto,c,h,}
+  - routing-release/src/code.cloudfoundry.org/gorouter/LICENSE
+  - routing-release/src/code.cloudfoundry.org/gorouter/NOTICE
+  - routing-release/src/code.cloudfoundry.org/gorouter/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/access_log/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/access_log/fakes/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/access_log/schema/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/common/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/common/health/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/common/http/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/common/schema/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/common/secure/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/common/secure/fakes/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/common/spec/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/config/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/metrics/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/metrics/monitor/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/metrics/reporter/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/metrics/reporter/fakes/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/proxy/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/proxy/handler/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/proxy/round_tripper/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/proxy/round_tripper/fakes/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/proxy/test_helpers/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/proxy/utils/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/proxy/utils/fakes/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/registry/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/registry/container/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/registry/fakes/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/route/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/route/fakes/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/route_fetcher/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/route_service/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/route_service/header/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/router/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/stats/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/stats/container/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/test/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/test/common/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/test_util/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/test_util/rss/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/test_util/rss/commands/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/test_util/rss/common/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/varz/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/routing-api/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/routing-api/models/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/trace-logger/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/uaa-go-client/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/uaa-go-client/config/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/uaa-go-client/schema/*.go # gosub
   - routing-release/src/github.com/armon/go-proxyproto/*.go # gosub
   - routing-release/src/github.com/bmizerany/pat/*.go # gosub
   - routing-release/src/github.com/cloudfoundry-incubator/cf-debug-server/*.go # gosub
   - routing-release/src/github.com/cloudfoundry-incubator/cf-lager/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry-incubator/routing-api/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry-incubator/routing-api/models/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry-incubator/trace-logger/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry-incubator/uaa-go-client/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry-incubator/uaa-go-client/config/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry-incubator/uaa-go-client/schema/*.go # gosub
   - routing-release/src/github.com/cloudfoundry/dropsonde/*.go # gosub
   - routing-release/src/github.com/cloudfoundry/dropsonde/emitter/*.go # gosub
   - routing-release/src/github.com/cloudfoundry/dropsonde/envelope_sender/*.go # gosub
@@ -29,47 +70,6 @@ files:
   - routing-release/src/github.com/cloudfoundry/dropsonde/metricbatcher/*.go # gosub
   - routing-release/src/github.com/cloudfoundry/dropsonde/metrics/*.go # gosub
   - routing-release/src/github.com/cloudfoundry/dropsonde/runtime_stats/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/access_log/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/access_log/fakes/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/access_log/schema/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/common/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/common/health/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/common/http/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/common/schema/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/common/secure/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/common/secure/fakes/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/common/spec/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/config/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/metrics/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/metrics/monitor/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/metrics/reporter/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/metrics/reporter/fakes/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/proxy/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/proxy/handler/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/proxy/round_tripper/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/proxy/round_tripper/fakes/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/proxy/test_helpers/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/proxy/utils/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/proxy/utils/fakes/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/registry/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/registry/container/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/registry/fakes/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/route/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/route/fakes/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/route_fetcher/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/route_service/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/route_service/header/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/router/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/stats/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/stats/container/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/test/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/test/common/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/test_util/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/test_util/rss/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/test_util/rss/commands/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/test_util/rss/common/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gorouter/varz/*.go # gosub
   - routing-release/src/github.com/cloudfoundry/gosteno/*.go # gosub
   - routing-release/src/github.com/cloudfoundry/gosteno/syslog/*.go # gosub
   - routing-release/src/github.com/cloudfoundry/sonde-go/events/*.go # gosub
