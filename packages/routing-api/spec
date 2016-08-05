@@ -5,6 +5,10 @@ dependencies:
   - golang1.6
 
 files:
+  - code.cloudfoundry.org/cflager/*.go # gosub
+  - code.cloudfoundry.org/clock/*.go # gosub
+  - code.cloudfoundry.org/debugserver/*.go # gosub
+  - code.cloudfoundry.org/lager/*.go # gosub
   - code.cloudfoundry.org/routing-api/*.go # gosub
   - code.cloudfoundry.org/routing-api/cmd/routing-api/*.go # gosub
   - code.cloudfoundry.org/routing-api/cmd/routing-api/test_helpers/*.go # gosub
@@ -21,8 +25,6 @@ files:
   - code.cloudfoundry.org/uaa-go-client/schema/*.go # gosub
   - github.com/bmizerany/pat/*.go # gosub
   - github.com/cactus/go-statsd-client/statsd/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-debug-server/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-lager/*.go # gosub
   - github.com/cloudfoundry/dropsonde/*.go # gosub
   - github.com/cloudfoundry/dropsonde/emitter/*.go # gosub
   - github.com/cloudfoundry/dropsonde/envelope_sender/*.go # gosub
@@ -78,8 +80,6 @@ files:
   - github.com/onsi/gomega/matchers/support/goraph/node/*.go # gosub
   - github.com/onsi/gomega/matchers/support/goraph/util/*.go # gosub
   - github.com/onsi/gomega/types/*.go # gosub
-  - github.com/pivotal-golang/clock/*.go # gosub
-  - github.com/pivotal-golang/lager/*.go # gosub
   - github.com/tedsuo/ifrit/*.go # gosub
   - github.com/tedsuo/ifrit/ginkgomon/*.go # gosub
   - github.com/tedsuo/ifrit/grouper/*.go # gosub

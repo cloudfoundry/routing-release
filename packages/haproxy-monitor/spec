@@ -5,7 +5,8 @@ dependencies:
   - golang1.6
 
 files:
-  - github.com/cloudfoundry-incubator/cf-lager/*.go # gosub
+  - code.cloudfoundry.org/cflager/*.go # gosub
+  - code.cloudfoundry.org/lager/*.go # gosub
   - github.com/onsi/ginkgo/*.go # gosub
   - github.com/onsi/ginkgo/config/*.go # gosub
   - github.com/onsi/ginkgo/internal/codelocation/*.go # gosub
@@ -34,7 +35,6 @@ files:
   - github.com/onsi/gomega/matchers/support/goraph/node/*.go # gosub
   - github.com/onsi/gomega/matchers/support/goraph/util/*.go # gosub
   - github.com/onsi/gomega/types/*.go # gosub
-  - github.com/pivotal-golang/lager/*.go # gosub
   - github.com/tedsuo/ifrit/*.go # gosub
   - github.com/tedsuo/ifrit/ginkgomon/*.go # gosub
   - haproxy-monitor/cmd/haproxy-monitor/*.go # gosub

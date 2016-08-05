@@ -6,6 +6,9 @@ files:
   - routing-release/src/code.cloudfoundry.org/gorouter/**/*.{go,golden,proto,c,h,}
   - routing-release/src/code.cloudfoundry.org/gorouter/LICENSE
   - routing-release/src/code.cloudfoundry.org/gorouter/NOTICE
+  - routing-release/src/code.cloudfoundry.org/cflager/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/clock/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/debugserver/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/access_log/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/access_log/fakes/*.go # gosub
@@ -47,6 +50,8 @@ files:
   - routing-release/src/code.cloudfoundry.org/gorouter/test_util/rss/commands/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/test_util/rss/common/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/varz/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/lager/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/localip/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/routing-api/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/routing-api/models/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/trace-logger/*.go # gosub
@@ -55,8 +60,6 @@ files:
   - routing-release/src/code.cloudfoundry.org/uaa-go-client/schema/*.go # gosub
   - routing-release/src/github.com/armon/go-proxyproto/*.go # gosub
   - routing-release/src/github.com/bmizerany/pat/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry-incubator/cf-debug-server/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry-incubator/cf-lager/*.go # gosub
   - routing-release/src/github.com/cloudfoundry/dropsonde/*.go # gosub
   - routing-release/src/github.com/cloudfoundry/dropsonde/emitter/*.go # gosub
   - routing-release/src/github.com/cloudfoundry/dropsonde/envelope_sender/*.go # gosub
@@ -110,9 +113,6 @@ files:
   - routing-release/src/github.com/onsi/gomega/matchers/support/goraph/node/*.go # gosub
   - routing-release/src/github.com/onsi/gomega/matchers/support/goraph/util/*.go # gosub
   - routing-release/src/github.com/onsi/gomega/types/*.go # gosub
-  - routing-release/src/github.com/pivotal-golang/clock/*.go # gosub
-  - routing-release/src/github.com/pivotal-golang/lager/*.go # gosub
-  - routing-release/src/github.com/pivotal-golang/localip/*.go # gosub
   - routing-release/src/github.com/rcrowley/go-metrics/*.go # gosub
   - routing-release/src/github.com/tedsuo/ifrit/*.go # gosub
   - routing-release/src/github.com/tedsuo/ifrit/grouper/*.go # gosub

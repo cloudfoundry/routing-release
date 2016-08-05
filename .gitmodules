@@ -10,15 +10,15 @@
 [submodule "src/github.com/bmizerany/pat"]
 	path = src/github.com/bmizerany/pat
 	url = https://github.com/bmizerany/pat
-[submodule "src/github.com/cloudfoundry-incubator/cf-debug-server"]
-	path = src/github.com/cloudfoundry-incubator/cf-debug-server
-	url = https://github.com/cloudfoundry-incubator/cf-debug-server
-[submodule "src/github.com/cloudfoundry-incubator/cf-lager"]
-	path = src/github.com/cloudfoundry-incubator/cf-lager
-	url = https://github.com/cloudfoundry-incubator/cf-lager
-[submodule "src/github.com/pivotal-golang/lager"]
-	path = src/github.com/pivotal-golang/lager
-	url = https://github.com/pivotal-golang/lager
+[submodule "src/code.cloudfoundry.org/debugserver"]
+	path = src/code.cloudfoundry.org/debugserver
+	url = https://github.com/cloudfoundry/debugserver
+[submodule "src/code.cloudfoundry.org/cflager"]
+	path = src/code.cloudfoundry.org/cflager
+	url = https://github.com/cloudfoundry/cflager
+[submodule "src/code.cloudfoundry.org/lager"]
+	path = src/code.cloudfoundry.org/lager
+	url = https://github.com/cloudfoundry/lager
 [submodule "src/github.com/cloudfoundry/dropsonde"]
 	path = src/github.com/cloudfoundry/dropsonde
 	url = https://github.com/cloudfoundry/dropsonde
@@ -40,18 +40,18 @@
 [submodule "src/code.cloudfoundry.org/tcp-emitter"]
 	path = src/code.cloudfoundry.org/tcp-emitter
 	url = https://github.com/cloudfoundry-incubator/tcp-emitter
-[submodule "src/github.com/pivotal-golang/clock"]
-	path = src/github.com/pivotal-golang/clock
-	url = https://github.com/pivotal-golang/clock
-[submodule "src/github.com/cloudfoundry-incubator/cf_http"]
-	path = src/github.com/cloudfoundry-incubator/cf_http
-	url = https://github.com/cloudfoundry-incubator/cf_http
+[submodule "src/code.cloudfoundry.org/clock"]
+	path = src/code.cloudfoundry.org/clock
+	url = https://github.com/cloudfoundry/clock
+[submodule "src/code.cloudfoundry.org/cfhttp"]
+	path = src/code.cloudfoundry.org/cfhttp
+	url = https://github.com/cloudfoundry/cfhttp
 [submodule "src/github.com/vito/go-sse"]
 	path = src/github.com/vito/go-sse
 	url = https://github.com/vito/go-sse
-[submodule "src/github.com/cloudfoundry-incubator/bbs"]
-	path = src/github.com/cloudfoundry-incubator/bbs
-	url = https://github.com/cloudfoundry-incubator/bbs
+[submodule "src/code.cloudfoundry.org/bbs"]
+	path = src/code.cloudfoundry.org/bbs
+	url = https://github.com/cloudfoundry/bbs
 [submodule "src/code.cloudfoundry.org/routing-api"]
 	path = src/code.cloudfoundry.org/routing-api
 	url = https://github.com/cloudfoundry-incubator/routing-api
@@ -82,14 +82,14 @@
 [submodule "src/github.com/cloudfoundry/sonde-go"]
 	path = src/github.com/cloudfoundry/sonde-go
 	url = https://github.com/cloudfoundry/sonde-go
-[submodule "src/github.com/cloudfoundry-incubator/consuladapter"]
-	path = src/github.com/cloudfoundry-incubator/consuladapter
+[submodule "src/code.cloudfoundry.org/consuladapter"]
+	path = src/code.cloudfoundry.org/consuladapter
 	url = https://github.com/cloudfoundry-incubator/consuladapter
 [submodule "src/github.com/hashicorp/consul"]
 	path = src/github.com/hashicorp/consul
 	url = https://github.com/hashicorp/consul.git
-[submodule "src/github.com/cloudfoundry-incubator/locket"]
-	path = src/github.com/cloudfoundry-incubator/locket
+[submodule "src/code.cloudfoundry.org/locket"]
+	path = src/code.cloudfoundry.org/locket
 	url = http://github.com/cloudfoundry-incubator/locket
 [submodule "src/code.cloudfoundry.org/routing-info"]
 	path = src/code.cloudfoundry.org/routing-info
@@ -115,9 +115,9 @@
 [submodule "src/github.com/nats-io/nats"]
 	path = src/github.com/nats-io/nats
 	url = https://github.com/nats-io/nats
-[submodule "src/github.com/pivotal-golang/localip"]
-	path = src/github.com/pivotal-golang/localip
-	url = https://github.com/pivotal-golang/localip
+[submodule "src/code.cloudfoundry.org/localip"]
+	path = src/code.cloudfoundry.org/localip
+	url = https://github.com/cloudfoundry/localip
 [submodule "src/github.com/rcrowley/go-metrics"]
 	path = src/github.com/rcrowley/go-metrics
 	url = https://github.com/rcrowley/go-metrics
@@ -145,3 +145,6 @@
 [submodule "src/gopkg.in/yaml.v2"]
 	path = src/gopkg.in/yaml.v2
 	url = https://gopkg.in/yaml.v2
+[submodule "src/code.cloudfoundry.org/runtimeschema"]
+	path = src/code.cloudfoundry.org/runtimeschema
+	url = https://github.com/cloudfoundry/runtimeschema

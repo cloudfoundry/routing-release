@@ -12,17 +12,17 @@ import (
 
 	"haproxy-monitor/watcher"
 
-	"github.com/cloudfoundry-incubator/cf-lager"
-	"github.com/pivotal-golang/lager"
+	"code.cloudfoundry.org/cflager"
+	"code.cloudfoundry.org/lager"
 )
 
 var pidFile = flag.String("pidFile", "", "path to monitored process's pid file")
 
 func main() {
-	cf_lager.AddFlags(flag.CommandLine)
+	cflager.AddFlags(flag.CommandLine)
 	flag.Parse()
 
-	logger, _ := cf_lager.New("haproxy-monitor")
+	logger, _ := cflager.New("haproxy-monitor")
 	if *pidFile == "" {
 		logger.Error("flag-parsing", errors.New("pidfile-not-found"))
 		os.Exit(1)
