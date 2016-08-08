@@ -242,10 +242,6 @@ properties:
 
 The TCP Router, TCP Emitter, and Routing API are stateless and horizontally scalable. Routing API depends on a clustered etcd data store. For high availability, deploy multiple instances of each job, distributed across regions of your infrastructure.
 
-### Enabling PROXY Protocol on GoRouter
-
-Steps for enabling PROXY Protocol for the GoRouter can be found [here](https://github.com/cloudfoundry/gorouter/blob/master/README.md#proxy-protocol).
-
 ### Configuring Your Load Balancer to Health Check TCP Routers
 
 In order to determine whether TCP Router instances are eligible for routing requests to, configure your load balancer to periodically check the health of each instance by attempting a TCP connection. By default the health check port is 80. This port can be configured using the `haproxy.health_check_port` property in the `property-overrides.yml` stub file.
@@ -328,3 +324,8 @@ the [CloudFoundry
 Documentation](http://docs.cloudfoundry.org/loggregator/all_metrics.html#routing).
 You can use the [NOAA Firehose sample app](https://github.com/cloudfoundry/noaa)
 to quickly consume metrics from the Firehose.
+
+## Gorouter Support for PROXY Protocol
+
+Steps for enabling PROXY Protocol on the GoRouter can be found [here](https://github.com/cloudfoundry/gorouter/blob/master/README.md#proxy-protocol).
+
