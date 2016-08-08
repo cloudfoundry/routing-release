@@ -139,8 +139,8 @@
 [submodule "src/code.cloudfoundry.org/route-registrar"]
 	path = src/code.cloudfoundry.org/route-registrar
 	url = https://github.com/cloudfoundry-incubator/route-registrar
-[submodule "src/github.com/cloudfoundry/multierror"]
-	path = src/github.com/cloudfoundry/multierror
+[submodule "src/code.cloudfoundry.org/multierror"]
+	path = src/code.cloudfoundry.org/multierror
 	url = https://github.com/cloudfoundry/multierror
 [submodule "src/gopkg.in/yaml.v2"]
 	path = src/gopkg.in/yaml.v2
