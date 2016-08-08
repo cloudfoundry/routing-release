@@ -20,10 +20,10 @@ run_go_vet() {
   for component in "$@"
   do
     pushd $component
-      for file in $(find . -name "*.go" -not -iname "*test.go")
-        do
-          go tool vet -v -all -shadow=true $file
-        done
+      # for file in $(find . -name "*.go" -not -iname "*test.go"); do
+      #   go tool vet -v -all -shadow=true $file
+      # done
+      go vet ./...
     popd
   done
 }
