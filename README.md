@@ -254,15 +254,15 @@ To simulate this health check manually:
 
 ### Configuring Port Ranges and DNS
 1. Configure your load balancer to forward a range of ports to the IPs of the
-   TCP Router instances. By default, this release assumes the range 1024-65535
-   will be forwarded.
-- If your load balancer is not configured to forward ports 1024-65535, you must
-  configure this release with the available port range using deployment
-  manifest property `routing-api.router_groups.reservable_ports`
-- Configure DNS to resolve a domain name to the load balancer.
-- After deploying this release you must configure the DNS name in CF as a
-  Shared Domain as an admin user, associating it with the Router Group.
+   TCP Router instances. By default this release assumes 100 ports will be forwarded, in the range 1024-1123. The number of ports in the range dictates how many TCP routes can be created.
+- If you configured your load balancer to forward a range other than 1024-1123, you must
+  configure this release with the same port range using deployment
+  manifest property `routing-api.router_groups.reservable_ports`, or [use the Routing API](https://github.com/cloudfoundry-incubator/routing-api#using-the-api-manually) (see "To update a Router Group's reservable_ports field with a new port range").
+- Configure DNS to resolve a domain name to the load balancer. This domain name will be used by developers to create TCP routes for their applications. 
+- After deploying this release you must add the domain you chose to CF as a
+  Shared Domain (admin only), associating it with the Router Group.
   ```
+  $ cf router-groups
   Getting router groups as admin ...
 
   name          type
@@ -271,26 +271,12 @@ To simulate this health check manually:
   $ cf create-shared-domain tcp.cfapps.example.com --router-group default-tcp
   ```
 
-#### Capacity Limits for Ports and TCP Routes
-One port is dedicated for each TCP route in CF; in other words, TCP routes may not share ports.
+A Router Group represents a horizontally scalable cluster of identically configured routers. Shared domains in Cloud Foundry are associated with one router group; see [Post Deploy Configuration](#post-deploy-configuration). To create a TCP route for their application, a developer creates it from a TCP domain; see [Create a TCP Route[(#create-a-tcp-route). For each TCP route, Cloud Foundry reserves a port on the CF router. Each port is dedicated to that route; route ports may not be shared by multiple routes. The number of ports available for reservation dictates how many TCP routes can be created. 
 
-A Router Group represents a horizontally scalable cluster of identically
-configured routers. A router group is limited to maximum port range 1024-65535.
-Currently this release supports one router group, so the maximum number of TCP
-routes than can be created in CF is 64512 (65535-1024). Eventually we may
-support multiple router groups and/or TCP routes that share a port.
+A router group is limited to maximum port range 1024-65535; defaulting to 1024-1123. Currently this release supports one router group, so the maximum number of TCP routes than can be created in CF is 64512 (65535-1024). Eventually we may
+support multiple router groups and/or TCP routes that share a port. 
 
-#### Using Multiple Load Balancers to Maximize Port Capacity
-Operators may not be able to offer 64512 ports on a given load balancer. The load balancer may support other systems in addition to Cloud Foundry. AWS ELBs can be configured to listen on a maximum of 100 ports.
-
-Multiple load balancers may be used to contribute to the pool of ports
-available for creating TCP routes. E.g. LB1 listens on ports 1024-29999, LB2
-listens on ports 30000-65535, both load balancers forward requests for these
-ports to the instances of the router group. Configure
-`routing-api.router_groups.reservable_ports` manifest property with the
-combined port range. Ports must not overlap.
-
-You must configure a DNS name to resolve to each load balancer you use for TCP routing. E.g. `tcp1.cfapps.example.com` resolves to LB1, `tcp2.cfapps.example.com` resolves to LB2. Each domain name must be added as a Shared Domain to CF, for developers to create routes from.
+The same reservable port range must be configured both on the load balancer, and in this release using the manifest property `routing-api.router_groups.reservable_ports` or the or [the Routing API](https://github.com/cloudfoundry-incubator/routing-api#using-the-api-manually). 
 
 ## Running Acceptance tests
 
