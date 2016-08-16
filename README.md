@@ -271,7 +271,7 @@ To simulate this health check manually:
   $ cf create-shared-domain tcp.cfapps.example.com --router-group default-tcp
   ```
 
-A Router Group represents a horizontally scalable cluster of identically configured routers. Shared domains in Cloud Foundry are associated with one router group; see [Post Deploy Configuration](#post-deploy-configuration). To create a TCP route for their application, a developer creates it from a TCP domain; see [Create a TCP Route[(#create-a-tcp-route). For each TCP route, Cloud Foundry reserves a port on the CF router. Each port is dedicated to that route; route ports may not be shared by multiple routes. The number of ports available for reservation dictates how many TCP routes can be created. 
+A Router Group represents a horizontally scalable cluster of identically configured routers. Shared domains in Cloud Foundry are associated with one router group; see [Post Deploy Configuration](#post-deploy-configuration). To create a TCP route for their application, a developer creates it from a TCP domain; see [Create a TCP Route](#create-a-tcp-route). For each TCP route, Cloud Foundry reserves a port on the CF router. Each port is dedicated to that route; route ports may not be shared by multiple routes. The number of ports available for reservation dictates how many TCP routes can be created. 
 
 A router group is limited to maximum port range 1024-65535; defaulting to 1024-1123. Currently this release supports one router group, so the maximum number of TCP routes than can be created in CF is 64512 (65535-1024). Eventually we may
 support multiple router groups and/or TCP routes that share a port. 
