@@ -242,6 +242,8 @@ properties:
 
 The TCP Router, TCP Emitter, and Routing API are stateless and horizontally scalable. Routing API depends on a clustered etcd data store. For high availability, deploy multiple instances of each job, distributed across regions of your infrastructure.
 
+On any environment other than BOSH Lite, a load balancer is required in front of the tier of TCP routers. These load balancers must be configured to forward requests for a range of ports to the TCP routers. The HAProxy job that comes with cf-release does not support this behavior. If you do not have a load balancer, there is no point in running more than one TCP router unless you're willing to depend on DNS load balancing (not recommended). You could assign a public IP to the TCP router and configure DNS to resolve the TCP domain directly to a TCP router instance. For additional information, see [Configuring Port Ranges and DNS](#configuring-your-load-balancer-to-health-check-tcp-routers).
+
 ### Configuring Your Load Balancer to Health Check TCP Routers
 
 In order to determine whether TCP Router instances are eligible for routing requests to, configure your load balancer to periodically check the health of each instance by attempting a TCP connection. By default the health check port is 80. This port can be configured using the `haproxy.health_check_port` property in the `property-overrides.yml` stub file.
