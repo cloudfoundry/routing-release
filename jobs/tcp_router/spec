@@ -27,12 +27,24 @@ properties:
     default: "1m"
   tcp_router.oauth_secret:
     description: "OAuth client secret used to obtain token for Routing API from UAA."
+
+  routing_api.uri:
+    description: "URL where the routing API can be reached internally"
+    default: http://routing-api.service.cf.internal
+  routing_api.port:
+    description: "Port of routing api"
+    default: "3000"
+
   tcp_router.request_timeout_in_seconds:
     description: "Server and client timeouts in seconds"
     default: 300
   tcp_router.health_check_port:
     description: "Load balancer in front of TCP Routers should be configured to check the health of TCP Router instances by establishing a TCP connection on this port"
     default: 80
+
+  uaa.token_endpoint:
+    description: "UAA token endpoint host name"
+    default: uaa.service.cf.internal
 
   uaa.tls_port:
     description: "Port on which UAA is listening for TLS connections. This is required for obtaining an OAuth token for Routing API."
@@ -52,8 +64,4 @@ properties:
   uaa.ca_cert:
     description : "Certificate authority for communication between clients and uaa."
     default: ""
-
-  routing_api.auth_disabled:
-    description: "When false, Routing API requires OAuth tokens for authentication."
-    default: false
 
