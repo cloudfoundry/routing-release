@@ -25,12 +25,24 @@ properties:
     description: "String representing interval for collecting statistic metrics from tcp proxy. Units: ms, s, m h"
     default: "1m"
 
+  routing_api.uri:
+    description: "URL where the routing API can be reached internally"
+    default: http://routing-api.service.cf.internal
+
+  routing_api.port:
+    description: "Port of routing api"
+    default: "3000"
+
   routing_api.auth_disabled:
     description: "When false, Routing API requires OAuth tokens for authentication."
     default: false
 
   router_configurer.oauth_secret:
     description: "OAuth client secret used to obtain token for Routing API from UAA."
+
+  uaa.token_endpoint:
+    description: "UAA token endpoint host name"
+    default: uaa.service.cf.internal
 
   uaa.tls_port:
     description: "Port on which UAA is listening for TLS connections. This is required for obtaining an OAuth token for Routing API."

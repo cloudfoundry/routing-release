@@ -126,12 +126,18 @@ properties:
 
   uaa.clients.gorouter.secret:
     description: "Password for UAA client for the gorouter."
+  uaa.token_endpoint:
+    description: "UAA token endpoint host name"
+    default: uaa.service.cf.internal
   uaa.port:
     description: "Port on which UAA is running."
     default: 8080
   uaa.ssl.port:
     description: "Secure Port on which UAA is running."
 
+  routing_api.uri:
+    description: "URL where the routing API can be reached internally"
+    default: http://routing-api.service.cf.internal
   routing_api.port:
     description: "Port on which Routing API is running."
     default: 3000

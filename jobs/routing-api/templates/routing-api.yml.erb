@@ -6,7 +6,7 @@ metron_config:
 metrics_reporting_interval: <%= p("routing_api.metrics_reporting_interval") %>
 statsd_endpoint: <%= p("routing_api.statsd_endpoint") %>
 oauth:
-  token_endpoint: uaa.service.cf.internal
+  token_endpoint: <%= p("uaa.token_endpoint") %>
   port: <%= p("uaa.tls_port") %>
   skip_ssl_validation: <%= p("skip_ssl_validation") %>
   <% if p("uaa.ca_cert") != "" %>

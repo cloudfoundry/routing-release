@@ -1,5 +1,5 @@
 oauth:
-  token_endpoint: uaa.service.cf.internal
+  token_endpoint: <%= p("uaa.token_endpoint") %>
   client_name: "tcp_emitter"
   client_secret: <%= p("tcp_emitter.oauth_secret") %>
   port: <%= p("uaa.tls_port") %>
@@ -8,8 +8,8 @@ oauth:
   ca_certs: "/var/vcap/jobs/tcp_emitter/config/certs/uaa/ca.crt"
   <% end %>
 routing_api:
-  uri: http://routing-api.service.cf.internal
-  port: 3000
+  uri: <%= p("routing_api.uri") %>
+  port: <%= p("routing_api.port") %>
   auth_disabled: <%= p("routing_api.auth_disabled") %>
 
 

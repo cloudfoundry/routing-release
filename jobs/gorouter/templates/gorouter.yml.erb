@@ -41,7 +41,7 @@ publish_active_apps_interval: 0 # 0 means disabled
 suspend_pruning_if_nats_unavailable: <%= p("router.suspend_pruning_if_nats_unavailable") %>
 
 oauth:
-  token_endpoint: uaa.service.cf.internal
+  token_endpoint: <%= p("uaa.token_endpoint") %>
   client_name: "gorouter"
   client_secret: <%= p("uaa.clients.gorouter.secret") %>
   port: <%= p("uaa.ssl.port") %>
@@ -52,7 +52,7 @@ oauth:
 
 <% if p("routing_api.enabled") %>
 routing_api:
-  uri: http://routing-api.service.cf.internal
+  uri: <%= p("routing_api.uri") %>
   port: <%= p("routing_api.port") %>
   auth_disabled: <%= p("routing_api.auth_disabled") %>
 <% end %>
