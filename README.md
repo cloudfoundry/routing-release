@@ -52,22 +52,89 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 
         ./scripts/run-unit-tests
 
-## Deploying to BOSH-Lite
+## Deploying Routing Release
 
 ### Prerequisites
 
-1. Install and start [BOSH Lite](https://github.com/cloudfoundry/bosh-lite). Instructions can be found on that repo's README.
-- Upload the latest Warden Trusty Go-Agent stemcell to BOSH Lite. You can download it first if you prefer.
+1. [Deploy BOSH](http://bosh.io/docs). An easy way to get started using a single VM is BOSH Lite.
+- Upload the latest Warden Trusty Go-Agent stemcell for your IaaS to the BOSH Director. Stemcells can be found at [bosh.io](https://bosh.io). You can download it first if you prefer.
 
 	```
 	bosh upload stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent
 	```
 - Install spiff, a tool for generating BOSH manifests. spiff is required for running the scripts in later steps. Stable binaries can be downloaded from [Spiff Releases](https://github.com/cloudfoundry-incubator/spiff/releases).
-- Deploy [cf-release](https://github.com/cloudfoundry/cf-release) and [diego-release](https://github.com/cloudfoundry-incubator/diego-release).
+- Deploy [cf-release](https://github.com/cloudfoundry/cf-release) and [diego-release](https://github.com/cloudfoundry-incubator/diego-release). For IAAS other than BOSH Lite, additional configuration is required for cf-release.
+	
+### Prerequisite configuration for cf-release
 
-> **Note**: for IAAS other than BOSH Lite, cf-release must be configured so
-> that UAA terminates SSL; see [Deploying to Other
-> IAAS](#deploying-to-other-iaas).
+If you use the BOSH Lite manifest generation script cf-release, and deploy the latest release of cf-release, the following prerequisites will be configured for you automatically.
+
+- UAA must be configured to terminate TLS for internal requests. Set the following properties in your environment stub for cf-release when using the manifest generation scripts, or set it directly in your manifest. The routing-release's manifest generation scripts will set `uaa.tls_port` to the value of `uaa.ssl.port` from the cf-release manifest.
+
+	```
+	properties:
+	  uaa:
+	    ssl:
+	      port: <choose a port for UAA to listen to SSL on; e.g. 8443>
+	    sslCertificate: |
+	      <insert certificate>
+	    sslPrivateKey: |
+	      <insert private key>
+	```
+
+- You must add the `routing.router_groups.read` and `routing.router_groups.write` scopes to your admin user. 
+
+	```
+	properties:
+	  uaa:
+	    scim:
+	      users:
+	      - admin|PASSWORD|scim.write,scim.read,openid,cloud_controller.admin,clients.read,clients.write,doppler.firehose,routing.router_groups.read,routing.router_groups.write
+	```
+
+- UAA must be configured to accept requests using an internal hostname. The manifest generation scripts for cf-release will do this for you (both BOSH Lite and non). However, if you override the `uaa.zones.internal.hostnames` property yourself, be sure to include `uaa.service.cf.internal` in your stub.
+
+	```
+	properties:
+	  uaa:
+	    zones:
+	      internal:
+	        hostnames:
+	        - uaa.service.cf.internal
+	```
+	
+- The following OAuth clients must be configured for UAA. All but the `cf` client are new; the important change to the `cf` client is adding the `routing.router_groups.read` and `routing.router_groups.write` scopes. If you're using the manifest generation scripts for cf-release, you can skip this step as the necessary clients are in the Spiff templates. If you're handrolling your manifest for cf-release, you'll need to add them.
+
+	```
+	properties:
+	  uaa:
+	    clients:
+	      cc_routing:
+	        authorities: routing.router_groups.read
+	        authorized-grant-types: client_credentials
+	        secret: <your-secret>
+	      cf:
+	        override: true
+	        authorized-grant-types: password,refresh_token
+	        scope: cloud_controller.read,cloud_controller.write,openid,password.write,cloud_controller.admin,cloud_controller.admin_read_only,scim.read,scim.write,doppler.firehose,uaa.user,routing.router_groups.read,routing.router_groups.write
+	        authorities: uaa.none
+	        access-token-validity: 600
+	        refresh-token-validity: 2592000
+	      gorouter:
+	        authorities: routing.routes.read
+	        authorized-grant-types: client_credentials,refresh_token
+	        secret: <your-secret>
+	      tcp_emitter:
+	        authorities: routing.routes.write,routing.routes.read,routing.router_groups.read
+	        authorized-grant-types: client_credentials,refresh_token
+	        secret: <your-secret>
+	      tcp_router:
+	        authorities: routing.routes.read,routing.router_groups.read
+	        authorized-grant-types: client_credentials,refresh_token
+	        secret: <your-secret>
+	```
+
+
 
 ### Upload Release, Generate Manifest, and Deploy
 1. Clone this repo and sync submodules; see [Get the code](#get-the-code).
@@ -182,61 +249,7 @@ The CLI commands below require version 6.17+ of the [cf CLI](https://github.com/
 
 BOSH Lite is a single VM environment intended for development. When deploying this release alongside Cloud Foundry in a distributed configuration, where jobs run on their own VMs, consider the following.
 
-### UAA configuration
 
-UAA needs to be configured with correct hostname so that routing components can
-contact it. If you are using the manifest generation scripts for cf-release, the
-following properties have been enabled by default. However, if you override the
-`uaa.zones.internal.hostnames` property yourself, make sure to include `uaa.service.cf.internal`
-in your stub.
-
-```
-properties:
-  uaa:
-    zones:
-      internal:
-        hostnames:
-        - uaa.service.cf.internal
-```
-
-### UAA SSL must be enabled before deploying this release
-
-The BOSH Lite manifest generation scripts use templates that have enabled the following properties by default. When generating a manifest for any other environment, you'll need to update your cf-release deployment with these manifest properties before generating the manifest for this release. This release's manifest generation scripts pull the value of `uaa.ssl.port` from the cf-release manifest.
-
-		properties:
-		  uaa:
-		    ssl:
-		      port: <choose a port for UAA to listen to SSL on; e.g. 8443>
-		    sslCertificate: |
-		      <insert certificate>
-		    sslPrivateKey: |
-		      <insert private key>
-
-### OAuth clients in UAA
-
-The following clients must be configured in UAA. If you're using the manifest generation scripts for cf-release, you can skip this step as the necessary clients are in the Spiff templates. If you're handrolling your manifest for cf-release, you'll need to add them.
-
-```
-properties:
-  uaa:
-    clients:
-      cc_routing:
-        authorities: routing.router_groups.read
-        authorized-grant-types: client_credentials
-        secret: <your-secret>
-      gorouter:
-        authorities: routing.routes.read
-        authorized-grant-types: client_credentials,refresh_token
-        secret: <your-secret>
-      tcp_emitter:
-        authorities: routing.routes.write,routing.routes.read,routing.router_groups.read
-        authorized-grant-types: client_credentials,refresh_token
-        secret: <your-secret>
-      tcp_router:
-        authorities: routing.routes.read,routing.router_groups.read
-        authorized-grant-types: client_credentials,refresh_token
-        secret: <your-secret>
-```
 
 ### Horizontal Scalability
 
