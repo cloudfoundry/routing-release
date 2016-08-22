@@ -62,13 +62,14 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 	```
 - Install spiff, a tool for generating BOSH manifests. spiff is required for running the scripts in later steps. Stable binaries can be downloaded from [Spiff Releases](https://github.com/cloudfoundry-incubator/spiff/releases).
 - Deploy [cf-release](https://github.com/cloudfoundry/cf-release) and [diego-release](https://github.com/cloudfoundry-incubator/diego-release). For IAAS other than BOSH Lite, this release requires specific configuration for cf-release; see [Prerequisite Configuration of cf-release](#prerequisite-configuration-of-cf-release).
-- Configure a load balancer providing high availability for the TCP routers to forward a range of ports to the TCP routers. Choose a domain name for TCP and configure DNS to resolve it to your load balancer. See [Port Ranges and DNS](#port-ranges-and-dns).
+- Configure a load balancer providing high availability for the TCP routers to forward a range of ports to the TCP routers. See [Load Balancer Requirements](#load-balancer-requirements).
+- Choose a domain name for TCP and configure DNS to resolve it to your load balancer; see [Domain Names](#domain-names).
 
 ### Prerequisite Configuration of cf-release
 
 If you use the BOSH Lite manifest generation script cf-release, and deploy the latest release of cf-release, the following prerequisites will be configured for you automatically.
 
-- UAA must be configured to terminate TLS for internal requests. Set the following properties in your environment stub for cf-release when using the manifest generation scripts, or set it directly in your manifest. The routing-release's manifest generation scripts will set `uaa.tls_port` to the value of `uaa.ssl.port` from the cf-release manifest.
+1. UAA must be configured to terminate TLS for internal requests. Set the following properties in your environment stub for cf-release when using the manifest generation scripts, or set it directly in your manifest. The routing-release's manifest generation scripts will set `uaa.tls_port` to the value of `uaa.ssl.port` from the cf-release manifest.
 
 	```
 	properties:
@@ -80,7 +81,6 @@ If you use the BOSH Lite manifest generation script cf-release, and deploy the l
 	    sslPrivateKey: |
 	      <insert private key>
 	```
-
 - You must add the `routing.router_groups.read` and `routing.router_groups.write` scopes to your admin user. 
 
 	```
@@ -90,7 +90,6 @@ If you use the BOSH Lite manifest generation script cf-release, and deploy the l
 	      users:
 	      - admin|PASSWORD|scim.write,scim.read,openid,cloud_controller.admin,clients.read,clients.write,doppler.firehose,routing.router_groups.read,routing.router_groups.write
 	```
-
 - The following OAuth clients must be configured for UAA. All but the `cf` client are new; the important change to the `cf` client is adding the `routing.router_groups.read` and `routing.router_groups.write` scopes. If you're using the manifest generation scripts for cf-release, you can skip this step as the necessary clients are in the Spiff templates. If you're handrolling your manifest for cf-release, you'll need to add them.
 
 	```
@@ -134,21 +133,11 @@ If you use the BOSH Lite manifest generation script cf-release, and deploy the l
 
 ### Load Balancer Requirements
 
-#### Port Ranges and DNS
+#### Ports
 
-For environments where high-availability is required, a load balancer is required in front of the TCP routers. These load balancers must be configured to forward requests for a range of ports to the TCP routers. The HAProxy job that comes with cf-release does not support this behavior. 
+For environments where high-availability is required, a load balancer is required in front of the TCP routers. These load balancers must be configured to forward requests for a range of ports to the TCP routers. The HAProxy job that comes with cf-release does not support this behavior. If high-availability is not required you can skip this section and allocate a public IP to a single TCP router instance.
 
-If high-availability is not required you can skip this section. Allocate a public IP to a single TCP router instance and configure DNS to resolve the TCP domain directly to a TCP router instance.
-
-1. Choose how many TCP routes you'd like to offer. For each TCP route, a port must be opened on your load balancer. Configure your load balancer to forward the range of ports you choose to the IPs of the TCP Router instances. By default this release assumes 100 ports will be forwarded, in the range 1024-1123. 
-- Choose a domain name from which developers will configure TCP routes for their applications. Configure DNS to resolve this domain name to the load balancer.  
-
-A Router Group represents a horizontally scalable cluster of identically configured routers. Only one router group is currently supported. Shared domains in Cloud Foundry are associated with one router group; see [Post Deploy Configuration](#post-deploy-configuration). To create a TCP route for their application, a developer creates it from a TCP domain; see [Create a TCP Route](#create-a-tcp-route). For each TCP route, Cloud Foundry reserves a port on the CF router. Each port is dedicated to that route; route ports may not be shared by multiple routes. The number of ports available for reservation dictates how many TCP routes can be created. 
-
-A router group is limited to maximum port range 1024-65535; defaulting to 1024-1123. As one router group is supported,  the maximum number of TCP routes than can be created in CF is 64512 (65535-1024). Though multiple Shared Domains can be assigned to the router group, they share a common pool of ports. E.g. given Shared Domains `tcp-1.example.com` and `tcp-2.example.com are assigned to the `default-tcp` router group, and a route for port 1024 is created from domain `tcp-1.example.com`, the same port could not be reserved for a route from domain `tcp-2.example.com`. Eventually we may
-support multiple router groups and/or TCP routes that share a port. 
-
-The same reservable port range must be configured both on the load balancer, and in this release using the manifest property `routing-api.router_groups.reservable_ports` or the or [the Routing API](https://github.com/cloudfoundry-incubator/routing-api#using-the-api-manually). 
+Choose how many TCP routes you'd like to offer. For each TCP route, a port must be opened on your load balancer. Configure your load balancer to forward the range of ports you choose to the IPs of the TCP Router instances. By default this release assumes 100 ports will be forwarded, in the range 1024-1123. 
 
 #### Load Balancer Healthchecking of TCP Routers
 
@@ -159,6 +148,10 @@ To simulate this health check manually:
   nc -vz <tcp router IP> 80
   Connection to <tcp router IP> port 80 [tcp/http] succeeded!
   ```
+
+### Domain Names
+
+Choose a domain name from which developers will configure TCP routes for their applications. Configure DNS to resolve this domain name to the load balancer. If high-availability is not required configure DNS to resolve the TCP domain directly to a single TCP router instance.
 
 
 ## Deploying routing-release
@@ -179,7 +172,18 @@ To simulate this health check manually:
             bosh -n upload release
 - Generate a Deployment Manifest and Deploy
 
-    If you configured your load balancer to forward a range other than 1024-1123 (see [Port Ranges and DNS](#port-ranges-and-dns)), you must configure this release with the same port range using deployment manifest property `routing-api.router_groups.reservable_ports`, or [use the Routing API](https://github.com/cloudfoundry-incubator/routing-api#using-the-api-manually) (see "To update a Router Group's reservable_ports field with a new port range").
+    If you configured your load balancer to forward a range other than 1024-1123 (see [Ports](#ports)), you must configure this release with the same port range using deployment manifest property `routing-api.router_groups.reservable_ports`.
+    
+    ```
+    properties:
+      routing_api:
+        router_groups:
+        - name: default-tcp
+          reservable_ports: 1024-1123
+          type: tcp
+    ```
+    
+    This is a seeded value only; after deploy, changes to this property will be ignored. To modify the reservable port range after deployment, use the [Routing API](https://github.com/cloudfoundry-incubator/routing-api#using-the-api-manually); (see "To update a Router Group's reservable_ports field with a new port range").
 
     - BOSH Lite
 
@@ -203,11 +207,11 @@ To simulate this health check manually:
 
 ## Post Deploy Steps
 
-### 1. Redeploy cf-release to Enable the Routing API
+1. Redeploy cf-release to Enable the Routing API
 
-Finally, update your cf-release deployment to enable the Routing API included in this release.
-
-1. If you have a stub for overriding manifest properties of cf-release, add the following properties to this file. A [default one](bosh-lite/stubs/cf/routing-and-diego-enabled-overrides.yml) is provided. When you re-generate the manifest, these values will override the defaults in the manifest.
+	After deploying routing-release, you must update your cf-release deployment to enable the Routing API included in this release.
+	
+	If you have a stub for overriding manifest properties of cf-release, add the following properties to this file. A [default one](bosh-lite/stubs/cf/routing-and-diego-enabled-overrides.yml) is provided. When you re-generate the manifest, these values will override the defaults in the manifest.
 
 	```
 	properties:
@@ -216,48 +220,54 @@ Finally, update your cf-release deployment to enable the Routing API included in
 	  routing_api:
 	    enabled: true
 	```
+
 	Though not strictly required, we recommend configuring Diego as your default backend (as configured with `default_to_diego_backend: true` above, as TCP Routing is only supported for Diego).
-- Then generate a new manifest for cf-release and re-deploy it.
+    
+	Then generate a new manifest for cf-release and re-deploy it.
 
-		cd ~/workspace/cf-release
-		./scripts/generate-bosh-lite-dev-manifest ~/workspace/routing-release/bosh-lite/stubs/cf/routing-and-diego-enabled-overrides.yml  # or <path-to-your-stub>
-		bosh -n deploy
+	```
+	cd ~/workspace/cf-release
+	./scripts/generate-bosh-lite-dev-manifest ~/workspace/routing-release/bosh-lite/stubs/cf/routing-and-diego-enabled-overrides.yml  # or <path-to-your-stub>
+	bosh -n deploy
+	```
+- Create a Shared Domain in CF
 
-### 2. Create a Shared Domain in CF
-
-After deploying this release you must add the domain you chose (see [Port Ranges and DNS](#port-ranges-and-dns)) to CF as a Shared Domain (admin only), associating it with the Router Group. 
-
-The CLI commands below require version 6.17+ of the [cf CLI](https://github.com/cloudfoundry/cli), and must be run as admin.
-
-1. List available router-groups
-
+	After deploying this release you must add the domain you chose (see [Domain Names](#domain-names)) to CF as a Shared Domain (admin only), associating it with the Router Group. 
+	
+	The CLI commands below require version 6.17+ of the [cf CLI](https://github.com/cloudfoundry/cli), and must be run as admin.
+	
+	List available router-groups
+	
 	```
 	$ cf router-groups
 	Getting router groups as admin ...
-
+	
 	name          type
 	default-tcp   tcp
 	```
-
+	
 	**Note**: If you receive this error: `FAILED This command requires the Routing API. Your targeted endpoint reports it is not enabled`. This is due to the CF CLI's `~/.cf/config.json` having an old cached `RoutingEndpoint` value. To fix this, just do a cf login again and this error should go away.
-
-- Create a shared-domain for the TCP router group
-
+	
+	Create a shared-domain for the TCP router group
+	
 	```
 	$ cf create-shared-domain tcp.bosh-lite.com --router-group default-tcp
 	Creating shared domain tcp.bosh-lite.com as admin...
 	OK
 	```
 
-### 3. Enable Quotas for TCP Routing
+	See [Router Groups](#router-groups) for details on that concept.
+- Enable Quotas for TCP Routing
 
-As ports can be a limited resource in some environments, the default quotas in Cloud Foundry for IaaS other than BOSH Lite do not allow reservation of route ports; required for creation of TCP routes. The final step to enabling TCP routing is to modify quotas to set the maximum number of TCP routes that may be created by each organization or space.
-
-1. Get the guid of the default org quota
+	As ports can be a limited resource in some environments, the default quotas in Cloud Foundry for IaaS other than BOSH Lite do not allow reservation of route ports; required for creation of TCP routes. The final step to enabling TCP routing is to modify quotas to set the maximum number of TCP routes that may be created by each organization or space.
+	
+	Get the guid of the default org quota
+	
 	```
 	$ cf curl /v2/quota_definitions?q=name:default
 	```
-- Update this quota definition to set `"total_reserved_route_ports": -1`
+	Update this quota definition to set `"total_reserved_route_ports": -1`
+	
 	```
 	$ cf curl /v2/quota_definitions/44dff27d-96a2-44ed-8904-fb5ca8cbb298 -X PUT -d '{"total_reserved_route_ports": -1}'
 	```
@@ -276,6 +286,16 @@ The CLI commands below require version 6.17+ of the [cf CLI](https://github.com/
 	OK!
 	```
 
+## Router Groups
+
+A Router Group represents a horizontally scalable cluster of identically configured routers. Only one router group is currently supported. Shared domains in Cloud Foundry are associated with one router group; see [Post Deploy Configuration](#post-deploy-configuration). To create a TCP route for their application, a developer creates it from a TCP domain; see [Create a TCP Route](#create-a-tcp-route). For each TCP route, Cloud Foundry reserves a port on the CF router. Each port is dedicated to that route; route ports may not be shared by multiple routes. The number of ports available for reservation dictates how many TCP routes can be created. 
+
+A router group is limited to maximum port range 1024-65535; defaulting to 1024-1123. As one router group is supported,  the maximum number of TCP routes than can be created in CF is 64512 (65535-1024). Though multiple Shared Domains can be assigned to the router group, they share a common pool of ports. E.g. given Shared Domains `tcp-1.example.com` and `tcp-2.example.com are assigned to the `default-tcp` router group, and a route for port 1024 is created from domain `tcp-1.example.com`, the same port could not be reserved for a route from domain `tcp-2.example.com`. Eventually we may
+support multiple router groups and/or TCP routes that share a port. 
+
+The same reservable port range must be configured both on the load balancer, and in this release using the manifest property `routing-api.router_groups.reservable_ports`. The port range can be modified after deploying using [the Routing API](https://github.com/cloudfoundry-incubator/routing-api#using-the-api-manually). 
+
+**Note:** when modifying the port range using the Routing API, consider that the new port range must include those ports that have already been reserved. 
 
 
 ## High Availability
