@@ -139,7 +139,7 @@ For environments where high-availability is required, a load balancer is require
 
 Choose how many TCP routes you'd like to offer. For each TCP route, a port must be opened on your load balancer. Configure your load balancer to forward the range of ports you choose to the IPs of the TCP Router instances. By default this release assumes 100 ports will be forwarded, in the range 1024-1123. 
 
-#### Load Balancer Healthchecking of TCP Routers
+#### Healthchecking of TCP Routers
 
 In order to determine whether TCP Router instances are eligible for routing requests to, configure your load balancer to periodically check the health of each instance by attempting a TCP connection. By default the health check port is 80. This port can be configured using the `haproxy.health_check_port` property in the `property-overrides.yml` stub file.
 
@@ -199,11 +199,6 @@ Choose a domain name from which developers will configure TCP routes for their a
             ./scripts/generate-manifest </path/to/stubs/> </path/to/cf-release-manifest> </path/to/diego-release-manifest>
             bosh -n deploy
 
-
-
-> **Note**: for IAAS other than BOSH Lite, consider whether the reservable port
-> range should be modified; see [Deploying to Other
-> IAAS](#deploying-to-other-iaas).
 
 ## Post Deploy Steps
 
