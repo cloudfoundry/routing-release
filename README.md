@@ -63,7 +63,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 - Install spiff, a tool for generating BOSH manifests. spiff is required for running the scripts in later steps. Stable binaries can be downloaded from [Spiff Releases](https://github.com/cloudfoundry-incubator/spiff/releases).
 - Deploy [cf-release](https://github.com/cloudfoundry/cf-release) and [diego-release](https://github.com/cloudfoundry-incubator/diego-release). For IAAS other than BOSH Lite, this release requires specific configuration for cf-release; see [Prerequisite Configuration of cf-release](#prerequisite-configuration-of-cf-release).
 - Configure a load balancer providing high availability for the TCP routers to forward a range of ports to the TCP routers. See [Load Balancer Requirements](#load-balancer-requirements).
-- Choose a domain name for TCP and configure DNS to resolve it to your load balancer; see [Domain Names](#domain-names).
+- Choose a domain name for developer to create TCP route from and configure DNS to resolve it to your load balancer; see [Domain Names](#domain-names).
 
 ### Prerequisite Configuration of cf-release
 
