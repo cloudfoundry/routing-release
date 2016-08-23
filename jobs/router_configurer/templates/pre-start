@@ -16,7 +16,7 @@ function create_directories() {
 function setcap_haproxy() {
     PATH=/var/vcap/packages/haproxy/bin:/var/vcap/packages/haproxy-monitor/bin:$PATH
     DAEMON=$(which haproxy)
-    setcap cap_net_bind_service=+ep $DAEMON
+    setcap cap_net_bind_service,cap_sys_resource=+ep $DAEMON
 }
 
 create_directories
