@@ -5,6 +5,7 @@ dependencies:
 files:
   - routing-release/src/code.cloudfoundry.org/cflager/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/lager/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/multierror/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/route-registrar/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/route-registrar/commandrunner/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/route-registrar/commandrunner/fakes/*.go # gosub
@@ -14,7 +15,6 @@ files:
   - routing-release/src/code.cloudfoundry.org/route-registrar/messagebus/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/route-registrar/messagebus/fakes/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/route-registrar/registrar/*.go # gosub
-  - routing-release/src/code.cloudfoundry.org/multierror/*.go # gosub
   - routing-release/src/github.com/nats-io/nats/*.go # gosub
   - routing-release/src/github.com/nats-io/nats/encoders/builtin/*.go # gosub
   - routing-release/src/github.com/nats-io/nuid/*.go # gosub

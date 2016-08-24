@@ -65,6 +65,23 @@ properties:
     description: "Host to ping for confirmation of DNS resolution"
     default: consul.service.cf.internal
 
+  routing_api.sqldb.host:
+    description: "Host for SQL database"
+  routing_api.sqldb.port:
+    description: "Port on which SQL database is listening"
+
+  routing_api.sqldb.type:
+    description: "Type of SQL database"
+    example: "mysql"
+  routing_api.sqldb.schema:
+    description: "Database name for routing api"
+    example: "routing_api"
+
+  routing_api.sqldb.username:
+    description: "Username used for connecting to SQL database"
+  routing_api.sqldb.password:
+    description: "Password used for connecting to SQL database"
+
   uaa.ca_cert:
     decription : "Certificate authority for communication between clients and UAA."
     default: ""

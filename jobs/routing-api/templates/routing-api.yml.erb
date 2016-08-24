@@ -21,3 +21,16 @@ etcd:
   ca_file: "/var/vcap/jobs/routing-api/config/certs/etcd/ca.crt"
   cert_file: "/var/vcap/jobs/routing-api/config/certs/etcd/client.crt"
   key_file: "/var/vcap/jobs/routing-api/config/certs/etcd/client.key"
+
+<% if_p("routing_api.sqldb.host",
+    "routing_api.sqldb.port",
+    "routing_api.sqldb.type",
+    "routing_api.sqldb.schema") do |host, port, type, schema| %>
+sqldb:
+  host: <%= host %>
+  port: <%= port %>
+  schema: <%= schema %>
+  type: <%= type %>
+  username: <%= p("routing_api.sqldb.username") %>
+  password: <%= p("routing_api.sqldb.password") %>
+<% end %>

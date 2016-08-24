@@ -30,3 +30,7 @@ tags
 
 # built .test files from run-inigo compile check
 *.test
+
+# go packages
+src/golang.org/x/tools/
+src/github.com/kisielk/

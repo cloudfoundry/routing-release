@@ -48,9 +48,13 @@ files:
   - github.com/coreos/etcd/pkg/transport/*.go # gosub
   - github.com/coreos/etcd/pkg/types/*.go # gosub
   - github.com/dgrijalva/jwt-go/*.go # gosub
+  - github.com/go-sql-driver/mysql/*.go # gosub
   - github.com/gogo/protobuf/gogoproto/*.go # gosub
   - github.com/gogo/protobuf/proto/*.go # gosub
   - github.com/gogo/protobuf/protoc-gen-gogo/descriptor/*.go # gosub
+  - github.com/jinzhu/gorm/*.go # gosub
+  - github.com/jinzhu/gorm/dialects/mysql/*.go # gosub
+  - github.com/jinzhu/inflection/*.go # gosub
   - github.com/nu7hatch/gouuid/*.go # gosub
   - github.com/onsi/ginkgo/*.go # gosub
   - github.com/onsi/ginkgo/config/*.go # gosub
