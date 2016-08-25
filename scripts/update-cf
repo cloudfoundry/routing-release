@@ -16,6 +16,6 @@ deployment_dir=${bosh_lite_dir}/deployments
 
 mkdir -p $deployment_dir
 
-spiff merge ${CF_MANIFEST} ${bosh_lite_dir}/stubs/cf/property_overrides.yml > ${deployment_dir}/cf.yml
+spiff merge ${CF_MANIFEST} ${bosh_lite_dir}/stubs/cf/* > ${deployment_dir}/cf.yml
 bosh -n deployment ${deployment_dir}/cf.yml
 bosh -n deploy
