@@ -46,9 +46,15 @@ properties:
     description: |
       Delay in seconds after drain begins before server stops listening.
       During this time the server will respond with 503 Service Unavailable to
-      requests having header User-Agent: HTTP-Monitor/1.1. This accommodates
-      requests in transit sent while health check responded ok.
+      requests having header
+      User-Agent: {Value of router.healthcheck_user_agent}.
+      This accommodates requests in transit sent during the time the health
+      check responded with `ok`.
     default: 0
+  router.healthcheck_user_agent:
+    description: User-Agent for the health check agent (usually the Load Balancer).
+    example: "ELB-HealthChecker/1.0"
+    default: "HTTP-Monitor/1.1"
   router.enable_ssl:
     description: "Enable ssl termination on the router"
     default: false
