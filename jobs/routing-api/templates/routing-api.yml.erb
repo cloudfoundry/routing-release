@@ -1,5 +1,7 @@
 ---
 log_guid: "routing_api"
+max_ttl: <%= p("routing_api.max_ttl") %>
+system_domain: <%= p("routing_api.system_domain") %>
 metron_config:
   address: "localhost"
   port: <%= p("metron.port") %>

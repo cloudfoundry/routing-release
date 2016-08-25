@@ -49,9 +49,8 @@ case $1 in
          -config /var/vcap/jobs/routing-api/config/routing-api.yml \
          -port $routing_port \
          -logLevel=<%= p("routing_api.log_level") %> \
-         -maxTTL <%= p("routing_api.max_ttl") %> \
          -ip <%= my_ip %> \
-         -systemDomain <%= p("routing_api.system_domain") %> <% if p("routing_api.auth_disabled") == true %> -devMode <% end %> \
+         <% if p("routing_api.auth_disabled") == true %> -devMode <% end %> \
 
     ;;
 
