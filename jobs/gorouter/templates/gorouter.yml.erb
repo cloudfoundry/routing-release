@@ -62,6 +62,7 @@ healthcheck_user_agent: <%= p("router.healthcheck_user_agent") %>
 endpoint_timeout: <%= p("request_timeout_in_seconds") %>s
 
 start_response_delay_interval: <%= p("router.requested_route_registration_interval_in_seconds") %>s
+load_balancer_healthy_threshold: <%= p("router.load_balancer_healthy_threshold") %>s
 
 enable_ssl: <%= p("router.enable_ssl") %>
 skip_ssl_validation: <%= p("router.ssl_skip_validation") %>
