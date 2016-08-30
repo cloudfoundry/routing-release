@@ -109,6 +109,10 @@ properties:
     description: "Enables support for the popular PROXY protocol, allowing downstream load balancers that do not support HTTP to pass along client information."
     default: false
 
+  router.tracing.enable_zipkin:
+    description: "Enables the addition of the X-B3-Trace-Id header to incoming requests. If the header already exists on the incoming request, it will not be overwritten."
+    default: false
+
   nats.user:
     description:
   nats.password:

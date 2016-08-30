@@ -23,6 +23,9 @@ logging:
   loggregator_enabled: true
   metron_address: "localhost:<%=p("metron.port") %>"
 
+tracing:
+  enable_zipkin: <%= p("router.tracing.enable_zipkin") %>
+
 port: <%= p("router.port") %>
 index: <%= p("router.offset") + spec.index %>
 go_max_procs: <%= p("router.number_of_cpus") %>
