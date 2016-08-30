@@ -16,10 +16,12 @@ files:
   - routing-release/src/code.cloudfoundry.org/gorouter/common/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/common/health/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/common/http/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/common/http/fakes/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/common/schema/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/common/secure/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/common/secure/fakes/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/common/spec/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/common/uuid/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/config/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/metrics/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/metrics/monitor/*.go # gosub
