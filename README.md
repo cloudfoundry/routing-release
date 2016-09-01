@@ -61,11 +61,13 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 	bosh upload stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent
 	```
 - Install spiff, a tool for generating BOSH manifests. spiff is required for running the scripts in later steps. Stable binaries can be downloaded from [Spiff Releases](https://github.com/cloudfoundry-incubator/spiff/releases).
-- Deploy [cf-release](https://github.com/cloudfoundry/cf-release) and [diego-release](https://github.com/cloudfoundry-incubator/diego-release). For IAAS other than BOSH Lite, this release requires specific configuration for cf-release; see [Prerequisite Configuration of cf-release](#prerequisite-configuration-of-cf-release).
+- Deploy [cf-release](https://github.com/cloudfoundry/cf-release), [diego-release](https://github.com/cloudfoundry-incubator/diego-release) and [cf-mysql-release](https://github.com/cloudfoundry/cf-mysql-release). For IAAS other than BOSH Lite, this release requires specific configuration for cf-release and cf-mysql-release; see [Prerequisite Configuration](#prerequisite-configuration).
 - Configure a load balancer providing high availability for the TCP routers to forward a range of ports to the TCP routers. See [Load Balancer Requirements](#load-balancer-requirements).
 - Choose a domain name for developer to create TCP route from and configure DNS to resolve it to your load balancer; see [Domain Names](#domain-names).
 
-### Prerequisite Configuration of cf-release
+### Prerequisite Configuration
+
+#### CF-Release
 
 If you use the BOSH Lite manifest generation script cf-release, and deploy the latest release of cf-release, the following prerequisites will be configured for you automatically.
 
@@ -81,7 +83,7 @@ If you use the BOSH Lite manifest generation script cf-release, and deploy the l
 	    sslPrivateKey: |
 	      <insert private key>
 	```
-- You must add the `routing.router_groups.read` and `routing.router_groups.write` scopes to your admin user. 
+- You must add the `routing.router_groups.read` and `routing.router_groups.write` scopes to your admin user.
 
 	```
 	properties:
@@ -131,13 +133,61 @@ If you use the BOSH Lite manifest generation script cf-release, and deploy the l
 	        - uaa.service.cf.internal
 	```
 
+#### CF-Mysql-Release
+
+Deploy instructions [here](https://github.com/cloudfoundry/cf-mysql-release#deploying).
+1. Currently Routing API does not create the database hence we need to configure mysql-release to seed the database and create the user.
+2. We recommend you do not use a mysql deployment that is exposed as a marketplace service instead use deployment where broker instances are set to zero. Update the following properties after generating your manifest.
+
+      ```
+      properties:
+	cf_mysql
+	  mysql
+	    seeded_databases:
+	    - name: <your-database-name>
+	      username: <your-username>
+	      password: <your-password>
+	....
+	jobs:
+	- cf-mysql-broker_z1
+	  instances: 0
+	....
+	- cf-mysql-broker_z2
+	  instances: 0
+      ```
+
+**Note**: For bosh-lite deployments the above changes are automatically done when you run the following script.
+
+      ```
+      cd routing-release
+      ./scripts/generate-mysql-bosh-lite-manifest
+      ```
+
+### Using Mysql in Routing Release
+
+Routing release now supports storing persistent information about router groups in Relational Database along with ETCD. To opt into this feature you can configure your manifest with following `sql` properties.
+
+    ```
+     properties:
+       routing_api:
+	  sqldb:
+	    host: <IP of SQL Host>
+	    port: <Port for SQL Host>
+	    type: mysql
+	    schema: <Schema name>
+	    username: <Username for SQL DB>
+	    password: <Password for SQL DB>
+    ```
+
+**Note**: If you are using CF-Mysql-Release, then the above values can be obtained from the `cf_mysql.mysql.seeded_databases` property(`schema` value corresponds to `seeded_databases[].name`). Host value can be obtained from the IP address of proxy_z1/proxy_z2 vm and Port value is `3306`.
+
 ### Load Balancer Requirements
 
 #### Ports
 
 For environments where high-availability is required, a load balancer is required in front of the TCP routers. These load balancers must be configured to forward requests for a range of ports to the TCP routers. The HAProxy job that comes with cf-release does not support this behavior. If high-availability is not required you can skip this section and allocate a public IP to a single TCP router instance.
 
-Choose how many TCP routes you'd like to offer. For each TCP route, a port must be opened on your load balancer. Configure your load balancer to forward the range of ports you choose to the IPs of the TCP Router instances. By default this release assumes 100 ports will be forwarded, in the range 1024-1123. 
+Choose how many TCP routes you'd like to offer. For each TCP route, a port must be opened on your load balancer. Configure your load balancer to forward the range of ports you choose to the IPs of the TCP Router instances. By default this release assumes 100 ports will be forwarded, in the range 1024-1123.
 
 #### Healthchecking of TCP Routers
 
