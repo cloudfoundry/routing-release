@@ -1,0 +1,39 @@
+property_overrides:
+  cf:
+    admin_username: admin
+    admin_password: admin
+  mysql:
+    seeded_databases:
+    - name: routing-api
+      username: router
+      password: router
+    admin_password: password
+    gcache_size:
+    disable_auto_sst:
+    roadmin_enabled: true
+    roadmin_password: password
+    cluster_health:
+      password: REPLACE_WITH_A_PASSWORD_YOU_MAKE_UP
+    galera_healthcheck:
+      endpoint_username: username
+      endpoint_password: password
+      db_password: gh_password
+  proxy:
+    api_username: username
+    api_password: password
+  broker:
+    auth_username: admin
+    auth_password: password
+    cookie_secret: 94046872-2602-4ca6-8d07-8b0da9762477
+    dashboard_secret: p-mysql-secret
+    quota_enforcer:
+      password: password
+    service_name: p-mysql
+    plans:
+    - name: 100mb
+      id: ab08f1bc-e6fc-4b56-a767-ee0fea6e3f20
+      description: Shared MySQL Server
+      max_storage_mb: 10
+      max_user_connections: 20
+  smoke_tests:
+    password: password

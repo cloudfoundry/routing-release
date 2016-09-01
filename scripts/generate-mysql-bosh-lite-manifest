@@ -1,0 +1,55 @@
+#!/bin/bash
+
+set -e
+
+MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+RELEASE_DIR="$( cd "${MY_DIR}/.." && pwd )"
+
+DIRECTOR_IP=${DIRECTOR_IP:-192.168.50.4}
+BOSH_LITE_USERNAME=${BOSH_LITE_USERNAME:-admin}
+BOSH_LITE_PASSWORD=${BOSH_LITE_PASSWORD:-admin}
+
+tmpdir=$(mktemp -d /tmp/mysql_manifest.XXXXX)
+trap '{ rm -rf ${tmpdir}; }' EXIT
+
+argument_error=false
+
+ROOT_DIR=$(
+  for i in `seq 1 5`; do
+    ls "cf-mysql-release" &>/dev/null
+    if [[ $? -ne 0 ]]; then  >> "/dev/null"
+      cd ..
+    else
+      break
+    fi
+  done
+  pwd
+)
+
+MANIFEST_FILE_PATH=${RELEASE_DIR}/bosh-lite/deployments/cf-mysql.yml
+CF_MYSQL_RELEASE_DIR=${ROOT_DIR}/cf-mysql-release
+CF_RELEASE_DIR=${ROOT_DIR}/cf-release
+
+echo $CF_MYSQL_RELEASE_DIR
+pushd "${RELEASE_DIR}" > /dev/null
+
+  bosh -n target "${DIRECTOR_IP}"
+  bosh -n login "${BOSH_LITE_USERNAME}" "${BOSH_LITE_PASSWORD}"
+  DIRECTOR_UUID="$(bosh status --uuid)"
+  sed "s/REPLACE_WITH_DIRECTOR_UUID/$DIRECTOR_UUID/g" \
+    "${CF_MYSQL_RELEASE_DIR}/manifest-generation/bosh-lite-stubs/cf-manifest.yml" \
+    > "${tmpdir}/bosh-lite-cf-manifest.yml"
+
+
+  ${CF_MYSQL_RELEASE_DIR}/scripts/generate-deployment-manifest \
+    -c ${tmpdir}/bosh-lite-cf-manifest.yml \
+    -p ${RELEASE_DIR}/bosh-lite/stubs/mysql/property-overrides.yml \
+    -i ${CF_MYSQL_RELEASE_DIR}/manifest-generation/bosh-lite-stubs/iaas-settings.yml \
+    -n ${RELEASE_DIR}/bosh-lite/stubs/mysql/instance-count-overrides.yml \
+    "$@" \
+    > ${MANIFEST_FILE_PATH}
+
+  bosh deployment ${MANIFEST_FILE_PATH}
+popd > /dev/null
+
+echo "CF-MySQL Manifest was generated at ${MANIFEST_FILE_PATH}"

@@ -1,0 +1,5 @@
+instance_count_overrides:
+  - name: cf-mysql-broker_z1
+    instances: 0
+  - name: cf-mysql-broker_z2
+    instances: 0
