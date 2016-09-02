@@ -270,6 +270,8 @@ properties:
     system_domain: (( config_from_cf.system_domain ))
     router_groups: (( property_overrides.routing_api.router_groups || meta.default_router_groups))
     max_ttl: (( property_overrides.routing_api.max_ttl || nil ))
+    lock_retry_interval: (( property_overrides.tcp_emitter.lock_retry_interval || nil ))
+    lock_ttl: (( property_overrides.tcp_emitter.lock_ttl || nil ))
     etcd:
       servers: (( property_overrides.routing_api.etcd.servers || config_from_cf.etcd.machines ))
       ca_cert: (( property_overrides.routing_api.etcd.ca_cert || nil ))

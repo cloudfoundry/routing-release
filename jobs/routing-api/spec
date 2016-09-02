@@ -96,3 +96,15 @@ properties:
       - name: default-tcp
         reservable_ports: 1024-10000,12000
         type: tcp
+
+  consul.servers:
+    description: "comma-separated list of consul server URLs (scheme://ip:port)"
+    default: "http://127.0.0.1:8500"
+
+  routing_api.lock_ttl:
+    description: "TTL for service lock"
+    default: "10s"
+
+  routing_api.lock_retry_interval:
+    description: "interval to wait before retrying a failed lock acquisition"
+    default: "5s"
