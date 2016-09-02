@@ -26,9 +26,11 @@ ROOT_DIR=$(
   pwd
 )
 
-MANIFEST_FILE_PATH=${RELEASE_DIR}/bosh-lite/deployments/cf-mysql.yml
 CF_MYSQL_RELEASE_DIR=${ROOT_DIR}/cf-mysql-release
 CF_RELEASE_DIR=${ROOT_DIR}/cf-release
+MANIFEST_FILE_PATH=${RELEASE_DIR}/bosh-lite/deployments/cf-mysql.yml
+
+mkdir -p `dirname ${MANIFEST_FILE_PATH}`
 
 echo $CF_MYSQL_RELEASE_DIR
 pushd "${RELEASE_DIR}" > /dev/null
