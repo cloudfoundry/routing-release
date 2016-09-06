@@ -13,7 +13,7 @@ property_overrides:
     roadmin_enabled: true
     roadmin_password: password
     cluster_health:
-      password: REPLACE_WITH_A_PASSWORD_YOU_MAKE_UP
+      password: password
     galera_healthcheck:
       endpoint_username: username
       endpoint_password: password
@@ -36,4 +36,6 @@ property_overrides:
       max_storage_mb: 10
       max_user_connections: 20
   smoke_tests:
+    password: password
+  acceptance_tests:
     password: password
