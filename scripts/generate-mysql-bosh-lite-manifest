@@ -27,7 +27,10 @@ ROOT_DIR=$(
 )
 
 CF_MYSQL_RELEASE_DIR=${ROOT_DIR}/cf-mysql-release
-CF_RELEASE_DIR=${ROOT_DIR}/cf-release
+if [ ! -d "${CF_MYSQL_RELEASE_DIR}" ]; then
+  echo "CF MYSQL dir does not exist"
+  exit 1
+fi
 MANIFEST_FILE_PATH=${RELEASE_DIR}/bosh-lite/deployments/cf-mysql.yml
 
 mkdir -p `dirname ${MANIFEST_FILE_PATH}`
