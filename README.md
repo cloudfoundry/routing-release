@@ -136,48 +136,49 @@ If you use the BOSH Lite manifest generation script cf-release, and deploy the l
 #### CF-Mysql-Release
 
 Deploy instructions [here](https://github.com/cloudfoundry/cf-mysql-release#deploying).
-1. Currently Routing API does not create the database hence we need to configure mysql-release to seed the database and create the user.
-2. We recommend you do not use a mysql deployment that is exposed as a marketplace service instead use deployment where broker instances are set to zero. Update the following properties after generating your manifest.
 
-      ```
-      properties:
-	cf_mysql
-	  mysql
-	    seeded_databases:
-	    - name: <your-database-name>
-	      username: <your-username>
-	      password: <your-password>
-	....
+1. Currently Routing API does not create the database hence we need to configure mysql-release to seed the database and create the user.
+1. We recommend you do not use a mysql deployment that is exposed as a marketplace service instead use deployment where broker instances are set to zero. Update the following properties after generating your manifest.
+
+	```
+    properties:
+	  cf_mysql
+	    mysql
+	      seeded_databases:
+	      - name: <your-database-name>
+	        username: <your-username>
+	        password: <your-password>
+	...
 	jobs:
 	- cf-mysql-broker_z1
 	  instances: 0
-	....
+	...
 	- cf-mysql-broker_z2
 	  instances: 0
-      ```
+	```
 
-**Note**: For bosh-lite deployments the above changes are automatically done when you run the following script.
+	**Note**: For bosh-lite deployments the above changes are automatically done when you run the following script.
 
-      ```
-      cd routing-release
-      ./scripts/generate-mysql-bosh-lite-manifest
-      ```
+	```
+	  cd routing-release
+	  ./scripts/generate-mysql-bosh-lite-manifest
+	```
 
 ### Using Mysql in Routing Release
 
 Routing release now supports storing persistent information about router groups in Relational Database along with ETCD. To opt into this feature you can configure your manifest with following `sql` properties.
 
-    ```
-     properties:
-       routing_api:
-	  sqldb:
-	    host: <IP of SQL Host>
-	    port: <Port for SQL Host>
-	    type: mysql
-	    schema: <Schema name>
-	    username: <Username for SQL DB>
-	    password: <Password for SQL DB>
-    ```
+```	
+properties:
+  routing_api:
+    sqldb:
+      host: <IP of SQL Host>
+      port: <Port for SQL Host>
+      type: mysql
+      schema: <Schema name>
+      username: <Username for SQL DB>
+      password: <Password for SQL DB>
+```
 
 **Note**: If you are using CF-Mysql-Release, then the above values can be obtained from the `cf_mysql.mysql.seeded_databases` property(`schema` value corresponds to `seeded_databases[].name`). Host value can be obtained from the IP address of proxy_z1/proxy_z2 vm and Port value is `3306`.
 
