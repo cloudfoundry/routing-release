@@ -70,6 +70,7 @@ files:
   - github.com/onsi/gomega/gexec/*.go # gosub
   - github.com/onsi/gomega/internal/assertion/*.go # gosub
   - github.com/onsi/gomega/internal/asyncassertion/*.go # gosub
+  - github.com/onsi/gomega/internal/oraclematcher/*.go # gosub
   - github.com/onsi/gomega/internal/testingtsupport/*.go # gosub
   - github.com/onsi/gomega/matchers/*.go # gosub
   - github.com/onsi/gomega/matchers/support/goraph/bipartitegraph/*.go # gosub
@@ -81,3 +82,4 @@ files:
   - github.com/tedsuo/ifrit/ginkgomon/*.go # gosub
   - github.com/tedsuo/rata/*.go # gosub
   - github.com/vito/go-sse/sse/*.go # gosub
+  - gopkg.in/yaml.v2/*.go # gosub

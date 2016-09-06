@@ -108,6 +108,7 @@ files:
   - routing-release/src/github.com/onsi/gomega/gexec/*.go # gosub
   - routing-release/src/github.com/onsi/gomega/internal/assertion/*.go # gosub
   - routing-release/src/github.com/onsi/gomega/internal/asyncassertion/*.go # gosub
+  - routing-release/src/github.com/onsi/gomega/internal/oraclematcher/*.go # gosub
   - routing-release/src/github.com/onsi/gomega/internal/testingtsupport/*.go # gosub
   - routing-release/src/github.com/onsi/gomega/matchers/*.go # gosub
   - routing-release/src/github.com/onsi/gomega/matchers/support/goraph/bipartitegraph/*.go # gosub

@@ -28,6 +28,7 @@ files:
   - github.com/onsi/gomega/gexec/*.go # gosub
   - github.com/onsi/gomega/internal/assertion/*.go # gosub
   - github.com/onsi/gomega/internal/asyncassertion/*.go # gosub
+  - github.com/onsi/gomega/internal/oraclematcher/*.go # gosub
   - github.com/onsi/gomega/internal/testingtsupport/*.go # gosub
   - github.com/onsi/gomega/matchers/*.go # gosub
   - github.com/onsi/gomega/matchers/support/goraph/bipartitegraph/*.go # gosub
@@ -37,6 +38,7 @@ files:
   - github.com/onsi/gomega/types/*.go # gosub
   - github.com/tedsuo/ifrit/*.go # gosub
   - github.com/tedsuo/ifrit/ginkgomon/*.go # gosub
+  - gopkg.in/yaml.v2/*.go # gosub
   - haproxy-monitor/cmd/haproxy-monitor/*.go # gosub
   - haproxy-monitor/cmd/haproxy-monitor/testrunner/*.go # gosub
   - haproxy-monitor/watcher/*.go # gosub
