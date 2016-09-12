@@ -13,7 +13,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 
 ### Get the code
 
-1. Fetch release repo
+1. Fetch release repo.
 
     ```
     mkdir -p ~/workspace
@@ -23,7 +23,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
     ```
 
 
-1. Automate `$GOPATH` and `$PATH` setup
+1. Automate `$GOPATH` and `$PATH` setup.
 
     This BOSH release doubles as a `$GOPATH`. It will automatically be set up for you if you have [direnv](http://direnv.net) installed.
 
@@ -35,7 +35,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
     If you do not wish to use direnv, you can simply `source` the `.envrc` file in the root of the release repo.  You may manually need to update your `$GOPATH` and `$PATH` variables as you switch in and out of the directory.
 
 
-1. Initialize and sync submodules
+1. Initialize and sync submodules.
 
 
     ```
