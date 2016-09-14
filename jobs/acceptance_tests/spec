@@ -50,4 +50,4 @@ properties:
     description: "Password for UAA client for the tcp emitter."
 
   acceptance_tests.system_domain:
-    decription : "Domain for system components, e.g. bosh-lite.com"
+    description : "Domain for system components, e.g. bosh-lite.com"
