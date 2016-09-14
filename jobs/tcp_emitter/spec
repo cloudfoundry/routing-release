@@ -82,5 +82,5 @@ properties:
     default: 3457
 
   uaa.ca_cert:
-    decription: "Certificate authority for communication between clients and uaa."
+    description: "Certificate authority for communication between clients and uaa."
     default: ""
