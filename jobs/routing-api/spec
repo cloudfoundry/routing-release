@@ -83,7 +83,7 @@ properties:
     description: "Password used for connecting to SQL database"
 
   uaa.ca_cert:
-    decription : "Certificate authority for communication between clients and UAA."
+    description : "Certificate authority for communication between clients and UAA."
     default: ""
 
   uaa.tls_port:

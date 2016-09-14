@@ -34,7 +34,7 @@ properties:
     description: "On startup, the router will delay listening for requests by this duration to increase likelihood that it has a complete routing table before serving requests. The router also broadcasts the same duration as a recommended interval to registering clients via NATS."
     default: 20
   router.load_balancer_healthy_threshold:
-    decription: "Time period in seconds to wait until declaring the router instance started after starting the listener socket. This allows an external load balancer time to register the instance as healthy."
+    description: "Time period in seconds to wait until declaring the router instance started after starting the listener socket. This allows an external load balancer time to register the instance as healthy."
     default: 20
   router.number_of_cpus:
     description: "Number of CPUs to utilize, the default (-1) will equal the number of available CPUs"
@@ -166,5 +166,5 @@ properties:
     default: false
 
   uaa.ca_cert:
-    decription : "Certificate authority for communication between clients and uaa."
+    description : "Certificate authority for communication between clients and uaa."
     default: ""
