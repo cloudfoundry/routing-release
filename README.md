@@ -157,7 +157,7 @@ Deploy instructions [here](https://github.com/cloudfoundry/cf-mysql-release#depl
 	  instances: 0
 	```
 
-	**Note**: For bosh-lite deployments the above changes are automatically done when you run the following script.
+	**Note**: For bosh-lite deployments the above changes are automatically done when you run the following script. This script depends on the master branch of cf-mysql-release to be checked out.
 
 	```
 	  cd routing-release
