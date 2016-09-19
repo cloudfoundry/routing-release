@@ -137,8 +137,9 @@ If you use the BOSH Lite manifest generation script cf-release, and deploy the l
 
 Deploy instructions [here](https://github.com/cloudfoundry/cf-mysql-release#deploying).
 
-1. Currently Routing API does not create the database hence we need to configure mysql-release to seed the database and create the user.
-1. We recommend you do not use a mysql deployment that is exposed as a marketplace service instead use deployment where broker instances are set to zero. Update the following properties after generating your manifest.
+Routing API does not create the database on deployment of routing-release; you must configure mysql-release to seed the database and user. You'll then configure the routing-release deployment manifest with these credentials. We recommend you do not use a mysql deployment that is exposed as a marketplace service. Instead, use a mysql deployment intended for internal platform use; for these deployments you should set broker instances to zero. 
+
+After generating your manifest for cf-mysql-release, update the following manifest properties before deploying.
 
 	```
     properties:
@@ -157,7 +158,7 @@ Deploy instructions [here](https://github.com/cloudfoundry/cf-mysql-release#depl
 	  instances: 0
 	```
 
-	**Note**: For bosh-lite deployments the above changes are automatically done when you run the following script. This script depends on the master branch of cf-mysql-release to be checked out.
+	**Note**: For bosh-lite deployments we provide a script that generates an appropriate manifest. This script depends on the master branch of cf-mysql-release to be checked out, and assumes you're using a local BOSH Lite director. To use a BOSH Lite on AWS, you'll need to set environment variables `DIRECTOR_IP` and `BOSH_LITE_PASSWORD`. 
 
 	```
 	  cd routing-release
@@ -166,7 +167,7 @@ Deploy instructions [here](https://github.com/cloudfoundry/cf-mysql-release#depl
 
 ### Using Mysql in Routing Release
 
-Routing release now supports storing persistent information about router groups in Relational Database along with ETCD. To opt into this feature you can configure your manifest with following `sql` properties.
+Routing release now supports storing persistent information about router groups in Relational Database instead of ETCD. To opt into this feature you can configure your manifest with following `sqldb` properties.
 
 ```	
 properties:
