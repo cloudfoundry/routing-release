@@ -16,8 +16,7 @@ defaults
         timeout server <%= p("haproxy.request_timeout_in_seconds").to_i * 1000 %>ms
     <% end %>
 
-frontend http-in
+listen health_check_http_url
     mode http
     bind :<%= p("haproxy.health_check_port") %>
-    option forwardfor
-    reqadd X-Forwarded-Proto:\ http
+    monitor-uri /health

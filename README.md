@@ -169,7 +169,7 @@ After generating your manifest for cf-mysql-release, update the following manife
 
 Routing release now supports storing persistent information about router groups in Relational Database instead of ETCD. To opt into this feature you can configure your manifest with following `sqldb` properties.
 
-```	
+```
 properties:
   routing_api:
     sqldb:
@@ -193,14 +193,28 @@ Choose how many TCP routes you'd like to offer. For each TCP route, a port must 
 
 #### Healthchecking of TCP Routers
 
-In order to determine whether TCP Router instances are eligible for routing requests to, configure your load balancer to periodically check the health of each instance by attempting a TCP connection. By default the health check port is 80. This port can be configured using the `haproxy.health_check_port` property in the `property-overrides.yml` stub file.
+In order to determine whether TCP Router instances are eligible for routing
+requests to, configure your load balancer to periodically check the health of
+each instance by attempting a TCP connection. By default the health check port
+is 80. This port can be configured using the `haproxy.health_check_port`
+property in the `property-overrides.yml` stub file.
 
-To simulate this health check manually:
+For example, to simulate this health check manually:
   ```
   nc -vz <tcp router IP> 80
   Connection to <tcp router IP> port 80 [tcp/http] succeeded!
   ```
 
+You can also check the health of each TCP Router instance by making an HTTP
+request to `http://<tcp router IP>:<haproxy.health_check_port>/health`.
+
+For example:
+  ```
+  curl http://<tcp router IP>:80/health
+  <html><body><h1>200 OK</h1>
+  Service ready.
+  </body></html>
+  ```
 ### Domain Names
 
 Choose a domain name from which developers will configure TCP routes for their applications. Configure DNS to resolve this domain name to the load balancer. If high-availability is not required configure DNS to resolve the TCP domain directly to a single TCP router instance.
@@ -214,7 +228,7 @@ Choose a domain name from which developers will configure TCP routes for their a
 
             cd ~/workspace/routing-release
             bosh -n upload release releases/routing-<lastest_version>.yml
- 
+
     - The `release-candidate` branch can be considered "edge" as it has passed tests. The `update` script handles syncing submodules, among other things.
 
             cd ~/workspace/routing-release
@@ -225,7 +239,7 @@ Choose a domain name from which developers will configure TCP routes for their a
 - Generate a Deployment Manifest and Deploy
 
     If you configured your load balancer to forward a range other than 1024-1123 (see [Ports](#ports)), you must configure this release with the same port range using deployment manifest property `routing-api.router_groups.reservable_ports`.
-    
+
     ```
     properties:
       routing_api:
@@ -234,7 +248,7 @@ Choose a domain name from which developers will configure TCP routes for their a
           reservable_ports: 1024-1123
           type: tcp
     ```
-    
+
     This is a seeded value only; after deploy, changes to this property will be ignored. To modify the reservable port range after deployment, use the [Routing API](https://github.com/cloudfoundry-incubator/routing-api#using-the-api-manually); (see "To update a Router Group's reservable_ports field with a new port range").
 
     - BOSH Lite
@@ -245,7 +259,7 @@ Choose a domain name from which developers will configure TCP routes for their a
 		The `generate-bosh-lite-manifest` script expects the cf-release and diego-release manifests to be at `~/workspace/cf-release/bosh-lite/deployments/cf.yml` and `~/workspace/diego-release/bosh-lite/deployments/diego.yml`; the BOSH Lite manifest generation scripts for those releases will put them there by default. If cf and diego manifests are in a different location then you must specify them as arguments:
 
             ./scripts/generate-bosh-lite-manifest /path/to/cf-release-manifest /path/to/diego-release-manifest
-        
+
     - Other IaaS
 
             ./scripts/generate-manifest </path/to/stubs/> </path/to/cf-release-manifest> </path/to/diego-release-manifest>
@@ -257,7 +271,7 @@ Choose a domain name from which developers will configure TCP routes for their a
 1. Redeploy cf-release to Enable the Routing API
 
 	After deploying routing-release, you must update your cf-release deployment to enable the Routing API included in this release.
-	
+
 	If you have a stub for overriding manifest properties of cf-release, add the following properties to this file. A [default one](bosh-lite/stubs/cf/routing-and-diego-enabled-overrides.yml) is provided. When you re-generate the manifest, these values will override the defaults in the manifest.
 
 	```
@@ -269,7 +283,7 @@ Choose a domain name from which developers will configure TCP routes for their a
 	```
 
 	Though not strictly required, we recommend configuring Diego as your default backend (as configured with `default_to_diego_backend: true` above, as TCP Routing is only supported for Diego).
-    
+
 	Then generate a new manifest for cf-release and re-deploy it.
 
 	```
@@ -280,23 +294,23 @@ Choose a domain name from which developers will configure TCP routes for their a
 - Create a Shared Domain in CF
 
 	After deploying this release you must add the domain you chose (see [Domain Names](#domain-names)) to CF as a Shared Domain (admin only), associating it with the Router Group. 
-	
+
 	The CLI commands below require version 6.17+ of the [cf CLI](https://github.com/cloudfoundry/cli), and must be run as admin.
-	
+
 	List available router-groups
-	
+
 	```
 	$ cf router-groups
 	Getting router groups as admin ...
-	
+
 	name          type
 	default-tcp   tcp
 	```
-	
+
 	**Note**: If you receive this error: `FAILED This command requires the Routing API. Your targeted endpoint reports it is not enabled`. This is due to the CF CLI's `~/.cf/config.json` having an old cached `RoutingEndpoint` value. To fix this, just do a cf login again and this error should go away.
-	
+
 	Create a shared-domain for the TCP router group
-	
+
 	```
 	$ cf create-shared-domain tcp.bosh-lite.com --router-group default-tcp
 	Creating shared domain tcp.bosh-lite.com as admin...
@@ -307,14 +321,14 @@ Choose a domain name from which developers will configure TCP routes for their a
 - Enable Quotas for TCP Routing
 
 	As ports can be a limited resource in some environments, the default quotas in Cloud Foundry for IaaS other than BOSH Lite do not allow reservation of route ports; required for creation of TCP routes. The final step to enabling TCP routing is to modify quotas to set the maximum number of TCP routes that may be created by each organization or space.
-	
+
 	Get the guid of the default org quota
-	
+
 	```
 	$ cf curl /v2/quota_definitions?q=name:default
 	```
 	Update this quota definition to set `"total_reserved_route_ports": -1`
-	
+
 	```
 	$ cf curl /v2/quota_definitions/44dff27d-96a2-44ed-8904-fb5ca8cbb298 -X PUT -d '{"total_reserved_route_ports": -1}'
 	```
