@@ -163,3 +163,6 @@
 [submodule "src/github.com/urfave/negroni"]
 	path = src/github.com/urfave/negroni
 	url = https://github.com/urfave/negroni
+[submodule "src/code.cloudfoundry.org/eventhub"]
+	path = src/code.cloudfoundry.org/eventhub
+	url = https://github.com/cloudfoundry/eventhub
