@@ -261,11 +261,13 @@ Choose a domain name from which developers will configure TCP routes for their a
 	      password: <Password for SQL DB>
 	```
 	
-	If you are using [cf-mysql-release](https://github.com/cloudfoundry/cf-mysql-release), then the values for these properties can be obtained from the manifest for cf-mysql-release. 
+	If you are using [cf-mysql-release](https://github.com/cloudfoundry/cf-mysql-release), then the values for these properties can be obtained from properties that manifest. 
 	
-	- `schema` corresponds to `mysql.seeded_databases[].name`
-	- `host` can be obtained from the IP address of `proxy_z1`
+	- `host` corresponds to the IP address of the `proxy_z1` job
 	- `port` is `3306`
+	- `schema` corresponds to `cf_mysql.mysql.seeded_databases[].name`
+	- `username` corresponds to `cf_mysql.mysql.seeded_databases[].username`
+	- `password` corresponds to `cf_mysql.mysql.seeded_databases[].password`
 
 
 ## Post Deploy Steps
