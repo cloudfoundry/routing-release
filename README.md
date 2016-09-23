@@ -165,24 +165,6 @@ After generating your manifest for cf-mysql-release, update the following manife
 	  ./scripts/generate-mysql-bosh-lite-manifest
 	```
 
-### Using Mysql in Routing Release
-
-Routing release now supports storing persistent information about router groups in Relational Database instead of ETCD. To opt into this feature you can configure your manifest with following `sqldb` properties.
-
-```
-properties:
-  routing_api:
-    sqldb:
-      host: <IP of SQL Host>
-      port: <Port for SQL Host>
-      type: mysql
-      schema: <Schema name>
-      username: <Username for SQL DB>
-      password: <Password for SQL DB>
-```
-
-**Note**: If you are using CF-Mysql-Release, then the above values can be obtained from the `cf_mysql.mysql.seeded_databases` property(`schema` value corresponds to `seeded_databases[].name`). Host value can be obtained from the IP address of proxy_z1/proxy_z2 vm and Port value is `3306`.
-
 ### Load Balancer Requirements
 
 #### Ports
@@ -238,18 +220,7 @@ Choose a domain name from which developers will configure TCP routes for their a
             bosh -n upload release
 - Generate a Deployment Manifest and Deploy
 
-    If you configured your load balancer to forward a range other than 1024-1123 (see [Ports](#ports)), you must configure this release with the same port range using deployment manifest property `routing-api.router_groups.reservable_ports`.
-
-    ```
-    properties:
-      routing_api:
-        router_groups:
-        - name: default-tcp
-          reservable_ports: 1024-1123
-          type: tcp
-    ```
-
-    This is a seeded value only; after deploy, changes to this property will be ignored. To modify the reservable port range after deployment, use the [Routing API](https://github.com/cloudfoundry-incubator/routing-api#using-the-api-manually); (see "To update a Router Group's reservable_ports field with a new port range").
+    The following scripts can be used to generate manifests for your deployment.
 
     - BOSH Lite
 
@@ -264,6 +235,37 @@ Choose a domain name from which developers will configure TCP routes for their a
 
             ./scripts/generate-manifest </path/to/stubs/> </path/to/cf-release-manifest> </path/to/diego-release-manifest>
             bosh -n deploy
+
+    If you configured your load balancer to forward a range other than 1024-1123 (see [Ports](#ports)), you must configure this release with the same port range using deployment manifest property `routing-api.router_groups.reservable_ports`. This is a seeded value only; after deploy, changes to this property will be ignored. To modify the reservable port range after deployment, use the [Routing API](https://github.com/cloudfoundry-incubator/routing-api#using-the-api-manually); (see "To update a Router Group's reservable_ports field with a new port range").
+
+    ```
+    properties:
+      routing_api:
+        router_groups:
+        - name: default-tcp
+          reservable_ports: 1024-1123
+          type: tcp
+    ```
+
+	Routing release now supports storing persistent information about router groups in Relational Database instead of ETCD. To opt into this feature you can configure your manifest with following `sqldb` properties. 
+	
+	```
+	properties:
+	  routing_api:
+	    sqldb:
+	      host: <IP of SQL Host>
+	      port: <Port for SQL Host>
+	      type: mysql
+	      schema: <Schema name>
+	      username: <Username for SQL DB>
+	      password: <Password for SQL DB>
+	```
+	
+	If you are using [cf-mysql-release](https://github.com/cloudfoundry/cf-mysql-release), then the values for these properties can be obtained from the manifest for cf-mysql-release. 
+	
+	- `schema` corresponds to `mysql.seeded_databases[].name`
+	- `host` can be obtained from the IP address of `proxy_z1`
+	- `port` is `3306`
 
 
 ## Post Deploy Steps
