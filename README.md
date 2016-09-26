@@ -163,14 +163,45 @@ for you automatically.
    property yourself, be sure to include `uaa.service.cf.internal` in your
    stub.
 
-    ```
-    properties:
-      uaa:
-	zones:
-	  internal:
-	    hostnames:
-	    - uaa.service.cf.internal
-    ```
+   ```
+   properties:
+     uaa:
+       zones:
+         internal:
+           hostnames:
+           - uaa.service.cf.internal
+   ```
+
+#### CF-Mysql-Release
+
+Deploy instructions [here](https://github.com/cloudfoundry/cf-mysql-release#deploying).
+
+Routing API does not create the database on deployment of routing-release; you
+must configure mysql-release to seed the database and user. You'll then
+configure the routing-release deployment manifest with these credentials. We
+recommend you do not use a mysql deployment that is exposed as a marketplace
+service. Instead, use a mysql deployment intended for internal platform use;
+for these deployments you should set broker instances to zero.
+
+After generating your manifest for cf-mysql-release, update the following
+manifest properties before deploying.
+
+```
+properties:
+  cf_mysql:
+    mysql:
+      seeded_databases:
+      - name: <your-database-name>
+        username: <your-username>
+        password: <your-password>
+...
+jobs:
+- cf-mysql-broker_z1
+  instances: 0
+...
+- cf-mysql-broker_z2
+  instances: 0
+```
 
 ### Load Balancer Requirements
 
@@ -292,6 +323,47 @@ directly to a single TCP router instance.
           type: tcp
     ```
 
+    Routing release now supports using a relational database for all data. We
+    recommend this over using etcd. To opt into this feature you can configure
+    your manifest with the following `sqldb` properties. These can be configured
+    in a property-overrides stub under the
+    `property_overrides.routing_api.sqldb` property. To migrate existing
+    deployments to use a relational database see [Migrating from ETCD](#Migrating from ETCD)
+
+    ```
+    properties:
+      routing_api:
+        sqldb:
+          type: <mysql || postgres>
+          host: <IP of SQL Host>
+          port: <Port for SQL Host>
+          schema: <Schema name>
+          username: <Username for SQL DB>
+          password: <Password for SQL DB>
+    ```
+
+    If you are using
+    [cf-mysql-release](https://github.com/cloudfoundry/cf-mysql-release), then
+    the values for these properties can be obtained from properties that
+    manifest.
+      - `type` should be `mysql`
+      - `host` corresponds to the IP address of the `proxy_z1` job
+      - `port` is `3306`
+      - `schema` corresponds to `cf_mysql.mysql.seeded_databases[].name`
+      - `username` corresponds to `cf_mysql.mysql.seeded_databases[].username`
+      - `password` corresponds to `cf_mysql.mysql.seeded_databases[].password`
+
+### Migrating from ETCD
+
+For deployments that already exist with ETCD, there is a 2 deployment process
+to migrate to a relational database.
+1. Deploy the most recent version of routing-release
+1. Redeploy routing release after adding the sql db configuration in your
+   manifest.
+
+The 2 deployment process should ensure zero down time in the
+switch from etcd to a relational database.
+
 ## Post Deploy Steps
 
 1. Redeploy cf-release to Enable the Routing API
@@ -305,12 +377,11 @@ directly to a single TCP router instance.
   provided. When you re-generate the manifest, these values will override
   the defaults in the manifest.
 
-  ```
-  properties:
-    cc:
-      default_to_diego_backend: true
-    routing_api:
-      enabled: true
+  ``` properties:
+        cc:
+          default_to_diego_backend: true
+        routing_api:
+          enabled: true
   ```
 
   Though not strictly required, we recommend configuring Diego as your default
