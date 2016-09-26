@@ -61,7 +61,7 @@ Commits to this repo (including Pull Requests) should be made on the Develop bra
 	bosh upload stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent
 	```
 - Install spiff, a tool for generating BOSH manifests. spiff is required for running the scripts in later steps. Stable binaries can be downloaded from [Spiff Releases](https://github.com/cloudfoundry-incubator/spiff/releases).
-- Deploy [cf-release](https://github.com/cloudfoundry/cf-release), [diego-release](https://github.com/cloudfoundry-incubator/diego-release) and [cf-mysql-release](https://github.com/cloudfoundry/cf-mysql-release). For IAAS other than BOSH Lite, this release requires specific configuration for cf-release and cf-mysql-release; see [Prerequisite Configuration](#prerequisite-configuration).
+- Deploy [cf-release](https://github.com/cloudfoundry/cf-release), [diego-release](https://github.com/cloudfoundry-incubator/diego-release). For IAAS other than BOSH Lite, this release requires specific configuration for cf-release; see [Prerequisite Configuration](#prerequisite-configuration).
 - Configure a load balancer providing high availability for the TCP routers to forward a range of ports to the TCP routers. See [Load Balancer Requirements](#load-balancer-requirements).
 - Choose a domain name for developer to create TCP route from and configure DNS to resolve it to your load balancer; see [Domain Names](#domain-names).
 
@@ -131,38 +131,6 @@ If you use the BOSH Lite manifest generation script cf-release, and deploy the l
 	      internal:
 	        hostnames:
 	        - uaa.service.cf.internal
-	```
-
-#### CF-Mysql-Release
-
-Deploy instructions [here](https://github.com/cloudfoundry/cf-mysql-release#deploying).
-
-Routing API does not create the database on deployment of routing-release; you must configure mysql-release to seed the database and user. You'll then configure the routing-release deployment manifest with these credentials. We recommend you do not use a mysql deployment that is exposed as a marketplace service. Instead, use a mysql deployment intended for internal platform use; for these deployments you should set broker instances to zero. 
-
-After generating your manifest for cf-mysql-release, update the following manifest properties before deploying.
-
-	```
-    properties:
-	  cf_mysql
-	    mysql
-	      seeded_databases:
-	      - name: <your-database-name>
-	        username: <your-username>
-	        password: <your-password>
-	...
-	jobs:
-	- cf-mysql-broker_z1
-	  instances: 0
-	...
-	- cf-mysql-broker_z2
-	  instances: 0
-	```
-
-	**Note**: For bosh-lite deployments we provide a script that generates an appropriate manifest. This script depends on the master branch of cf-mysql-release to be checked out, and assumes you're using a local BOSH Lite director. To use a BOSH Lite on AWS, you'll need to set environment variables `DIRECTOR_IP` and `BOSH_LITE_PASSWORD`. 
-
-	```
-	  cd routing-release
-	  ./scripts/generate-mysql-bosh-lite-manifest
 	```
 
 ### Load Balancer Requirements
@@ -246,29 +214,6 @@ Choose a domain name from which developers will configure TCP routes for their a
           reservable_ports: 1024-1123
           type: tcp
     ```
-
-	Routing release now supports storing persistent information about router groups in Relational Database instead of ETCD. To opt into this feature you can configure your manifest with following `sqldb` properties. 
-	
-	```
-	properties:
-	  routing_api:
-	    sqldb:
-	      host: <IP of SQL Host>
-	      port: <Port for SQL Host>
-	      type: mysql
-	      schema: <Schema name>
-	      username: <Username for SQL DB>
-	      password: <Password for SQL DB>
-	```
-	
-	If you are using [cf-mysql-release](https://github.com/cloudfoundry/cf-mysql-release), then the values for these properties can be obtained from properties that manifest. 
-	
-	- `host` corresponds to the IP address of the `proxy_z1` job
-	- `port` is `3306`
-	- `schema` corresponds to `cf_mysql.mysql.seeded_databases[].name`
-	- `username` corresponds to `cf_mysql.mysql.seeded_databases[].username`
-	- `password` corresponds to `cf_mysql.mysql.seeded_databases[].password`
-
 
 ## Post Deploy Steps
 
