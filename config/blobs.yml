@@ -16,6 +16,6 @@ golang/go1.6.3.linux-amd64.tar.gz:
   sha: 5e916ba4dd8c2fc43beafca4c08b334c4d0686f3
   size: 84856920
 haproxy/pcre-8.39.tar.gz:
-  object_id: ad448681-fdae-46dd-b607-87665428bb7d
+  object_id: 85cf7a34-28de-46ac-b97d-307f372b096a
   sha: b3aec1f643d9701841e2f9d57ac121a7ff448fc8
   size: 2062258
