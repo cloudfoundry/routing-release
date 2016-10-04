@@ -21,6 +21,10 @@ source /var/vcap/packages/routing_utils/syslog_utils.sh
 <% end %>
 
 
+function setup_environment() {
+  mkdir -p "${RUN_DIR}"
+}
+
 case $1 in
 
   start)
@@ -32,6 +36,7 @@ case $1 in
     fi
     set -e
 
+    setup_environment
     pid_guard $PIDFILE "tcp_emitter"
 
     tee_output_to_sys_log "${LOG_DIR}" "tcp_emitter"

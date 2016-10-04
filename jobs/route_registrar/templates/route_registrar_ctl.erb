@@ -10,9 +10,13 @@ CONFIG_FILE=/var/vcap/jobs/route_registrar/config/registrar_settings.yml
 source /var/vcap/packages/routing_utils/pid_utils.sh
 source /var/vcap/packages/routing_utils/syslog_utils.sh
 
+function setup_environment() {
+  mkdir -p "${RUN_DIR}"
+}
 case $1 in
 
 start)
+  setup_environment
 
   pid_guard ${PIDFILE} ${JOB_NAME}
 

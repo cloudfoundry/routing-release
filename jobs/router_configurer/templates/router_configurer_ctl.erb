@@ -8,6 +8,10 @@ PIDFILE=$RUN_DIR/router_configurer.pid
 source /var/vcap/packages/routing_utils/pid_utils.sh
 source /var/vcap/packages/routing_utils/syslog_utils.sh
 
+function setup_environment() {
+  mkdir -p "${RUN_DIR}"
+}
+
 case $1 in
 
   start)
@@ -19,6 +23,7 @@ case $1 in
     fi
     set -e
 
+    setup_environment
     pid_guard $PIDFILE "router_configurer"
 
     SCRIPT=$(basename $0)

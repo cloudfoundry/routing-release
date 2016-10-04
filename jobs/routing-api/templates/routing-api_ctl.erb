@@ -24,9 +24,15 @@ source /var/vcap/packages/routing_utils/syslog_utils.sh
   my_ip = discover_external_ip
 %>
 
+function setup_environment() {
+  mkdir -p "${RUN_DIR}"
+}
+
 case $1 in
 
   start)
+
+    setup_environment
     pid_guard $PIDFILE "routing-api"
 
     tee_output_to_sys_log "${LOG_DIR}" "routing_api"
