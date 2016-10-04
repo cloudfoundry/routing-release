@@ -24,6 +24,7 @@ files:
   - code.cloudfoundry.org/routing-api/handlers/*.go # gosub
   - code.cloudfoundry.org/routing-api/helpers/*.go # gosub
   - code.cloudfoundry.org/routing-api/metrics/*.go # gosub
+  - code.cloudfoundry.org/routing-api/migration/*.go # gosub
   - code.cloudfoundry.org/routing-api/models/*.go # gosub
   - code.cloudfoundry.org/runtimeschema/metric/*.go # gosub
   - code.cloudfoundry.org/trace-logger/*.go # gosub
