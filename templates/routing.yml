@@ -278,6 +278,13 @@ properties:
       client_cert: (( property_overrides.routing_api.etcd.client_cert || nil ))
       client_key: (( property_overrides.routing_api.etcd.client_key || nil ))
       require_ssl: (( property_overrides.routing_api.etcd.require_ssl || nil ))
+    sqldb:
+      host: (( property_overrides.routing_api.sqldb.host || nil ))
+      port: (( property_overrides.routing_api.sqldb.port || nil ))
+      schema: (( property_overrides.routing_api.sqldb.schema || nil ))
+      type: (( property_overrides.routing_api.sqldb.type || nil ))
+      username: (( property_overrides.routing_api.sqldb.username || nil ))
+      password: (( property_overrides.routing_api.sqldb.password || nil ))
   router_configurer:
     debug_address: (( property_overrides.router_configurer.debug_address ))
     tcp_stats_collection_interval: (( property_overrides.router_configurer.tcp_stats_collection_interval ))
