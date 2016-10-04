@@ -4,7 +4,7 @@ property_overrides:
     admin_password: admin
   mysql:
     seeded_databases:
-    - name: routing-api
+    - name: routing_api
       username: router
       password: router
     admin_password: password
