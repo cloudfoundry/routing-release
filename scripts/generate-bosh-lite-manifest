@@ -3,45 +3,60 @@ set -e
 
 function usage() {
   >&2 echo "    Usage:
-    $0 /path/to/cf-release-manifest /path/to/diego-release-manifest
+    $0 [options]
+        -c /path/to/cf-release-manifest
+        -d /path/to/diego-release-manifest
+        -l /path/to/stub1,/path/to/stub2/,...
+
+    No options are required. Will use following default values:
+
+    CF Manifest: ~/workspace/cf-release/bosh-lite/deployments/cf.yml
+    Diego Manifest: ~/workspace/diego-release/bosh-lite/deployments/diego.yml
+    Stubs List: ~/workspace/cf-release/src/routing-release/bosh-lite/stubs/iaas-settings.yml,~/workspace/cf-release/src/routing-release/bosh-lite/stubs/instance-count-overrides.yml,~/workspace/cf-release/src/routing-release/bosh-lite/stubs/persistent-disk-overrides.yml,~/workspace/cf-release/src/routing-release/bosh-lite/stubs/property-overrides.yml
 
     Ex:
-    $0 ~/deployments/bosh-lite/cf.yml ~/deployments/bosh-lite/diego.yml
+    $0 -c ~/deployments/bosh-lite/cf.yml -d ~/deployments/bosh-lite/diego.yml -l ~/deployments/bosh-lite/stubs/iaas-settings.yml,~/deployments/bosh-lite/stubs/instance-count-overrides.yml,~/deployments/bosh-lite/stubs/persistent-disk-overrides.yml,~/deployments/bosh-lite/stubs/property-overrides.yml
 "
   exit 1
 }
 
-cf_manifest_file=$1
-diego_manifest_file=$2
-
-if [ ! -z "$3" ]; then
-  >&2 echo "Too many arguments"
-  usage
-fi
+cf_manifest_file=""
+diego_manifest_file=""
+bosh_lite_stubs=""
+while getopts ":hc:d:l:" opt; do
+  case "$opt" in
+    c)
+        cf_manifest_file=$OPTARG
+        ;;
+    d)
+        diego_manifest_file=$OPTARG
+        ;;
+    l)
+        bosh_lite_stubs=$OPTARG
+        ;;
+    h)
+        usage
+        ;;
+  esac
+done
 
 if [ -z "${cf_manifest_file}" ]; then
   cf_manifest_file=$HOME/workspace/cf-release/bosh-lite/deployments/cf.yml
-fi
-
-if [ ! -f "${cf_manifest_file}" ]; then
-  >&2 echo "CF release manifest ${cf_manifest_file} does not exist"
-  usage
 fi
 
 if [ -z "${diego_manifest_file}" ]; then
   diego_manifest_file=$HOME/workspace/diego-release/bosh-lite/deployments/diego.yml
 fi
 
-if [ ! -f "${diego_manifest_file}" ]; then
-  >&2 echo "Diego release manifest ${diego_manifest_file} does not exist"
-  usage
+root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+bosh_lite_dir="$(cd $root_dir/../bosh-lite && pwd)"
+stubs_dir=${bosh_lite_dir}/stubs
+
+if [ -z "${bosh_lite_stubs}" ]; then
+  bosh_lite_stubs=${stubs_dir}/iaas-settings.yml,${stubs_dir}/instance-count-overrides.yml,${stubs_dir}/persistent-disk-overrides.yml,${stubs_dir}/property-overrides.yml
 fi
 
-root_dir=$(dirname $0)
-bosh_lite_dir=${root_dir}/../bosh-lite
-
 mkdir -p ${bosh_lite_dir}/deployments
-
-${root_dir}/generate-manifest ${bosh_lite_dir}/stubs ${cf_manifest_file} ${diego_manifest_file} > ${bosh_lite_dir}/deployments/routing-manifest.yml
+${root_dir}/generate-manifest -l $bosh_lite_stubs -c ${cf_manifest_file} -d ${diego_manifest_file} > ${bosh_lite_dir}/deployments/routing-manifest.yml
 
 bosh deployment ${bosh_lite_dir}/deployments/routing-manifest.yml

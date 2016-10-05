@@ -6,27 +6,34 @@ templates=$(dirname $0)/../templates
 
 function usage() {
   >&2 echo "    Usage:
-    $0 /path/to/stub/ /path/to/cf-release-manifest /path/to/diego-release-manifest
+    $0 -c /path/to/cf-release-manifest -d /path/to/diego-release-manifest [-l /path/to/stub1,/path/to/stub2/,...i]
 
     Ex:
-    $0 bosh-lite/stubs ~/deployments/bosh-lite/cf.yml ~/deployments/bosh-lite/diego.yml
+    $0 -c ~/deployments/cf.yml -d ~/deployments/diego.yml -l ~/deployments/stubs/iaas-settings.yml,~/deployments/stubs/instance-count-overrides.yml,~/deployments/stubs/persistent-disk-overrides.yml,~/deployments/stubs/property-overrides.yml
 "
   exit 1
 }
 
-stubs_dir=$1
-cf_manifest_file=$2
-diego_manifest_file=$3
-property_overrides=$stubs_dir/property-overrides.yml
-instance_counts=$stubs_dir/instance-count-overrides.yml
-persistent_disk=$stubs_dir/persistent-disk-overrides.yml
-iaas_settings=$stubs_dir/iaas-settings.yml
+cf_manifest_file=""
+diego_manifest_file=""
+stubs=""
 
-
-if [ ! -z "$4" ]; then
-  >&2 echo "Too many arguments"
-  usage
-fi
+while getopts ":hc:d:l:" opt; do
+  case "$opt" in
+    c)
+        cf_manifest_file=$OPTARG
+        ;;
+    d)
+        diego_manifest_file=$OPTARG
+        ;;
+    l)
+        stubs=`echo $OPTARG | tr "," " "`
+        ;;
+    h)
+        usage
+        ;;
+  esac
+done
 
 if [ ! -f "${cf_manifest_file}" ]; then
   >&2 echo "CF release manifest ${cf_manifest_file} does not exist"
@@ -35,26 +42,6 @@ fi
 
 if [ ! -f "${diego_manifest_file}" ]; then
   >&2 echo "Diego release manifest ${diego_manifest_file} does not exist"
-  usage
-fi
-
-if [ ! -f "${property_overrides}" ]; then
-  >&2 echo "Did not find Property Overrides stub '${property_overrides}' in '${stubs_dir}' directory"
-  usage
-fi
-
-if [ ! -f "${instance_counts}" ]; then
-  >&2 echo "Did not find Instance Count Overrides stub '${instance_counts}'  in '${stubs_dir}' directory"
-  usage
-fi
-
-if [ ! -f "${persistent_disk}" ]; then
-  >&2 echo "Did not find Persistent Disk Overrides stub '${persistent_disk}'  in '${stubs_dir}' directory"
-  usage
-fi
-
-if [ ! -f "${iaas_settings}" ]; then
-  >&2 echo "Did not find IaaS Setting stub '${iaas_settings}'  in '${stubs_dir}' directory"
   usage
 fi
 
@@ -76,15 +63,12 @@ spiff merge \
 
 spiff merge \
   ${templates}/routing.yml \
-  ${property_overrides} \
-  ${instance_counts} \
-  ${persistent_disk} \
-  ${iaas_settings} \
   ${tmpdir}/config-from-cf.yml \
   ${tmpdir}/config-from-diego.yml \
+  $stubs \
   > ${tmpdir}/routing.yml
 
-  spiff merge \
+spiff merge \
   ${templates}/routing-deployment.yml \
   ${director_uuid} \
   ${tmpdir}/routing.yml
