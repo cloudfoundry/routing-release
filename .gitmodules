@@ -166,3 +166,6 @@
 [submodule "src/code.cloudfoundry.org/eventhub"]
 	path = src/code.cloudfoundry.org/eventhub
 	url = https://github.com/cloudfoundry/eventhub
+[submodule "src/github.com/lib/pq"]
+	path = src/github.com/lib/pq
+	url = https://github.com/lib/pq
