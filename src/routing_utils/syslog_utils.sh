@@ -12,5 +12,7 @@ function tee_output_to_sys_log() {
 }
 
 function prepend_datetime() {
-  awk -W interactive '{gsub(/\\n/, ""); lineWithDate="echo [`date +\"%Y-%m-%d %H:%M:%S%z\"`] \047" $0 "\047"; system(lineWithDate)}'
+  while read -r line; do
+    sed s/\\\\n// | echo "[`date +\"%Y-%m-%d %H:%M:%S%z\"`] $line"
+  done
 }
