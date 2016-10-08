@@ -221,7 +221,11 @@ Choose a domain name from which developers will configure TCP routes for their a
 
 	After deploying routing-release, you must update your cf-release deployment to enable the Routing API included in this release.
 
-	If you have a stub for overriding manifest properties of cf-release, add the following properties to this file. A [default one](bosh-lite/stubs/cf/routing-and-diego-enabled-overrides.yml) is provided. When you re-generate the manifest, these values will override the defaults in the manifest.
+	If you have a stub for overriding manifest properties of cf-release,
+	add the following properties to this file. A [default
+	one](bosh-lite/stubs/cf/routing-and-diego-enabled-overrides.yml) is
+	provided. When you re-generate the manifest, these values will override
+	the defaults in the manifest.
 
 	```
 	properties:
