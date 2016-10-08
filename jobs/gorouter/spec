@@ -37,7 +37,7 @@ properties:
     description: "Time period in seconds to wait until declaring the router instance started after starting the listener socket. This allows an external load balancer time to register the instance as healthy."
     default: 20
   router.balancing_algorithm:
-    description: "Algorithm used to distribute requests for a route across backends. Supported values are round-robin and least-connections"
+    description: "Algorithm used to distribute requests for a route across backends. Supported values are round-robin and least-connection"
     default: round-robin
   router.number_of_cpus:
     description: "Number of CPUs to utilize, the default (-1) will equal the number of available CPUs"
