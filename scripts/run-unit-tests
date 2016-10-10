@@ -57,13 +57,13 @@ else
   popd
 
   pushd src/code.cloudfoundry.org
-    ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress \
+    ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress  --nodes 4 \
       "$@" uaa-go-client
 
-    ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress \
+    ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress --nodes 4 \
       "$@" routing-api routing-api-cli
 
-    ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress --nodes 4\
+    ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress --nodes 4 \
       "$@" cf-tcp-router tcp-emitter route-registrar
 
     # Run go vet after ginkgo so that all necessary packages are compiled
@@ -71,7 +71,7 @@ else
   popd
 
   pushd src/code.cloudfoundry.org/gorouter
-    ginkgo -r -p -keepGoing -trace -randomizeAllSpecs -progress --nodes 4\
+    ginkgo -r -p -keepGoing -trace -randomizeAllSpecs -progress --nodes 4 \
       "$@"
 
     # Installing dependencies needed by go vet
