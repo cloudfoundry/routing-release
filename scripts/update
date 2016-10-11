@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -ex
+
 if [ "$1" == "--help" ]; then
   echo "USAGE: $0"
   echo "    This command takes no arguments."
@@ -8,16 +10,11 @@ if [ "$1" == "--help" ]; then
   exit 0
 fi
 
-set -x
-
 function has_upstream() {
   git rev-parse @{u} > /dev/null 2>&1
 }
 
 has_upstream && git pull
-
-# Do not set -e until after has_upstream check so that we always update submodules
-set -e
 
 if [[ "$(git --version | grep 'version 1.7')x" != "x" ]]; then
   git submodule foreach --recursive git submodule sync && git submodule update --init --recursive
