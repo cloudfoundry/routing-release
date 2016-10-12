@@ -13,6 +13,6 @@ function tee_output_to_sys_log() {
 
 function prepend_datetime() {
   while read -r line; do
-    sed s/\\\\n// | echo "[`date +\"%Y-%m-%d %H:%M:%S%z\"`] $line"
+    echo "[`date +\"%Y-%m-%d %H:%M:%S%z\"`] $line" | sed s/\\\\n//
   done
 }
