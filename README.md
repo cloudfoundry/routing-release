@@ -172,26 +172,18 @@ for you automatically.
            - uaa.service.cf.internal
    ```
 
-#### CF-Mysql-Release
+#### Relational Database
 
-Deploy instructions [here](https://github.com/cloudfoundry/cf-mysql-release#deploying).
+This release supports a relational database as a data store for the Routing API; MySQL and PostgreSQL are supported. BOSH Lite deployments will use the PostgreSQL database that comes with cf-release by default. For other IaaS we recommend the [CF MySQL Release](https://github.com/cloudfoundry/cf-mysql-release). For any deployment, you can also provide your own MySQL or PostgreSQL database. Routing API does not create the database on deployment of routing-release; you must create a database schema in advance and then provide the credentials for it in the deployment manifest for this release (see [Deploying routing-release](#deploying-routing-release)). 
 
-Routing API does not create the database on deployment of routing-release; you
-must configure mysql-release to seed the database and user. You'll then
-configure the routing-release deployment manifest with these credentials. We
-recommend you do not use a mysql deployment that is exposed as a marketplace
-service. Instead, use a mysql deployment intended for internal platform use;
-for these deployments you should set broker instances to zero.
-
-After generating your manifest for cf-mysql-release, update the following
-manifest properties before deploying.
+For the CF MySQL Release, you can seed the required database on deploy using the manifest property `cf_mysql.mysql.seeded_databases`. We recommend you do not use a deployment of cf-mysql-release that is exposed as a CF marketplace service. Instead, use a deployment intended for internal platform use; for these deployments you should set broker instances to zero. After generating your manifest for cf-mysql-release, update the following manifest properties before deploying.
 
 ```
 properties:
   cf_mysql:
     mysql:
       seeded_databases:
-      - name: <your-database-name>
+      - name: routing-api
         username: <your-username>
         password: <your-password>
 ...
@@ -203,7 +195,7 @@ jobs:
   instances: 0
 ```
 
-### Load Balancer Requirements
+### Load Balancer Requirements for TCP Routing
 
 #### Ports
 
@@ -323,12 +315,7 @@ directly to a single TCP router instance.
           type: tcp
     ```
 
-    Routing release now supports using a relational database for all data. We
-    recommend this over using etcd. To opt into this feature you can configure
-    your manifest with the following `sqldb` properties. These can be configured
-    in a property-overrides stub under the
-    `property_overrides.routing_api.sqldb` property. To migrate existing
-    deployments to use a relational database see [Migrating from ETCD](#Migrating from ETCD)
+    The routing-release now supports a relational database for the Routing API. We recommend this instead of etcd. To opt into this feature you can configure your manifest stub with the following `sqldb` properties. To migrate existing deployments to use a relational database see [Migrating from ETCD](#Migrating from ETCD)
 
     ```
     properties:
@@ -355,14 +342,12 @@ directly to a single TCP router instance.
 
 ### Migrating from ETCD
 
-For deployments that already exist with ETCD, there is a 2 deployment process
+For existing deployments that use etcd, there is a two-phase upgrade process
 to migrate to a relational database.
-1. Deploy the most recent version of routing-release
-1. Redeploy routing release after adding the sql db configuration in your
-   manifest.
+1. Deploy the most recent version of routing-release. The migration depends on a recent change to routing-api whereby only one instance is active at a time; this is achieved using a lock in Consul.
+1. Configure your manifest with the `routing_api.sqldb` property and redeploy routing-release.
 
-The 2 deployment process should ensure zero down time in the
-switch from etcd to a relational database.
+This process should ensure a migration with zero downtime to application backends.
 
 ## Post Deploy Steps
 
@@ -468,6 +453,10 @@ SpaceDeveloper role.
     OK!
     ```
 
+### TCP Router demo
+For step by step instructions on TCP router demo done at Cloud Foundry Summit
+2016, refer to [TCP Router demo](docs/demo.md)
+
 ## Router Groups
 
 A Router Group represents a horizontally scalable cluster of identically
@@ -532,10 +521,6 @@ See the README for [Routing Acceptance Tests](https://github.com/cloudfoundry-in
 
 ## Routing API
 For details refer to [Routing API](https://github.com/cloudfoundry-incubator/routing-api/blob/master/README.md).
-
-## TCP Router demo
-For step by step instructions on TCP router demo done at Cloud Foundry Summit
-2016, refer to [TCP Router demo](docs/demo.md)
 
 ## Metrics Documentation
 For documentation on metrics available for streaming from Routing components
