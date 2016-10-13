@@ -1,11 +1,26 @@
 #!/bin/bash
 
-set -e
+set -xe
 
 scripts_path=./$(dirname $0)
 source $scripts_path/get_paths.sh
 
-$scripts_path/generate-bosh-lite-manifest $CF_MANIFESTS_DIR/cf.yml $DIEGO_MANIFESTS_DIR/diego.yml
+genmanifest=true
+
+for var in "$@"
+do
+  if [ "$var" == "--no-manifest" ]; then
+    genmanifest=false
+  else
+    echo "Unrecognized option $var"
+    echo "Valid options are: --no-manifest"
+    exit 1
+  fi
+done
+
+if [ "$genmanifest" == "true" ]; then
+  $scripts_path/generate-bosh-lite-manifest $CF_MANIFESTS_DIR/cf.yml $DIEGO_MANIFESTS_DIR/diego.yml
+fi
 
 bosh --parallel 10 sync blobs
 bosh create release --force
