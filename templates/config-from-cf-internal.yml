@@ -19,7 +19,14 @@ config_from_cf:
     server_cert: (( properties.consul.server_cert ))
     server_key: (( properties.consul.server_key ))
   loggregator:
-    etcd_machines: (( properties.loggregator.etcd.machines ))
+    etcd:
+      machines: (( properties.loggregator.etcd.machines ))
+      ca_cert: (( properties.loggregator.etcd.ca_cert ))
+      require_ssl: (( properties.loggregator.etcd.require_ssl ))
+  metron_agent:
+    etcd:
+      client_cert: (( properties.metron_agent.etcd.client_cert ))
+      client_key: (( properties.metron_agent.etcd.client_key ))
   etcd:
     machines: (( properties.etcd.machines ))
   metron_endpoint:
@@ -59,6 +66,12 @@ properties:
   loggregator:
     etcd:
       machines: (( merge ))
+      ca_cert: (( merge ))
+      require_ssl: (( merge ))
+  metron_agent:
+    etcd:
+      client_cert: (( merge ))
+      client_key: (( merge ))
   etcd:
     machines: (( merge ))
   metron_endpoint:

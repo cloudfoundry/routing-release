@@ -246,11 +246,16 @@ properties:
   syslog_daemon_config: (( property_overrides.syslog_daemon_config || nil ))
   metron_agent:
     deployment: (( name ))
+    etcd:
+      client_cert: (( config_from_cf.metron_agent.etcd.client_cert ))
+      client_key: (( config_from_cf.metron_agent.etcd.client_key ))
   metron_endpoint:
     shared_secret: (( config_from_cf.metron_endpoint.shared_secret ))
   loggregator:
     etcd:
-      machines: (( config_from_cf.loggregator.etcd_machines ))
+      machines: (( config_from_cf.loggregator.etcd.machines ))
+      ca_cert: (( config_from_cf.loggregator.etcd.ca_cert ))
+      require_ssl: (( config_from_cf.loggregator.etcd.require_ssl ))
   consul:
     agent:
       domain: (( config_from_cf.consul.domain ))
