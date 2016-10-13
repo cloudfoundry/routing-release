@@ -23,6 +23,7 @@ consul_cluster:
   lock_ttl: <%= p("routing_api.lock_ttl") %>
   retry_interval: <%= p("routing_api.lock_retry_interval") %>
 
+<% if_p("routing_api.etcd.servers") do %>
 etcd:
   require_ssl: <%= p("routing_api.etcd.require_ssl") %>
   ca_file: "/var/vcap/jobs/routing-api/config/certs/etcd/ca.crt"
@@ -31,6 +32,7 @@ etcd:
   node_urls: <%= p("routing_api.etcd.servers").map { |addr|
   "#{p("routing_api.etcd.require_ssl") ? "https" : "http"}://#{addr}:4001"
   } %>
+<% end %>
 
 <% if_p("routing_api.sqldb.host",
     "routing_api.sqldb.port",
