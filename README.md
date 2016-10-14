@@ -87,9 +87,7 @@ branch.
 1. Choose a domain name for developer to create TCP route from and configure
    DNS to resolve it to your load balancer; see [Domain Names](#domain-names).
 
-### Prerequisite Configuration
-
-#### CF-Release
+### CF-Release
 
 If you use the BOSH Lite manifest generation script cf-release, and deploy the
 latest release of cf-release, the following prerequisites will be configured
@@ -172,7 +170,7 @@ for you automatically.
            - uaa.service.cf.internal
    ```
 
-#### Relational Database
+### Relational Database
 
 This release supports a relational database as a data store for the Routing API; MySQL and PostgreSQL are supported. BOSH Lite deployments will use the PostgreSQL database that comes with cf-release by default. For other IaaS we recommend the [CF MySQL Release](https://github.com/cloudfoundry/cf-mysql-release). For any deployment, you can also provide your own MySQL or PostgreSQL database. Routing API does not create the database on deployment of routing-release; you must create a database schema in advance and then provide the credentials for it in the deployment manifest for this release (see [Deploying routing-release](#deploying-routing-release)). 
 
@@ -195,16 +193,13 @@ jobs:
   instances: 0
 ```
 
-### Load Balancer Requirements for TCP Routing
+### Load Balancer requirements for TCP routing
+
+If you are deploying routing-release to an environment that requires high availability, a load balancer is required to front the TCP routers. The HAProxy job that comes with cf-release does not fulfill this requirement. If you are using a load balancer for this purpose, you must configure it to forward a range of ports to the TCP routers, and also to periodically healthcheck them. If high-availability is not required you can skip this section and allocate a public IP to a single TCP router instance.
+
+For more on high availability, see [High Availability](#high-availability).
 
 #### Ports
-
-For environments where high-availability is required, a load balancer is
-required in front of the TCP routers. These load balancers must be configured
-to forward requests for a range of ports to the TCP routers. The HAProxy job
-that comes with cf-release does not support this behavior. If high-availability
-is not required you can skip this section and allocate a public IP to a single
-TCP router instance.
 
 Choose how many TCP routes you'd like to offer. For each TCP route, a port must
 be opened on your load balancer. Configure your load balancer to forward the
@@ -242,8 +237,8 @@ applications. Configure DNS to resolve this domain name to the load balancer.
 If high-availability is not required configure DNS to resolve the TCP domain
 directly to a single TCP router instance.
 
-
 ## Deploying routing-release
+
 1. Clone this repo and sync submodules; see [Get the code](#get-the-code).
 1. Upload routing-release to BOSH
 
@@ -266,81 +261,78 @@ directly to a single TCP router instance.
       bosh -n upload release
       ```
 
-1. Generate a Deployment Manifest and Deploy
+1. Generate a Deployment Manifest
 
-    The following scripts can be used to generate manifests for your deployment.
+	The following scripts can be used to generate manifests for your deployment.
 
-    - BOSH Lite
+	- For BOSH Lite: `./scripts/generate-bosh-lite-manifest`
+	- For other IaaS: `./scripts/generate-manifest`
 
-      ```
-      ./scripts/generate-bosh-lite-manifest
-      bosh -n deploy
-      ```
+	Both scripts support the following options:
+	
+	- `-c` path to cf-release-manifest
+	- `-d` path to diego-release-manifest
+	- `-l` list of stubs
 
-      The `generate-bosh-lite-manifest` script expects the cf-release and
-      diego-release manifests to be at
-      `~/workspace/cf-release/bosh-lite/deployments/cf.yml` and
-      `~/workspace/diego-release/bosh-lite/deployments/diego.yml`; the BOSH
-      Lite manifest generation scripts for those releases will put them there
-      by default. If CF and Diego manifests are in a different location then
-      you must specify them as arguments:
+	If no options are provided, the `generate-bosh-lite-manifest` script expects the cf-release and diego-release manifests to be at `~/workspace/cf-release/bosh-lite/deployments/cf.yml` and `~/workspace/diego-release/bosh-lite/deployments/diego.yml`; the BOSH Lite manifest generation scripts for those releases will put them there by default. 
 
-      ```
-      ./scripts/generate-bosh-lite-manifest /path/to/cf-release-manifest /path/to/diego-release-manifest
-      ```
+	**Important:** Before deploying, consider the following sections on manifest configuration for reservable TCP ports and relational databases, and on upgrading to a relational database from etcd.  
 
-    - Other IaaS
+1. Deploy
 
-      ```
-      ./scripts/generate-manifest </path/to/stubs/> </path/to/cf-release-manifest> </path/to/diego-release-manifest>
-      bosh -n deploy
-      ```
+	```
+	bosh deploy
+	```
 
-    If you configured your load balancer to forward a range other than
-    1024-1123 (see [Ports](#ports)), you must configure this release with the
-    same port range using deployment manifest property
-    `routing-api.router_groups.reservable_ports`. This is a seeded value only;
-    after deploy, changes to this property will be ignored. To modify the
-    reservable port range after deployment, use the [Routing
-    API](https://github.com/cloudfoundry-incubator/routing-api#using-the-api-manually);
-    (see "To update a Router Group's reservable_ports field with a new port
-    range").
+### Ports
 
-    ```
-    properties:
-      routing_api:
-        router_groups:
-        - name: default-tcp
-          reservable_ports: 1024-1123
-          type: tcp
-    ```
+If you configured your load balancer to forward a range other than
+1024-1123 (see [Ports](#ports)), you must configure this release with the
+same port range using deployment manifest property
+`routing-api.router_groups.reservable_ports`. This is a seeded value only;
+after deploy, changes to this property will be ignored. To modify the
+reservable port range after deployment, use the [Routing
+API](https://github.com/cloudfoundry-incubator/routing-api#using-the-api-manually);
+(see "To update a Router Group's reservable_ports field with a new port
+range").
 
-    The routing-release now supports a relational database for the Routing API. We recommend this instead of etcd. To opt into this feature you can configure your manifest stub with the following `sqldb` properties. To migrate existing deployments to use a relational database see [Migrating from ETCD](#Migrating from ETCD)
+```
+properties:
+  routing_api:
+	router_groups:
+	- name: default-tcp
+	  reservable_ports: 1024-1123
+	  type: tcp
+```
 
-    ```
-    properties:
-      routing_api:
-        sqldb:
-          type: <mysql || postgres>
-          host: <IP of SQL Host>
-          port: <Port for SQL Host>
-          schema: <Schema name>
-          username: <Username for SQL DB>
-          password: <Password for SQL DB>
-    ```
+### Relational Database
+	
+The routing-release now supports a relational database for the Routing API. We recommend this instead of etcd. To opt into this feature you can configure your manifest stub with the following `sqldb` properties. To migrate existing deployments to use a relational database see [Migrating from ETCD](#Migrating from ETCD)
 
-    If you are using
-    [cf-mysql-release](https://github.com/cloudfoundry/cf-mysql-release), then
-    the values for these properties can be obtained from properties that
-    manifest.
-      - `type` should be `mysql`
-      - `host` corresponds to the IP address of the `proxy_z1` job
-      - `port` is `3306`
-      - `schema` corresponds to `cf_mysql.mysql.seeded_databases[].name`
-      - `username` corresponds to `cf_mysql.mysql.seeded_databases[].username`
-      - `password` corresponds to `cf_mysql.mysql.seeded_databases[].password`
+```
+properties:
+  routing_api:
+	sqldb:
+	  type: <mysql || postgres>
+	  host: <IP of SQL Host>
+	  port: <Port for SQL Host>
+	  schema: <Schema name>
+	  username: <Username for SQL DB>
+	  password: <Password for SQL DB>
+```
 
-### Migrating from ETCD
+If you are using
+[cf-mysql-release](https://github.com/cloudfoundry/cf-mysql-release), then
+the values for these properties can be obtained from properties that
+manifest.
+  - `type` should be `mysql`
+  - `host` corresponds to the IP address of the `proxy_z1` job
+  - `port` is `3306`
+  - `schema` corresponds to `cf_mysql.mysql.seeded_databases[].name`
+  - `username` corresponds to `cf_mysql.mysql.seeded_databases[].username`
+  - `password` corresponds to `cf_mysql.mysql.seeded_databases[].password`
+
+### Migrating from etcd
 
 For existing deployments that use etcd, there is a two-phase upgrade process
 to migrate to a relational database.
@@ -487,7 +479,6 @@ API](https://github.com/cloudfoundry-incubator/routing-api#using-the-api-manuall
 
 **Note:** when modifying the port range using the Routing API, consider that
 the new port range must include those ports that have already been reserved.
-
 
 ## High Availability
 
