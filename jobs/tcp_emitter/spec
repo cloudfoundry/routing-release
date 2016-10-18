@@ -54,7 +54,7 @@ properties:
 
   tcp_emitter.sync_interval:
     description: "Interval to sync with BBS to get latest route information."
-    default: "60s"
+    default: "20s"
 
   tcp_emitter.route_ttl:
     description: "TTL used for routes registered with Routing API."
