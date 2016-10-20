@@ -16,7 +16,26 @@ function usage() {
 
 cf_manifest_file=""
 diego_manifest_file=""
-stubs=""
+stubslist=""
+
+get_abs_filename() {
+  # $1 : relative filename
+  echo "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"
+}
+
+append_stub() {
+  stub=$1
+  if [ -d $stub ]; then
+    pushd $stub
+      for f in *.yml
+      do
+        stubslist="$(get_abs_filename $f) $stubslist"
+      done
+    popd
+  else
+    stubslist="$stub $stubslist"
+  fi
+}
 
 while getopts ":hc:d:l:" opt; do
   case "$opt" in
@@ -27,7 +46,10 @@ while getopts ":hc:d:l:" opt; do
         diego_manifest_file=$OPTARG
         ;;
     l)
-        stubs=`echo $OPTARG | tr "," " "`
+        stubs=$(echo $OPTARG | tr "," "\n")
+        for stub in $stubs; do
+          append_stub $(eval "get_abs_filename $stub")
+        done
         ;;
     h)
         usage
@@ -65,7 +87,7 @@ spiff merge \
   ${templates}/routing.yml \
   ${tmpdir}/config-from-cf.yml \
   ${tmpdir}/config-from-diego.yml \
-  $stubs \
+  $stubslist \
   > ${tmpdir}/routing.yml
 
 spiff merge \
