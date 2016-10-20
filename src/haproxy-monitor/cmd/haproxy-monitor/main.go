@@ -28,6 +28,7 @@ func main() {
 		os.Exit(1)
 	}
 
+	logger.Info("starting-monitor", lager.Data{"pid-file": *pidFile})
 	for {
 		fileBytes, err := ioutil.ReadFile(*pidFile)
 		if err != nil {
@@ -39,7 +40,8 @@ func main() {
 			logger.Error("exiting", fmt.Errorf("Cannot convert file %s to integer", *pidFile))
 			os.Exit(1)
 		}
-		logger.Info("checking-pid", lager.Data{"pid": pid})
+
+		logger.Debug("checking-pid", lager.Data{"pid": pid})
 		if !watcher.Running(pid) {
 			logger.Error("exiting", fmt.Errorf("PID %d not found", pid))
 			os.Exit(1)
