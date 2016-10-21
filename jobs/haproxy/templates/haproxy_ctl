@@ -8,7 +8,6 @@ source /var/vcap/packages/routing_utils/syslog_utils.sh
 PATH=/var/vcap/packages/haproxy/bin:/var/vcap/packages/haproxy-monitor/bin:$PATH
 
 NAME=haproxy
-SCRIPT=haproxy_ctl
 DAEMON=$(which haproxy)
 MONITOR=$(which haproxy-monitor)
 CONFIG=/var/vcap/jobs/haproxy/config/haproxy.conf
@@ -53,11 +52,10 @@ start_haproxy() {
         echo "HAProxy is currently running"
     else
         RETVAL=0
-        ensure_dirs
         chown -R "${USER}":"${USER}" "$(dirname "${CONFIG}")"
         echo "$("${TIMESTAMP}"): Starting HAProxy"
         set +e
-        exec chpst -u vcap:vcap "${DAEMON}" -f "${CONFIG}" -D -p "${HAPROXY_PID_FILE}" 0<&-
+        exec chpst -u "${USER}":"${USER}" "${DAEMON}" -f "${CONFIG}" -D -p "${HAPROXY_PID_FILE}" 0<&-
         RETVAL=$?
         set -e
         case "${RETVAL}" in
@@ -121,10 +119,9 @@ reload_haproxy() {
     status_haproxy
     if [ "${RETVAL}" = 0 ]; then
         RETVAL=0
-        ensure_dirs
         echo "$("${TIMESTAMP}"): reloading HAProxy"
         set +e
-        exec chpst -u vcap:vcap "${DAEMON}" -f "${CONFIG}" -p "${HAPROXY_PID_FILE}" -D -sf $(cat $HAPROXY_PID_FILE) 0<&-
+        exec chpst -u "${USER}":"${USER}" "${DAEMON}" -f "${CONFIG}" -p "${HAPROXY_PID_FILE}" -D -sf $(cat $HAPROXY_PID_FILE) 0<&-
         RETVAL=$?
         set -e
         case "${RETVAL}" in
@@ -148,7 +145,9 @@ reload_haproxy() {
 case "$1" in
     start)
         echo -n "Starting ${DESC}: "
+        ensure_dirs
 
+        SCRIPT=$(basename $0)
         exec 1>> $HAPROXY_LOG_DIR/$SCRIPT.log
         exec 2>> $HAPROXY_LOG_DIR/$SCRIPT.err.log
 
@@ -158,7 +157,7 @@ case "$1" in
 
         pid_guard ${MONITOR_PID_FILE}
         echo $$ > ${MONITOR_PID_FILE}
-        exec chpst -u vcap:vcap ${MONITOR} --pidFile ${HAPROXY_PID_FILE}
+        exec chpst -u "${USER}":"${USER}" ${MONITOR} --pidFile ${HAPROXY_PID_FILE}
 
         echo "${NAME}."
         ;;
@@ -173,11 +172,13 @@ case "$1" in
         ;;
     reload)
         echo -n "Reloading ${DESC}: "
+        ensure_dirs
         reload_haproxy
         echo "${NAME}."
         ;;
     force-reload|restart)
         echo -n "Restarting ${DESC}: "
+        ensure_dirs
         restart_haproxy
         echo "${NAME}."
         ;;
