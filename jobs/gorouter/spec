@@ -24,12 +24,12 @@ properties:
     description: "Listening Port for Router."
     default: 80
   router.status.port:
-    description: "Port for the Router varz/status endpoint."
+    description: "Port for the /health, /varz, and /routes endpoints."
     default: 8080
   router.status.user:
-    description: "Username for HTTP basic auth to the varz/status endpoint."
+    description: "Username for HTTP basic auth to the /varz and /routes endpoints."
   router.status.password:
-    description: "Password for HTTP basic auth to the varz/status endpoint."
+    description: "Password for HTTP basic auth to the /varz and /routes endpoints."
   router.requested_route_registration_interval_in_seconds:
     description: "On startup, the router will delay listening for requests by this duration to increase likelihood that it has a complete routing table before serving requests. The router also broadcasts the same duration as a recommended interval to registering clients via NATS."
     default: 20
