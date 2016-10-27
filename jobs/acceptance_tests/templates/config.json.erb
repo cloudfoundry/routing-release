@@ -9,6 +9,7 @@ config = {
   admin_password: p("acceptance_tests.cloud_controller.admin_password"),
   use_http: p("acceptance_tests.cloud_controller.use_http"),
   skip_ssl_validation: p("acceptance_tests.skip_ssl_validation"),
+  include_http_routes: p("acceptance_tests.include_http_routes"),
   oauth: {
     token_endpoint: 'https://uaa.' + p("acceptance_tests.system_domain"),
     client_name: "tcp_emitter",

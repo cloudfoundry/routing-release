@@ -50,4 +50,8 @@ properties:
     description: "Password for UAA client for the tcp emitter."
 
   acceptance_tests.system_domain:
-    description : "Domain for system components, e.g. bosh-lite.com"
+    description: "Domain for system components, e.g. bosh-lite.com"
+
+  acceptance_tests.include_http_routes:
+    default: false
+    description: "When true, additionally runs the HTTP Routes test for Routing API"
