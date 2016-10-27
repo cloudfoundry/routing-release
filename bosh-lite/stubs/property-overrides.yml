@@ -77,5 +77,6 @@ property_overrides:
         -----END RSA PRIVATE KEY-----
   skip_ssl_validation: true
   acceptance_tests:
+    include_http_routes: true
     addresses:
       - "10.244.14.2"

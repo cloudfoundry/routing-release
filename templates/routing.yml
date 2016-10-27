@@ -319,6 +319,7 @@ properties:
     tls_port: (( config_from_cf.uaa.ssl.port ))
   acceptance_tests:
     addresses: (( property_overrides.acceptance_tests.addresses ))
+    include_http_routes: (( property_overrides.acceptance_tests.include_http_routes ))
     system_domain: (( config_from_cf.system_domain ))
     skip_ssl_validation: (( config_from_cf.acceptance_tests.skip_ssl_validation ))
     cloud_controller:
