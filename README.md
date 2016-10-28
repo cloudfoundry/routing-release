@@ -499,12 +499,15 @@ setup.
 1. bosh is targeted to your local bosh-lite
 1. routing-release
    [deployed](#deploying-tcp-router-to-a-local-bosh-lite-instance) on bosh-lite
+1. Endpoints for http routes are not tested by the errand by default. To enable
+   them, set the property `properties.acceptance_tests.include_http_routes` in
+   your manifest for the errand job.
 
 Run the following commands to execute the acceptance tests as an errand on
 bosh-lite
 
 ```
-bosh run errand router_acceptance_tests
+bosh run errand routing_acceptance_tests
 ```
 
 ### Manually
