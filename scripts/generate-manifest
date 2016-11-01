@@ -26,12 +26,12 @@ get_abs_filename() {
 append_stub() {
   stub=$1
   if [ -d $stub ]; then
-    pushd $stub
+    pushd $stub > /dev/null
       for f in *.yml
       do
         stubslist="$(get_abs_filename $f) $stubslist"
       done
-    popd
+    popd > /dev/null
   else
     stubslist="$stub $stubslist"
   fi
