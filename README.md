@@ -353,12 +353,12 @@ Additionally, gorouter communicates with [Route Services](http://docs.cloudfound
 
 In all cases, these components will validate that certs are signed by a known CA and that the cert is for the requested domain. To disable this validation, as when deploying the routing subsystem to an environment with self-signed certs, configure the following properties:
 
-	```
-	properties:
-	  skip_ssl_validation: true
-	  router:
-	    ssl_skip_validation: true
-	```
+```
+properties:
+  skip_ssl_validation: true
+  router:
+    ssl_skip_validation: true
+```
 
 ## Post Deploy Steps
 
