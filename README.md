@@ -332,7 +332,7 @@ manifest.
   - `username` corresponds to `cf_mysql.mysql.seeded_databases[].username`
   - `password` corresponds to `cf_mysql.mysql.seeded_databases[].password`
 
-### Migrating from etcd
+#### Migrating from etcd
 
 For existing deployments that use etcd, there is a two-phase upgrade process
 to migrate to a relational database.
@@ -340,6 +340,25 @@ to migrate to a relational database.
 1. Configure your manifest with the `routing_api.sqldb` property and redeploy routing-release.
 
 This process should ensure a migration with zero downtime to application backends.
+
+### Validation of TLS Certificates from Route Services and UAA
+
+The following components communicate with UAA via TLS:
+- Routing API
+- Gorouter
+- TCP Router
+- TCP Emitter
+
+Additionally, gorouter communicates with [Route Services](http://docs.cloudfoundry.org/services/route-services.html) via TLS. 
+
+In all cases, these components will validate that certs are signed by a known CA and that the cert is for the requested domain. To disable this validation, as when deploying the routing subsystem to an environment with self-signed certs, configure the following properties:
+
+	```
+	properties:
+	  skip_ssl_validation: true
+	  router:
+	    ssl_skip_validation: true
+	```
 
 ## Post Deploy Steps
 
