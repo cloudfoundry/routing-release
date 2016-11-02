@@ -74,7 +74,7 @@ properties:
     description: "The private ssl key for ssl termination"
     default: ""
   router.ssl_skip_validation:
-    description: "Skip SSL client cert validation"
+    description: "Skip validation of TLS certificates received from route services and UAA"
     default: false
   router.cipher_suites:
     description:
