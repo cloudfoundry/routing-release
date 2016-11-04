@@ -35,9 +35,10 @@ func main() {
 			logger.Error("exiting", fmt.Errorf("Cannot read file %s", *pidFile))
 			os.Exit(1)
 		}
-		pid, err := strconv.Atoi(strings.TrimSpace(string(fileBytes)))
+		data := strings.TrimSpace(string(fileBytes))
+		pid, err := strconv.Atoi(data)
 		if err != nil {
-			logger.Error("exiting", fmt.Errorf("Cannot convert file %s to integer", *pidFile))
+			logger.Error("exiting", fmt.Errorf("Cannot convert file %s to integer", *pidFile), lager.Data{"contents": data})
 			os.Exit(1)
 		}
 
