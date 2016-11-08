@@ -41,4 +41,5 @@ files:
   - gopkg.in/yaml.v2/*.go # gosub
   - haproxy-monitor/cmd/haproxy-monitor/*.go # gosub
   - haproxy-monitor/cmd/haproxy-monitor/testrunner/*.go # gosub
+  - haproxy-monitor/pid/*.go # gosub
   - haproxy-monitor/watcher/*.go # gosub

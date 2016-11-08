@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"syscall"
 
 	"haproxy-monitor/cmd/haproxy-monitor/testrunner"
 
@@ -37,6 +38,7 @@ var _ = Describe("HaproxyMonitor", func() {
 		var (
 			catCmd  *exec.Cmd
 			pidFile string
+			pidFd   int
 		)
 
 		BeforeEach(func() {
@@ -52,6 +54,7 @@ var _ = Describe("HaproxyMonitor", func() {
 			Expect(err).ToNot(HaveOccurred())
 
 			pidFile = file.Name()
+			pidFd = int(file.Fd())
 			monitorArgs.PidFile = pidFile
 		})
 
@@ -69,7 +72,24 @@ var _ = Describe("HaproxyMonitor", func() {
 		})
 
 		Context("when the PID inside the pid file changes", func() {
-			It("continues running", func() {
+			var newPid int
+			BeforeEach(func() {
+				newCmd := exec.Command("cat")
+				err := newCmd.Start()
+				Expect(err).ToNot(HaveOccurred())
+				newPid = newCmd.Process.Pid
+			})
+
+			It("does not block on flock syscall", func() {
+				err := syscall.Flock(pidFd, syscall.LOCK_EX)
+				Expect(err).ToNot(HaveOccurred())
+
+				err = ioutil.WriteFile(pidFile, []byte(""), os.ModePerm)
+				Expect(err).ToNot(HaveOccurred())
+				Eventually(session, "3s").Should(Exit())
+
+				err = syscall.Flock(pidFd, syscall.LOCK_UN)
+				Expect(err).ToNot(HaveOccurred())
 			})
 		})
 

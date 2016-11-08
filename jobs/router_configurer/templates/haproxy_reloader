@@ -10,4 +10,7 @@ HAPROXY_PID_FILE=/var/vcap/sys/run/haproxy/pid
 test -x "${DAEMON}"
 test -f "${CONFIG}"
 
+exec {LOCK_FD}<${HAPROXY_PID_FILE}
+flock -x -w 5 ${LOCK_FD}
+
 "${DAEMON}" -f "${CONFIG}" -p "${HAPROXY_PID_FILE}" -D -sf $(cat $HAPROXY_PID_FILE) 0<&-
