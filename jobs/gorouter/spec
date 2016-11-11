@@ -23,6 +23,9 @@ properties:
   router.port:
     description: "Listening Port for Router."
     default: 80
+  router.status.host:
+    description: "Host for the /health, /varz, and /routes endpoints."
+    default: "0.0.0.0"
   router.status.port:
     description: "Port for the /health, /varz, and /routes endpoints."
     default: 8080
