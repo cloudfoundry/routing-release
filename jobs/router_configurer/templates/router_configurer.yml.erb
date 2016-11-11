@@ -1,5 +1,5 @@
 oauth:
-  token_endpoint: uaa.service.cf.internal
+  token_endpoint: <%= p("uaa.token_endpoint") %>
   client_name: "tcp_router"
   client_secret: <%= p("router_configurer.oauth_secret") %>
   port: <%= p("uaa.tls_port") %>
@@ -9,8 +9,8 @@ oauth:
   <% end %>
 
 routing_api:
-  uri: http://routing-api.service.cf.internal
-  port: 3000
+  uri: <%= p("routing_api.uri") %>
+  port: <%= p("routing_api.port") %>
   auth_disabled: <%= p("routing_api.auth_disabled") %>
 
 

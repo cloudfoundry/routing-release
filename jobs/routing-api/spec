@@ -86,6 +86,10 @@ properties:
     description : "Certificate authority for communication between clients and UAA."
     default: ""
 
+  uaa.token_endpoint:
+    description: "UAA token endpoint host name"
+    default: uaa.service.cf.internal
+
   uaa.tls_port:
     description: "Port on which UAA is listening for TLS connections. This is required for obtaining a key to verify client OAuth tokens."
 

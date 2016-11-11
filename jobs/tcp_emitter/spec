@@ -30,6 +30,14 @@ properties:
   tcp_emitter.bbs.client_key:
     description: "PEM-encoded client key"
 
+  routing_api.uri:
+    description: "URL where the routing API can be reached internally"
+    default: http://routing-api.service.cf.internal
+
+  routing_api.port:
+    description: "Port of routing api"
+    default: "3000"
+
   routing_api.auth_disabled:
     description: "auth disabled setting of routing api"
     default: false
@@ -48,6 +56,10 @@ properties:
   skip_ssl_validation:
     description: Skip TLS verification when talking to UAA
     default: false
+
+  uaa.token_endpoint:
+    description: "UAA token endpoint host name"
+    default: uaa.service.cf.internal
 
   uaa.tls_port:
     description: "Port on which UAA is listening for TLS connections. This is required for obtaining a OAuth token for Routing API."
