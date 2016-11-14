@@ -23,5 +23,5 @@ properties:
     default: 80
 
   haproxy.health_check_ip:
-    description: "IP for haproxy health check"
-    default: ""
+    description: "Interface on which TCP Router listens for healthchecks"
+    default: "0.0.0.0"
