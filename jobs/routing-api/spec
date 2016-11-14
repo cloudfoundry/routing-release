@@ -110,5 +110,5 @@ properties:
     default: "5s"
 
   routing_api.listen_ip:
-    description: "IP for routing api to listen on"
+    description: "Interface on which Routing Api listens"
     default: "0.0.0.0"
