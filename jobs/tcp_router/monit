@@ -1,0 +1,7 @@
+check process tcp_router
+  with pidfile /var/vcap/sys/run/tcp_router/tcp_router.pid
+  start program "/var/vcap/jobs/tcp_router/bin/tcp_router_ctl start"
+    as uid vcap and gid vcap
+  stop program "/var/vcap/jobs/tcp_router/bin/tcp_router_ctl stop"
+    as uid vcap and gid vcap
+  group vcap

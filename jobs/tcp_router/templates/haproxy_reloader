@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+
+PATH=/var/vcap/packages/tcp_router/bin:$PATH
+DAEMON=$(which haproxy)
+CONFIG=/var/vcap/jobs/tcp_router/config/haproxy.conf
+HAPROXY_PID_FILE=/var/vcap/sys/run/tcp_router/haproxy.pid
+
+test -x "${DAEMON}"
+test -f "${CONFIG}"
+
+"${DAEMON}" -f "${CONFIG}" -p "${HAPROXY_PID_FILE}" -D -sf $(cat $HAPROXY_PID_FILE) 0<&-

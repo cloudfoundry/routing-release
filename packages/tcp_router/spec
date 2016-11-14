@@ -1,21 +1,28 @@
 ---
-name: router_configurer
+name: tcp_router
 
 dependencies:
   - golang1.6
 
 files:
   - code.cloudfoundry.org/cf-tcp-router/*.go # gosub
-  - code.cloudfoundry.org/cf-tcp-router/cmd/router-configurer/*.go # gosub
-  - code.cloudfoundry.org/cf-tcp-router/cmd/router-configurer/testrunner/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/config/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/configurer/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/configurer/fakes/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/configurer/haproxy/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/configurer/haproxy/fakes/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/metrics_reporter/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/metrics_reporter/fakes/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/metrics_reporter/haproxy_client/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/metrics_reporter/haproxy_client/fakes/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/models/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/monitor/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/monitor/fakes/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/routing_table/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/routing_table/fakes/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/syncer/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/testrunner/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/testutil/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/utils/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/watcher/*.go # gosub
   - code.cloudfoundry.org/cflager/*.go # gosub

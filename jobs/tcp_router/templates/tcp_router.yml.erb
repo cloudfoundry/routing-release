@@ -1,11 +1,11 @@
 oauth:
   token_endpoint: uaa.service.cf.internal
   client_name: "tcp_router"
-  client_secret: <%= p("router_configurer.oauth_secret") %>
+  client_secret: <%= p("tcp_router.oauth_secret") %>
   port: <%= p("uaa.tls_port") %>
   skip_ssl_validation: <%= p("skip_ssl_validation") %>
   <% if p("uaa.ca_cert") != "" %>
-  ca_certs: "/var/vcap/jobs/router_configurer/config/certs/uaa/ca.crt"
+  ca_certs: "/var/vcap/jobs/tcp_router/config/certs/uaa/ca.crt"
   <% end %>
 
 routing_api:
@@ -13,4 +13,6 @@ routing_api:
   port: 3000
   auth_disabled: <%= p("routing_api.auth_disabled") %>
 
+haproxy_pid_file: "/var/vcap/sys/run/tcp_router/haproxy.pid"
 
+ 

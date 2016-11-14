@@ -6,8 +6,7 @@ export GOPATH=$BOSH_INSTALL_TARGET
 
 export GOROOT=$(readlink -nf /var/vcap/packages/golang1.6)
 export PATH=$GOROOT/bin:$PATH
-
-go install haproxy-monitor/cmd/haproxy-monitor
+go install code.cloudfoundry.org/cf-tcp-router
 
 # clean up source artifacts
 rm -rf ${BOSH_INSTALL_TARGET}/src ${BOSH_INSTALL_TARGET}/pkg

@@ -12,7 +12,7 @@ property_overrides:
       username: routing_api
       password: admin
 
-  router_configurer:
+  tcp_router:
     tcp_stats_collection_interval: 1m
     log_level: info
     debug_address: ~

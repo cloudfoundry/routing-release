@@ -13,7 +13,7 @@ templates:
 packages:
   - routing_utils
   - tcp_emitter
-  - router_configurer
+  - tcp_router
 
 properties:
   tcp_emitter.debug_address:

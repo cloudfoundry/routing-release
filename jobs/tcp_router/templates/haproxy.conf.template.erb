@@ -1,0 +1,22 @@
+global
+    log 127.0.0.1   syslog info
+    daemon
+    user vcap
+    group vcap
+    maxconn 64000
+    spread-checks 4
+    stats socket /var/vcap/jobs/tcp_router/config/haproxy.sock user vcap mode 600 level operator
+
+defaults
+    log global
+    timeout connect 30000ms
+    maxconn 64000
+    <% if p("tcp_router.request_timeout_in_seconds").to_i > 0 %>
+        timeout client <%= p("tcp_router.request_timeout_in_seconds").to_i * 1000 %>ms
+        timeout server <%= p("tcp_router.request_timeout_in_seconds").to_i * 1000 %>ms
+    <% end %>
+
+listen health_check_http_url
+    mode http
+    bind :<%= p("tcp_router.health_check_port") %>
+    monitor-uri /health

@@ -1,36 +1,38 @@
 ---
-name: router_configurer
+name: tcp_router
 
 templates:
-  router_configurer_ctl.erb: bin/router_configurer_ctl
+  tcp_router_ctl.erb: bin/tcp_router_ctl
   haproxy_reloader: bin/haproxy_reloader
   pre-start: bin/pre-start
-  router_configurer.yml.erb: config/router_configurer.yml
+  tcp_router.yml.erb: config/tcp_router.yml
   uaa_ca.crt.erb: config/certs/uaa/ca.crt
+  haproxy.conf.erb: config/haproxy.conf
+  haproxy.conf.template.erb: config/haproxy.conf.template
 
 packages:
   - routing_utils
-  - router_configurer
+  - tcp_router
+  - haproxy
 
 properties:
-  router_configurer.debug_address:
+  tcp_router.debug_address:
     description: "Address at which to serve debug info"
     default: "0.0.0.0:17002"
-
-  router_configurer.log_level:
+  tcp_router.log_level:
     description: "Log level"
     default: "info"
-
-  router_configurer.tcp_stats_collection_interval:
+  tcp_router.tcp_stats_collection_interval:
     description: "String representing interval for collecting statistic metrics from tcp proxy. Units: ms, s, m h"
     default: "1m"
-
-  routing_api.auth_disabled:
-    description: "When false, Routing API requires OAuth tokens for authentication."
-    default: false
-
-  router_configurer.oauth_secret:
+  tcp_router.oauth_secret:
     description: "OAuth client secret used to obtain token for Routing API from UAA."
+  tcp_router.request_timeout_in_seconds:
+    description: "Server and client timeouts in seconds"
+    default: 300
+  tcp_router.health_check_port:
+    description: "Load balancer in front of TCP Routers should be configured to check the health of TCP Router instances by establishing a TCP connection on this port"
+    default: 80
 
   uaa.tls_port:
     description: "Port on which UAA is listening for TLS connections. This is required for obtaining an OAuth token for Routing API."
@@ -50,3 +52,8 @@ properties:
   uaa.ca_cert:
     description : "Certificate authority for communication between clients and uaa."
     default: ""
+
+  routing_api.auth_disabled:
+    description: "When false, Routing API requires OAuth tokens for authentication."
+    default: false
+

@@ -1,7 +1,0 @@
-check process router_configurer
-  with pidfile /var/vcap/sys/run/router_configurer/router_configurer.pid
-  start program "/var/vcap/jobs/router_configurer/bin/router_configurer_ctl start"
-    as uid vcap and gid vcap
-  stop program "/var/vcap/jobs/router_configurer/bin/router_configurer_ctl stop"
-    as uid vcap and gid vcap
-  group vcap
