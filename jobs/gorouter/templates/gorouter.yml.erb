@@ -1,8 +1,10 @@
 ---
-<% if_p("router.status.port",
+<% if_p("router.status.host",
+        "router.status.port",
         "router.status.user",
-        "router.status.password") do |port, user, password| %>
+        "router.status.password") do |host, port, user, password| %>
 status:
+  host: <%= host %>
   port: <%= port %>
   user: <%= user %>
   pass: "<%= password %>"

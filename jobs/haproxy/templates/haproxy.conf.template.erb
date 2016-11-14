@@ -18,5 +18,5 @@ defaults
 
 listen health_check_http_url
     mode http
-    bind :<%= p("haproxy.health_check_port") %>
+    bind <%= p("haproxy.health_check_ip") %>:<%= p("haproxy.health_check_port") %>
     monitor-uri /health

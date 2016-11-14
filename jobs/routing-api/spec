@@ -108,3 +108,7 @@ properties:
   routing_api.lock_retry_interval:
     description: "interval to wait before retrying a failed lock acquisition"
     default: "5s"
+
+  routing_api.listen_ip:
+    description: "Interface on which Routing Api listens"
+    default: "0.0.0.0"

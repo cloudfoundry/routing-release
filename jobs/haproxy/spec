@@ -21,3 +21,7 @@ properties:
   haproxy.health_check_port:
     description: "Load balancer in front of TCP Routers should be configured to check the health of TCP Router instances by establishing a TCP connection on this port"
     default: 80
+
+  haproxy.health_check_ip:
+    description: "Interface on which TCP Router listens for healthchecks"
+    default: "0.0.0.0"

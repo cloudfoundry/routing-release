@@ -57,6 +57,7 @@ case $1 in
          -logLevel=<%= p("routing_api.log_level") %> \
          -ip <%= my_ip %> \
          <% if p("routing_api.auth_disabled") == true %> -devMode <% end %> \
+         <%= p("routing_api.etcd.servers").map{|addr| "#{p("routing_api.etcd.require_ssl") ? "https" : "http"}://#{addr}:4001"}.join(" ")%>
 
     ;;
 
