@@ -1,7 +1,7 @@
 ---
 name: gorouter
 
-description: "The Router maintains a list of live routes for the applications running on each DEA. The Router load balances requests (based on their Host header) between each application instance registered for a specific route. It requires to be behind a load balancer that can terminate SSL connections."
+description: "Gorouter maintains a dynamic routing table based on updates received from NATS and (when enabled) the Routing API. This routing table maps URLs to backends. The router finds the URL in the routing table that most closely matches the host header of the request and load balances across the associated backends."
 
 templates:
   gorouter_ctl: bin/gorouter_ctl
