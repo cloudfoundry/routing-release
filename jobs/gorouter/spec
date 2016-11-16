@@ -62,7 +62,7 @@ properties:
     example: "ELB-HealthChecker/1.0"
     default: "HTTP-Monitor/1.1"
   router.enable_ssl:
-    description: "Enable ssl termination on the router"
+    description: "When enabled, Gorouter will listen on port 443 and terminate TLS for requests received on this port."
     default: false
   router.dns_health_check_host:
       description: "Host to ping for confirmation of DNS resolution, only used when Routing API is enabled"
