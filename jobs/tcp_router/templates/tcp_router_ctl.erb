@@ -31,7 +31,6 @@ RETVAL=0
 
 remove_pid() {
     rm -f "${HAPROXY_PID_FILE}"
-    rmdir "$(dirname "${HAPROXY_PID_FILE}")" || :
 }
 
 start_haproxy() {
