@@ -1,8 +1,6 @@
 global
     log 127.0.0.1   syslog info
     daemon
-    user vcap
-    group vcap
     maxconn 64000
     spread-checks 4
     stats socket /var/vcap/jobs/tcp_router/config/haproxy.sock user vcap mode 600 level operator
