@@ -137,10 +137,11 @@ case $1 in
     ;;
 
   stop)
-    kill_and_wait $PIDFILE
+    tee_output_to_sys_log "${LOG_DIR}" "tcp_router"
     echo -n "Stopping ${DESC}: "
     stop_haproxy
-    echo "${NAME}."
+    echo -n "Stopping ${NAME}."
+    kill_and_wait $PIDFILE
 
     ;;
   *)
