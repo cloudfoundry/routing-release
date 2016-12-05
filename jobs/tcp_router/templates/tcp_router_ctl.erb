@@ -8,7 +8,7 @@ PIDFILE=$RUN_DIR/tcp_router.pid
 HAPROXY_PID_FILE=/var/vcap/sys/run/tcp_router/haproxy.pid
 
 PATH=/var/vcap/packages/haproxy/bin:$PATH
-NAME=haproxy
+NAME=tcp_router
 DAEMON=$(which haproxy)
 CONFIG=/var/vcap/jobs/tcp_router/config/haproxy.conf
 DESC="HAProxy"
@@ -29,10 +29,6 @@ test -f "${CONFIG}"
 
 RETVAL=0
 
-remove_pid() {
-    rm -f "${HAPROXY_PID_FILE}"
-}
-
 start_haproxy() {
     status_haproxy
     if [ "${RETVAL}" = 0 ]; then
@@ -52,7 +48,8 @@ start_haproxy() {
             *)
                 echo "$("${TIMESTAMP}"): Errored starting HAProxy"
                 echo "$("${TIMESTAMP}"): Errored starting HAProxy" >&2
-                remove_pid
+                echo "$("${TIMESTAMP}"): Removing stale PID file for HAProxy"
+                rm -f "${HAPROXY_PID_FILE}"
                 echo "FAILED - check logs"
                 RETVAL=1
                 ;;
@@ -96,54 +93,23 @@ status_haproxy() {
     fi
 }
 
-restart_haproxy() {
-    stop_haproxy
-    start_haproxy
-}
-
-reload_haproxy() {
-    status_haproxy
-    if [ "${RETVAL}" = 0 ]; then
-        RETVAL=0
-        echo "$("${TIMESTAMP}"): reloading HAProxy"
-        set +e
-        "${DAEMON}" -f "${CONFIG}" -p "${HAPROXY_PID_FILE}" -D -sf $(cat $HAPROXY_PID_FILE) 0<&-
-        RETVAL=$?
-        set -e
-        case "${RETVAL}" in
-            0)
-                echo "$("${TIMESTAMP}"): Finished reloading HAProxy"
-                echo "SUCCESS"
-                ;;
-            *)
-                echo "$("${TIMESTAMP}"): Errored reloading HAProxy"
-                echo "$("${TIMESTAMP}"): Errored reloading HAProxy" >&2
-                remove_pid
-                echo "FAILED - check logs"
-                RETVAL=1
-                ;;
-        esac
-    else
-        echo "HAProxy is not currently running"
-    fi
-}
 case $1 in
 
   start)
-    #Start HaProxy
-    echo -n "Starting ${DESC}: "
-    
+    # setup log dir
     SCRIPT=$(basename $0)
     exec 1>> $LOG_DIR/$SCRIPT.log
     exec 2>> $LOG_DIR/$SCRIPT.err.log
     
     tee_output_to_sys_log "${LOG_DIR}" "tcp_router"
 
+    #Start HaProxy
+    echo -n "Starting ${DESC}: "
     start_haproxy
-    
-    echo "${NAME}."
 
     #Start tcp_router
+    echo -n "Starting ${NAME}."
+
     set +e
     host <%= p("dns_health_check_host") %>
     if [[ "0" != "$?" ]]; then
@@ -177,24 +143,8 @@ case $1 in
     echo "${NAME}."
 
     ;;
-
-  haproxy-status)
-      status_haproxy
-      ;;
-  haproxy-reload)
-      echo -n "Reloading ${DESC}: "
-      ensure_dirs
-      reload_haproxy
-      echo "${NAME}."
-      ;;
-  haproxy-force-reload|haproxy-restart)
-      echo -n "Restarting ${DESC}: "
-      ensure_dirs
-      restart_haproxy
-      echo "${NAME}."
-      ;;
   *)
-    echo "Usage: tcp_router {start|stop|haproxy-restart|haproxy-reload|haproxy-force-reload|haproxy-status}"
+    echo "Usage: tcp_router {start|stop}"
 
     ;;
 
