@@ -24,6 +24,7 @@ files:
   - routing-release/src/code.cloudfoundry.org/gorouter/common/uuid/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/config/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/handlers/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/mbus/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/metrics/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/metrics/monitor/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/metrics/reporter/*.go # gosub
