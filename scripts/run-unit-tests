@@ -28,22 +28,29 @@ run_go_vet() {
   done
 }
 
-if uname -a | grep Darwin; then os=darwin; else os=linux; fi
+if uname -a | grep Darwin; then OS=darwin; else OS=linux; fi
 
 set +e
 CONSUL_VERSION=`consul -v | grep 0.6.3`
 set -e
 if [ "$CONSUL_VERSION" != "Consul v0.6.3" ]; then
-  curl -L -o ${tmpdir}/consul-0.6.3.zip "https://releases.hashicorp.com/consul/0.6.3/consul_0.6.3_${os}_amd64.zip"
+  curl -L -o ${tmpdir}/consul-0.6.3.zip "https://releases.hashicorp.com/consul/0.6.3/consul_0.6.3_${OS}_amd64.zip"
   unzip -o ${tmpdir}/consul-0.6.3.zip -d ./${bin_dir}
   rm ${tmpdir}/consul-0.6.3.zip
 fi
 
-pushd src/github.com/coreos/etcd
-  git checkout v2.1.1
-  go install .
-  git checkout -
-popd
+if [ "$OS" == darwin ]; then
+  pushd src/github.com/coreos/etcd
+    git checkout v2.1.1
+    go install .
+    git checkout -
+  popd
+else
+ curl -L "https://github.com/coreos/etcd/releases/download/v2.1.1/etcd-v2.1.1-linux-amd64.tar.gz" -o etcd-v2.1.1-linux-amd64.tar.gz
+ tar -xzf etcd-v2.1.1-linux-amd64.tar.gz -C /tmp
+ mv /tmp/etcd-v2.1.1-linux-amd64/etcd $GOPATH/bin
+fi
+
 
 export PATH=$PATH:$PWD/bin
 

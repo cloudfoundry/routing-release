@@ -1,12 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 
-CF_RELEASE="$HOME/workspace/cf-release"
 IMAGE="cloudfoundry/cf-routing-pipeline"
+MOUNT_DIR="/routing-release"
+START_SERVICES="service mysql start; service postgresql start"
+RUN_UNIT_TEST="cd ${MOUNT_DIR}; source .envrc; ./scripts/run-unit-tests"
 
 docker pull ${IMAGE}
 docker run \
-  -v"${CF_RELEASE}:/cf-release" \
+  -v "${PWD}:${MOUNT_DIR}" \
   -e DB \
   ${IMAGE} \
-  /bin/bash -c "service mysql start; service postgresql start; cd /cf-release/src/routing-release; source .envrc; ./scripts/run-unit-tests"
+  /bin/bash -c "${START_SERVICES};${RUN_UNIT_TEST}"
 
