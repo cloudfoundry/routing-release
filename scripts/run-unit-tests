@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -e -x
 
 function printStatus {
@@ -46,14 +45,16 @@ if [ "$OS" == darwin ]; then
     git checkout -
   popd
 else
- curl -L "https://github.com/coreos/etcd/releases/download/v2.1.1/etcd-v2.1.1-linux-amd64.tar.gz" -o etcd-v2.1.1-linux-amd64.tar.gz
- tar -xzf etcd-v2.1.1-linux-amd64.tar.gz -C /tmp
+ OUTPUT="etcd-v2.1.1-linux-amd64.tar.gz"
+ curl -L "https://github.com/coreos/etcd/releases/download/v2.1.1/etcd-v2.1.1-linux-amd64.tar.gz" -o ${OUTPUT} 
+ tar -xzf ${OUTPUT} -C /tmp
  mv /tmp/etcd-v2.1.1-linux-amd64/etcd $GOPATH/bin
+ rm -rf ${OUTPUT}
+ rm -rf /tmp/etcd-v2.1.1-linux-amd64
 fi
 
-
 export PATH=$PATH:$PWD/bin
-
+go install github.com/nats-io/gnatsd
 go get github.com/onsi/ginkgo/ginkgo
 go get github.com/onsi/gomega
 
@@ -88,4 +89,8 @@ else
     go vet ./...
     go tool vet --shadow .
   popd
+fi
+
+if [ "$OS" == linux ]; then
+  rm -rf $GOPATH/bin/{gnatsd,ginkgo,etcd}
 fi

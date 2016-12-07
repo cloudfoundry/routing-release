@@ -2,7 +2,7 @@
 
 IMAGE="cloudfoundry/cf-routing-pipeline"
 MOUNT_DIR="/routing-release"
-START_SERVICES="service mysql start; service postgresql start"
+START_SERVICES="service mysql start; service postgresql start; service rsyslog start"
 RUN_UNIT_TEST="cd ${MOUNT_DIR}; source .envrc; ./scripts/run-unit-tests"
 
 docker pull ${IMAGE}
