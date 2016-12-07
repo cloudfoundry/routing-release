@@ -6,7 +6,7 @@ templates:
   config.json.erb: bin/config.json
 
 packages:
- - golang1.6
+ - golang1.7
  - acceptance_tests
  - tcp_emitter
  - rtr

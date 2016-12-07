@@ -2,7 +2,7 @@
 name: tcp_emitter
 
 dependencies:
-  - golang1.6
+  - golang1.7
 
 files:
   - code.cloudfoundry.org/bbs/*.go # gosub
