@@ -54,7 +54,7 @@ else
 fi
 
 export PATH=$PATH:$PWD/bin
-go install github.com/nats-io/gnatsd
+go get github.com/nats-io/gnatsd
 go get github.com/onsi/ginkgo/ginkgo
 go get github.com/onsi/gomega
 
