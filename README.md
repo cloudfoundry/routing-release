@@ -308,8 +308,11 @@ properties:
 ```
 
 ### Relational Database
+
+If you are using the manifest generation script for BOSH Lite, you can skip this step; routing-api will be configured to use the PostgreSQL database that comes with cf-release. 
 	
-The routing-release now supports a relational database for the Routing API. We recommend this instead of etcd. To opt into this feature you can configure your manifest stub with the following `sqldb` properties. To migrate existing deployments to use a relational database see [Migrating from ETCD](#Migrating from ETCD)
+The routing-release now supports a relational database for the Routing API. We recommend this instead of etcd. To opt into this feature you can configure your manifest stub with the following `
+b` properties. To migrate existing deployments to use a relational database see [Migrating from ETCD](#Migrating from ETCD)
 
 ```
 properties:
