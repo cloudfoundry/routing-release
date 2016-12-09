@@ -286,6 +286,8 @@ directly to a single TCP router instance.
 
 ### Ports
 
+If you are using the manifest generation script for BOSH Lite, you can skip this step. 
+
 If you configured your load balancer to forward a range other than
 1024-1123 (see [Ports](#ports)), you must configure this release with the
 same port range using deployment manifest property
