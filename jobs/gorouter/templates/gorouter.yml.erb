@@ -17,7 +17,6 @@ nats:
 <% end %>
 
 logging:
-  file: /var/vcap/sys/log/gorouter/gorouter.log
   syslog: vcap.gorouter
   level: <%= p("router.logging_level") %>
   loggregator_enabled: true
