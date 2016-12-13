@@ -13,9 +13,6 @@
 [submodule "src/code.cloudfoundry.org/debugserver"]
 	path = src/code.cloudfoundry.org/debugserver
 	url = https://github.com/cloudfoundry/debugserver
-[submodule "src/code.cloudfoundry.org/cflager"]
-	path = src/code.cloudfoundry.org/cflager
-	url = https://github.com/cloudfoundry/cflager
 [submodule "src/code.cloudfoundry.org/lager"]
 	path = src/code.cloudfoundry.org/lager
 	url = https://github.com/cloudfoundry/lager
