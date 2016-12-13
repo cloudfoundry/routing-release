@@ -2,7 +2,7 @@
 name: acceptance_tests
 
 dependencies:
-  - golang1.6
+  - golang1.7
   - rtr
 
 files:

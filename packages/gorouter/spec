@@ -1,7 +1,7 @@
 ---
 name: gorouter
 dependencies:
-- golang1.6
+- golang1.7
 files:
   - routing-release/src/code.cloudfoundry.org/gorouter/**/*.{go,golden,proto,c,h,}
   - routing-release/src/code.cloudfoundry.org/gorouter/LICENSE
