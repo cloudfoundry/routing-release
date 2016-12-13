@@ -42,8 +42,7 @@ start_haproxy() {
         set -e
         case "${RETVAL}" in
             0)
-                echo "$("${TIMESTAMP}"): Finished starting HAProxy"
-                echo "SUCCESS"
+                echo "$("${TIMESTAMP}"): Successfully started HAProxy"
                 ;;
             *)
                 echo "$("${TIMESTAMP}"): Errored starting HAProxy"
@@ -104,7 +103,6 @@ case $1 in
     tee_output_to_sys_log "${LOG_DIR}" "tcp_router"
 
     #Start HaProxy
-    echo -n "Starting ${DESC}: "
     start_haproxy
 
     #Start tcp_router
@@ -138,10 +136,12 @@ case $1 in
 
   stop)
     tee_output_to_sys_log "${LOG_DIR}" "tcp_router"
+    # stopping tcp_router
+    echo "Stopping ${NAME}."
+    kill_and_wait $PIDFILE
+    # stopping haproxy
     echo -n "Stopping ${DESC}: "
     stop_haproxy
-    echo -n "Stopping ${NAME}."
-    kill_and_wait $PIDFILE
 
     ;;
   *)
