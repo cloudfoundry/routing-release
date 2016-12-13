@@ -286,6 +286,8 @@ directly to a single TCP router instance.
 
 ### Ports
 
+If you are using the manifest generation script for BOSH Lite, you can skip this step. 
+
 If you configured your load balancer to forward a range other than
 1024-1123 (see [Ports](#ports)), you must configure this release with the
 same port range using deployment manifest property
@@ -306,8 +308,11 @@ properties:
 ```
 
 ### Relational Database
+
+If you are using the manifest generation script for BOSH Lite, you can skip this step; routing-api will be configured to use the PostgreSQL database that comes with cf-release. 
 	
-The routing-release now supports a relational database for the Routing API. We recommend this instead of etcd. To opt into this feature you can configure your manifest stub with the following `sqldb` properties. To migrate existing deployments to use a relational database see [Migrating from ETCD](#Migrating from ETCD)
+The routing-release now supports a relational database for the Routing API. We recommend this instead of etcd. To opt into this feature you can configure your manifest stub with the following `
+b` properties. To migrate existing deployments to use a relational database see [Migrating from ETCD](#Migrating from ETCD)
 
 ```
 properties:
@@ -343,6 +348,8 @@ This process should ensure a migration with zero downtime to application backend
 
 ### Validation of TLS Certificates from Route Services and UAA
 
+If you are using the manifest generation script for BOSH Lite, you can skip this step; certificate validation will be disabled.
+
 The following components communicate with UAA via TLS:
 - Routing API
 - Gorouter
@@ -351,11 +358,19 @@ The following components communicate with UAA via TLS:
 
 Additionally, gorouter communicates with [Route Services](http://docs.cloudfoundry.org/services/route-services.html) via TLS. 
 
-In all cases, these components will validate that certs are signed by a known CA and that the cert is for the requested domain. To disable this validation, as when deploying the routing subsystem to an environment with self-signed certs, configure the following properties:
+In all cases, these components will validate that certs are signed by a known CA and that the cert is for the requested domain. To disable this validation, as when deploying the routing subsystem to an environment with self-signed certs, configure the following property in routing-release:
 
 ```
 properties:
   skip_ssl_validation: true
+  router:
+    ssl_skip_validation: true
+```
+
+To disable validation of certs by Gorouter, configure the following property in the deployment manifest for cf-release:
+
+```
+properties:
   router:
     ssl_skip_validation: true
 ```
