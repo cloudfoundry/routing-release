@@ -278,18 +278,18 @@ properties:
     lock_retry_interval: (( property_overrides.tcp_emitter.lock_retry_interval || nil ))
     lock_ttl: (( property_overrides.tcp_emitter.lock_ttl || nil ))
     etcd:
-      servers: (( property_overrides.routing_api.etcd.servers || config_from_cf.etcd.machines ))
+      servers: (( property_overrides.routing_api.etcd.servers || nil ))
       ca_cert: (( property_overrides.routing_api.etcd.ca_cert || nil ))
       client_cert: (( property_overrides.routing_api.etcd.client_cert || nil ))
       client_key: (( property_overrides.routing_api.etcd.client_key || nil ))
       require_ssl: (( property_overrides.routing_api.etcd.require_ssl || nil ))
     sqldb:
-      host: (( property_overrides.routing_api.sqldb.host || nil ))
-      port: (( property_overrides.routing_api.sqldb.port || nil ))
-      schema: (( property_overrides.routing_api.sqldb.schema || nil ))
-      type: (( property_overrides.routing_api.sqldb.type || nil ))
+      host: (( property_overrides.routing_api.sqldb.host || config_from_cf.databases.address ))
+      port: (( property_overrides.routing_api.sqldb.port || config_from_cf.databases.port ))
+      type: (( property_overrides.routing_api.sqldb.type || config_from_cf.databases.db_scheme ))
       username: (( property_overrides.routing_api.sqldb.username || nil ))
       password: (( property_overrides.routing_api.sqldb.password || nil ))
+      schema: (( property_overrides.routing_api.sqldb.schema || nil ))
   tcp_router:
     debug_address: (( property_overrides.tcp_router.debug_address ))
     tcp_stats_collection_interval: (( property_overrides.tcp_router.tcp_stats_collection_interval ))

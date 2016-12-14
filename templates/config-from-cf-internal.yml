@@ -27,11 +27,13 @@ config_from_cf:
     etcd:
       client_cert: (( properties.metron_agent.etcd.client_cert ))
       client_key: (( properties.metron_agent.etcd.client_key ))
-  etcd:
-    machines: (( properties.etcd.machines ))
   metron_endpoint:
     shared_secret: (( properties.metron_endpoint.shared_secret ))
   system_domain: (( properties.system_domain ))
+  databases:
+    address: (( properties.databases.address ))
+    db_scheme: (( properties.databases.db_scheme ))
+    port: (( properties.databases.port ))
   uaa:
     ca_cert: (( properties.uaa.ca_cert ))
     port: (( properties.uaa.port ))
@@ -72,10 +74,12 @@ properties:
     etcd:
       client_cert: (( merge ))
       client_key: (( merge ))
-  etcd:
-    machines: (( merge ))
   metron_endpoint:
     shared_secret: (( merge ))
+  databases:
+    address: (( merge ))
+    db_scheme: (( merge ))
+    port: (( merge ))
   uaa:
     ca_cert:
     port:
