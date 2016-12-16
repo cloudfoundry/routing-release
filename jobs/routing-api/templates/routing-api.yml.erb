@@ -1,3 +1,24 @@
+<%
+def sqldb?
+  if_p("routing_api.sqldb.host", "routing_api.sqldb.port", "routing_api.sqldb.type", "routing_api.sqldb.schema") do
+    return true
+  end
+
+  false
+end
+
+def etcd?
+  if_p("routing_api.etcd.servers") do
+    return true
+  end
+
+  false
+end
+
+if not (etcd? || sqldb?)
+  raise 'Either routing_api.etcd or routing_api.sqldb must be configured'
+end
+%>
 ---
 log_guid: "routing_api"
 max_ttl: <%= p("routing_api.max_ttl") %>
@@ -35,14 +56,14 @@ etcd:
 <% end %>
 
 <% if_p("routing_api.sqldb.host",
-    "routing_api.sqldb.port",
-    "routing_api.sqldb.type",
-    "routing_api.sqldb.schema") do |host, port, type, schema| %>
+        "routing_api.sqldb.port",
+        "routing_api.sqldb.type",
+        "routing_api.sqldb.schema") do |host, port, type, schema| %>
 sqldb:
   host: <%= host %>
   port: <%= port %>
-  schema: <%= schema %>
   type: <%= type %>
+  schema: <%= schema %>
   username: <%= p("routing_api.sqldb.username") %>
   password: <%= p("routing_api.sqldb.password") %>
 <% end %>
