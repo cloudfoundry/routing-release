@@ -73,8 +73,8 @@ properties:
     default: "120s"
 
   bbs.api_location:
-    description: "Diego BBS Server endpoint URL."
-    default: "http://bbs.service.cf.internal:8889"
+    description: "Diego BBS Server endpoint hostname. Do not include the scheme; this will be configured automatically based on the value of property bbs.require_ssl."
+    default: "bbs.service.cf.internal:8889"
   bbs.require_ssl:
     description: "Enables mutual-TLS communication with Diego BBS."
     default: true
