@@ -283,6 +283,7 @@ properties:
       client_cert: (( property_overrides.routing_api.etcd.client_cert || nil ))
       client_key: (( property_overrides.routing_api.etcd.client_key || nil ))
       require_ssl: (( property_overrides.routing_api.etcd.require_ssl || nil ))
+    port: (( property_overrides.routing_api.port || nil ))
     sqldb:
       host: (( property_overrides.routing_api.sqldb.host || config_from_cf.databases.address ))
       port: (( property_overrides.routing_api.sqldb.port || config_from_cf.databases.port ))
@@ -290,6 +291,7 @@ properties:
       username: (( property_overrides.routing_api.sqldb.username || nil ))
       password: (( property_overrides.routing_api.sqldb.password || nil ))
       schema: (( property_overrides.routing_api.sqldb.schema || nil ))
+    uri:  (( property_overrides.routing_api.uri || nil ))
   tcp_router:
     debug_address: (( property_overrides.tcp_router.debug_address ))
     tcp_stats_collection_interval: (( property_overrides.tcp_router.tcp_stats_collection_interval ))
@@ -316,6 +318,7 @@ properties:
   uaa:
     ca_cert: (( config_from_cf.uaa.ca_cert ))
     tls_port: (( config_from_cf.uaa.ssl.port ))
+    token_endpoint: (( property_overrides.uaa.token_endpoint || nil ))
   acceptance_tests:
     addresses: (( property_overrides.acceptance_tests.addresses ))
     include_http_routes: (( property_overrides.acceptance_tests.include_http_routes ))

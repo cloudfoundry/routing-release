@@ -50,10 +50,9 @@ case $1 in
     # Allowed number of open file descriptors
     # ulimit -n 100000
 
-    routing_port=3000
     exec /var/vcap/packages/routing-api/bin/routing-api \
          -config /var/vcap/jobs/routing-api/config/routing-api.yml \
-         -port $routing_port \
+         -port <%= p("routing_api.port") %> \
          -logLevel=<%= p("routing_api.log_level") %> \
          -ip <%= my_ip %> \
          <% if p("routing_api.auth_disabled") == true %> -devMode <% end %> \

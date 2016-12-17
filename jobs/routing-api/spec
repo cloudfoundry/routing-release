@@ -41,6 +41,9 @@ properties:
   routing_api.log_level:
     description: "Log level"
     default: "info"
+  routing_api.port:
+    description: "Port on which Routing API is running."
+    default: 3000
 
   routing_api.etcd.servers:
     description: "Must be the internal DNS name for the etcd cluster when require_ssl:true. When require_ssl:false either a DNS name or an array of IP addresses is supported."

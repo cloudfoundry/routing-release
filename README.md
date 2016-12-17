@@ -398,6 +398,9 @@ properties:
   backend (as configured with `default_to_diego_backend: true` above, as TCP
   Routing is only supported for Diego).
 
+  **Note**: If changing the default `routing_api.port`, then you will want to
+  update this property in the cf-release deployment manifest.
+
   Then generate a new manifest for cf-release and re-deploy it.
 
   ```

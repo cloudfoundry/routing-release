@@ -1,6 +1,6 @@
 #!/bin/bash
 
-nc -z 127.0.0.1 3000
+nc -z 127.0.0.1 <%= p("routing_api.port") %>
 
 # http://www.consul.io/docs/agent/checks.html
 if [ $? -ne 0 ]; then
