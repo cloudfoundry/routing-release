@@ -46,7 +46,7 @@ properties:
     default: 3000
 
   routing_api.etcd.servers:
-    description: "Must be the internal DNS name for the etcd cluster when require_ssl:true. When require_ssl:false either a DNS name or an array of IP addresses is supported."
+    description: "When require_ssl:true, this must be an array of the internal DNS name for the etcd cluster. When require_ssl:false this must be an array of either the DNS name or the IP addresses of the etcd servers."
   routing_api.etcd.client_cert:
      description: "Client certificate for communication between clients and etcd"
      default: ""
