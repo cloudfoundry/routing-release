@@ -149,9 +149,6 @@ properties:
   uaa.token_endpoint:
     description: "UAA token endpoint host name. Do not include a scheme in this value; TCP Router will always use TLS to connect to UAA."
     default: uaa.service.cf.internal
-  uaa.port:
-    description: "Port on which UAA is running."
-    default: 8080
   uaa.ssl.port:
     description: "Secure Port on which UAA is running."
 
