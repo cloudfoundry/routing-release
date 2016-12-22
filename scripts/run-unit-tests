@@ -68,6 +68,9 @@ else
     ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress  --nodes 4 \
       "$@" uaa-go-client
 
+    ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress  --nodes 4 \
+      "$@" multierror
+
     ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress --nodes 4 \
       "$@" routing-api routing-api-cli
 
