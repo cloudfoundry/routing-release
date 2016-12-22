@@ -58,7 +58,7 @@ properties:
     default: false
 
   uaa.token_endpoint:
-    description: "UAA token endpoint host name"
+    description: "UAA token endpoint host name. Do not include a scheme in this value; TCP Router will always use TLS to connect to UAA."
     default: uaa.service.cf.internal
 
   uaa.tls_port:
