@@ -147,7 +147,7 @@ properties:
   uaa.clients.gorouter.secret:
     description: "Password for UAA client for the gorouter."
   uaa.token_endpoint:
-    description: "UAA token endpoint host name"
+    description: "UAA token endpoint host name. Do not include a scheme in this value; TCP Router will always use TLS to connect to UAA."
     default: uaa.service.cf.internal
   uaa.port:
     description: "Port on which UAA is running."
