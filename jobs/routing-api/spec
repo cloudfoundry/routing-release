@@ -42,7 +42,7 @@ properties:
     description: "Log level"
     default: "info"
   routing_api.port:
-    description: "Port on which Routing API is running."
+    description: "Port on which Routing API is running. If this is changed and routing_api.enabled:true in cf-release, it will break management of routes and domains until routing_api.port is updated in cf-release."
     default: 3000
 
   routing_api.etcd.servers:
