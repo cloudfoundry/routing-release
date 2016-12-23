@@ -256,6 +256,10 @@ properties:
       machines: (( config_from_cf.loggregator.etcd.machines ))
       ca_cert: (( config_from_cf.loggregator.etcd.ca_cert ))
       require_ssl: (( config_from_cf.loggregator.etcd.require_ssl ))
+    tls:
+      metron:
+        cert: (( config_from_cf.loggregator.tls.metron.cert ))
+        key: (( config_from_cf.loggregator.tls.metron.key ))
   consul:
     agent:
       domain: (( config_from_cf.consul.domain ))

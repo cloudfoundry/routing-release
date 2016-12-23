@@ -23,6 +23,10 @@ config_from_cf:
       machines: (( properties.loggregator.etcd.machines ))
       ca_cert: (( properties.loggregator.etcd.ca_cert ))
       require_ssl: (( properties.loggregator.etcd.require_ssl ))
+    tls:
+      metron:
+        cert: (( properties.loggregator.tls.metron.cert ))
+        key: (( properties.loggregator.tls.metron.key ))
   metron_agent:
     etcd:
       client_cert: (( properties.metron_agent.etcd.client_cert ))
@@ -70,6 +74,10 @@ properties:
       machines: (( merge ))
       ca_cert: (( merge ))
       require_ssl: (( merge ))
+    tls:
+      metron:
+        cert: (( merge ))
+        key: (( merge ))
   metron_agent:
     etcd:
       client_cert: (( merge ))

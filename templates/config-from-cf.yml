@@ -24,6 +24,10 @@ config_from_cf:
       machines: (( merge ))
       ca_cert: (( merge ))
       require_ssl: (( merge ))
+    tls:
+      metron:
+        cert: (( merge ))
+        key: (( merge ))
   metron_agent:
     etcd:
       client_cert: (( merge ))
