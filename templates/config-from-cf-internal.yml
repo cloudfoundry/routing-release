@@ -24,6 +24,7 @@ config_from_cf:
       ca_cert: (( properties.loggregator.etcd.ca_cert ))
       require_ssl: (( properties.loggregator.etcd.require_ssl ))
     tls:
+      ca_cert: (( properties.loggregator.tls.ca_cert ))
       metron:
         cert: (( properties.loggregator.tls.metron.cert ))
         key: (( properties.loggregator.tls.metron.key ))
@@ -75,6 +76,7 @@ properties:
       ca_cert: (( merge ))
       require_ssl: (( merge ))
     tls:
+      ca_cert: (( merge ))
       metron:
         cert: (( merge ))
         key: (( merge ))
