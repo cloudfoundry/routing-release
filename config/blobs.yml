@@ -23,3 +23,7 @@ golang/go1.7.4.linux-amd64.tar.gz:
   object_id: 89b4bbed-ebfb-4f22-8f57-65d8b81f7d78
   sha: 2e5baf03d1590e048c84d1d5b4b6f2540efaaea1
   size: 84021919
+cf-cli/cf-cli_6.23.0_linux_x86-64.tgz:
+  object_id: c90aa80b-cfd9-45e3-85c5-bc938cec7630
+  sha: 512615bee31b36f258db1c1ca605974139035142
+  size: 6642870
