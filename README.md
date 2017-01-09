@@ -450,17 +450,46 @@ properties:
   route ports; required for creation of TCP routes. The final step to enabling
   TCP routing is to modify quotas to set the maximum number of TCP routes that
   may be created by each organization or space.
+  
+  Determine whether your default org quota allows TCP Routes:
+  
+  ```
+  $ cf quota default
+Getting quota default info as admin...
+OK
 
-  Get the guid of the default org quota
+Total Memory           10G
+Instance Memory        unlimited
+Routes                 -1
+Services               100
+Paid service plans     allowed
+App instance limit     unlimited
+Reserved Route Ports   0
+  ```
+
+  If `Reserved Route Ports` is greater than zero, you can skip the following step, as this attribute determines how many TCP routes can be created within each organization assigned this quota.
+  
+  If `Reserved Route Ports` is zero, you can update the quota with the following command:
 
   ```
-  $ cf curl /v2/quota_definitions?q=name:default
-  ```
-  Update this quota definition to set `"total_reserved_route_ports": -1`
+  $ cf update-quota default --reserved-route-ports 2
+Updating quota default as admin...
+OK
 
+  $ cf quota default
+Getting quota default info as admin...
+OK
+
+Total Memory           10G
+Instance Memory        unlimited
+Routes                 -1
+Services               100
+Paid service plans     allowed
+App instance limit     unlimited
+Reserved Route Ports   2
   ```
-  $ cf curl /v2/quota_definitions/44dff27d-96a2-44ed-8904-fb5ca8cbb298 -X PUT -d '{"total_reserved_route_ports": -1}'
-  ```
+  
+  Configuring `Reserved Route Ports` to `-1` sets the quota attribute to unlimited. For more information on configuring quotas for TCP Routing, see [Enabling TCP Routing](https://docs.cloudfoundry.org/adminguide/enabling-tcp-routing.html#configure-quota).
 
 ## Creating a TCP Route
 
