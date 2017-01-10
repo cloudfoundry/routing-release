@@ -19,6 +19,11 @@ packages:
   - routing_utils
   - gorouter
 
+consumes:
+- name: nats
+  type: nats
+  optional: true
+
 properties:
   router.port:
     description: "Listening Port for Router."
@@ -121,13 +126,19 @@ properties:
     default: false
 
   nats.user:
-    description:
+    description: User name for NATS authentication
+    example: nats
   nats.password:
-    description:
+    description: Password for NATS authentication
+    example: natSpa55w0rd
   nats.port:
-    description:
+    description: TCP port of NATS servers
+    example: 4222
   nats.machines:
-    description: "IP of each NATS cluster member."
+    description: IPs of each NATS cluster member
+    example: |
+      - 192.168.50.123
+      - 192.168.52.123
   router.offset:
     description:
     default: 0
