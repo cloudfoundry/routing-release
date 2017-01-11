@@ -121,5 +121,5 @@ function kill_and_wait() {
 }
 
 running_in_container() {
-  grep -q -E '/instance|/docker/' /proc/self/cgroup
+  grep -q -E '/instance|/docker/|devices' /proc/self/cgroup
 }
