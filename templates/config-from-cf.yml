@@ -36,9 +36,9 @@ config_from_cf:
   metron_endpoint:
     shared_secret: (( merge ))
   databases:
-    address: (( merge ))
-    db_scheme: (( merge ))
-    port: (( merge ))
+    address: (( merge || nil ))
+    db_scheme: (( merge || nil ))
+    port: (( merge || nil ))
   uaa:
     ca_cert: (( merge || nil ))
     port: (( merge ))

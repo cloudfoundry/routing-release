@@ -36,9 +36,9 @@ config_from_cf:
     shared_secret: (( properties.metron_endpoint.shared_secret ))
   system_domain: (( properties.system_domain ))
   databases:
-    address: (( properties.databases.address ))
-    db_scheme: (( properties.databases.db_scheme ))
-    port: (( properties.databases.port ))
+    address: (( properties.databases.address || nil ))
+    db_scheme: (( properties.databases.db_scheme || nil ))
+    port: (( properties.databases.port || nil ))
   uaa:
     ca_cert: (( properties.uaa.ca_cert ))
     port: (( properties.uaa.port ))
@@ -87,9 +87,9 @@ properties:
   metron_endpoint:
     shared_secret: (( merge ))
   databases:
-    address: (( merge ))
-    db_scheme: (( merge ))
-    port: (( merge ))
+    address: (( merge || nil ))
+    db_scheme: (( merge || nil ))
+    port: (( merge || nil ))
   uaa:
     ca_cert:
     port:
