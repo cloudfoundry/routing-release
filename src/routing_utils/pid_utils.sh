@@ -121,5 +121,5 @@ function kill_and_wait() {
 }
 
 running_in_container() {
-  grep -q -E '/instance|/docker/|devices' /proc/self/cgroup
+  grep --quiet --invert-match ':/$' /proc/self/cgroup
 }
