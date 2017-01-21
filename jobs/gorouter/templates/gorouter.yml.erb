@@ -42,6 +42,14 @@ droplet_stale_threshold: 120s
 publish_active_apps_interval: 0s # 0 means disabled
 suspend_pruning_if_nats_unavailable: <%= p("router.suspend_pruning_if_nats_unavailable") %>
 
+<% if p("router.max_idle_connections") && p("router.max_idle_connections") > 0 %>
+disable_keep_alives: false
+max_idle_conns: <%= p("router.max_idle_connections") %>
+max_idle_conns_per_host: 100
+<% else %>
+disable_keep_alives: true
+<% end%>
+
 oauth:
   token_endpoint: <%= p("uaa.token_endpoint") %>
   client_name: "gorouter"
