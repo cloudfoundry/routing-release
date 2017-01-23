@@ -23,8 +23,11 @@ files:
   - routing-release/src/code.cloudfoundry.org/gorouter/common/uuid/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/config/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/handlers/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/logger/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/logger/fakes/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/mbus/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/metrics/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/metrics/fakes/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/metrics/monitor/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/metrics/reporter/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/metrics/reporter/fakes/*.go # gosub
@@ -54,7 +57,6 @@ files:
   - routing-release/src/code.cloudfoundry.org/gorouter/test_util/rss/common/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/varz/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/lager/*.go # gosub
-  - routing-release/src/code.cloudfoundry.org/lager/lagerflags/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/localip/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/routing-api/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/routing-api/models/*.go # gosub
@@ -77,8 +79,6 @@ files:
   - routing-release/src/github.com/cloudfoundry/dropsonde/metricbatcher/*.go # gosub
   - routing-release/src/github.com/cloudfoundry/dropsonde/metrics/*.go # gosub
   - routing-release/src/github.com/cloudfoundry/dropsonde/runtime_stats/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gosteno/*.go # gosub
-  - routing-release/src/github.com/cloudfoundry/gosteno/syslog/*.go # gosub
   - routing-release/src/github.com/cloudfoundry/sonde-go/events/*.go # gosub
   - routing-release/src/github.com/codegangsta/cli/*.go # gosub
   - routing-release/src/github.com/dgrijalva/jwt-go/*.go # gosub
@@ -124,6 +124,8 @@ files:
   - routing-release/src/github.com/tedsuo/ifrit/http_server/*.go # gosub
   - routing-release/src/github.com/tedsuo/ifrit/sigmon/*.go # gosub
   - routing-release/src/github.com/tedsuo/rata/*.go # gosub
+  - routing-release/src/github.com/uber-go/atomic/*.go # gosub
+  - routing-release/src/github.com/uber-go/zap/*.go # gosub
   - routing-release/src/github.com/urfave/negroni/*.go # gosub
   - routing-release/src/github.com/vito/go-sse/sse/*.go # gosub
   - routing-release/src/golang.org/x/crypto/pbkdf2/*.go # gosub

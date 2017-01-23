@@ -166,3 +166,9 @@
 [submodule "src/github.com/lib/pq"]
 	path = src/github.com/lib/pq
 	url = https://github.com/lib/pq
+[submodule "src/github.com/uber-go/zap"]
+	path = src/github.com/uber-go/zap
+	url = https://github.com/uber-go/zap
+[submodule "src/github.com/uber-go/atomic"]
+	path = src/github.com/uber-go/atomic
+	url = https://github.com/uber-go/atomic
