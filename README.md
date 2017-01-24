@@ -246,7 +246,7 @@ directly to a single TCP router instance.
 
       ```
       cd ~/workspace/routing-release
-      bosh -n upload release releases/routing-<lastest_version>.yml
+      bosh upload release releases/routing-<lastest_version>.yml
       ```
 
     - The `release-candidate` branch can be considered "edge" as it has passed
@@ -257,8 +257,8 @@ directly to a single TCP router instance.
       cd ~/workspace/routing-release
       git checkout release-candidate
       ./scripts/update
-      bosh create release --force
-      bosh -n upload release
+      bosh create release
+      bosh upload release
       ```
 
 1. Generate a Deployment Manifest
