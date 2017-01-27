@@ -1,15 +1,15 @@
 set -e -x
 
 echo "Extracting pcre..."
-tar xzf haproxy/pcre-8.39.tar.gz
-cd pcre-8.39
+tar xzf haproxy/pcre-8.40.tar.gz
+cd pcre-8.40
 ./configure
 make
 make install
 cd ..
 
-tar xzf haproxy/haproxy-1.5.12.tar.gz
-cd haproxy-1.5.12
+tar xzf haproxy/haproxy-1.5.19.tar.gz
+cd haproxy-1.5.19
 make TARGET=linux2628 USE_OPENSSL=1 USE_STATIC_PCRE=1
 mkdir ${BOSH_INSTALL_TARGET}/bin
 cp haproxy ${BOSH_INSTALL_TARGET}/bin/
