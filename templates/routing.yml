@@ -228,6 +228,13 @@ jobs:
     networks:
     - name: router1
     resource_pool: small_errand
+  - name: routing_smoke_tests
+    templates: (( base_job_templates.smoke_tests_errand ))
+    lifecycle: errand
+    instances: (( instance_count_overrides.small_errand.instances || 1 ))
+    networks:
+    - name: router1
+    resource_pool: small_errand
 
 property_overrides: (( merge ))
 iaas_settings: (( merge ))
@@ -335,6 +342,8 @@ properties:
       admin_user: (( config_from_cf.acceptance_tests.admin_user ))
       admin_password: (( config_from_cf.acceptance_tests.admin_password ))
       use_http: (( config_from_cf.acceptance_tests.use_http ))
+  smoke_tests:
+    tcp_apps_domain: (( property_overrides.smoke_tests.tcp_apps_domain || nil ))
 
 base_job_templates:
   routing_api:
@@ -362,6 +371,11 @@ base_job_templates:
       release: cf
   acceptance_tests_errand:
     - name: acceptance_tests
+      release: routing
+    - name: consul_agent
+      release: cf
+  smoke_tests_errand:
+    - name: smoke_tests
       release: routing
     - name: consul_agent
       release: cf

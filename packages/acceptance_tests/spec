@@ -17,12 +17,15 @@ files:
   - code.cloudfoundry.org/clock/*.go # gosub
   - code.cloudfoundry.org/lager/*.go # gosub
   - code.cloudfoundry.org/lager/lagertest/*.go # gosub
+  - code.cloudfoundry.org/routing-acceptance-tests/assets/golang/*.go # gosub
+  - code.cloudfoundry.org/routing-acceptance-tests/assets/golang/Godeps/*.json
   - code.cloudfoundry.org/routing-acceptance-tests/assets/tcp-droplet-receiver/*.go # gosub
   - code.cloudfoundry.org/routing-acceptance-tests/assets/tcp-sample-receiver/*.go # gosub
   - code.cloudfoundry.org/routing-acceptance-tests/assets/tcp-sample-receiver/testrunner/*.go # gosub
   - code.cloudfoundry.org/routing-acceptance-tests/helpers/*.go # gosub
   - code.cloudfoundry.org/routing-acceptance-tests/helpers/assets/*.go # gosub
   - code.cloudfoundry.org/routing-acceptance-tests/http_routes/*.go # gosub
+  - code.cloudfoundry.org/routing-acceptance-tests/smoke_tests/*.go # gosub
   - code.cloudfoundry.org/routing-acceptance-tests/tcp_routing/*.go # gosub
   - code.cloudfoundry.org/routing-api/*.go # gosub
   - code.cloudfoundry.org/routing-api/models/*.go # gosub

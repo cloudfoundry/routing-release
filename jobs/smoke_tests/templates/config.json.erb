@@ -1,0 +1,23 @@
+<%
+  require 'json'
+
+config = {
+  addresses: p("acceptance_tests.addresses"),
+  api: p("acceptance_tests.cloud_controller.api"),
+  apps_domain: Array(p("acceptance_tests.cloud_controller.apps_domain")).first,
+  admin_user: p("acceptance_tests.cloud_controller.admin_user"),
+  admin_password: p("acceptance_tests.cloud_controller.admin_password"),
+  use_http: p("acceptance_tests.cloud_controller.use_http"),
+  skip_ssl_validation: p("acceptance_tests.skip_ssl_validation"),
+  tcp_apps_domain: p("smoke_tests.tcp_apps_domain"),
+  oauth: {
+    token_endpoint: 'https://uaa.' + p("acceptance_tests.system_domain"),
+    client_name: "tcp_emitter",
+    skip_ssl_validation: p("acceptance_tests.skip_ssl_validation"),
+    client_secret: p("tcp_emitter.oauth_secret"),
+    port: 443,
+  }
+}
+%>
+
+<%= JSON.pretty_generate(config) %>

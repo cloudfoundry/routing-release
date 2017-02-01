@@ -1,0 +1,51 @@
+---
+name: smoke_tests
+
+templates:
+  run.erb: bin/run
+  config.json.erb: bin/config.json
+
+packages:
+ - golang1.7
+ - acceptance_tests
+ - cf-cli
+
+properties:
+  acceptance_tests.verbose:
+    default: false
+    description: "Whether to pass the -v flag to router acceptance tests"
+
+  acceptance_tests.addresses:
+    default:
+      - "10.244.14.2"
+    description: "A list of addresses which will be checked for TCP connectivity and features"
+
+  acceptance_tests.skip_ssl_validation:
+    default: false
+    description: "When true, does not verify TLS certificates for any API calls made during the test run"
+
+  acceptance_tests.cloud_controller.api:
+    description: "URL of the Cloud Controller API"
+
+  acceptance_tests.cloud_controller.apps_domain:
+    description: "App domain that will be created"
+
+  acceptance_tests.cloud_controller.admin_user:
+    description: "Cloud Controller admin user"
+
+  acceptance_tests.cloud_controller.admin_password:
+    description: "Cloud Controller admin user's password"
+
+  acceptance_tests.cloud_controller.use_http:
+    default: false
+    description: Flag for using HTTP when making application requests rather than the default HTTPS
+
+  tcp_emitter.oauth_secret:
+    description: "Password for UAA client for the tcp emitter."
+
+  acceptance_tests.system_domain:
+    description: "Domain for system components, e.g. bosh-lite.com"
+
+  smoke_tests.tcp_apps_domain:
+    description: "TCP app domain to run smoke test against"
+    default: ""
