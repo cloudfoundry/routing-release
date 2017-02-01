@@ -42,7 +42,7 @@ properties:
         routing updates. It must be a time duration represented as a string
         (e.g. "10s").
         It must parse to a positive time duration i.e. "-5s" is not permitted.
-      * Additionally, the 'tags' and 'health_check' keys are optional.
+      * Additionally, the 'tags', 'health_check', and 'prepend_instance_index' keys are optional.
       * 'uris' is an array of URIs to register for the 'port'.
       * 'tags' are included in metrics that gorouter emits to support filtering.
       * 'health_check' is a hash which should have 'name' and 'script_path'.
@@ -57,6 +57,13 @@ properties:
       * if the healthcheck script exits with error, the route is unregistered.
       * if a timeout is configured, the healthcheck script must exit within the timeout,
         otherwise it is terminated (with `SIGKILL`) and the route is unregistered.
+      * 'prepend_instance_index' is a boolean. When set to true the values in 'uris'
+        will be prepended with the instance index.
+        e.g. 'some-uri.system-domain.com' will become '0-some-uri.system-domain.com' on the instance
+        with index 0, and '2-some-url.system-domain.com' on the instance with index 2.
+        When this value is enabled, each instance will register its own, unique, set of uris.
+        To additionally continue to register these original uris, create another route
+        with the same uris and set 'prepend_instance_index' to false (or omit the key entirely).
     example: |
       - name: my-service
         registration_interval: 20s
@@ -75,3 +82,12 @@ properties:
         port: 12346
         uris:
           - my-service.system-domain.com/debug
+      - name: cf-mysql-proxy-api-per-instance
+        port: 8080
+        uris:
+        - proxy-cf-mysql.system.domain
+        prepend_instance_index: true
+      - name: cf-mysql-proxy-api
+        port: 8081
+        uris:
+        - proxy-cf-mysql.system.domain
