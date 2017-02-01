@@ -6,4 +6,5 @@ DIR=$(dirname $0)
 ${DIR}/deploy
 
 bosh run errand routing_acceptance_tests
+bosh run errand routing_smoke_tests
 
