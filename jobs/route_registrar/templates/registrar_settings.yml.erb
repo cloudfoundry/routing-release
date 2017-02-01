@@ -21,7 +21,7 @@
   my_ip = discover_external_ip
 
   nats_ips = nil
-  if_p('nats.ips') do |ips|
+  if_p('nats.machines') do |ips|
     nats_ips = ips.compact
   end.else do
     nats_ips = link('nats').instances.map { |instance| instance.address }
