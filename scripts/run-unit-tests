@@ -29,14 +29,10 @@ run_go_vet() {
 
 if uname -a | grep Darwin; then OS=darwin; else OS=linux; fi
 
-set +e
-CONSUL_VERSION=`consul -v | grep 0.6.3`
-set -e
-if [ "$CONSUL_VERSION" != "Consul v0.6.3" ]; then
-  curl -L -o ${tmpdir}/consul-0.6.3.zip "https://releases.hashicorp.com/consul/0.6.3/consul_0.6.3_${OS}_amd64.zip"
-  unzip -o ${tmpdir}/consul-0.6.3.zip -d ./${bin_dir}
-  rm ${tmpdir}/consul-0.6.3.zip
-fi
+# get consul
+curl -L -o ${tmpdir}/consul-0.6.3.zip "https://releases.hashicorp.com/consul/0.6.3/consul_0.6.3_${OS}_amd64.zip"
+unzip -o ${tmpdir}/consul-0.6.3.zip -d ./${bin_dir}
+rm ${tmpdir}/consul-0.6.3.zip
 
 if [ "$OS" == darwin ]; then
   pushd src/github.com/coreos/etcd
