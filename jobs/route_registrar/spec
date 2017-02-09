@@ -64,8 +64,6 @@ properties:
         When this value is enabled, each instance will register its own, unique, set of uris.
         To additionally continue to register these original uris, create another route
         with the same uris and set 'prepend_instance_index' to false (or omit the key entirely).
-        This property is incompatible with host names beginning with * or host names containing
-        any other invalid character.
     example: |
       - name: my-service
         registration_interval: 20s
