@@ -353,7 +353,7 @@ base_job_templates:
       release: routing
     - name: metron_agent
       release: cf
-    - name: statsd-injector
+    - name: statsd_injector
       release: cf
   tcp_router:
     - name: consul_agent
