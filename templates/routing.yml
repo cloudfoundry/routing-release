@@ -336,6 +336,7 @@ properties:
     include_http_routes: (( property_overrides.acceptance_tests.include_http_routes ))
     system_domain: (( config_from_cf.system_domain ))
     skip_ssl_validation: (( config_from_cf.acceptance_tests.skip_ssl_validation ))
+    verbose: (( property_overrides.acceptance_tests.verbose ))
     cloud_controller:
       apps_domain: (( config_from_cf.acceptance_tests.apps_domain ))
       api: (( config_from_cf.acceptance_tests.api ))
