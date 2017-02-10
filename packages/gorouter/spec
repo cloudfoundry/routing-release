@@ -37,7 +37,6 @@ files:
   - routing-release/src/code.cloudfoundry.org/gorouter/proxy/round_tripper/fakes/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/proxy/test_helpers/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/proxy/utils/*.go # gosub
-  - routing-release/src/code.cloudfoundry.org/gorouter/proxy/utils/fakes/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/registry/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/registry/container/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/registry/fakes/*.go # gosub
