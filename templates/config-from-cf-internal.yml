@@ -28,6 +28,9 @@ config_from_cf:
       metron:
         cert: (( properties.loggregator.tls.metron.cert ))
         key: (( properties.loggregator.tls.metron.key ))
+      statsd_injector:
+        cert: (( properties.loggregator.tls.statsd_injector.cert ))
+        key: (( properties.loggregator.tls.statsd_injector.key ))
   metron_agent:
     etcd:
       client_cert: (( properties.metron_agent.etcd.client_cert ))
@@ -51,6 +54,8 @@ config_from_cf:
         secret: (( properties.uaa.clients.tcp_emitter.secret ))
       tcp_router:
         secret: (( properties.uaa.clients.tcp_router.secret ))
+  statsd_injector:
+    deployment: (( properties.statsd_injector.deployment ))
 
 # The keys below should not be included in the final stub
 name: (( merge ))
@@ -80,6 +85,9 @@ properties:
       metron:
         cert: (( merge ))
         key: (( merge ))
+      statsd_injector:
+        cert: (( merge ))
+        key: (( merge ))
   metron_agent:
     etcd:
       client_cert: (( merge ))
@@ -102,3 +110,5 @@ properties:
         secret:
       tcp_router:
         secret:
+  statsd_injector:
+    deployment: (( merge ))

@@ -268,6 +268,9 @@ properties:
       metron:
         cert: (( config_from_cf.loggregator.tls.metron.cert ))
         key: (( config_from_cf.loggregator.tls.metron.key ))
+      statsd_injector:
+        cert: (( config_from_cf.loggregator.tls.statsd_injector.cert ))
+        key: (( config_from_cf.loggregator.tls.statsd_injector.key ))
   consul:
     agent:
       domain: (( config_from_cf.consul.domain ))
@@ -331,6 +334,8 @@ properties:
     ca_cert: (( config_from_cf.uaa.ca_cert ))
     tls_port: (( config_from_cf.uaa.ssl.port ))
     token_endpoint: (( property_overrides.uaa.token_endpoint || nil ))
+  statsd_injector:
+    deployment: (( config_from_cf.statsd_injector.deployment ))
   acceptance_tests:
     addresses: (( property_overrides.acceptance_tests.addresses ))
     include_http_routes: (( property_overrides.acceptance_tests.include_http_routes ))

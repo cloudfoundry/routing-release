@@ -29,6 +29,9 @@ config_from_cf:
       metron:
         cert: (( merge ))
         key: (( merge ))
+      statsd_injector:
+        cert: (( merge ))
+        key: (( merge ))
   metron_agent:
     etcd:
       client_cert: (( merge ))
@@ -51,3 +54,5 @@ config_from_cf:
         secret: (( merge ))
       tcp_router:
         secret: (( merge ))
+  statsd_injector:
+    deployment: (( merge ))
