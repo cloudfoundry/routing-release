@@ -29,7 +29,7 @@ properties:
     default: "localhost:8125"
   routing_api.debug_address:
     description: "Address at which to serve debug info"
-    default: "0.0.0.0:17002"
+    default: "127.0.0.1:17002"
   routing_api.statsd_client_flush_interval:
     description: "Buffered statsd client flush interval"
     default: "300ms"

@@ -18,7 +18,7 @@ packages:
 properties:
   tcp_emitter.debug_address:
     description: "Address at which to serve debug info"
-    default: "0.0.0.0:17002"
+    default: "127.0.0.1:17002"
 
   tcp_emitter.log_level:
     description: "Log level"
