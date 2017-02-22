@@ -29,7 +29,6 @@ files:
   - routing-release/src/code.cloudfoundry.org/gorouter/metrics/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/metrics/fakes/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/metrics/monitor/*.go # gosub
-  - routing-release/src/code.cloudfoundry.org/gorouter/metrics/reporter/fakes/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/proxy/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/proxy/handler/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/proxy/round_tripper/*.go # gosub
