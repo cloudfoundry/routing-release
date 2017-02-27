@@ -70,23 +70,24 @@ else
     ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress --nodes 4 \
       "$@" routing-api routing-api-cli
 
+    # Run go vet after ginkgo so that all necessary packages are compiled
+    run_go_vet tcp-emitter
+
     ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress --nodes 4 \
       "$@" cf-tcp-router tcp-emitter route-registrar
 
-    # Run go vet after ginkgo so that all necessary packages are compiled
-    run_go_vet tcp-emitter
   popd
 
   pushd src/code.cloudfoundry.org/gorouter
-    ginkgo -r -p -keepGoing -trace -randomizeAllSpecs -progress --nodes 4 \
-      "$@"
-
     # Installing dependencies needed by go vet
     go install .
 
     #run_go_vet gorouter
     go vet ./...
     go tool vet --shadow .
+
+    ginkgo -r -p -keepGoing -trace -randomizeAllSpecs -progress --nodes 4 \
+      "$@"
   popd
 fi
 
