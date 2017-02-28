@@ -76,8 +76,7 @@ else
     # Build gorouter source code to verify no errors
     go build -race .
 
-    run_go_vet gorouter
-    go tool vet .
+    go vet ./...
 
     $GINKGO_FLAGS
     popd
