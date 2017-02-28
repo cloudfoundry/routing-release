@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e -x
 
+PACKAGE=$1
+
 function printStatus {
   if [ $? -eq 0 ]; then
     echo -e "\nSWEET SUITE SUCCESS"
@@ -19,9 +21,6 @@ run_go_vet() {
   for component in "$@"
   do
     pushd $component
-      # for file in $(find . -name "*.go" -not -iname "*test.go"); do
-      #   go tool vet -v -all -shadow=true $file
-      # done
       go vet ./...
     popd
   done
@@ -54,8 +53,9 @@ go get github.com/nats-io/gnatsd
 go get github.com/onsi/ginkgo/ginkgo
 go get github.com/onsi/gomega
 
+echo $PACKAGE
 if [ -n "$PACKAGE" ]; then
-  ginkgo -r -p "$@" "./src/${PACKAGE}"
+  ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress  --nodes 4 "./src/code.cloudfoundry.org/${PACKAGE}"
 else
   pushd src/code.cloudfoundry.org/uaa-go-client
   popd
@@ -82,8 +82,7 @@ else
     # Installing dependencies needed by go vet
     go install .
 
-    #run_go_vet gorouter
-    go vet ./...
+    run_go_vet gorouter
     go tool vet --shadow .
 
     ginkgo -r -p -keepGoing -trace -randomizeAllSpecs -progress --nodes 4 \
