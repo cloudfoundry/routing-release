@@ -73,10 +73,11 @@ else
   popd
 
   pushd src/code.cloudfoundry.org/gorouter
-    # Build gorouter source code to veirfy no errors
+    # Build gorouter source code to verify no errors
     go build -race .
 
-    go tool vet --shadow .
+    run_go_vet gorouter
+    go tool vet .
 
     $GINKGO_FLAGS
     popd
