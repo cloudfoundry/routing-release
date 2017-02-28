@@ -48,6 +48,8 @@ else
  rm -rf /tmp/etcd-v2.1.1-linux-amd64
 fi
 
+GINKGO_FLAGS="ginkgo -r -race -keepGoing -p -trace -randomizeAllSpecs -progress  --nodes 4"
+
 export PATH=$PATH:$PWD/bin
 go get github.com/nats-io/gnatsd
 go get github.com/onsi/ginkgo/ginkgo
@@ -55,39 +57,29 @@ go get github.com/onsi/gomega
 
 echo $PACKAGE
 if [ -n "$PACKAGE" ]; then
-  ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress  --nodes 4 "./src/code.cloudfoundry.org/${PACKAGE}"
+  $GINKGO_FLAGS "./src/code.cloudfoundry.org/${PACKAGE}"
 else
-  pushd src/code.cloudfoundry.org/uaa-go-client
-  popd
-
   pushd src/code.cloudfoundry.org
-    ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress  --nodes 4 \
-      "$@" uaa-go-client
+      $GINKGO_FLAGS uaa-go-client
 
-    ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress  --nodes 4 \
-      "$@" multierror
+      $GINKGO_FLAGS multierror
 
-    ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress --nodes 4 \
-      "$@" routing-api routing-api-cli
+      $GINKGO_FLAGS multierror routing-api routing-api-cli
 
-    # Run go vet after ginkgo so that all necessary packages are compiled
-    run_go_vet tcp-emitter
+      # Run go vet after ginkgo so that all necessary packages are compiled
+      run_go_vet tcp-emitter
 
-    ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress --nodes 4 \
-      "$@" cf-tcp-router tcp-emitter route-registrar
-
+      $GINKGO_FLAGS cf-tcp-router tcp-emitter route-registrar
   popd
 
   pushd src/code.cloudfoundry.org/gorouter
-    # Installing dependencies needed by go vet
-    go install .
+    # Build gorouter source code to veirfy no errors
+    go build -race .
 
-    run_go_vet gorouter
     go tool vet --shadow .
 
-    ginkgo -r -p -keepGoing -trace -randomizeAllSpecs -progress --nodes 4 \
-      "$@"
-  popd
+    $GINKGO_FLAGS
+    popd
 fi
 
 if [ "$OS" == linux ]; then
