@@ -4,6 +4,12 @@ Thanks for contributing to 'routing-release'. To speed up the process of reviewi
 
 * An explanation of the use cases your change solves
 
+* Instructions to functionally test the behavior change using operator interfaces (BOSH manifest, logs, curl, and metrics)
+
+* Expected result after the change
+
+* Current result before the change
+
 * Links to any other associated PRs
 
 * [ ] I have viewed signed and have submitted the Contributor License Agreement
