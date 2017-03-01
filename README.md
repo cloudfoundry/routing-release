@@ -170,6 +170,10 @@ for you automatically.
            - uaa.service.cf.internal
    ```
 
+#### Warning!
+
+Requiring TLS for etcd in cf-release when this release is configured to use etcd as the datastore for `routing_api` will cause a failure of TCP Routing. Before requiring TLS to etcd, upgrade this release to 0.141.0 or later, and migrate `routing_api` to a relational database by configuring the properties `routing_api.sqldb`. Once the datastore for `routing_api` is on a relational database, you can require TLS for etcd. 
+
 ### Relational Database
 
 This release supports a relational database as a data store for the Routing API; MySQL and PostgreSQL are supported. BOSH Lite deployments will use the PostgreSQL database that comes with cf-release by default. For other IaaS we recommend the [CF MySQL Release](https://github.com/cloudfoundry/cf-mysql-release). For any deployment, you can also provide your own MySQL or PostgreSQL database. Routing API does not create the database on deployment of routing-release; you must create a database schema in advance and then provide the credentials for it in the deployment manifest for this release (see [Deploying routing-release](#deploying-routing-release)). 
