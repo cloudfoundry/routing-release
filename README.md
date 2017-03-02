@@ -319,7 +319,7 @@ properties:
 
 If you are using the manifest generation script for BOSH Lite, you can skip this step; routing-api will be configured to use the PostgreSQL database that comes with cf-release. 
 	
-The routing-release now requires a relational database for the Routing API. Configure the properties for `sqldb` below with credentials Routing API requires to connect to the database. To migrate existing deployments to use a relational database see [Migrating from ETCD](#Migrating from ETCD)
+The routing-release now requires a relational database for the Routing API. Configure the properties for `sqldb` below with credentials Routing API requires to connect to the database. To migrate existing deployments to use a relational database see [Migrating from etcd](#Migrating from etcd).
 
 ```
 properties:
@@ -344,6 +344,7 @@ If you are using [cf-mysql-release](https://github.com/cloudfoundry/cf-mysql-rel
 #### Migrating from etcd
 
 For existing deployments of routing-release on versions prior to 0.141.0, there is a two-phase upgrade process to ensure a zero-downtime migration from etcd to a relational database.
+
 1. Upgrade to routing-release some version between 0.141.0 and 0.146.0, inclusive, but do not add the `routing_api.sqldb` properties which would trigger a migration. The migration depends on a change to routing-api whereby only one instance is active at a time; this is achieved using a lock in Consul.
 1. Then configure your manifest with the `routing_api.sqldb` property and redeploy routing-release. You may upgrade to the latest release version at the same time.
 
