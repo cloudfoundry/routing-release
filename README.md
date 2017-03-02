@@ -86,6 +86,12 @@ branch.
 
 1. Choose a domain name for developer to create TCP route from and configure
    DNS to resolve it to your load balancer; see [Domain Names](#domain-names).
+   
+### Warning!
+
+This release previously supported etcd as a data store for Routing API, however it was unreliable for persistent data. On upgrading from an older release that was configured to use etcd, data will automatically be migrated to the relational database. 
+
+If the etcd cluster used by an older deployment of this release is configured to require TLS before Routing API data is migrated to a relational database, TCP Routing functionality will fail until Routing API can reconnect to etcd and access the same persistent data. If your strategy for enabling TLS in etcd involves destroying the etcd cluster, TCP Routing will fail. Before configuring etcd to require TLS or destroying etcd, upgrade this release and configure it to use a relational database using the two-phase process described in [Migrating from etcd](#migrating-from-etcd). Once the datastore for Routing API is configured to use a relational database, you can require TLS for etcd. 
 
 ### CF-Release
 
@@ -170,15 +176,13 @@ for you automatically.
             - uaa.service.cf.internal
     ```
 
-#### Warning!
+### Relational Database Prerequisites
 
-Requiring TLS for etcd in cf-release when this release is configured to use etcd as the datastore for `routing_api` will cause a failure of TCP Routing. Before requiring TLS to etcd, upgrade this release to 0.141.0 or later, and migrate `routing_api` to a relational database by configuring the properties `routing_api.sqldb`. Once the datastore for `routing_api` is on a relational database, you can require TLS for etcd. 
+This release requires a relational database as a data store for the Routing API; MySQL and PostgreSQL are supported. Routing API does not create the database on deployment of routing-release; you must create a database in advance and then provide the credentials for it in the deployment manifest for this release (see [Deploying routing-release](#relational-database-1)). 
 
-### Relational Database
+BOSH Lite deployments will use the PostgreSQL database that comes with cf-release by default. For other IaaS we recommend the [CF MySQL Release](https://github.com/cloudfoundry/cf-mysql-release). For any deployment, you can also provide your own MySQL or PostgreSQL database. 
 
-This release supports a relational database as a data store for the Routing API; MySQL and PostgreSQL are supported. BOSH Lite deployments will use the PostgreSQL database that comes with cf-release by default. For other IaaS we recommend the [CF MySQL Release](https://github.com/cloudfoundry/cf-mysql-release). For any deployment, you can also provide your own MySQL or PostgreSQL database. Routing API does not create the database on deployment of routing-release; you must create a database schema in advance and then provide the credentials for it in the deployment manifest for this release (see [Deploying routing-release](#deploying-routing-release)). 
-
-For the CF MySQL Release, you can seed the required database on deploy using the manifest property `cf_mysql.mysql.seeded_databases`. We recommend you do not use a deployment of cf-mysql-release that is exposed as a CF marketplace service. Instead, use a deployment intended for internal platform use; for these deployments you should set broker instances to zero. After generating your manifest for cf-mysql-release, update the following manifest properties before deploying.
+If you use the CF MySQL Release, you can seed the required database on deploy using the manifest property `cf_mysql.mysql.seeded_databases`. We recommend you do not use a deployment of cf-mysql-release that is exposed as a CF marketplace service. Instead, use a deployment intended for internal platform use; for these deployments you should set broker instances to zero. After generating your manifest for cf-mysql-release, update the following manifest properties before deploying.
 
 ```
 properties:
@@ -315,7 +319,7 @@ properties:
 
 If you are using the manifest generation script for BOSH Lite, you can skip this step; routing-api will be configured to use the PostgreSQL database that comes with cf-release. 
 	
-The routing-release now supports a relational database for the Routing API. We recommend this instead of etcd. To opt into this feature you can configure your manifest stub with the following properties. To migrate existing deployments to use a relational database see [Migrating from ETCD](#Migrating from ETCD)
+The routing-release now requires a relational database for the Routing API. Configure the properties for `sqldb` below with credentials Routing API requires to connect to the database. To migrate existing deployments to use a relational database see [Migrating from ETCD](#Migrating from ETCD)
 
 ```
 properties:
@@ -329,10 +333,7 @@ properties:
       password: <Password for SQL DB>
 ```
 
-If you are using
-[cf-mysql-release](https://github.com/cloudfoundry/cf-mysql-release), then
-the values for these properties can be obtained from properties that
-manifest.
+If you are using [cf-mysql-release](https://github.com/cloudfoundry/cf-mysql-release), then the values for these properties can be obtained from the following properties in the manifest for that release.
   - `type` should be `mysql`
   - `host` corresponds to the IP address of the `proxy_z1` job
   - `port` is `3306`
@@ -342,12 +343,9 @@ manifest.
 
 #### Migrating from etcd
 
-For existing deployments that use etcd, there is a two-phase upgrade process
-to migrate to a relational database.
-1. Deploy the most recent version of routing-release. The migration depends on a recent change to routing-api whereby only one instance is active at a time; this is achieved using a lock in Consul.
-1. Configure your manifest with the `routing_api.sqldb` property and redeploy routing-release.
-
-This process should ensure a migration with zero downtime to application backends.
+For existing deployments of routing-release on versions prior to 0.141.0, there is a two-phase upgrade process to ensure a zero-downtime migration from etcd to a relational database.
+1. Upgrade to routing-release some version between 0.141.0 and 0.146.0, inclusive, but do not add the `routing_api.sqldb` properties which would trigger a migration. The migration depends on a change to routing-api whereby only one instance is active at a time; this is achieved using a lock in Consul.
+1. Then configure your manifest with the `routing_api.sqldb` property and redeploy routing-release. You may upgrade to the latest release version at the same time.
 
 ### Validation of TLS Certificates from Route Services and UAA
 
