@@ -102,12 +102,12 @@ for you automatically.
     ```
     properties:
       uaa:
-		ssl:
-	  		port: <choose a port for UAA to listen to SSL on; e.g. 8443>
-	  	sslCertificate: |
-			<insert certificate>
-	  	sslPrivateKey: |
-			<insert private key>
+	ssl:
+	  port: <choose a port for UAA to listen to SSL on; e.g. 8443>
+	sslCertificate: |
+	  <insert certificate>
+	sslPrivateKey: |
+	  <insert private key>
     ```
 1. You must add the `routing.router_groups.read` and
   `routing.router_groups.write` scopes to your admin user.
