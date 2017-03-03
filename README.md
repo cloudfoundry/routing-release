@@ -108,22 +108,23 @@ for you automatically.
     ```
     properties:
       uaa:
-	ssl:
-	  port: <choose a port for UAA to listen to SSL on; e.g. 8443>
-	sslCertificate: |
-	  <insert certificate>
-	sslPrivateKey: |
-	  <insert private key>
+        ssl:
+          port: <choose a port for UAA to listen to SSL on; e.g. 8443>
+        sslCertificate: |
+          <insert certificate>
+        sslPrivateKey: |
+          <insert private key>
     ```
 1. You must add the `routing.router_groups.read` and
   `routing.router_groups.write` scopes to your admin user.
 
     ```
-    properties:
-      uaa:
-      scim:
-	  users:
-	  - admin|PASSWORD|scim.write,scim.read,openid,cloud_controller.admin,clients.read,clients.write,doppler.firehose,routing.router_groups.read,routing.router_groups.write
+  properties:
+    uaa:
+    scim:
+      users:
+      -
+admin|PASSWORD|scim.write,scim.read,openid,cloud_controller.admin,clients.read,clients.write,doppler.firehose,routing.router_groups.read,routing.router_groups.write
     ```
 
 1. The following OAuth clients must be configured for UAA. All but the `cf`
@@ -136,30 +137,30 @@ for you automatically.
     ```
     properties:
       uaa:
-	clients:
-	  cc_routing:
-	    authorities: routing.router_groups.read
-	    authorized-grant-types: client_credentials
-	    secret: <your-secret>
-	  cf:
-	    override: true
-	    authorized-grant-types: password,refresh_token
-	    scope: cloud_controller.read,cloud_controller.write,openid,password.write,cloud_controller.admin,cloud_controller.admin_read_only,scim.read,scim.write,doppler.firehose,uaa.user,routing.router_groups.read,routing.router_groups.write
-	    authorities: uaa.none
-	    access-token-validity: 600
-	    refresh-token-validity: 2592000
-	  gorouter:
-	    authorities: routing.routes.read
-	    authorized-grant-types: client_credentials,refresh_token
-	    secret: <your-secret>
-	  tcp_emitter:
-	    authorities: routing.routes.write,routing.routes.read
-	    authorized-grant-types: client_credentials,refresh_token
-	    secret: <your-secret>
-	  tcp_router:
-	    authorities: routing.routes.read
-	    authorized-grant-types: client_credentials,refresh_token
-	    secret: <your-secret>
+        clients:
+          cc_routing:
+            authorities: routing.router_groups.read
+            authorized-grant-types: client_credentials
+            secret: <your-secret>
+          cf:
+            override: true
+            authorized-grant-types: password,refresh_token
+            scope: cloud_controller.read,cloud_controller.write,openid,password.write,cloud_controller.admin,cloud_controller.admin_read_only,scim.read,scim.write,doppler.firehose,uaa.user,routing.router_groups.read,routing.router_groups.write
+            authorities: uaa.none
+            access-token-validity: 600
+            refresh-token-validity: 2592000
+          gorouter:
+            authorities: routing.routes.read
+            authorized-grant-types: client_credentials,refresh_token
+            secret: <your-secret>
+          tcp_emitter:
+            authorities: routing.routes.write,routing.routes.read
+            authorized-grant-types: client_credentials,refresh_token
+            secret: <your-secret>
+          tcp_router:
+            authorities: routing.routes.read
+            authorized-grant-types: client_credentials,refresh_token
+            secret: <your-secret>
     ```
 1. UAA must be configured to accept requests using an internal hostname. The
    manifest generation scripts for cf-release will do this for you (both BOSH
