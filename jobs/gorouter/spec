@@ -55,12 +55,9 @@ properties:
     default: false
   router.drain_wait:
     description: |
-      Delay in seconds after drain begins before server stops listening.
-      During this time the server will respond with 503 Service Unavailable to
-      requests having header
-      User-Agent: {Value of router.healthcheck_user_agent}.
-      This accommodates requests in transit sent during the time the health
-      check responded with `ok`.
+      Delay in seconds after shut down is initiated before server stops listening.
+      During this time the server will reject requests to the /health endpoint.
+      This accommodates requests forwarded by a load balancer until it considers the router unhealthy.
     default: 20
   router.healthcheck_user_agent:
     description: User-Agent for the health check agent (usually the Load Balancer).
