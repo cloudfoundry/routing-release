@@ -33,6 +33,7 @@ properties:
     default: 8080
   router.status.user:
     description: "Username for HTTP basic auth to the /varz and /routes endpoints."
+    default: router-status
   router.status.password:
     description: "Password for HTTP basic auth to the /varz and /routes endpoints."
   router.requested_route_registration_interval_in_seconds:

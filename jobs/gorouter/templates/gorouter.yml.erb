@@ -1,12 +1,8 @@
 ---
-<% if_p("router.status.port",
-        "router.status.user",
-        "router.status.password") do |port, user, password| %>
 status:
-  port: <%= port %>
-  user: <%= user %>
-  pass: "<%= password %>"
-<% end %>
+  port: <%= p("router.status.port") %>
+  user: <%= p("router.status.user") %>
+  pass: <%= p("router.status.password") %>
 
 <%
   nats_machines = nil
