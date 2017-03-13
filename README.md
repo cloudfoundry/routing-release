@@ -121,10 +121,20 @@ for you automatically.
     ```
   properties:
     uaa:
-    scim:
-      users:
-      -
-admin|PASSWORD|scim.write,scim.read,openid,cloud_controller.admin,clients.read,clients.write,doppler.firehose,routing.router_groups.read,routing.router_groups.write
+      scim:
+        users:
+        - name: admin
+          password: PASSWORD
+          groups:
+          - scim.write
+          - scim.read
+          - openid
+          - cloud_controller.admin
+          - clients.read
+          - clients.write
+          - doppler.firehose
+          - routing.router_groups.read
+          - routing.router_groups.write
     ```
 
 1. The following OAuth clients must be configured for UAA. All but the `cf`
