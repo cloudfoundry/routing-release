@@ -11,6 +11,8 @@ config = {
   skip_ssl_validation: p("acceptance_tests.skip_ssl_validation"),
   test_password: if_p("acceptance_tests.user_password"),
   include_http_routes: p("acceptance_tests.include_http_routes"),
+  default_timeout: 120,
+  cf_push_timeout: 120,
   oauth: {
     token_endpoint: 'https://uaa.' + p("acceptance_tests.system_domain"),
     client_name: "tcp_emitter",
