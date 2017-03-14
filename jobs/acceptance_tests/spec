@@ -56,5 +56,5 @@ properties:
     default: false
     description: "When true, additionally runs the HTTP Routes test for Routing API"
 
-  acceptance_tests.user_password
-  description: "By default, users created during acceptance tests will be configured random names and random passwords. This property enables specifying the password for users created during the test."
+  acceptance_tests.user_password:
+    description: "By default, users created during acceptance tests will be configured random names and random passwords. This property enables specifying the password for users created during the test."
