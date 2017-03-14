@@ -35,12 +35,13 @@ files:
   - code.cloudfoundry.org/uaa-go-client/schema/*.go # gosub
   - github.com/bmizerany/pat/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-test-helpers/cf/*.go # gosub
-  - github.com/cloudfoundry-incubator/cf-test-helpers/cf/internal/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-test-helpers/commandreporter/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-test-helpers/commandstarter/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-test-helpers/config/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-test-helpers/generator/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-test-helpers/helpers/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-test-helpers/helpers/internal/*.go # gosub
+  - github.com/cloudfoundry-incubator/cf-test-helpers/internal/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-test-helpers/workflowhelpers/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-test-helpers/workflowhelpers/internal/*.go # gosub
   - github.com/dgrijalva/jwt-go/*.go # gosub
