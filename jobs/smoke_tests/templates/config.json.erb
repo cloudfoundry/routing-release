@@ -11,6 +11,8 @@ config = {
   test_password: if_p("acceptance_tests.user_password"),
   skip_ssl_validation: p("acceptance_tests.skip_ssl_validation"),
   tcp_apps_domain: p("smoke_tests.tcp_apps_domain"),
+  default_timeout: 120,
+  cf_push_timeout: 120,
   oauth: {
     token_endpoint: 'https://uaa.' + p("acceptance_tests.system_domain"),
     client_name: "tcp_emitter",
