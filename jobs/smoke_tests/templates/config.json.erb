@@ -8,6 +8,7 @@ config = {
   admin_user: p("acceptance_tests.cloud_controller.admin_user"),
   admin_password: p("acceptance_tests.cloud_controller.admin_password"),
   use_http: p("acceptance_tests.cloud_controller.use_http"),
+  test_password: if_p("acceptance_tests.user_password"),
   skip_ssl_validation: p("acceptance_tests.skip_ssl_validation"),
   tcp_apps_domain: p("smoke_tests.tcp_apps_domain"),
   oauth: {

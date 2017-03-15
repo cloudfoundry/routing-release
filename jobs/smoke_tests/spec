@@ -49,3 +49,6 @@ properties:
   smoke_tests.tcp_apps_domain:
     description: "TCP app domain to run smoke test against"
     default: ""
+
+  acceptance_tests.user_password:
+    description: "By default, users created during acceptance tests will be configured random names and random passwords. This property enables specifying the password for users created during the test."
