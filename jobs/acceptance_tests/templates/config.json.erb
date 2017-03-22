@@ -9,7 +9,6 @@ config = {
   admin_password: p("acceptance_tests.cloud_controller.admin_password"),
   use_http: p("acceptance_tests.cloud_controller.use_http"),
   skip_ssl_validation: p("acceptance_tests.skip_ssl_validation"),
-  test_password: if_p("acceptance_tests.user_password"),
   include_http_routes: p("acceptance_tests.include_http_routes"),
   default_timeout: 120,
   cf_push_timeout: 120,
@@ -21,6 +20,10 @@ config = {
     port: 443,
   }
 }
+
+if_p("acceptance_tests.user_password") do |password|
+config[:user_password] = password
+end
 %>
 
 <%= JSON.pretty_generate(config) %>
