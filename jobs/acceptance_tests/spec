@@ -60,4 +60,5 @@ properties:
     description: "By default, users created during acceptance tests will be configured random names and random passwords. This property enables specifying the password for users created during the test."
 
   acceptance_tests.default_timeout:
+    default: 120
     description: "Default timeout for Ginkgo assertions. i.e. Timeout for `Eventually`"
