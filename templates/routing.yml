@@ -349,6 +349,7 @@ properties:
       admin_password: (( config_from_cf.acceptance_tests.admin_password ))
       use_http: (( config_from_cf.acceptance_tests.use_http ))
     default_timeout: (( property_overrides.acceptance_tests.default_timeout ))
+    user_password: (( property_overrides.acceptance_tests.user_password ))
   smoke_tests:
     tcp_apps_domain: (( property_overrides.smoke_tests.tcp_apps_domain || nil ))
 
