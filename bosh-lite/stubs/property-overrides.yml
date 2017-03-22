@@ -78,5 +78,6 @@ property_overrides:
   skip_ssl_validation: true
   acceptance_tests:
     include_http_routes: true
+    default_timeout: 300
     addresses:
       - "10.244.14.2"
