@@ -2,4 +2,4 @@
 name: cf-cli
 
 files:
-  - cf-cli/cf-cli_6.23.0_linux_x86-64.tgz
+  - cf-cli/cf-cli_6.25.0_linux_x86-64.tgz
