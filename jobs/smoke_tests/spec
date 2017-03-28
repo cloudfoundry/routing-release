@@ -47,7 +47,7 @@ properties:
     description: "Domain for system components, e.g. bosh-lite.com"
 
   smoke_tests.tcp_apps_domain:
-    description: "TCP app domain to run smoke test against"
+    description: "TCP app domain to use for testing. By default, a temporary domain will be created but tests will use the IP address of the TCP Router"
     default: ""
 
   acceptance_tests.user_password:
