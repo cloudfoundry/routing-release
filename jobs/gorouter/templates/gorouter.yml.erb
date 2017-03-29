@@ -92,7 +92,9 @@ routing_api:
   auth_disabled: <%= p("routing_api.auth_disabled") %>
 <% end %>
 
-router_group: <%=if_p("router.router_group") %>
+<% if_p("router.router_group") do |group| %>
+router_group: <%= group %>
+<% end %>
 
 drain_wait: <%= p("router.drain_wait") %>s
 healthcheck_user_agent: <%= p("router.healthcheck_user_agent") %>
