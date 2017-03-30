@@ -62,3 +62,7 @@ properties:
   acceptance_tests.default_timeout:
     default: 120
     description: "Default timeout for Ginkgo assertions. i.e. Timeout for `Eventually`"
+
+  acceptance_tests.tcp_router_group:
+    default: "default-tcp"
+    description: "The name of the the router group associated with the default TCP Router"
