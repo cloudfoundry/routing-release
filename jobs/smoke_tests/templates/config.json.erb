@@ -12,6 +12,7 @@ config = {
   tcp_apps_domain: p("smoke_tests.tcp_apps_domain"),
   default_timeout: p("acceptance_tests.default_timeout"),
   cf_push_timeout: 120,
+  tcp_router_group: p("acceptance_tests.tcp_router_group"),
   oauth: {
     token_endpoint: 'https://uaa.' + p("acceptance_tests.system_domain"),
     client_name: "tcp_emitter",
