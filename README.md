@@ -517,12 +517,14 @@ SpaceDeveloper role.
 
     `$ cf p myapp -d tcp.bosh-lite.com --random-route`
 
-1. Send a request to your app using the TCP shared domain and the port reserved for your route.
+1. Send a request to your app using the TCP shared domain and the port reserved for your route. 
 
     ```
     $ curl tcp.bosh-lite.com:60073
     OK!
     ```
+    
+ > Note: To curl `tcp.bosh-lite.com`, you could consider adding an entry to `/etc/hosts` `10.244.14.2 tcp.bosh-lite.com`.
 
 ### TCP Router demo
 For step by step instructions on TCP router demo done at Cloud Foundry Summit
