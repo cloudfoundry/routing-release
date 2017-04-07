@@ -169,3 +169,15 @@
 [submodule "src/github.com/uber-go/atomic"]
 	path = src/github.com/uber-go/atomic
 	url = https://github.com/uber-go/atomic
+[submodule "src/github.com/google/go-genproto"]
+	path = src/github.com/google/go-genproto
+	url = https://github.com/google/go-genproto
+[submodule "src/golang.org/x/net"]
+	path = src/golang.org/x/net
+	url = https://golang.org/x/net
+[submodule "src/golang.org/x/text"]
+	path = src/golang.org/x/text
+	url = https://golang.org/x/text
+[submodule "src/google.golang.org/grpc"]
+	path = src/google.golang.org/grpc
+	url = https://google.golang.org/grpc

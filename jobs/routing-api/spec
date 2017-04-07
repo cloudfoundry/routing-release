@@ -9,6 +9,9 @@ templates:
   uaa_ca.crt.erb: config/certs/uaa/ca.crt
   etcd_client.key.erb: config/certs/etcd/client.key
   routing-api.yml.erb: config/routing-api.yml
+  locket_ca.crt.erb: config/certs/locket/ca.crt
+  locket_client.crt.erb: config/certs/locket/client.crt
+  locket_client.key.erb: config/certs/locket/client.key
 
 packages:
 - routing-api
@@ -115,3 +118,23 @@ properties:
   routing_api.lock_retry_interval:
     description: "interval to wait before retrying a failed lock acquisition"
     default: "5s"
+
+  routing_api.locket.api_location:
+    description: "Hostname and port of the Locket server. Used to obtain a lock so only one instance of Routing API is active at a time."
+    default: ""
+
+  routing_api.locket.ca_cert:
+    description: "CA cert for the Locket server."
+    default: ""
+
+  routing_api.locket.client_cert:
+    description: "Client cert for the Locket server."
+    default: ""
+
+  routing_api.locket.client_key:
+    description: "Client key for the Locket server."
+    default: ""
+
+  routing_api.skip_consul_lock:
+    description: "Requires locket.api_location to be set. When false, Routing API will obtain a lock from both Consul and Locket. When true, Routing API will obtain the lock from Locket only. "
+    default: false

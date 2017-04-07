@@ -41,3 +41,11 @@ sqldb:
   schema: <%= p("routing_api.sqldb.schema") %>
   username: <%= p("routing_api.sqldb.username") %>
   password: <%= p("routing_api.sqldb.password") %>
+
+locket:
+  locket_address: <%= p("routing_api.locket.api_location") %>
+  locket_ca_cert_file: "/var/vcap/jobs/routing-api/config/certs/locket/ca.crt"
+  locket_client_cert_file: "/var/vcap/jobs/routing-api/config/certs/locket/client.crt"
+  locket_client_key_file: "/var/vcap/jobs/routing-api/config/certs/locket/client.key"
+
+skip_consul_lock: <%= p("routing_api.skip_consul_lock") %>
