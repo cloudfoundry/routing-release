@@ -120,21 +120,21 @@ properties:
     default: "5s"
 
   routing_api.locket.api_location:
-    description: "Hostname and port of the Locket server. Used to obtain a lock so only one instance of Routing API is active at a time."
+    description: "Hostname and port of the Locket server. Used to obtain a lock so only one instance of Routing API is active at a time. Requires Locket, which is not deployed with cf-release by default."
     default: ""
 
   routing_api.locket.ca_cert:
-    description: "CA cert for the Locket server."
+    description: "CA cert for the Locket server. Requires Locket, which is not deployed with cf-release by default."
     default: ""
 
   routing_api.locket.client_cert:
-    description: "Client cert for the Locket server."
+    description: "Client cert for the Locket server. Requires Locket, which is not deployed with cf-release by default."
     default: ""
 
   routing_api.locket.client_key:
-    description: "Client key for the Locket server."
+    description: "Client key for the Locket server. Requires Locket, which is not deployed with cf-release by default."
     default: ""
 
   routing_api.skip_consul_lock:
-    description: "Requires locket.api_location to be set. When false, Routing API will obtain a lock from both Consul and Locket. When true, Routing API will obtain the lock from Locket only. "
+    description: "When false, Routing API will obtain a lock from both Consul and Locket. When true, Routing API will obtain the lock from Locket only. Requires locket.api_location to be set and Locket, which is not deployed with cf-release by default."
     default: false
