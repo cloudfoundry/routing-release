@@ -118,7 +118,7 @@ properties:
     default: 0
     description: "Maximum total idle keepalive connections to backends. When 0, support for keepalive connections is disabled. Maximum idle connections per backend is 100."
   router.router_group:
-    description: "Name of router group to which instances of this router belong. When enabled, Gorouter will only update its routing table for register and unregister messages that includes the guid for this router group."
+    description: "Name of router group to which instances of a given router belongs. When enabled, Gorouter will only update its routing table for register and unregister messages that include the guid for this router group."
   router.force_forwarded_proto_https:
     description: "Enables setting X-Forwarded-Proto header if SSL termination happened upstream and incorrectly set the header value. When this property is set to true gorouter sets the header X-Forwarded-Proto to https. When this value set to false, gorouter set the header X-Forwarded-Proto to the protocol of the incoming request"
     default: false
