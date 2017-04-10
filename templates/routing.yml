@@ -97,6 +97,7 @@ jobs:
     properties:
       metron_agent:
         zone: z1
+      <<: (( merge ))
   - name: tcp_router_z2
     templates: (( base_job_templates.tcp_router ))
     instances: (( instance_count_overrides.tcp_router_z2.instances || 0 ))
@@ -111,6 +112,7 @@ jobs:
     properties:
       metron_agent:
         zone: z2
+      <<: (( merge ))
   - name: tcp_router_z3
     templates: (( base_job_templates.tcp_router ))
     instances: (( instance_count_overrides.tcp_router_z3.instances || 0 ))
@@ -125,6 +127,7 @@ jobs:
     properties:
       metron_agent:
         zone: z3
+      <<: (( merge ))
   - name: tcp_emitter_z1
     templates: (( base_job_templates.tcp_emitter ))
     instances: (( instance_count_overrides.tcp_emitter_z1.instances || 1 ))
@@ -314,6 +317,7 @@ properties:
     log_level: (( property_overrides.tcp_router.log_level || nil ))
     request_timeout_in_seconds: (( property_overrides.tcp_router.request_timeout_in_seconds || 300 ))
     health_check_port: (( property_overrides.tcp_router.health_check_port || nil ))
+    router_group: (( property_overrides.tcp_router.router_group || "default-tcp" ))
   tcp_emitter:
     bbs:
       client_cert: (( property_overrides.tcp_emitter.bbs.client_cert ))
