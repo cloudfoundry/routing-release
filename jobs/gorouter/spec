@@ -19,6 +19,10 @@ packages:
   - routing_utils
   - gorouter
 
+provides:
+- name: gorouter
+  type: router
+
 consumes:
 - name: nats
   type: nats
