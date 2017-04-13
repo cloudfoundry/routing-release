@@ -450,8 +450,8 @@ properties:
   Create a shared-domain for the TCP router group
 
   ```
-  $ cf create-shared-domain tcp.bosh-lite.com --router-group default-tcp
-  Creating shared domain tcp.bosh-lite.com as admin...
+  $ cf create-shared-domain tcp-apps-domain.com --router-group default-tcp
+  Creating shared domain tcp-apps-domain.com as admin...
   OK
   ```
 
@@ -515,16 +515,26 @@ SpaceDeveloper role.
    the TCP domain and including the `--random-route` option, a TCP route will
    be created with a reserved port and the route mapped to your app.
 
-    `$ cf p myapp -d tcp.bosh-lite.com --random-route`
+    `$ cf p myapp -d tcp-apps-domain.com --random-route`
 
 1. Send a request to your app using the TCP shared domain and the port reserved for your route. 
 
     ```
-    $ curl tcp.bosh-lite.com:60073
+    $ curl tcp-apps-domain.com:60073
     OK!
     ```
     
- > Note: To curl `tcp.bosh-lite.com`, you could consider adding an entry to `/etc/hosts` `10.244.14.2 tcp.bosh-lite.com`.
+**Note:** 
+On a BOSH deployed environment, you would configure DNS to resolve the TCP shared domain to a load balancer in front of the TCP Routers. However BOSH Lite does not expose ports used by TCP Router. To test TCP Routing against a local BOSH Lite, you can use its curl its IP directly using the route port (assumes route port is 60073):
+```
+$ curl 10.244.14.2:60073
+```
+Or you could add an entry to `/etc/hosts` and curl the domain and port: 
+```
+10.244.14.2 tcp-apps-domain.com
+```
+
+To test this against a remote BOSH Lite, you must ssh into a job (like the TCP Router itself) and curl the IP of the router and the route port.
 
 ### TCP Router demo
 For step by step instructions on TCP router demo done at Cloud Foundry Summit
