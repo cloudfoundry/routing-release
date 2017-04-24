@@ -362,6 +362,8 @@ base_job_templates:
   routing_api:
     - name: consul_agent
       release: cf
+      consumes:
+        consul: nil
     - name: routing-api
       release: routing
     - name: metron_agent
@@ -371,6 +373,8 @@ base_job_templates:
   tcp_router:
     - name: consul_agent
       release: cf
+      consumes:
+        consul: nil
     - name: tcp_router
       release: routing
     - name: metron_agent
@@ -378,6 +382,8 @@ base_job_templates:
   tcp_emitter:
     - name: consul_agent
       release: cf
+      consumes:
+        consul: nil
     - name: tcp_emitter
       release: routing
     - name: metron_agent
@@ -387,8 +393,12 @@ base_job_templates:
       release: routing
     - name: consul_agent
       release: cf
+      consumes:
+        consul: nil
   smoke_tests_errand:
     - name: smoke_tests
       release: routing
     - name: consul_agent
       release: cf
+      consumes:
+        consul: nil
