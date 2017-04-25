@@ -2,3 +2,9 @@ config_from_diego:
   bbs:
     ca_cert: (( merge ))
     require_ssl: (( merge ))
+  locket:
+    api_location: (( merge ))
+    ca_cert: (( merge ))
+    client_cert: (( merge ))
+    client_key: (( merge ))
+  skip_consul_lock: (( merge ))

@@ -2,6 +2,12 @@ config_from_diego:
   bbs:
     ca_cert: (( properties.diego.bbs.ca_cert ))
     require_ssl: (( properties.diego.bbs.require_ssl || nil ))
+  locket:
+    api_location: (( properties.diego.auctioneer.locket.api_location || nil ))
+    ca_cert: (( properties.diego.auctioneer.bbs.ca_cert || nil ))
+    client_cert: (( properties.diego.auctioneer.bbs.client_cert || nil ))
+    client_key: (( properties.diego.auctioneer.bbs.client_key || nil ))
+  skip_consul_lock: (( properties.diego.auctioneer.skip_consul_lock || nil ))
 
 # The keys below should not be included in the final stub
 properties:
@@ -9,3 +15,12 @@ properties:
     bbs:
       ca_cert:
       require_ssl:
+
+    auctioneer:
+      locket:
+        api_location:
+      skip_consul_lock:
+      bbs:
+        ca_cert:
+        client_cert:
+        client_key:

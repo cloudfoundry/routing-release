@@ -310,6 +310,12 @@ properties:
       password: (( property_overrides.routing_api.sqldb.password || nil ))
       schema: (( property_overrides.routing_api.sqldb.schema || nil ))
     uri:  (( property_overrides.routing_api.uri || nil ))
+    locket:
+      api_location: (( config_from_diego.locket.api_location ))
+      ca_cert: (( config_from_diego.locket.ca_cert ))
+      client_key: (( config_from_diego.locket.client_key ))
+      client_cert: (( config_from_diego.locket.client_cert ))
+    skip_consul_lock: (( config_from_diego.skip_consul_lock  ))
   tcp_router:
     debug_address: (( property_overrides.tcp_router.debug_address ))
     tcp_stats_collection_interval: (( property_overrides.tcp_router.tcp_stats_collection_interval ))
