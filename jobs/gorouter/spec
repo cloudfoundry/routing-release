@@ -133,7 +133,7 @@ properties:
   router.isolation_segments:
     description: "Routes with these isolation segments will be registered. Used in combination with routing_table_sharding_mode."
     default: []
-  router.routing_table_shard_mode:
+  router.routing_table_sharding_mode:
     description: |
       all: all routes will be registered.
       shared-and-segments: both routes for the configured isolation segments and those that do not have an isolation segment specified will be registered.
