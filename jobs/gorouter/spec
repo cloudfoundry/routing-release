@@ -130,6 +130,10 @@ properties:
     description: "Enables the addition of the X-B3-Trace-Id header to incoming requests. If the header already exists on the incoming request, it will not be overwritten."
     default: false
 
+  router.isolation_segments:
+    description: "Routes with these isolation segments will be registered. Used in combination with routing_table_sharding_mode."
+    default: []
+
   nats.user:
     description: User name for NATS authentication
     example: nats
