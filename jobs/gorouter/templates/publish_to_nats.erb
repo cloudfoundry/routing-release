@@ -1,0 +1,54 @@
+#!/bin/bash
+
+set -x
+
+<%
+begin
+  nats_ip = nil
+  nats_port = nil
+  nats_user = nil
+  nats_password = nil
+
+  if_p('nats.machines') do |ips|
+    nats_ip = ips[0]
+  end.else do
+    nats_ip = link('nats').instances[0].address
+  end
+
+  if_p('nats.port') do |prop|
+    nats_port = prop
+  end.else do
+    nats_port = link('nats').p("nats.port")
+  end
+
+  if_p('nats.user') do |prop|
+    nats_user = prop
+  end.else do
+    nats_user = link('nats').p("nats.user")
+  end
+
+  if_p('nats.password') do |prop|
+    nats_password = prop
+  end.else do
+    nats_password = link('nats').p("nats.password")
+  end
+rescue
+end
+%>
+
+: ${2?"Usage: publish_to_nats subject message"}
+
+export SUBJECT=$1
+export MESSAGE=$2
+NATS_IP=<%= nats_ip %>
+NATS_PORT=<%= nats_port %>
+
+(
+NATS_USER=<%= nats_user %>
+NATS_PASS=<%= nats_password %>
+echo "CONNECT {\"verbose\":true,\"user\":\"${NATS_USER}\",\"pass\":\"${NATS_PASS}\"}";
+sleep 1;
+echo "pub ${SUBJECT} ${#MESSAGE}";
+echo ${MESSAGE};
+sleep 1;
+) | nc -C ${NATS_IP} ${NATS_PORT}
