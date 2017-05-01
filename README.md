@@ -119,22 +119,22 @@ for you automatically.
   `routing.router_groups.write` scopes to your admin user.
 
     ```
-  properties:
-    uaa:
-      scim:
-        users:
-        - name: admin
-          password: PASSWORD
-          groups:
-          - scim.write
-          - scim.read
-          - openid
-          - cloud_controller.admin
-          - clients.read
-          - clients.write
-          - doppler.firehose
-          - routing.router_groups.read
-          - routing.router_groups.write
+    properties:
+      uaa:
+        scim:
+          users:
+          - name: admin
+            password: PASSWORD
+            groups:
+            - scim.write
+            - scim.read
+            - openid
+            - cloud_controller.admin
+            - clients.read
+            - clients.write
+            - doppler.firehose
+            - routing.router_groups.read
+            - routing.router_groups.write
     ```
 
 1. The following OAuth clients must be configured for UAA. All but the `cf`
