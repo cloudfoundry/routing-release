@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 <%
 begin
   nats_ip = nil
@@ -36,7 +34,15 @@ rescue
 end
 %>
 
-: ${2?"Usage: publish_to_nats subject message"}
+read -r -d '' usage <<'EOF'
+wrong number of arguments
+Usage: publish_to_nats subject message
+Example: publish_to_nats router.register '{"host":"172.217.6.68","port":80,"uris":["bar.example.com"]}'
+EOF
+
+set -eux -o pipefail
+
+: ${2?"${usage}"}
 
 export SUBJECT=$1
 export MESSAGE=$2
