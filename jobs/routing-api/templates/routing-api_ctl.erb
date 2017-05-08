@@ -7,23 +7,6 @@ PIDFILE=$RUN_DIR/routing-api.pid
 source /var/vcap/packages/routing_utils/pid_utils.sh
 source /var/vcap/packages/routing_utils/syslog_utils.sh
 
-<%
-  def discover_external_ip
-    networks = spec.networks.marshal_dump
-    _, network = networks.find do |_name, network_spec|
-      network_spec.default
-    end
-    if !network
-      _, network = networks.first
-    end
-    if !network
-      raise "Could not determine IP via network spec: #{networks}"
-    end
-    network.ip
-  end
-  my_ip = discover_external_ip
-%>
-
 function setup_environment() {
   mkdir -p "${RUN_DIR}"
 }
@@ -54,7 +37,7 @@ case $1 in
          -config /var/vcap/jobs/routing-api/config/routing-api.yml \
          -port <%= p("routing_api.port") %> \
          -logLevel=<%= p("routing_api.log_level") %> \
-         -ip <%= my_ip %> \
+         -ip <%= spec.ip %> \
          <% if p("routing_api.auth_disabled") == true %> -devMode <% end %> \
 
     ;;

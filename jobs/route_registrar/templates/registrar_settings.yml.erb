@@ -1,25 +1,6 @@
 <%=
   require 'json'
 
-  def discover_external_ip
-    networks = spec.networks.marshal_dump
-
-    _, network = networks.find do |_name, network_spec|
-      network_spec.default
-    end
-
-    if !network
-      _, network = networks.first
-    end
-
-    if !network
-      raise "Could not determine IP via network spec: #{networks}"
-    end
-
-    network.ip
-  end
-  my_ip = discover_external_ip
-
   nats_ips = nil
   if_p('nats.machines') do |ips|
     nats_ips = ips.compact
@@ -66,7 +47,7 @@
 
   config = {
     message_bus_servers: message_bus_servers,
-    host: my_ip,
+    host: spec.ip,
     routes: routes,
   }
   JSON.pretty_generate(config)
