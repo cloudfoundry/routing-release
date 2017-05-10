@@ -19,6 +19,9 @@ properties:
   tcp_router.debug_address:
     description: "Address at which to serve debug info"
     default: "127.0.0.1:17002"
+  tcp_router.isolation_segments:
+    description: "Routes with these isolation segments will be registered. Used in combination with routing_table_sharding_mode."
+    default: []
   tcp_router.log_level:
     description: "Log level"
     default: "info"
