@@ -67,9 +67,13 @@ if [ ! -f "${diego_manifest_file}" ]; then
   usage
 fi
 
+if [[ -z "${DIRECTOR_UUID}" ]]; then
+    DIRECTOR_UUID=$(bosh status --uuid)
+fi
+
 tmpdir=$(mktemp -d /tmp/routing-manifest.XXXXX)
 director_uuid=${tmpdir}/director.yml
-printf "director_uuid: %s" $(bosh status --uuid) > ${director_uuid}
+printf "director_uuid: %s" $DIRECTOR_UUID > ${director_uuid}
 
 spiff merge \
   ${templates}/config-from-cf.yml \
