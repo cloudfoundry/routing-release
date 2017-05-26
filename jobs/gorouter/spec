@@ -23,6 +23,8 @@ packages:
 provides:
   - name: gorouter
     type: http-router
+    properties:
+      - router.route_services_secret
 
 consumes:
 - name: nats
