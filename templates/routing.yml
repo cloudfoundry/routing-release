@@ -238,7 +238,7 @@ jobs:
 
 property_overrides: (( merge ))
 iaas_settings: (( merge ))
-release_version_overrides: (( merge ))
+release_version_overrides: (( merge || nil ))
 instance_count_overrides: (( merge ))
 persistent_disk_overrides: (( merge ))
 config_from_cf: (( merge ))
