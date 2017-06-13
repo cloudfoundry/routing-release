@@ -9,7 +9,7 @@ function usage() {
     $0 -c /path/to/cf-release-manifest -d /path/to/diego-release-manifest [-l /path/to/stub1,/path/to/stub2/,...i]
 
     Ex:
-    $0 -c ~/deployments/cf.yml -d ~/deployments/diego.yml -l ~/deployments/stubs/iaas-settings.yml,~/deployments/stubs/instance-count-overrides.yml,~/deployments/stubs/persistent-disk-overrides.yml,~/deployments/stubs/property-overrides.yml
+    $0 -c ~/deployments/cf.yml -d ~/deployments/diego.yml -l ~/deployments/stubs/iaas-settings.yml,~/deployments/stubs/instance-count-overrides.yml,~/deployments/stubs/persistent-disk-overrides.yml,~/deployments/stubs/property-overrides.yml,~/deployments/stubs/release-version-overrides.yml
 "
   exit 1
 }
@@ -98,4 +98,3 @@ spiff merge \
   ${templates}/routing-deployment.yml \
   ${director_uuid} \
   ${tmpdir}/routing.yml
-

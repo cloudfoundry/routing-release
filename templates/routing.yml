@@ -2,9 +2,9 @@ name: (( config_from_cf.cf_deployment_name "-routing" ))
 
 releases:
 - name: routing
-  version: latest
+  version: (( release_version_overrides.routing.version || "latest" ))
 - name: cf
-  version: latest
+  version: (( release_version_overrides.cf.version || "latest" ))
 
 compilation:
   network: router1
@@ -238,6 +238,7 @@ jobs:
 
 property_overrides: (( merge ))
 iaas_settings: (( merge ))
+release_version_overrides: (( merge ))
 instance_count_overrides: (( merge ))
 persistent_disk_overrides: (( merge ))
 config_from_cf: (( merge ))

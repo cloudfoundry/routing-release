@@ -12,10 +12,10 @@ function usage() {
 
     CF Manifest: ~/workspace/cf-release/bosh-lite/deployments/cf.yml
     Diego Manifest: ~/workspace/diego-release/bosh-lite/deployments/diego.yml
-    Stubs List: ~/workspace/cf-release/src/routing-release/bosh-lite/stubs/iaas-settings.yml,~/workspace/cf-release/src/routing-release/bosh-lite/stubs/instance-count-overrides.yml,~/workspace/cf-release/src/routing-release/bosh-lite/stubs/persistent-disk-overrides.yml,~/workspace/cf-release/src/routing-release/bosh-lite/stubs/property-overrides.yml
+    Stubs List: ~/workspace/cf-release/src/routing-release/bosh-lite/stubs/iaas-settings.yml,~/workspace/cf-release/src/routing-release/bosh-lite/stubs/instance-count-overrides.yml,~/workspace/cf-release/src/routing-release/bosh-lite/stubs/persistent-disk-overrides.yml,~/workspace/cf-release/src/routing-release/bosh-lite/stubs/property-overrides.yml,~/workspace/cf-release/src/routing-release/bosh-lite/stubs/release-version-overrides.yml
 
     Ex:
-    $0 -c ~/deployments/bosh-lite/cf.yml -d ~/deployments/bosh-lite/diego.yml -l ~/deployments/bosh-lite/stubs/iaas-settings.yml,~/deployments/bosh-lite/stubs/instance-count-overrides.yml,~/deployments/bosh-lite/stubs/persistent-disk-overrides.yml,~/deployments/bosh-lite/stubs/property-overrides.yml
+    $0 -c ~/deployments/bosh-lite/cf.yml -d ~/deployments/bosh-lite/diego.yml -l ~/deployments/bosh-lite/stubs/iaas-settings.yml,~/deployments/bosh-lite/stubs/instance-count-overrides.yml,~/deployments/bosh-lite/stubs/persistent-disk-overrides.yml,~/deployments/bosh-lite/stubs/property-overrides.yml,~/deployments/bosh-lite/stubs/release-version-overrides.yml
 "
   exit 1
 }
@@ -53,7 +53,7 @@ bosh_lite_dir="$(cd $root_dir/../bosh-lite && pwd)"
 stubs_dir=${bosh_lite_dir}/stubs
 
 if [ -z "${bosh_lite_stubs}" ]; then
-  bosh_lite_stubs=${stubs_dir}/iaas-settings.yml,${stubs_dir}/instance-count-overrides.yml,${stubs_dir}/persistent-disk-overrides.yml,${stubs_dir}/property-overrides.yml
+  bosh_lite_stubs=${stubs_dir}/iaas-settings.yml,${stubs_dir}/instance-count-overrides.yml,${stubs_dir}/persistent-disk-overrides.yml,${stubs_dir}/property-overrides.yml,${stubs_dir}/release-version-overrides.yml
 fi
 
 mkdir -p ${bosh_lite_dir}/deployments
