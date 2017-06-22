@@ -77,7 +77,7 @@ else
 
       $GINKGO_FLAGS multierror
 
-      $GINKGO_FLAGS multierror routing-api routing-api-cli
+      $GINKGO_FLAGS routing-api routing-api-cli
 
       # Run go vet after ginkgo so that all necessary packages are compiled
       run_go_vet tcp-emitter
