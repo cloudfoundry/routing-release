@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# COMPONENT takes only single package name
+COMPONENT=$1
+IMAGE="cloudfoundry/cf-routing-pipeline"
+MOUNT_DIR="/routing-release"
+START_SERVICES="service mysql start; service postgresql start; service rsyslog start"
+RUN_UNIT_TEST="cd ${MOUNT_DIR}; source .envrc; ./scripts/run-unit-tests ${COMPONENT}"
+
+docker pull ${IMAGE}
+docker run -it \
+  -v "${PWD}:${MOUNT_DIR}" \
+  ${IMAGE}
+
