@@ -633,13 +633,13 @@ Steps for enabling PROXY Protocol on the GoRouter can be found
     `router.requested_route_registration_interval_in_seconds`, then healthcheck
     endpoint will return 200 immediately on start and server accept connections
     after a delay equal to either of these properties
-  - If `router.load_balancer_healthy_threshold` <
+  - If `router.load_balancer_healthy_threshold` >
     `router.requested_route_registration_interval_in_seconds`, then healthcheck
     will return 200 immediately on start and server will accept connections
     after a delay equal to `load_balancer_healthy_threshold`
-  - If `router.load_balancer_healthy_threshold` >
+  - If `router.load_balancer_healthy_threshold` <
     `router.requested_route_registration_interval_in_seconds`, then healthcheck
     will return 503 on start, then 200 OK after a delay equal to
     `requested_route_registration_interval_in_seconds -
     load_balancer_healthy_threshold`. Server will begin accepting connections
-    after an additional delay equal to `load_balancer_healthy_threshold`.
+    after an additional delay equal to `requested_route_registration_interval_in_seconds`.
