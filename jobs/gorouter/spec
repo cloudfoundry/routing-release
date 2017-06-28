@@ -70,7 +70,7 @@ properties:
       This accommodates requests forwarded by a load balancer until it considers the router unhealthy.
     default: 20
   router.healthcheck_user_agent:
-    description: User-Agent for the health check agent (usually the Load Balancer).
+    description: DEPRECATED. Use /health endpoint on port specified by status.port. User-Agent for the health check agent (usually the Load Balancer).
     example: "ELB-HealthChecker/1.0"
     default: "HTTP-Monitor/1.1"
   router.enable_ssl:
