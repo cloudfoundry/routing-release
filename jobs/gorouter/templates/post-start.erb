@@ -6,6 +6,6 @@ source /var/vcap/packages/routing_utils/syslog_utils.sh
 
 tee_output_to_sys_log "${LOG_DIR}" "post-start"
 
-echo "Waiting <%= lb_delay %> seconds for gorouter to become ready..."
+echo "Waiting <%= lb_delay %> seconds to allow load balancer to consider gorouter healthy..."
 sleep <%= lb_delay %>
 echo "Gorouter is ready."
