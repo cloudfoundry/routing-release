@@ -628,6 +628,4 @@ Steps for enabling PROXY Protocol on the GoRouter can be found
   `router.drain_wait` expires, Gorouter will stop accepting connections and the
   process will gracefully stop.
 
-- On startup, the healthcheck endpoint will return 200 immediately after the
-  gorouter comes up. The gorouter will then wait for a delay equal to
-  `router.load_balancer_healthy_threshold` before accepting connections.
+- On startup, the healthcheck endpoint will return a 503 for a duration equal to `router.requested_route_registration_interval_in_seconds`, during which time the router will not accept connections. This time is used to preload the routing table. The healthcheck endpoint will then return a 200 and the router will begin accepting connections. BOSH will not consider the startup process complete until an additional duration equal to `router.load_balancer_healthy_threshold`, after which time other instances of Gorouter will be deployed or upgraded. 
