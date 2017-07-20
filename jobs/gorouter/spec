@@ -91,6 +91,15 @@ properties:
       (https://github.com/golang/go/blob/release-branch.go1.7/src/crypto/tls/cipher_suites.go#L269-L285) 
       separated by colons. The cipher suite will be chosen according to this order during SSL handshake
     default: "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+  router.forwarded_client_cert:
+    description: |
+        How to handle the x-forwarded-client-cert (XFCC) HTTP header. Possible values are:
+        - always_forward: Always forward the XFCC header in the request, regardless of whether the client connection is mTLS.
+        Use this value when your load balancer is forwarding the client certificate.
+        - sanitize_set: Strip any instances of XFCC headers from the client request.
+        When the client connection is mTLS, an instance of the header will be sent for each certificate in the chain provided by the client in the mTLS handshake.
+        Values will be base64 encoded PEM. Use this value when Gorouter is the first component to terminate TLS.
+    default: always_forward
   router.route_services_secret:
     description: "Support for route services is disabled when no value is configured. A robust passphrase is recommended."
     default: ""
