@@ -78,7 +78,7 @@ properties:
       description: "Host to ping for confirmation of DNS resolution, only used when Routing API is enabled"
       default: "consul.service.cf.internal"
   router.tls_pem:
-    description: "List of private keys and certs for SSL termination. Required if router.enable_ssl is true."
+    description: "Array of private keys and certs for TLS termination. Each element in the array supports a chain of certificates and private keys in PEM format. Required if router.enable_ssl is true."
   router.ssl_skip_validation:
     description: "Skip validation of TLS certificates received from route services and UAA"
     default: false
