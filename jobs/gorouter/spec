@@ -74,6 +74,9 @@ properties:
   router.enable_ssl:
     description: "When enabled, Gorouter will listen on port 443 and terminate TLS for requests received on this port."
     default: false
+  router.min_tls_version:
+    description: Minimum accepted version of TLS protocol. All versions above this will also be accepted. Valid values are TLSv1.0, TLSv1.1, and TLSv1.2.
+    default: TLSv1.2
   router.dns_health_check_host:
       description: "Host to ping for confirmation of DNS resolution, only used when Routing API is enabled"
       default: "consul.service.cf.internal"

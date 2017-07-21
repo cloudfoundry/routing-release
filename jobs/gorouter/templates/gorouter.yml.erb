@@ -104,6 +104,7 @@ balancing_algorithm: <%= p("router.balancing_algorithm") %>
 enable_ssl: <%= p("router.enable_ssl") %>
 <% if p("router.enable_ssl") %>
 tls_pem: <%= p("router.tls_pem") %>
+min_tls_version: <%= p("router.min_tls_version") %>
 <% end %>
 skip_ssl_validation: <%= p("router.ssl_skip_validation") %>
 cipher_suites: <%= p("router.cipher_suites") %>
