@@ -75,6 +75,9 @@ max_idle_conns_per_host: 100
 disable_keep_alives: true
 <% end%>
 
+backends:
+  max_conns: <%= p("router.backends.max_conns") %>
+
 oauth:
   token_endpoint: <%= p("uaa.token_endpoint") %>
   client_name: "gorouter"
