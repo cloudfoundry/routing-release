@@ -89,8 +89,9 @@ properties:
     description:
       An ordered list of golang supported standard SSL cipher suites containing golang tls constants
       (https://github.com/golang/go/blob/release-branch.go1.7/src/crypto/tls/cipher_suites.go#L269-L285)
-      separated by colons. The cipher suite will be chosen according to this order during SSL handshake
-    default: "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+      separated by colons. Refer to https://testssl.sh/openssl-rfc.mapping.html for the OpenSSL suite name mappings.
+			The cipher suite will be chosen according to this order during SSL handshake
+    default: "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384"
   router.forwarded_client_cert:
     description: |
         How to handle the x-forwarded-client-cert (XFCC) HTTP header. Possible values are:
