@@ -43,7 +43,6 @@ files:
   - routing-release/src/code.cloudfoundry.org/gorouter/route_fetcher/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/router/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/routeservice/*.go # gosub
-  - routing-release/src/code.cloudfoundry.org/gorouter/routeservice/header/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/stats/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/stats/container/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/test/*.go # gosub
