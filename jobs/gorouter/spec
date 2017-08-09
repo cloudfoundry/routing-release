@@ -90,11 +90,11 @@ properties:
     default: false
   router.cipher_suites:
     description:
-      An ordered list of golang supported standard SSL cipher suites containing golang tls constants
-      (https://golang.org/pkg/crypto/tls/#pkg-constants) or RFC formatted values separated by colons.
+      An ordered, colon-delimited list of golang supported TLS cipher suites in OpenSSL or RFC format.
+      The selected cipher suite will be negotiated according to the order of this list during a TLS handshake.
+      See (https://golang.org/pkg/crypto/tls/#pkg-constants) for golang supported cipher suites.
       The first four of these are supported for TLSv1.0/1.1 only.
-      Refer to https://testssl.sh/openssl-rfc.mapping.html for the OpenSSL suite name mappings.
-      The cipher suite will be chosen according to this order during SSL handshake.
+      See https://testssl.sh/openssl-rfc.mapping.html for a mapping of OpenSSL and RFC suite names.
     default: "ECDHE-RSA-AES128-GCM-SHA256:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
   router.forwarded_client_cert:
     description: |
