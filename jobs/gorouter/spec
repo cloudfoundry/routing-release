@@ -92,7 +92,7 @@ properties:
     description:
       An ordered, colon-delimited list of golang supported TLS cipher suites in OpenSSL or RFC format.
       The selected cipher suite will be negotiated according to the order of this list during a TLS handshake.
-      See https://golang.org/pkg/crypto/tls/#pkg-constants for golang supported cipher suites.
+      See https://github.com/golang/go/blob/release-branch.go1.7/src/crypto/tls/cipher_suites.go#L269-L285 for golang supported cipher suites.
       The first four of these are supported for TLSv1.0/1.1 only.
       See https://testssl.sh/openssl-rfc.mapping.html for a mapping of OpenSSL and RFC suite names.
     default: "ECDHE-RSA-AES128-GCM-SHA256:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
