@@ -80,4 +80,4 @@ properties:
     description: "List of addresses of routers with `forward_client_cert` configured to `sanitize_set`. Used for testing `X-Forwarded-Client-Cert`."
 
   acceptance_tests.xfcc.client_pem:
-    description: "Array of private keys and certs for client mTLS authentication. Each element in the array supports a chain of certificates and private keys in PEM format. Required if any XFCC are run."
+    description: "Array of private keys and certs for client mTLS authentication. Each element in the array supports a chain of certificates and private keys in PEM format. Required if any of xfcc.always_forward, xfcc.forward, or xfcc.sanitize_set are non-empty arrays."
