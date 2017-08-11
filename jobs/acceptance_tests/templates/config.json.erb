@@ -19,8 +19,18 @@ config = {
     skip_ssl_validation: p("acceptance_tests.skip_ssl_validation"),
     client_secret: p("tcp_emitter.oauth_secret"),
     port: 443,
+  },
+  xfcc: {
+    always_forward: p("acceptance_tests.xfcc.always_forward"),
+    forward: p("acceptance_tests.xfcc.forward"),
+    sanitize_set: p("acceptance_tests.xfcc.sanitize_set"),
   }
 }
+
+xfcc_ips = config[:xfcc][:always_forward] + config[:xfcc][:forward] + config[:xfcc][:sanitize_set]
+if xfcc_ips.length > 0
+  config[:xfcc][:client_pem] = p("acceptance_tests.xfcc.client_pem")
+end
 
 if_p("acceptance_tests.user_password") do |password|
 config[:test_password] = password

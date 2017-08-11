@@ -22,6 +22,7 @@ files:
   - code.cloudfoundry.org/routing-acceptance-tests/helpers/*.go # gosub
   - code.cloudfoundry.org/routing-acceptance-tests/helpers/assets/*.go # gosub
   - code.cloudfoundry.org/routing-acceptance-tests/http_routes/*.go # gosub
+  - code.cloudfoundry.org/routing-acceptance-tests/http_routing/*.go # gosub
   - code.cloudfoundry.org/routing-acceptance-tests/smoke_tests/*.go # gosub
   - code.cloudfoundry.org/routing-acceptance-tests/tcp_routing/*.go # gosub
   - code.cloudfoundry.org/routing-api/*.go # gosub
