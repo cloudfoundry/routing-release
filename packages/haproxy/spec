@@ -3,4 +3,3 @@ name: haproxy
 
 files:
   - haproxy/haproxy-1.5.19.tar.gz
-  - haproxy/pcre-8.40.tar.gz
