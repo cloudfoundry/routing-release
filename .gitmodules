@@ -184,3 +184,6 @@
 [submodule "src/github.com/cf-routing/gosub"]
 	path = src/github.com/cf-routing/gosub
 	url = https://github.com/cf-routing/gosub
+[submodule "src/code.cloudfoundry.org/go-loggregator"]
+	path = src/code.cloudfoundry.org/go-loggregator
+	url = https://github.com/cloudfoundry-incubator/go-loggregator
