@@ -97,7 +97,7 @@ properties:
       The selected cipher suite will be negotiated according to the order of this list during a TLS handshake.
       See https://github.com/golang/go/blob/release-branch.go1.8/src/crypto/tls/cipher_suites.go#L369-L390 for golang supported cipher suites.
       The first four of these are supported for TLSv1.0/1.1 only.
-      See https://testssl.sh/openssl-rfc.mapping.html for a mapping of OpenSSL and RFC suite names.
+      See https://www.openssl.org/docs/man1.1.0/apps/ciphers.html for a mapping of OpenSSL and RFC suite names.
     default: "ECDHE-RSA-AES128-GCM-SHA256:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
   router.forwarded_client_cert:
     description: |
