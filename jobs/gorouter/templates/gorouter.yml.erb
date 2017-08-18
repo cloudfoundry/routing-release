@@ -106,7 +106,16 @@ balancing_algorithm: <%= p("router.balancing_algorithm") %>
 
 enable_ssl: <%= p("router.enable_ssl") %>
 <% if p("router.enable_ssl") %>
-tls_pem: <%= p("router.tls_pem") %>
+<%
+  p("router.tls_pem").each { |cert_pair|
+    if !cert_pair.is_a?(Hash) || !cert_pair.key?("cert_chain") || !cert_pair.key?("private_key")
+      raise 'must provide cert_chain and private_key with tls_pem'
+    end
+  }
+  tls_pem = { 'tls_pem' => p('router.tls_pem') }
+%>
+<%= tls_pem.to_yaml[3..-1] %>
+
 min_tls_version: <%= p("router.min_tls_version") %>
 <% end %>
 disable_http: <%= p("router.disable_http") %>

@@ -84,7 +84,17 @@ properties:
       description: "Host to ping for confirmation of DNS resolution, only used when Routing API is enabled"
       default: "consul.service.cf.internal"
   router.tls_pem:
-    description: "Array of private keys and certs for TLS termination. Each element in the array supports a chain of certificates and private keys in PEM format. Required if router.enable_ssl is true."
+    description: "Array of private keys and certificates used for TLS handshakes with downstream clients. Each element in the array is an object containing fields 'private_key' and 'cert_chain', each of which supports a PEM block. Required if router.enable_ssl is true."
+    example: |
+        tls_pem:
+        - cert_chain: |
+          -----BEGIN CERTIFICATE-----
+          -----END CERTIFICATE-----
+          -----BEGIN CERTIFICATE-----
+          -----END CERTIFICATE-----
+          private_key: |
+          -----BEGIN RSA PRIVATE KEY-----
+          -----END RSA PRIVATE KEY-----
   router.ca_certs:
     description: "Array of additional certificate authorities used to validate certificates provided by remote systems during (m)TLS handshakes."
     default: []
