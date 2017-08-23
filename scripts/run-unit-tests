@@ -61,6 +61,12 @@ if [ ${etcd_status} -ne 0 ]; then
   fi
 fi
 
+echo "Running template tests"
+  gem install bundler
+  bundle install
+  bundle exec rspec
+echo "Finsihed running template tests"
+
 GINKGO_FLAGS="ginkgo -r -race -keepGoing -p -trace -randomizeAllSpecs -progress  --nodes 4"
 
 export PATH=$PATH:$PWD/bin
