@@ -64,6 +64,7 @@ fi
 echo "Running template tests"
   gem install bundler
   bundle install
+  rubocop spec # fix these errors by running 'rubocop -a spec' or add an ignore directive
   bundle exec rspec
 echo "Finsihed running template tests"
 
