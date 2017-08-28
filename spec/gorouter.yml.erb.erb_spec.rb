@@ -50,7 +50,7 @@ describe 'gorouter.yml.erb' do
           ],
           'min_tls_version' => 1.2,
           'disable_http' => false,
-          'ca_certs' => ['test-certs'],
+          'ca_certs' => 'test-certs',
           'cipher_suites' => 'test-suites',
           'forwarded_client_cert' => ['test-cert'],
           'isolation_segments' => '[is1]',
@@ -142,6 +142,22 @@ describe 'gorouter.yml.erb' do
         end
         it 'should error' do
           expect { raise parsed_yaml }.to raise_error(RuntimeError, 'must provide cert_chain and private_key with tls_pem')
+        end
+      end
+    end
+
+    context 'ca_certs' do
+      context 'when correct ca_certs is provided' do
+        it 'should configure the property' do
+          expect(parsed_yaml['ca_certs']).to eq('test-certs')
+        end
+      end
+      context 'when a simple array is provided' do
+        before do
+          deployment_manifest_fragment['properties']['router']['ca_certs'] = ['some-tls-cert']
+        end
+        it 'raises error' do
+          expect { raise parsed_yaml }.to raise_error(RuntimeError, 'ca_certs must be provided as a single string block')
         end
       end
     end
