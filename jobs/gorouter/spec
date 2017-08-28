@@ -96,8 +96,8 @@ properties:
           -----BEGIN RSA PRIVATE KEY-----
           -----END RSA PRIVATE KEY-----
   router.ca_certs:
-    description: "Array of additional certificate authorities used to validate certificates provided by remote systems during (m)TLS handshakes."
-    default: []
+    description: "Block of additional certificate authorities used to validate certificates provided by remote systems during (m)TLS handshakes."
+    default: ""
   router.ssl_skip_validation:
     description: "Skip validation of TLS certificates received from route services and UAA"
     default: false
