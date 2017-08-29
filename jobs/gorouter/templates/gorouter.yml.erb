@@ -119,12 +119,14 @@ enable_ssl: <%= p("router.enable_ssl") %>
 min_tls_version: <%= p("router.min_tls_version") %>
 <% end %>
 disable_http: <%= p("router.disable_http") %>
-<%
+
+<%=
   if !p("router.ca_certs").is_a?(String)
     raise 'ca_certs must be provided as a single string block'
   end
+  { 'ca_certs' => p("router.ca_certs") }.to_yaml[3..-1]
 %>
-ca_certs: <%= p("router.ca_certs") %>
+
 skip_ssl_validation: <%= p("router.ssl_skip_validation") %>
 cipher_suites: <%= p("router.cipher_suites") %>
 forwarded_client_cert: <%= p("router.forwarded_client_cert") %>

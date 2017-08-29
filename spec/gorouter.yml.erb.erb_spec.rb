@@ -160,6 +160,30 @@ describe 'gorouter.yml.erb' do
           expect { raise parsed_yaml }.to raise_error(RuntimeError, 'ca_certs must be provided as a single string block')
         end
       end
+      context 'when set to a multi-line string' do
+        let(:test_certs) do
+          '
+some
+multi
+line
+
+string
+with lots
+
+o
+
+whitespace
+
+      '
+        end
+
+        before do
+          deployment_manifest_fragment['properties']['router']['ca_certs'] = test_certs
+        end
+        it 'suceessfully configures the property' do
+          expect(parsed_yaml['ca_certs']).to eq(test_certs)
+        end
+      end
     end
   end
 end
