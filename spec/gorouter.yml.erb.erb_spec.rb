@@ -152,6 +152,14 @@ describe 'gorouter.yml.erb' do
           expect(parsed_yaml['ca_certs']).to eq('test-certs')
         end
       end
+      context 'when ca_certs is blank' do
+        before do
+          deployment_manifest_fragment['properties']['router']['ca_certs'] = ''
+        end
+        it 'does not error' do
+          expect(parsed_yaml['ca_certs']).to eq('')
+        end
+      end
       context 'when a simple array is provided' do
         before do
           deployment_manifest_fragment['properties']['router']['ca_certs'] = ['some-tls-cert']
