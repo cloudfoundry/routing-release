@@ -154,15 +154,23 @@ describe 'gorouter.yml.erb' do
       end
       context 'when ca_certs is blank' do
         before do
-          deployment_manifest_fragment['properties']['router']['ca_certs'] = ''
+          deployment_manifest_fragment['properties']['router']['ca_certs'] = nil
         end
         it 'does not error' do
-          expect(parsed_yaml['ca_certs']).to eq('')
+          expect(parsed_yaml).to_not have_key('ca_certs')
         end
       end
       context 'when a simple array is provided' do
         before do
           deployment_manifest_fragment['properties']['router']['ca_certs'] = ['some-tls-cert']
+        end
+        it 'raises error' do
+          expect { raise parsed_yaml }.to raise_error(RuntimeError, 'ca_certs must be provided as a single string block')
+        end
+      end
+      context 'when an empty array is provided' do
+        before do
+          deployment_manifest_fragment['properties']['router']['ca_certs'] = []
         end
         it 'raises error' do
           expect { raise parsed_yaml }.to raise_error(RuntimeError, 'ca_certs must be provided as a single string block')
