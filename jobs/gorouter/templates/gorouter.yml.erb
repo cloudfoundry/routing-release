@@ -78,6 +78,13 @@ disable_keep_alives: true
 backends:
   max_conns: <%= p("router.backends.max_conns") %>
 
+<% if p("router.backends.cert_chain") && p("router.backends.private_key") %>
+  cert_chain: <%= p("router.backends.cert_chain") %>
+  private_key: <%= p("router.backends.private_key") %>
+<% elsif p("router.backends.cert_chain") && !p("router.backends.private_key") ||  !p("router.backends.cert_chain") && p("router.backends.private_key")
+  raise 'must provide both cert_chain and private_key for backends.'
+end %>
+
 oauth:
   token_endpoint: <%= p("uaa.token_endpoint") %>
   client_name: "gorouter"
@@ -115,6 +122,7 @@ enable_ssl: <%= p("router.enable_ssl") %>
   tls_pem = { 'tls_pem' => p('router.tls_pem') }
 %>
 <%= tls_pem.to_yaml[3..-1] %>
+
 
 min_tls_version: <%= p("router.min_tls_version") %>
 <% end %>

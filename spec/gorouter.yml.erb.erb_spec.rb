@@ -65,7 +65,9 @@ describe 'gorouter.yml.erb' do
           'suspend_pruning_if_nats_unavailable' => false,
           'max_idle_connections' => 100,
           'backends' => {
-            'max_conns' => 100
+            'max_conns' => 100,
+            'cert_chain' => 'backend-certchain',
+            'private_key' => 'backend-privatekey'
           }
         },
         'request_timeout_in_seconds' => 100,
@@ -142,6 +144,22 @@ describe 'gorouter.yml.erb' do
         end
         it 'should error' do
           expect { raise parsed_yaml }.to raise_error(RuntimeError, 'must provide cert_chain and private_key with tls_pem')
+        end
+      end
+    end
+    context 'backends.cert_chain & backends.private_key' do
+      context 'when both are provided' do
+        it 'should configure the property' do
+          expect(parsed_yaml['backends']['cert_chain']).to eq('backend-certchain')
+          expect(parsed_yaml['backends']['private_key']).to eq('backend-privatekey')
+        end
+      end
+      context 'when single property is provided' do
+        before do
+          deployment_manifest_fragment['properties']['router']['backends']= {'cert_chain' => 'backend-certchain' , 'private_key' => nil, 'max_conns' => 100}
+        end
+        it 'should error' do
+          expect { raise parsed_yaml }.to raise_error(RuntimeError, 'must provide both cert_chain and private_key for backends.')
         end
       end
     end
