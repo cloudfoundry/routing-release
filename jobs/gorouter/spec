@@ -98,9 +98,9 @@ properties:
   router.ca_certs:
     description: "Block of additional certificate authorities used to validate certificates provided by remote systems during (m)TLS handshakes."
   router.backends.cert_chain:
-    description: Certificate chain in PEM format presented to backends for which a TLS port is registered.
+    description: Certificate chain used for client authentication to TLS-registered backends.  In PEM format.
   router.backends.private_key:
-    description: Private key in PEM format for certificate in backends.cert_chain.
+    description: Private key used for client authentication to TLS-registered backends.  In PEM format.
   router.ssl_skip_validation:
     description: "Skip validation of TLS certificates received from route services and UAA"
     default: false
