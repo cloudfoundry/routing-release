@@ -4,15 +4,15 @@ require 'rspec'
 require 'yaml'
 require 'bosh/template/evaluation_context'
 
-Testcert = 'some
+TEST_CERT = 'some
 
 multiline
 
-cert'
+cert'.freeze
 
-Testkey = 'some
+TEST_KEY = 'some
 
-multi line key'
+multi line key'.freeze
 
 describe 'gorouter.yml.erb' do
   let(:deployment_manifest_fragment) do
@@ -76,8 +76,8 @@ describe 'gorouter.yml.erb' do
           'max_idle_connections' => 100,
           'backends' => {
             'max_conns' => 100,
-            'cert_chain' => Testcert,
-            'private_key' => Testkey
+            'cert_chain' => TEST_CERT,
+            'private_key' => TEST_KEY
           }
         },
         'request_timeout_in_seconds' => 100,
@@ -160,8 +160,8 @@ describe 'gorouter.yml.erb' do
     describe 'backends' do
       context 'when both cert_chain and private_key are provided' do
         it 'should configure the property' do
-          expect(parsed_yaml['backends']['cert_chain']).to eq(Testcert)
-          expect(parsed_yaml['backends']['private_key']).to eq(Testkey)
+          expect(parsed_yaml['backends']['cert_chain']).to eq(TEST_CERT)
+          expect(parsed_yaml['backends']['private_key']).to eq(TEST_KEY)
         end
       end
       context 'when cert_chain is provided but not private_key' do
