@@ -4,6 +4,16 @@ require 'rspec'
 require 'yaml'
 require 'bosh/template/evaluation_context'
 
+Testcert = 'some
+
+multiline
+
+cert'
+
+Testkey = 'some
+
+multi line key'
+
 describe 'gorouter.yml.erb' do
   let(:deployment_manifest_fragment) do
     {
@@ -66,8 +76,8 @@ describe 'gorouter.yml.erb' do
           'max_idle_connections' => 100,
           'backends' => {
             'max_conns' => 100,
-            'cert_chain' => 'backend-certchain',
-            'private_key' => 'backend-privatekey'
+            'cert_chain' => Testcert,
+            'private_key' => Testkey
           }
         },
         'request_timeout_in_seconds' => 100,
@@ -147,19 +157,37 @@ describe 'gorouter.yml.erb' do
         end
       end
     end
-    context 'backends.cert_chain & backends.private_key' do
-      context 'when both are provided' do
+    describe 'backends' do
+      context 'when both cert_chain and private_key are provided' do
         it 'should configure the property' do
-          expect(parsed_yaml['backends']['cert_chain']).to eq('backend-certchain')
-          expect(parsed_yaml['backends']['private_key']).to eq('backend-privatekey')
+          expect(parsed_yaml['backends']['cert_chain']).to eq(Testcert)
+          expect(parsed_yaml['backends']['private_key']).to eq(Testkey)
         end
       end
-      context 'when single property is provided' do
+      context 'when cert_chain is provided but not private_key' do
         before do
-          deployment_manifest_fragment['properties']['router']['backends']= {'cert_chain' => 'backend-certchain' , 'private_key' => nil, 'max_conns' => 100}
+          deployment_manifest_fragment['properties']['router']['backends']['private_key'] = nil
         end
         it 'should error' do
-          expect { raise parsed_yaml }.to raise_error(RuntimeError, 'must provide both cert_chain and private_key for backends.')
+          expect { raise parsed_yaml }.to raise_error(RuntimeError, 'backends.cert_chain and backends.private_key must be both provided or not at all')
+        end
+      end
+      context 'when private_key is provided but not cert_chain' do
+        before do
+          deployment_manifest_fragment['properties']['router']['backends']['cert_chain'] = nil
+        end
+        it 'should error' do
+          expect { raise parsed_yaml }.to raise_error(RuntimeError, 'backends.cert_chain and backends.private_key must be both provided or not at all')
+        end
+      end
+      context 'when neither cert_chain nor private_key are provided' do
+        before do
+          deployment_manifest_fragment['properties']['router']['backends']['cert_chain'] = nil
+          deployment_manifest_fragment['properties']['router']['backends']['private_key'] = nil
+        end
+        it 'should not error and should not configure the properties' do
+          expect(parsed_yaml['backends']['cert_chain']).to eq('')
+          expect(parsed_yaml['backends']['private_key']).to eq('')
         end
       end
     end

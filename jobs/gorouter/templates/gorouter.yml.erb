@@ -75,15 +75,24 @@ max_idle_conns_per_host: 100
 disable_keep_alives: true
 <% end%>
 
-backends:
-  max_conns: <%= p("router.backends.max_conns") %>
+<%=
+  backend_cert_chain = ''
+  backend_private_key = ''
+  if_p("router.backends.cert_chain") { |val| backend_cert_chain = val }
+  if_p("router.backends.private_key") { |val| backend_private_key = val }
 
-<% if p("router.backends.cert_chain") && p("router.backends.private_key") %>
-  cert_chain: <%= p("router.backends.cert_chain") %>
-  private_key: <%= p("router.backends.private_key") %>
-<% elsif p("router.backends.cert_chain") && !p("router.backends.private_key") ||  !p("router.backends.cert_chain") && p("router.backends.private_key")
-  raise 'must provide both cert_chain and private_key for backends.'
-end %>
+  if (backend_cert_chain != '') ^ (backend_private_key != '')
+    raise 'backends.cert_chain and backends.private_key must be both provided or not at all'
+  end
+
+  backends = {
+    "max_conns" => p("router.backends.max_conns"),
+    "cert_chain" => backend_cert_chain,
+    "private_key" => backend_private_key,
+  }
+
+  { "backends" => backends }.to_yaml[3..-1]
+%>
 
 oauth:
   token_endpoint: <%= p("uaa.token_endpoint") %>
