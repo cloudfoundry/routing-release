@@ -75,6 +75,8 @@ max_idle_conns_per_host: 100
 disable_keep_alives: true
 <% end%>
 
+frontend_idle_timeout: <%= p("router.frontend_idle_timeout") %>s
+
 <%=
   backend_cert_chain = ''
   backend_private_key = ''

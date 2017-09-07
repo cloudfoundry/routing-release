@@ -160,6 +160,10 @@ properties:
     description: "Enables setting X-Forwarded-Proto header if SSL termination happened upstream and incorrectly set the header value. When this property is set to true gorouter sets the header X-Forwarded-Proto to https. When this value set to false, gorouter set the header X-Forwarded-Proto to the protocol of the incoming request"
     default: false
 
+  router.frontend_idle_timeout:
+    description: (optional, integer) Duration in seconds after which Gorouter will close idle TCP connections from clients.
+    default: 5
+
   router.backends.max_conns:
     description: "Maximum concurrent TCP connections per backend. When set to 0 there is no limit"
     default: 0
