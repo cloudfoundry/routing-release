@@ -96,7 +96,7 @@ properties:
           -----BEGIN RSA PRIVATE KEY-----
           -----END RSA PRIVATE KEY-----
   router.ca_certs:
-    description: "Block of additional certificate authorities used to validate certificates provided by remote systems during (m)TLS handshakes."
+    description: "String of concatenated certificate authorities in PEM format, used to validate certificates provided by remote systems."
   router.backends.cert_chain:
     description: Certificate chain used for client authentication to TLS-registered backends.  In PEM format.
   router.backends.private_key:
