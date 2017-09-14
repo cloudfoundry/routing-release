@@ -161,7 +161,9 @@ properties:
     default: false
 
   router.frontend_idle_timeout:
-    description: (optional, integer) Duration in seconds after which Gorouter will close idle TCP connections from clients.
+    description: |
+      (optional, integer) Duration in seconds to maintain an open connection when client supports keep-alive.
+      This property must be configured greater than the connection idle timeout for the load balancer on Iaas to prevent connections from being closed prematurely.
     default: 5
 
   router.backends.max_conns:
