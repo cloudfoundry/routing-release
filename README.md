@@ -86,12 +86,12 @@ branch.
 
 1. Choose a domain name for developer to create TCP route from and configure
    DNS to resolve it to your load balancer; see [Domain Names](#domain-names).
-   
+
 ### Warning!
 
-This release previously supported etcd as a data store for Routing API, however it was unreliable for persistent data. On upgrading from an older release that was configured to use etcd, data will automatically be migrated to the relational database. 
+This release previously supported etcd as a data store for Routing API, however it was unreliable for persistent data. On upgrading from an older release that was configured to use etcd, data will automatically be migrated to the relational database.
 
-If the etcd cluster used by an older deployment of this release is configured to require TLS before Routing API data is migrated to a relational database, TCP Routing functionality will fail until Routing API can reconnect to etcd and access the same persistent data. If your strategy for enabling TLS in etcd involves destroying the etcd cluster, TCP Routing will fail. Before configuring etcd to require TLS or destroying etcd, upgrade this release and configure it to use a relational database using the two-phase process described in [Migrating from etcd](#migrating-from-etcd). Once the datastore for Routing API is configured to use a relational database, you can require TLS for etcd. 
+If the etcd cluster used by an older deployment of this release is configured to require TLS before Routing API data is migrated to a relational database, TCP Routing functionality will fail until Routing API can reconnect to etcd and access the same persistent data. If your strategy for enabling TLS in etcd involves destroying the etcd cluster, TCP Routing will fail. Before configuring etcd to require TLS or destroying etcd, upgrade this release and configure it to use a relational database using the two-phase process described in [Migrating from etcd](#migrating-from-etcd). Once the datastore for Routing API is configured to use a relational database, you can require TLS for etcd.
 
 ### CF-Release
 
@@ -189,9 +189,9 @@ for you automatically.
 
 ### Relational Database Prerequisites
 
-This release requires a relational database as a data store for the Routing API; MySQL and PostgreSQL are supported. Routing API does not create the database on deployment of routing-release; you must create a database in advance and then provide the credentials for it in the deployment manifest for this release (see [Deploying routing-release](#relational-database-1)). 
+This release requires a relational database as a data store for the Routing API; MySQL and PostgreSQL are supported. Routing API does not create the database on deployment of routing-release; you must create a database in advance and then provide the credentials for it in the deployment manifest for this release (see [Deploying routing-release](#relational-database-1)).
 
-BOSH Lite deployments will use the PostgreSQL database that comes with cf-release by default. For other IaaS we recommend the [CF MySQL Release](https://github.com/cloudfoundry/cf-mysql-release). For any deployment, you can also provide your own MySQL or PostgreSQL database. 
+BOSH Lite deployments will use the PostgreSQL database that comes with cf-release by default. For other IaaS we recommend the [CF MySQL Release](https://github.com/cloudfoundry/cf-mysql-release). For any deployment, you can also provide your own MySQL or PostgreSQL database.
 
 If you use the CF MySQL Release, you can seed the required database on deploy using the manifest property `cf_mysql.mysql.seeded_databases`. We recommend you do not use a deployment of cf-mysql-release that is exposed as a CF marketplace service. Instead, use a deployment intended for internal platform use; for these deployments you should set broker instances to zero. After generating your manifest for cf-mysql-release, update the following manifest properties before deploying.
 
@@ -288,14 +288,14 @@ directly to a single TCP router instance.
 	- For other IaaS: `./scripts/generate-manifest`
 
 	Both scripts support the following options:
-	
+
 	- `-c` path to cf-release-manifest
 	- `-d` path to diego-release-manifest
 	- `-l` list of stubs
 
-	If no options are provided, the `generate-bosh-lite-manifest` script expects the cf-release and diego-release manifests to be at `~/workspace/cf-release/bosh-lite/deployments/cf.yml` and `~/workspace/diego-release/bosh-lite/deployments/diego.yml`; the BOSH Lite manifest generation scripts for those releases will put them there by default. 
+	If no options are provided, the `generate-bosh-lite-manifest` script expects the cf-release and diego-release manifests to be at `~/workspace/cf-release/bosh-lite/deployments/cf.yml` and `~/workspace/diego-release/bosh-lite/deployments/diego.yml`; the BOSH Lite manifest generation scripts for those releases will put them there by default.
 
-	**Important:** Before deploying, consider the following sections on manifest configuration for reservable TCP ports and relational databases, and on upgrading to a relational database from etcd.  
+	**Important:** Before deploying, consider the following sections on manifest configuration for reservable TCP ports and relational databases, and on upgrading to a relational database from etcd.
 
 1. Deploy
 
@@ -305,7 +305,7 @@ directly to a single TCP router instance.
 
 ### Ports
 
-If you are using the manifest generation script for BOSH Lite, you can skip this step. 
+If you are using the manifest generation script for BOSH Lite, you can skip this step.
 
 If you configured your load balancer to forward a range other than
 1024-1123 (see [Ports](#ports)), you must configure this release with the
@@ -328,8 +328,8 @@ properties:
 
 ### Relational Database
 
-If you are using the manifest generation script for BOSH Lite, you can skip this step; routing-api will be configured to use the PostgreSQL database that comes with cf-release. 
-	
+If you are using the manifest generation script for BOSH Lite, you can skip this step; routing-api will be configured to use the PostgreSQL database that comes with cf-release.
+
 The routing-release now requires a relational database for the Routing API. Configure the properties for `sqldb` below with credentials Routing API requires to connect to the database. To migrate existing deployments to use a relational database see [Migrating from etcd](#Migrating from etcd).
 
 ```
@@ -369,7 +369,7 @@ The following components communicate with UAA via TLS:
 - TCP Router
 - TCP Emitter
 
-Additionally, gorouter communicates with [Route Services](http://docs.cloudfoundry.org/services/route-services.html) via TLS. 
+Additionally, gorouter communicates with [Route Services](http://docs.cloudfoundry.org/services/route-services.html) via TLS.
 
 In all cases, these components will validate that certs are signed by a known CA and that the cert is for the requested domain. To disable this validation, as when deploying the routing subsystem to an environment with self-signed certs, configure the following property in routing-release:
 
@@ -464,9 +464,9 @@ properties:
   route ports; required for creation of TCP routes. The final step to enabling
   TCP routing is to modify quotas to set the maximum number of TCP routes that
   may be created by each organization or space.
-  
+
   Determine whether your default org quota allows TCP Routes:
-  
+
   ```
   $ cf quota default
 Getting quota default info as admin...
@@ -482,7 +482,7 @@ Reserved Route Ports   0
   ```
 
   If `Reserved Route Ports` is greater than zero, you can skip the following step, as this attribute determines how many TCP routes can be created within each organization assigned this quota.
-  
+
   If `Reserved Route Ports` is zero, you can update the quota with the following command:
 
   ```
@@ -502,7 +502,7 @@ Paid service plans     allowed
 App instance limit     unlimited
 Reserved Route Ports   2
   ```
-  
+
   Configuring `Reserved Route Ports` to `-1` sets the quota attribute to unlimited. For more information on configuring quotas for TCP Routing, see [Enabling TCP Routing](https://docs.cloudfoundry.org/adminguide/enabling-tcp-routing.html#configure-quota).
 
 ## Creating a TCP Route
@@ -517,19 +517,19 @@ SpaceDeveloper role.
 
     `$ cf p myapp -d tcp-apps-domain.com --random-route`
 
-1. Send a request to your app using the TCP shared domain and the port reserved for your route. 
+1. Send a request to your app using the TCP shared domain and the port reserved for your route.
 
     ```
     $ curl tcp-apps-domain.com:60073
     OK!
     ```
-    
-**Note:** 
+
+**Note:**
 On a BOSH deployed environment, you would configure DNS to resolve the TCP shared domain to a load balancer in front of the TCP Routers. However BOSH Lite does not expose ports used by TCP Router. To test TCP Routing against a local BOSH Lite, you can use its curl its IP directly using the route port (assumes route port is 60073):
 ```
 $ curl 10.244.14.2:60073
 ```
-Or you could add an entry to `/etc/hosts` and curl the domain and port: 
+Or you could add an entry to `/etc/hosts` and curl the domain and port:
 ```
 10.244.14.2 tcp-apps-domain.com
 ```
@@ -628,4 +628,4 @@ Steps for enabling PROXY Protocol on the GoRouter can be found
   `router.drain_wait` expires, Gorouter will stop accepting connections and the
   process will gracefully stop.
 
-- On startup, the healthcheck endpoint will return a 503 for a duration equal to `router.requested_route_registration_interval_in_seconds`, during which time the router will not accept connections. This time is used to preload the routing table. The healthcheck endpoint will then return a 200 and the router will begin accepting connections. BOSH will not consider the startup process complete until an additional duration equal to `router.load_balancer_healthy_threshold`, after which time other instances of Gorouter will be deployed or upgraded. 
+- On startup, the healthcheck endpoint will return a 503 for a duration equal to `router.requested_route_registration_interval_in_seconds`, during which time the router will not accept connections. This time is used to preload the routing table. The healthcheck endpoint will then return a 200 and the router will begin accepting connections. BOSH will not consider the startup process complete until an additional duration equal to `router.load_balancer_healthy_threshold`, after which time other instances of Gorouter will be deployed or upgraded.
