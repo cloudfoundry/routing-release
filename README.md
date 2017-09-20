@@ -543,8 +543,8 @@ For step by step instructions on TCP router demo done at Cloud Foundry Summit
 ## Router Groups
 
 A Router Group represents a horizontally scalable cluster of identically
-configured routers. Only one router group is currently supported. Shared
-domains in Cloud Foundry are associated with one router group; see [Post Deploy
+configured routers.
+Shared domains in Cloud Foundry are associated with one router group; see [Post Deploy
 Configuration](#post-deploy-configuration). To create a TCP route for their
 application, a developer creates it from a TCP domain; see [Create a TCP
 Route](#create-a-tcp-route). For each TCP route, Cloud Foundry reserves a port
