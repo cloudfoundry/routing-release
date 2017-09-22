@@ -75,6 +75,7 @@ describe 'gorouter.yml.erb' do
           'suspend_pruning_if_nats_unavailable' => false,
           'max_idle_connections' => 100,
           'backends' => {
+            'enable_tls' => false,
             'max_conns' => 100,
             'cert_chain' => TEST_CERT,
             'private_key' => TEST_KEY
