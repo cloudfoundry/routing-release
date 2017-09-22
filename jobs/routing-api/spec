@@ -69,7 +69,7 @@ properties:
 
   dns_health_check_host:
     description: "Host to ping for confirmation of DNS resolution"
-    default: consul.service.cf.internal
+    default: uaa.service.cf.internal
 
   routing_api.sqldb.host:
     description: "Host for SQL database"
