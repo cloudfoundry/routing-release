@@ -168,6 +168,12 @@ properties:
       However, depending on the IaaS, this timeout may need to be shorter than the load balancer's timeout, e.g., Azure's load balancer times out at 240 seconds (by default) without sending a TCP RST to clients, so a value lower than this is recommended in order to force it to send the TCP RST.
     default: 900
 
+  router.backends.enable_tls:
+    description:
+      (optional, boolean) By default, Gorouter forwards requests to backends over unencrypted connections and will ignore routes registered with a TLS port,
+      preferring a non-tls port when both are present. When this property is set to true, Gorouter will connect to backends using TLS when routes are
+      registered with a TLS port, ignoring non-tls ports when both are present.
+    default: false
   router.backends.max_conns:
     description: "Maximum concurrent TCP connections per backend. When set to 0 there is no limit"
     default: 0

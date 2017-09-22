@@ -88,6 +88,7 @@ frontend_idle_timeout: <%= p("router.frontend_idle_timeout") %>s
   end
 
   backends = {
+    "enable_tls" => p("router.backends.enable_tls"),
     "max_conns" => p("router.backends.max_conns"),
     "cert_chain" => backend_cert_chain,
     "private_key" => backend_private_key,
