@@ -1,7 +1,0 @@
-check process tcp_emitter
-  with pidfile /var/vcap/sys/run/tcp_emitter/tcp_emitter.pid
-  start program "/var/vcap/jobs/tcp_emitter/bin/tcp_emitter_ctl start"
-    as uid vcap and gid vcap
-  stop program "/var/vcap/jobs/tcp_emitter/bin/tcp_emitter_ctl stop"
-    as uid vcap and gid vcap
-  group vcap

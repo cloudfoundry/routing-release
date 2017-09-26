@@ -8,7 +8,6 @@ templates:
 packages:
  - golang1.8
  - acceptance_tests
- - tcp_emitter
  - rtr
  - cf-cli
 

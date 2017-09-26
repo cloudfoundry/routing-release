@@ -32,7 +32,6 @@ function sync_package() {
 }
 
 sync_package tcp_router        -app code.cloudfoundry.org/cf-tcp-router/... &
-sync_package tcp_emitter       -app code.cloudfoundry.org/tcp-emitter/cmd/... &
 sync_package routing-api       -app code.cloudfoundry.org/routing-api/cmd/... &
 sync_package gorouter          -app code.cloudfoundry.org/gorouter/... &
 sync_package route_registrar   -app code.cloudfoundry.org/route-registrar/... &

@@ -367,9 +367,8 @@ The following components communicate with UAA via TLS:
 - Routing API
 - Gorouter
 - TCP Router
-- TCP Emitter
 
-Additionally, gorouter communicates with [Route Services](http://docs.cloudfoundry.org/services/route-services.html) via TLS. 
+Additionally, gorouter communicates with [Route Services](http://docs.cloudfoundry.org/services/route-services.html) via TLS.
 
 In all cases, these components will validate that certs are signed by a known CA and that the cert is for the requested domain. To disable this validation, as when deploying the routing subsystem to an environment with self-signed certs, configure the following property in routing-release:
 
@@ -573,7 +572,7 @@ the new port range must include those ports that have already been reserved.
 
 ## High Availability
 
-The TCP Router, TCP Emitter, and Routing API are stateless and horizontally
+The TCP Router and Routing API are stateless and horizontally
 scalable. The TCP Routers must be fronted by a load balancer for
 high-availability. The Routing API depends on a clustered etcd data store. For
 high availability, deploy multiple instances of each job, distributed across
