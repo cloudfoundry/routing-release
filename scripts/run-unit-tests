@@ -88,10 +88,7 @@ else
 
       $GINKGO_FLAGS -v routing-api/cmd/routing-api
 
-      # Run go vet after ginkgo so that all necessary packages are compiled
-      run_go_vet tcp-emitter
-
-      $GINKGO_FLAGS cf-tcp-router tcp-emitter route-registrar
+      $GINKGO_FLAGS cf-tcp-router route-registrar
   popd
 
   pushd src/code.cloudfoundry.org/gorouter
