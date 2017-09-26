@@ -389,7 +389,7 @@ properties:
 
 ## Post Deploy Steps
 
-1. Redeploy cf-release to Enable the Routing API
+#### Redeploy cf-release to Enable the Routing API
 
   After deploying routing-release, you must update your cf-release deployment
   to enable the Routing API included in this release.
@@ -422,7 +422,21 @@ properties:
   bosh -n deploy
   ```
 
-1. Create a Shared Domain in CF
+#### Optional: redeploy Diego to enable TCP routes
+
+  The Diego Route Emitter component must be configured to emit TCP routes in order to support TCP routing.
+  Provide a manifest stub with this property set
+
+  ```
+  property_overrides:
+     tcp_emitter:
+       enabled: true
+  ```
+
+  Then regenerate your Diego manifest and redeploy.
+
+
+#### Create a Shared Domain in CF
 
   After deploying this release you must add the domain you chose (see [Domain
   Names](#domain-names)) to CF as a Shared Domain (admin only), associating it
@@ -456,7 +470,7 @@ properties:
 
   See [Router Groups](#router-groups) for details on that concept.
 
-1. Enable Quotas for TCP Routing
+#### Enable Quotas for TCP Routing
 
   As ports can be a limited resource in some environments, the default quotas
   in Cloud Foundry for IaaS other than BOSH Lite do not allow reservation of
