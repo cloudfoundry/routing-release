@@ -84,11 +84,7 @@ else
 
       $GINKGO_FLAGS multierror routing-api-cli
 
-      $GINKGO_FLAGS -skipPackage=cmd/routing-api routing-api
-
-      $GINKGO_FLAGS -v routing-api/cmd/routing-api
-
-      $GINKGO_FLAGS cf-tcp-router route-registrar
+      $GINKGO_FLAGS routing-api cf-tcp-router route-registrar
   popd
 
   pushd src/code.cloudfoundry.org/gorouter
