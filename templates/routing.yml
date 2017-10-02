@@ -265,16 +265,7 @@ properties:
     request_timeout_in_seconds: (( property_overrides.tcp_router.request_timeout_in_seconds || 300 ))
     health_check_port: (( property_overrides.tcp_router.health_check_port || nil ))
   tcp_emitter:
-    bbs:
-      client_cert: (( property_overrides.tcp_emitter.bbs.client_cert ))
-      client_key: (( property_overrides.tcp_emitter.bbs.client_key ))
-    debug_address: (( property_overrides.tcp_emitter.debug_address ))
-    log_level: (( property_overrides.tcp_emitter.log_level || nil ))
     oauth_secret: (( config_from_cf.uaa.clients.tcp_emitter.secret ))
-    lock_ttl: (( property_overrides.tcp_emitter.lock_ttl || nil ))
-    sync_interval: (( property_overrides.tcp_emitter.sync_interval || nil ))
-    route_ttl: (( property_overrides.tcp_emitter.route_ttl || nil ))
-    lock_retry_interval: (( property_overrides.tcp_emitter.lock_retry_interval || nil ))
   skip_ssl_validation: (( property_overrides.skip_ssl_validation || nil ))
   bbs:
     api_location: (( "bbs.service.cf.internal:8889" ))
