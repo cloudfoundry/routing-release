@@ -1,8 +1,15 @@
 <%
   require 'json'
 
+
+tcp_router_ips = nil
+if_p("acceptance_tests.addresses") { |ips| tcp_router_ips = ips }
+unless tcp_router_ips
+  tcp_router_ips = link("tcp_router").instances.map(&:address)
+end
+
 config = {
-  addresses: p("acceptance_tests.addresses"),
+  addresses: tcp_router_ips,
   api: p("acceptance_tests.cloud_controller.api"),
   apps_domain: Array(p("acceptance_tests.cloud_controller.apps_domain")).first,
   admin_user: p("acceptance_tests.cloud_controller.admin_user"),

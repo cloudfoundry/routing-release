@@ -22,7 +22,6 @@ To run the acceptance tests as an errand, apply the following ops-file to your `
         oauth_secret: "((uaa_clients_tcp_emitter_secret))"
       acceptance_tests:
         nodes: 1
-        addresses: [10.244.0.137] # replace this with the IP address of your TCP router
         cloud_controller:
           api: "api.((system_domain))"
           admin_user: "admin"
