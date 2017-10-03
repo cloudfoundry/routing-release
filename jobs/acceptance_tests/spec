@@ -11,10 +11,6 @@ packages:
  - rtr
  - cf-cli
 
-consumes:
-- name: tcp_router
-  type: router
-
 properties:
   acceptance_tests.nodes:
     default: 4
@@ -25,7 +21,9 @@ properties:
     description: "Whether to pass the -v flag to router acceptance tests"
 
   acceptance_tests.addresses:
-    description: "A list of addresses which will be checked for TCP connectivity and features.  If unset, the tcp_router link will be used instead."
+    default:
+      - "10.244.14.2"
+    description: "A list of addresses which will be checked for TCP connectivity and features"
 
   acceptance_tests.skip_ssl_validation:
     default: false
