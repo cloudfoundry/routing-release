@@ -18,6 +18,7 @@ files:
   - code.cloudfoundry.org/locket/lock/*.go # gosub
   - code.cloudfoundry.org/locket/models/*.go # gosub
   - code.cloudfoundry.org/routing-api/*.go # gosub
+  - code.cloudfoundry.org/routing-api/admin/*.go # gosub
   - code.cloudfoundry.org/routing-api/cmd/routing-api/*.go # gosub
   - code.cloudfoundry.org/routing-api/cmd/routing-api/testrunner/*.go # gosub
   - code.cloudfoundry.org/routing-api/config/*.go # gosub
