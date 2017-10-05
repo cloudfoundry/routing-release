@@ -1,0 +1,36 @@
+---
+name: bbr_routing
+templates:
+  backup.erb: bin/bbr/backup
+  restore.erb: bin/bbr/restore
+  config.json.erb: config/config.json
+  pre-backup-lock: bin/bbr/pre-backup-lock
+  post-backup-unlock: bin/bbr/post-backup-unlock
+  pre-restore-lock: bin/bbr/pre-restore-lock
+  post-restore-unlock: bin/bbr/post-restore-unlock
+
+packages: []
+properties:
+  username:
+    description: "database user"
+    default: routing-api
+  password:
+    description: "database user's password"
+  host:
+    description: "database host"
+    default: "sql-db.service.cf.internal"
+  port:
+    description: "database port"
+    default: 3306
+  adapter:
+    description: "database adapter (mysql or postgres)"
+    default: "mysql"
+  database_name:
+    description: "database name"
+    default: routing-api
+  tables:
+    description: "tables to backup"
+    default: ["router_groups"]
+  release_level_backup:
+    description: "flag to enable backups"
+    default: true

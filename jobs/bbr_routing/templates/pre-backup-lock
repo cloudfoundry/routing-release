@@ -1,0 +1,7 @@
+#!/bin/bash
+
+<% if p('release_level_backup') %>
+echo -e "PUT /lock_router_group_writes HTTP/1.0\r\n" | nc -U /var/vcap/sys/run/routing-api/admin.sock
+<% else %>
+echo "script deactivated due to release_level_backup being set to FALSE\n"
+<% end %>
