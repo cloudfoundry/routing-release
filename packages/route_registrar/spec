@@ -1,7 +1,7 @@
 ---
 name: route_registrar
 dependencies:
-- golang1.8
+- golang1.9
 files:
   - routing-release/src/code.cloudfoundry.org/lager/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/lager/lagerflags/*.go # gosub
