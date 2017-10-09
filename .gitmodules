@@ -184,3 +184,6 @@
 [submodule "src/code.cloudfoundry.org/go-loggregator"]
 	path = src/code.cloudfoundry.org/go-loggregator
 	url = https://github.com/cloudfoundry-incubator/go-loggregator
+[submodule "src/code.cloudfoundry.org/diego-logging-client"]
+	path = src/code.cloudfoundry.org/diego-logging-client
+	url = https://github.com/cloudfoundry/diego-logging-client
