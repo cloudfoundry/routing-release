@@ -15,6 +15,6 @@ haproxy/haproxy-1.5.19.tar.gz:
   object_id: 03a79a93-2124-4dc7-bad4-566e28b079db
   sha: 8aa56f4cca4c1bf27c82f60ec2a040f91acb0bc1
 rtr/rtr-linux-amd64.tgz:
-  size: 2638231
-  object_id: 82080b7f-42ca-4d55-5068-be4161dfcf49
-  sha: a702c7fc3316881387b2d333f7a4b0d01b6552c2
+  size: 2879954
+  object_id: 0cf3bae5-36b5-4169-60e4-047cd0e6c51d
+  sha: 4f00ab7e880241dcdecdeb454f94dce0c4c5749b
