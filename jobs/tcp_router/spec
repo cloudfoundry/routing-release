@@ -15,6 +15,10 @@ packages:
   - tcp_router
   - haproxy
 
+provides:
+  - name: tcp_router
+    type: tcp-router
+
 properties:
   tcp_router.debug_address:
     description: "Address at which to serve debug info"
