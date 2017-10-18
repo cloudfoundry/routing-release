@@ -26,6 +26,7 @@ provides:
   type: routing_api_db
   properties:
   - routing_api.sqldb
+  - release_level_backup
 
 properties:
   routing_api.max_ttl:
@@ -150,5 +151,5 @@ properties:
     default: false
 
   release_level_backup:
-    default: true
-    description: "Include routing api jobs and database in backup and restore operations"
+    default: false
+    description: "Include routing api database in backup and restore operations"

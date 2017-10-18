@@ -10,10 +10,4 @@ consumes:
   type: routing_api_db
 
 packages: []
-properties:
-  tables:
-    description: "tables to backup"
-    default: ["router_groups"]
-  release_level_backup:
-    description: "flag to enable backups"
-    default: true
+properties: {}

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-<% if p('release_level_backup') %>
+<% if link('routing_api_db').p('release_level_backup') %>
 set -ex
 
 JOB_PATH="/var/vcap/jobs/bbr-routingdb"
