@@ -1,6 +1,10 @@
 #!/bin/bash
 
 <% if p('release_level_backup') %>
+nc -z 127.0.0.1 <%= p("routing_api.port") %>
+if [ $? -ne 0 ]; then # routing-api is not running on this instance
+  exit 0 # so there's nothing to do
+fi
 echo -e "PUT /lock_router_group_writes HTTP/1.0\r\n" | nc -U /var/vcap/sys/run/routing-api/admin.sock
 <% else %>
 echo "script deactivated due to release_level_backup being set to FALSE\n"
