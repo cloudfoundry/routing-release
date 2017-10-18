@@ -12,10 +12,20 @@ templates:
   locket_ca.crt.erb: config/certs/locket/ca.crt
   locket_client.crt.erb: config/certs/locket/client.crt
   locket_client.key.erb: config/certs/locket/client.key
+  pre-backup-lock.erb: bin/bbr/pre-backup-lock
+  post-backup-unlock.erb: bin/bbr/post-backup-unlock
+  pre-restore-lock.erb: bin/bbr/pre-restore-lock
+  post-restore-unlock.erb: bin/bbr/post-restore-unlock
 
 packages:
 - routing-api
 - routing_utils
+
+provides:
+- name: routing_api_db
+  type: routing_api_db
+  properties:
+  - routing_api.sqldb
 
 properties:
   routing_api.max_ttl:
@@ -138,3 +148,7 @@ properties:
   routing_api.skip_consul_lock:
     description: "When false, Routing API will obtain a lock from both Consul and Locket. When true, Routing API will obtain the lock from Locket only. Requires locket.api_location to be set and Locket, which is not deployed with cf-release by default."
     default: false
+
+  release_level_backup:
+    default: true
+    description: "Include routing api jobs and database in backup and restore operations"
