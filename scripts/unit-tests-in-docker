@@ -12,7 +12,7 @@ START_SERVICES="service mysql start && service postgresql start && service rsysl
 RUN_UNIT_TEST="cd ${MOUNT_DIR} && source .envrc && ./scripts/run-unit-tests ${COMPONENT}"
 
 docker pull ${IMAGE}
-docker run \
+docker run --rm \
   -v "${PWD}:${MOUNT_DIR}" \
   ${IMAGE} \
   /bin/bash -c "${START_SERVICES} && ${RUN_UNIT_TEST}"
