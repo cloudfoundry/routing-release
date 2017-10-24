@@ -43,7 +43,9 @@ sqldb:
   schema: <%= p("routing_api.sqldb.schema") %>
   username: <%= p("routing_api.sqldb.username") %>
   password: <%= p("routing_api.sqldb.password") %>
+<% if p("routing_api.sqldb.ca_cert") != "" %>
   ca_cert: <%= p("routing_api.sqldb.ca_cert") %>
+<% end %>
 
 locket:
   locket_address: <%= p("routing_api.locket.api_location") %>
