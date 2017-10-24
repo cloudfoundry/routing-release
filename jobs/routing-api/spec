@@ -98,8 +98,6 @@ properties:
     description: "Username used for connecting to SQL database"
   routing_api.sqldb.password:
     description: "Password used for connecting to SQL database"
-  routing_api.sqldb.ca_cert:
-    description: (optional, string) When present, force database connections via TLS.
 
   uaa.ca_cert:
     description : "Certificate authority for communication between clients and UAA."
