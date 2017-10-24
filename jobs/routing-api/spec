@@ -150,6 +150,11 @@ properties:
     description: "When false, Routing API will obtain a lock from both Consul and Locket. When true, Routing API will obtain the lock from Locket only. Requires locket.api_location to be set and Locket, which is not deployed with cf-release by default."
     default: false
 
+  routing_api.admin_port:
+    description: "Local port to listen on with admin endpoint (used for backup/restore locking)"
+    default: 15897
+
+
   release_level_backup:
     default: false
     description: "Include routing api database in backup and restore operations"
