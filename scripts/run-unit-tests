@@ -39,28 +39,6 @@ if [ ${consul_status} -ne 0 ]; then
   rm ${tmpdir}/consul-0.6.3.zip
 fi
 
-# install etcd if needed
-set +e
-etcd --version
-etcd_status=$?
-set -e
-if [ ${etcd_status} -ne 0 ]; then
-  if [ "$OS" == darwin ]; then
-    pushd src/github.com/coreos/etcd
-      git checkout v2.1.1
-      go install .
-      git checkout -
-    popd
-  else
-   OUTPUT="etcd-v2.1.1-linux-amd64.tar.gz"
-   curl -L "https://github.com/coreos/etcd/releases/download/v2.1.1/etcd-v2.1.1-linux-amd64.tar.gz" -o ${OUTPUT}
-   tar -xzf ${OUTPUT} -C /tmp
-   mv /tmp/etcd-v2.1.1-linux-amd64/etcd $GOPATH/bin
-   rm -rf ${OUTPUT}
-   rm -rf /tmp/etcd-v2.1.1-linux-amd64
-  fi
-fi
-
 echo "Running template tests"
   gem install bundler
   bundle install
@@ -98,5 +76,5 @@ else
 fi
 
 if [ "$OS" == linux ]; then
-  rm -rf $GOPATH/bin/{gnatsd,ginkgo,etcd}
+  rm -rf $GOPATH/bin/{gnatsd,ginkgo}
 fi

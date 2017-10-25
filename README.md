@@ -87,12 +87,6 @@ branch.
 1. Choose a domain name for developer to create TCP route from and configure
    DNS to resolve it to your load balancer; see [Domain Names](#domain-names).
    
-### Warning!
-
-This release previously supported etcd as a data store for Routing API, however it was unreliable for persistent data. On upgrading from an older release that was configured to use etcd, data will automatically be migrated to the relational database. 
-
-If the etcd cluster used by an older deployment of this release is configured to require TLS before Routing API data is migrated to a relational database, TCP Routing functionality will fail until Routing API can reconnect to etcd and access the same persistent data. If your strategy for enabling TLS in etcd involves destroying the etcd cluster, TCP Routing will fail. Before configuring etcd to require TLS or destroying etcd, upgrade this release and configure it to use a relational database using the two-phase process described in [Migrating from etcd](#migrating-from-etcd). Once the datastore for Routing API is configured to use a relational database, you can require TLS for etcd. 
-
 ### CF-Release
 
 If you use the BOSH Lite manifest generation script cf-release, and deploy the
@@ -295,7 +289,7 @@ directly to a single TCP router instance.
 
 	If no options are provided, the `generate-bosh-lite-manifest` script expects the cf-release and diego-release manifests to be at `~/workspace/cf-release/bosh-lite/deployments/cf.yml` and `~/workspace/diego-release/bosh-lite/deployments/diego.yml`; the BOSH Lite manifest generation scripts for those releases will put them there by default. 
 
-	**Important:** Before deploying, consider the following sections on manifest configuration for reservable TCP ports and relational databases, and on upgrading to a relational database from etcd.  
+	**Important:** Before deploying, consider the following sections on manifest configuration for reservable TCP ports and relational databases.  
 
 1. Deploy
 
@@ -330,7 +324,7 @@ properties:
 
 If you are using the manifest generation script for BOSH Lite, you can skip this step; routing-api will be configured to use the PostgreSQL database that comes with cf-release. 
 	
-The routing-release now requires a relational database for the Routing API. Configure the properties for `sqldb` below with credentials Routing API requires to connect to the database. To migrate existing deployments to use a relational database see [Migrating from etcd](#Migrating from etcd).
+The routing-release now requires a relational database for the Routing API. Configure the properties for `sqldb` below with credentials Routing API requires to connect to the database.
 
 ```
 properties:
@@ -351,13 +345,6 @@ If you are using [cf-mysql-release](https://github.com/cloudfoundry/cf-mysql-rel
   - `schema` corresponds to `cf_mysql.mysql.seeded_databases[].name`
   - `username` corresponds to `cf_mysql.mysql.seeded_databases[].username`
   - `password` corresponds to `cf_mysql.mysql.seeded_databases[].password`
-
-#### Migrating from etcd
-
-For existing deployments of routing-release on versions prior to 0.141.0, there is a two-phase upgrade process to ensure a zero-downtime migration from etcd to a relational database.
-
-1. Upgrade to routing-release some version between 0.141.0 and 0.146.0, inclusive, but do not add the `routing_api.sqldb` properties which would trigger a migration. The migration depends on a change to routing-api whereby only one instance is active at a time; this is achieved using a lock in Consul.
-1. Then configure your manifest with the `routing_api.sqldb` property and redeploy routing-release. You may upgrade to the latest release version at the same time.
 
 ### Validation of TLS Certificates from Route Services and UAA
 
@@ -588,7 +575,7 @@ the new port range must include those ports that have already been reserved.
 
 The TCP Router and Routing API are stateless and horizontally
 scalable. The TCP Routers must be fronted by a load balancer for
-high-availability. The Routing API depends on a clustered etcd data store. For
+high-availability. The Routing API depends on a database, that can be clustered for high-availability. For
 high availability, deploy multiple instances of each job, distributed across
 regions of your infrastructure.
 
