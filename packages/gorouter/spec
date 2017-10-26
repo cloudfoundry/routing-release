@@ -124,5 +124,6 @@ files:
   - routing-release/src/github.com/uber-go/zap/*.go # gosub
   - routing-release/src/github.com/urfave/negroni/*.go # gosub
   - routing-release/src/github.com/vito/go-sse/sse/*.go # gosub
+  - routing-release/src/github.com/mailru/easyjson/**/*.go # gosub
   - routing-release/src/golang.org/x/crypto/pbkdf2/*.go # gosub
   - routing-release/src/gopkg.in/yaml.v2/*.go # gosub

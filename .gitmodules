@@ -187,3 +187,6 @@
 [submodule "src/code.cloudfoundry.org/diego-logging-client"]
 	path = src/code.cloudfoundry.org/diego-logging-client
 	url = https://github.com/cloudfoundry/diego-logging-client
+[submodule "src/github.com/mailru/easyjson"]
+	path = src/github.com/mailru/easyjson
+	url = https://github.com/mailru/easyjson.git
