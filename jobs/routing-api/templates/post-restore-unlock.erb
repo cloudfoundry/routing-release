@@ -2,6 +2,7 @@
 
 <% if p('release_level_backup') %>
   /var/vcap/bosh/bin/monit start routing-api
+  sleep 30
 <% else %>
 echo "script deactivated due to release_level_backup being set to FALSE\n"
 <% end %>
