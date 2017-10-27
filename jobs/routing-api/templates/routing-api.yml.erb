@@ -25,16 +25,22 @@ consul_cluster:
   lock_ttl: <%= p("routing_api.lock_ttl") %>
   retry_interval: <%= p("routing_api.lock_retry_interval") %>
 
-sqldb:
-  host: <%= p("routing_api.sqldb.host") %>
-  port: <%= p("routing_api.sqldb.port") %>
-  type: <%= p("routing_api.sqldb.type") %>
-  schema: <%= p("routing_api.sqldb.schema") %>
-  username: <%= p("routing_api.sqldb.username") %>
-  password: <%= p("routing_api.sqldb.password") %>
-<% if_p("routing_api.sqldb.ca_cert") do %>
-  ca_cert: <%= p("routing_api.sqldb.ca_cert") %>
-<% end %>
+<%=
+  sqldb = {
+    'sqldb' => {
+      'host' => p("routing_api.sqldb.host"),
+      'port' => p("routing_api.sqldb.port"),
+      'type' => p("routing_api.sqldb.type"),
+      'schema' => p("routing_api.sqldb.schema"),
+      'username' => p("routing_api.sqldb.username"),
+      'password' => p("routing_api.sqldb.password"),
+    }
+  }
+  if_p("routing_api.sqldb.ca_cert") do |cert|
+    sqldb['sqldb']['ca_cert'] = cert
+  end
+  sqldb.to_yaml[4..-2]
+%>
 
 locket:
   locket_address: <%= p("routing_api.locket.api_location") %>
