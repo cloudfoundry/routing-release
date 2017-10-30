@@ -2,6 +2,8 @@
 
 <% if p('release_level_backup') %>
   /var/vcap/bosh/bin/monit start routing-api
+  # if uaa is not up, routing-api will fail to start. This will lock monit for up to a minute
+  # if monit is locked, then capi unlock will not work
   sleep 30
 <% else %>
 echo "script deactivated due to release_level_backup being set to FALSE\n"

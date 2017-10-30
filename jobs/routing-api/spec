@@ -9,6 +9,7 @@ templates:
   locket_ca.crt.erb: config/certs/locket/ca.crt
   locket_client.crt.erb: config/certs/locket/client.crt
   locket_client.key.erb: config/certs/locket/client.key
+  bbr-metadata: bin/bbr/metadata
   pre-backup-lock.erb: bin/bbr/pre-backup-lock
   post-backup-unlock.erb: bin/bbr/post-backup-unlock
   pre-restore-lock.erb: bin/bbr/pre-restore-lock
