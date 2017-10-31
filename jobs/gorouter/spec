@@ -10,8 +10,6 @@ templates:
   dns_health_check.erb: bin/dns_health_check
   publish_to_nats.erb: bin/publish_to_nats
   gorouter.yml.erb: config/gorouter.yml
-  gorouter_logrotate.cron.erb: config/gorouter_logrotate.cron
-  logrotate.conf.erb: config/logrotate.conf
   drain: bin/drain
   uaa_ca.crt.erb: config/certs/uaa/ca.crt
 
@@ -135,15 +133,6 @@ properties:
   router.route_services_timeout:
     description: "Expiry time of a route service signature in seconds"
     default: 60
-  router.logrotate.freq_min:
-    description: "The frequency in minutes which logrotate will rotate VM logs"
-    default: 5
-  router.logrotate.rotate:
-    description: "The number of files that logrotate will keep around on the VM"
-    default: 7
-  router.logrotate.size:
-    description: "The size at which logrotate will decide to rotate the log file"
-    default: 2M
   router.extra_headers_to_log:
     description: "An array of headers that access log events will be annotated with"
     default: []
@@ -245,6 +234,9 @@ properties:
   router.enable_access_log_streaming:
     description: "Enables streaming of access log to syslog."
     default: false
+  router.write_access_logs_locally:
+    description: "Enables writing access log to local disk."
+    default: true
   router.suspend_pruning_if_nats_unavailable:
     description: |
       Suspend pruning of routes when NATs is unavailable and maintain the

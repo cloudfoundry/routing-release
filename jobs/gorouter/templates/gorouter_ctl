@@ -52,8 +52,6 @@ case $1 in
     # Allowed number of open file descriptors
     ulimit -n 100000
 
-    (crontab -l | sed /gorouter.*logrotate/d; cat /var/vcap/jobs/gorouter/config/gorouter_logrotate.cron) | sed /^$/d | crontab
-
     setcap cap_net_bind_service=+ep /var/vcap/packages/gorouter/bin/gorouter
 
     chpst -u vcap:vcap /var/vcap/jobs/gorouter/bin/run_gorouter &
