@@ -36,8 +36,9 @@ properties:
   route_registrar.routes:
     description: |
       * Array of hashes determining which routes will be registered.
-      * Each hash should have 'port', 'uris', 'registration_interval'
+      * Each hash should have 'port' or 'tls_port', 'uris', 'registration_interval'
         and 'name' keys.
+      * 'server_cert_domain_san' is the SAN on the destination host's TLS certificate. You must provide 'server_cert_domain_san' when 'tls_port' is specified.
       * 'registration_interval' is the delay between
         routing updates. It must be a time duration represented as a string
         (e.g. "10s").
@@ -78,6 +79,11 @@ properties:
           name: my-service-health_check
           script_path: /path/to/script
           timeout: 5s
+      - name: my-tls-endpoint
+        tls_port: 12346
+        server_cert_domain_san: "my-tls-endpoint.internal.com"
+        uris:
+          - my-service.system-domain.com
       - name: my-debug-endpoint
         port: 12346
         uris:
