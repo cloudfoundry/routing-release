@@ -15,7 +15,7 @@ consumes:
 templates:
   pre-start: bin/pre-start
   route_registrar_ctl.erb: bin/route_registrar_ctl
-  registrar_settings.yml.erb: config/registrar_settings.yml
+  registrar_settings.json.erb: config/registrar_settings.json
 
 properties:
   nats.machines:
