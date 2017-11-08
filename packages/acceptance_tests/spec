@@ -13,8 +13,7 @@ files:
   - code.cloudfoundry.org/cf-routing-test-helpers/helpers/*.go # gosub
   - code.cloudfoundry.org/cf-routing-test-helpers/schema/*.go # gosub
   - code.cloudfoundry.org/clock/*.go # gosub
-  - code.cloudfoundry.org/lager/*.go # gosub
-  - code.cloudfoundry.org/lager/lagertest/*.go # gosub
+  - code.cloudfoundry.org/lager/**/*.go
   - code.cloudfoundry.org/routing-acceptance-tests/assets/golang/*.go # gosub
   - code.cloudfoundry.org/routing-acceptance-tests/assets/tcp-droplet-receiver/*.go # gosub
   - code.cloudfoundry.org/routing-acceptance-tests/assets/tcp-sample-receiver/*.go # gosub

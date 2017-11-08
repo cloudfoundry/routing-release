@@ -12,8 +12,7 @@ files:
   - code.cloudfoundry.org/consuladapter/*.go # gosub
   - code.cloudfoundry.org/debugserver/*.go # gosub
   - code.cloudfoundry.org/eventhub/*.go # gosub
-  - code.cloudfoundry.org/lager/*.go # gosub
-  - code.cloudfoundry.org/lager/lagerflags/*.go # gosub
+  - code.cloudfoundry.org/lager/**/*.go
   - code.cloudfoundry.org/locket/*.go # gosub
   - code.cloudfoundry.org/locket/lock/*.go # gosub
   - code.cloudfoundry.org/locket/models/*.go # gosub
