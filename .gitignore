@@ -17,6 +17,7 @@ dev_releases
 *~
 *#
 #*
+/.idea
 
 bosh-lite/manifests
 bosh-lite/deployments
