@@ -27,6 +27,7 @@ describe 'gorouter.yml.erb' do
             'password' => 'pass'
           },
           'enable_ssl' => true,
+          'client_cert_validation' => 'none',
           'logging_level' => 'info',
           'tracing' => {
             'enable_zipkin' => false
@@ -121,6 +122,23 @@ describe 'gorouter.yml.erb' do
   end
 
   context 'given a generally valid manifest' do
+    describe 'client_cert_validation' do
+      context 'when no override is provided' do
+        it 'should default to off' do
+          expect(parsed_yaml['client_cert_validation']).to eq('none')
+        end
+      end
+
+      context 'when the value is not valid' do
+        before do
+          deployment_manifest_fragment['properties']['router']['client_cert_validation'] = 'meow'
+        end
+        it 'should error' do
+          expect { raise parsed_yaml }.to raise_error(RuntimeError, 'router.client_cert_validation must be "off", "request", or "require"')
+        end
+      end
+    end
+
     context 'tls_pem' do
       context 'when correct tls_pem is provided' do
         it 'should configure the property' do
