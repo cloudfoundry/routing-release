@@ -137,20 +137,6 @@ describe 'gorouter.yml.erb' do
           expect { raise parsed_yaml }.to raise_error(RuntimeError, 'router.client_cert_validation must be "none", "request", or "require"')
         end
       end
-
-      context 'when enable_ssl is false' do
-        before do
-          deployment_manifest_fragment['properties']['router']['enable_ssl'] = false
-        end
-        context 'when a value is provided' do
-          before do
-            deployment_manifest_fragment['properties']['router']['client_cert_validation'] = 'none'
-          end
-          it 'should error' do
-            expect { raise parsed_yaml }.to raise_error(RuntimeError, 'router.client_cert_validation is set, but enable_ssl is false')
-          end
-        end
-      end
     end
 
     context 'tls_pem' do
