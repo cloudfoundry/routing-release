@@ -138,13 +138,21 @@ enable_ssl: <%= p("router.enable_ssl") %>
 <%
   allowed_client_cert_validations = ["none", "request", "require"]
   client_cert_validation = p("router.client_cert_validation")
+
   if !allowed_client_cert_validations.include?(client_cert_validation)
-    raise 'router.client_cert_validation must be "off", "request", or "require"'
+    raise 'router.client_cert_validation must be "none", "request", or "require"'
   end
 %>
 client_cert_validation: <%= client_cert_validation %>
 
 min_tls_version: <%= p("router.min_tls_version") %>
+<% else
+
+  if p("router.client_cert_validation") != ""
+    raise 'router.client_cert_validation is set, but enable_ssl is false'
+  end
+
+%>
 <% end %>
 disable_http: <%= p("router.disable_http") %>
 

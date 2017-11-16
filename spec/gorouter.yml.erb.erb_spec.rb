@@ -124,7 +124,7 @@ describe 'gorouter.yml.erb' do
   context 'given a generally valid manifest' do
     describe 'client_cert_validation' do
       context 'when no override is provided' do
-        it 'should default to off' do
+        it 'should default to none' do
           expect(parsed_yaml['client_cert_validation']).to eq('none')
         end
       end
@@ -134,7 +134,21 @@ describe 'gorouter.yml.erb' do
           deployment_manifest_fragment['properties']['router']['client_cert_validation'] = 'meow'
         end
         it 'should error' do
-          expect { raise parsed_yaml }.to raise_error(RuntimeError, 'router.client_cert_validation must be "off", "request", or "require"')
+          expect { raise parsed_yaml }.to raise_error(RuntimeError, 'router.client_cert_validation must be "none", "request", or "require"')
+        end
+      end
+
+      context 'when enable_ssl is false' do
+        before do
+          deployment_manifest_fragment['properties']['router']['enable_ssl'] = false
+        end
+        context 'when a value is provided' do
+          before do
+            deployment_manifest_fragment['properties']['router']['client_cert_validation'] = 'none'
+          end
+          it 'should error' do
+            expect { raise parsed_yaml }.to raise_error(RuntimeError, 'router.client_cert_validation is set, but enable_ssl is false')
+          end
         end
       end
     end
