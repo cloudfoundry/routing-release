@@ -74,7 +74,7 @@ properties:
     default: false
   router.client_cert_validation:
     description: |
-      none - Gorouter will not request client certificates in TLS handshakes, and will ignore them if presented.
+      none - Gorouter will not request client certificates in TLS handshakes, and will ignore them if presented. Incompatible with `forwarded_client_cert: forward` or `sanitize_set`.
       request - Gorouter will request client certificates in TLS handshakes, and will validate them when presented, but will not require them.
       require - Gorouter will fail a TLS handshake if the client does not provide a certificate signed by a CA it trusts.
     default: none
@@ -118,14 +118,16 @@ properties:
     default: "ECDHE-RSA-AES128-GCM-SHA256:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
   router.forwarded_client_cert:
     description: |
-        How to handle the x-forwarded-client-cert (XFCC) HTTP header. Possible values are:
-        - always_forward: Always forward the XFCC header in the request, regardless of whether the client connection is mTLS.
+      How to handle the x-forwarded-client-cert (XFCC) HTTP header. Possible values are:
+      - always_forward: Always forward the XFCC header in the request, regardless of whether the client connection is mTLS.
         Use this value when your load balancer is forwarding the client certificate and requests are not forwarded to Gorouter over mTLS. In the case where the connection between load balancer and Gorouter is mTLS, the client certificate received by Gorouter in the TLS handshake will not be forwarded.
-        - forward: Forward the XFCC header received from the client only when the client connection is mTLS.
+      - forward: Forward the XFCC header received from the client only when the client connection is mTLS.
         This is a more secure version of `always_forward`. The client certificate received by Gorouter in the TLS handshake will not be forwarded.
-        - sanitize_set: Strip any instances of XFCC headers from the client request.
+        Requires `client_cert_validation: request` or `require`.
+      - sanitize_set: Strip any instances of XFCC headers from the client request.
         When the client connection is mTLS, the client certificate received by Gorouter in the TLS handshake will be forwarded in this header.
         Values will be base64 encoded PEM. Use this value when Gorouter is the first component to terminate TLS.
+        Requires `client_cert_validation: request` or `require`.
     default: always_forward
   router.route_services_secret:
     description: "Support for route services is disabled when no value is configured. A robust passphrase is recommended."
