@@ -76,7 +76,7 @@ properties:
     description: |
       none - Gorouter will not request client certificates in TLS handshakes, and will ignore them if presented. Incompatible with `forwarded_client_cert: forward` or `sanitize_set`.
       request - Gorouter will request client certificates in TLS handshakes, and will validate them when presented, but will not require them.
-      require - Gorouter will fail a TLS handshake if the client does not provide a certificate signed by a CA it trusts.
+      require - Gorouter will fail a TLS handshake if the client does not provide a certificate signed by a CA it trusts. For use with Gorouters responsible for app domains only; incompatible with Gorouters responsible for the CF system domain as not all clients provide client certificates.
     default: request
   router.disable_http:
     description: Disables the http listener on port specified by router.port. This cannot be set to true if enable_ssl is false.
