@@ -26,10 +26,13 @@ files:
   - routing-release/src/code.cloudfoundry.org/gorouter/logger/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/logger/fakes/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/mbus/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/mbus/fakes/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/metrics/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/metrics/fakes/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/metrics/monitor/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/proxy/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/proxy/fails/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/proxy/fails/fakes/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/proxy/handler/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/proxy/round_tripper/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/proxy/round_tripper/fakes/*.go # gosub
@@ -81,8 +84,13 @@ files:
   - routing-release/src/github.com/gogo/protobuf/gogoproto/*.go # gosub
   - routing-release/src/github.com/gogo/protobuf/proto/*.go # gosub
   - routing-release/src/github.com/gogo/protobuf/protoc-gen-gogo/descriptor/*.go # gosub
-  - routing-release/src/github.com/nats-io/nats/*.go # gosub
-  - routing-release/src/github.com/nats-io/nats/encoders/builtin/*.go # gosub
+  - routing-release/src/github.com/mailru/easyjson/*.go # gosub
+  - routing-release/src/github.com/mailru/easyjson/buffer/*.go # gosub
+  - routing-release/src/github.com/mailru/easyjson/jlexer/*.go # gosub
+  - routing-release/src/github.com/mailru/easyjson/jwriter/*.go # gosub
+  - routing-release/src/github.com/nats-io/go-nats/*.go # gosub
+  - routing-release/src/github.com/nats-io/go-nats/encoders/builtin/*.go # gosub
+  - routing-release/src/github.com/nats-io/go-nats/util/*.go # gosub
   - routing-release/src/github.com/nats-io/nuid/*.go # gosub
   - routing-release/src/github.com/nu7hatch/gouuid/*.go # gosub
   - routing-release/src/github.com/onsi/ginkgo/*.go # gosub
@@ -124,6 +132,5 @@ files:
   - routing-release/src/github.com/uber-go/zap/*.go # gosub
   - routing-release/src/github.com/urfave/negroni/*.go # gosub
   - routing-release/src/github.com/vito/go-sse/sse/*.go # gosub
-  - routing-release/src/github.com/mailru/easyjson/**/*.go # gosub
   - routing-release/src/golang.org/x/crypto/pbkdf2/*.go # gosub
   - routing-release/src/gopkg.in/yaml.v2/*.go # gosub

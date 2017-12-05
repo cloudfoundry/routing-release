@@ -103,9 +103,9 @@
 [submodule "src/code.cloudfoundry.org/gorouter"]
 	path = src/code.cloudfoundry.org/gorouter
 	url = https://github.com/cloudfoundry/gorouter
-[submodule "src/github.com/nats-io/nats"]
-	path = src/github.com/nats-io/nats
-	url = https://github.com/nats-io/nats
+[submodule "src/github.com/nats-io/go-nats"]
+	path = src/github.com/nats-io/go-nats
+	url = https://github.com/nats-io/go-nats
 [submodule "src/code.cloudfoundry.org/localip"]
 	path = src/code.cloudfoundry.org/localip
 	url = https://github.com/cloudfoundry/localip

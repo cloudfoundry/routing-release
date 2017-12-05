@@ -40,7 +40,7 @@ if [ ${consul_status} -ne 0 ]; then
 fi
 
 echo "Running template tests"
-  gem install bundler
+  # gem install bundler
   bundle install
   rubocop spec # fix these errors by running 'rubocop -a spec' or add an ignore directive
   bundle exec rspec
