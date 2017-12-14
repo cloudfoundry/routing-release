@@ -5,7 +5,7 @@ set -u
 set -o pipefail
 
 # COMPONENT takes only single package name
-COMPONENT=$1
+COMPONENT=${1:-gorouter}
 IMAGE="cloudfoundry/cf-routing-pipeline"
 MOUNT_DIR="/routing-release"
 START_SERVICES="service mysql start && service postgresql start && service rsyslog start"
