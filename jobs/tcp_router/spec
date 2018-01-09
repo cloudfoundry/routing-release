@@ -74,4 +74,3 @@ properties:
   uaa.ca_cert:
     description : "Certificate authority for communication between clients and uaa."
     default: ""
-

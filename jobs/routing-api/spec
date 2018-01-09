@@ -20,6 +20,13 @@ packages:
 - routing_utils
 
 provides:
+- name: routing_api
+  type: routing_api
+  properties:
+  - routing_api.clients
+  - routing_api.system_domain
+  - uaa.ca_cert
+  - skip_ssl_validation
 - name: routing_api_db
   type: routing_api_db
   properties:
@@ -94,6 +101,12 @@ properties:
 
   uaa.tls_port:
     description: "Port on which UAA is listening for TLS connections. This is required for obtaining a key to verify client OAuth tokens."
+
+  routing_api.clients:
+    description: "OAuth client ids and secrets provided via link to jobs in other BOSH deployments that need to read and/or write to Routing API. These clients must be configured in UAA via API or using the property uaa.clients with the desired scopes. For a list of scopes supported see https://github.com/cloudfoundry-incubator/routing-api/blob/master/docs/api_docs.md. Jobs consuming the link should use these credentials to fetch a token from UAA with which to authenticate with Routing API."
+    example:
+      cfcr_routing_api_client:
+        secret: "((uaa_clients_cfcr_routing_api_client_secret))"
 
   routing_api.router_groups:
     description: "Array of router groups that will be seeded into routing_api database. Once some value is included with a deploy, subsequent changes to this property will be ignored. TCP Routing requires a router group of type: tcp."
