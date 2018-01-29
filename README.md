@@ -318,10 +318,10 @@ properties:
 	- name: default-tcp
 	  reservable_ports: 1024-1123
 	  type: tcp
-  - name: another-tcp
+        - name: another-tcp
 	  reservable_ports: [1066, 1266]
 	  type: tcp
-  - name: other-tcp
+        - name: other-tcp
 	  reservable_ports: 1111-2222,4444
 	  type: tcp
 ```
