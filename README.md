@@ -60,24 +60,17 @@ branch.
 
 ## Deploying Routing for Cloud Foundry
 
-1. Configure a load balancer providing high availability for the TCP routers to
-   forward a range of ports to the TCP routers. See
-   [Load Balancer Requirements](#load-balancer-requirements-for-tcp-routing).
+1. For high availability, configure a load balancer in front of the routers; for more information see [High Availability](#high-availability). If high-availability is not required allocate a public IP to a single instance of each router. See [Port Requirements for TCP Routing](#port-requirements-for-tcp-routing). 
 
-1. Choose a domain name for developer to create TCP route from and configure
-   DNS to resolve it to your load balancer; see [Domain Names](#domain-names). 
+1. If you are using a load balancer see [Configuring Load Balancer Healthcheck](https://docs.cloudfoundry.org/adminguide/configure-lb-healthcheck.html).
+
+1. Choose domain names from which developers will configure HTTP and TCP routes for their applications. Separate domain names will be required for HTTP and TCP routing. Configure DNS to resolve these domain names to the load balancer in front of the routers. You may use the same or separate load balancers for the HTTP and TCP domains. If high-availability is not required configure DNS to resolve the domains directly to a single instance of the routers.
 
 1. If your manifest is configured with self-signed certificates for UAA, configure routing components to skip validation of the TLS certificate; see [Validation of TLS Certificates from Route Services and UAA](#validation-of-tls-certificates-from-route-services-and-uaa).
    
 1. Deploy Cloud Foundry using the instructions for [cf-deployment](https://github.com/cloudfoundry/cf-deployment/blob/master/deployment-guide.md).
 
-### Load Balancer requirements for TCP routing
-
-If you are deploying routing-release to an environment that requires high availability, a load balancer is required to front the TCP routers. The HAProxy job that comes with cf-release does not fulfill this requirement. If you are using a load balancer for this purpose, you must configure it to forward a range of ports to the TCP routers, and also to periodically healthcheck them. If high-availability is not required you can skip this section and allocate a public IP to a single TCP router instance.
-
-For more on high availability, see [High Availability](#high-availability).
-
-#### Ports
+### Port Requirements for TCP Routing
 
 Choose how many TCP routes you'd like to offer. For each TCP route, a port must
 be opened on your load balancer. Configure your load balancer to forward the
@@ -102,37 +95,7 @@ range").
 ```
 
 
-#### Healthchecking of TCP Routers
 
-In order to determine whether TCP Router instances are eligible for routing
-requests to, configure your load balancer to periodically check the health of
-each instance by attempting a TCP connection. By default the health check port
-is 80. This port can be configured using the `haproxy.health_check_port`
-property in the `property-overrides.yml` stub file.
-
-For example, to simulate this health check manually:
-```
-nc -vz <tcp router IP> 80
-Connection to <tcp router IP> port 80 [tcp/http] succeeded!
-```
-
-You can also check the health of each TCP Router instance by making an HTTP
-request to `http://<tcp router IP>:<haproxy.health_check_port>/health`.
-
-For example:
-```
-curl http://<tcp router IP>:80/health
-<html><body><h1>200 OK</h1>
-Service ready.
-</body></html>
-```
-
-### Domain Names
-
-Choose a domain name from which developers will configure TCP routes for their
-applications. Configure DNS to resolve this domain name to the load balancer.
-If high-availability is not required configure DNS to resolve the TCP domain
-directly to a single TCP router instance.
 
 ### Validation of TLS Certificates from Route Services and UAA
 
@@ -503,14 +466,4 @@ to quickly consume metrics from the Firehose.
 
 Steps for enabling PROXY Protocol on the GoRouter can be found
 [here](https://github.com/cloudfoundry/gorouter/blob/master/README.md#proxy-protocol).
-
-## Configure Load Balancer healthchecks for Gorouter
-
-- On shutdown, the healthcheck endpoint will return 503 for a duration defined
-  by `router.drain_wait` while Gorouter continues to serve requests. When
-  `router.drain_wait` expires, Gorouter will stop accepting connections and the
-  process will gracefully stop.
-
-- On startup, the healthcheck endpoint will return a 503 for a duration equal to `router.requested_route_registration_interval_in_seconds`, during which time the router will not accept connections. This time is used to preload the routing table. The healthcheck endpoint will then return a 200 and the router will begin accepting connections. BOSH will not consider the startup process complete until an additional duration equal to `router.load_balancer_healthy_threshold`, after which time other instances of Gorouter will be deployed or upgraded. 
-
 
