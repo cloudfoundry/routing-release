@@ -1,14 +1,12 @@
 #!/bin/bash
 
-set -e
-set -u
-set -o pipefail
+set -eu -o pipefail
 
-# COMPONENT takes only single package name
-COMPONENT=${1:-gorouter}
+# if COMPONENT is not specified then all components will be tested
+COMPONENT=${1:-""}
 IMAGE="cloudfoundry/cf-routing-pipeline"
 MOUNT_DIR="/routing-release"
-START_SERVICES="service mysql start && service postgresql start && service rsyslog start"
+START_SERVICES="chown -R mysql:mysql /var/lib/mysql && service mysql start && service postgresql start && service rsyslog start"
 RUN_UNIT_TEST="cd ${MOUNT_DIR} && source .envrc && ./scripts/run-unit-tests ${COMPONENT}"
 
 docker pull ${IMAGE}
