@@ -21,7 +21,7 @@ branch.
   ```
   mkdir -p ~/workspace
   cd ~/workspace
-  git clone https://github.com/cloudfoundry-incubator/routing-release.git
+  git clone https://github.com/cloudfoundry/routing-release.git
   cd routing-release/
   ```
 
@@ -80,7 +80,7 @@ Routing API must be configured with the same range of ports. By default cf-deplo
 `routing-api.router_groups.reservable_ports`. This is a seeded value only;
 after deploy, changes to this property will be ignored. To modify the
 reservable port range after deployment, use the [Routing
-API](https://github.com/cloudfoundry-incubator/routing-api#using-the-api-manually);
+API](https://github.com/cloudfoundry/routing-api#using-the-api-manually);
 (see "To update a Router Group's reservable_ports field with a new port
 range").
 
@@ -235,7 +235,7 @@ bosh run errand routing_acceptance_tests
 ```
 
 ### Manually
-See the README for [Routing Acceptance Tests](https://github.com/cloudfoundry-incubator/routing-acceptance-tests)
+See the README for [Routing Acceptance Tests](https://github.com/cloudfoundry/routing-acceptance-tests)
 
 ## Manual Testing of TCP Routing
 
@@ -444,7 +444,7 @@ The same reservable port range must be configured both on the load balancer,
 and in this release using the manifest property
 `routing-api.router_groups.reservable_ports`. The port range can be modified
 after deploying using [the Routing
-API](https://github.com/cloudfoundry-incubator/routing-api#using-the-api-manually).
+API](https://github.com/cloudfoundry/routing-api#using-the-api-manually).
 
 **Note:** when modifying the port range using the Routing API, consider that
 the new port range must include those ports that have already been reserved.
@@ -458,7 +458,7 @@ high availability, deploy multiple instances of each job, distributed across
 regions of your infrastructure.
 
 ## Routing API
-For details refer to [Routing API](https://github.com/cloudfoundry-incubator/routing-api/blob/master/README.md).
+For details refer to [Routing API](https://github.com/cloudfoundry/routing-api/blob/master/README.md).
 
 ## Metrics Documentation
 For documentation on metrics available for streaming from Routing components
