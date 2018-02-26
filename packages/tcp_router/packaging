@@ -1,12 +1,18 @@
-set -e
+set -ex
 
-mkdir -p ${BOSH_INSTALL_TARGET}/src
-cp -a . ${BOSH_INSTALL_TARGET}/src
-export GOPATH=$BOSH_INSTALL_TARGET
+mkdir -p "${BOSH_INSTALL_TARGET}/bin"
+source /var/vcap/packages/golang-1.9-linux/bosh/compile.env
 
-export GOROOT=$(readlink -nf /var/vcap/packages/golang1.9)
-export PATH=$GOROOT/bin:$PATH
-go install code.cloudfoundry.org/cf-tcp-router
+mkdir -p "${GOPATH}/src"
 
-# clean up source artifacts
-rm -rf ${BOSH_INSTALL_TARGET}/src ${BOSH_INSTALL_TARGET}/pkg
+mv code.cloudfoundry.org "${GOPATH}/src"
+mv github.com "${GOPATH}/src"
+mv gopkg.in "${GOPATH}/src"
+
+pushd ${GOPATH}/src/code.cloudfoundry.org/cf-tcp-router
+  go build -o "${BOSH_INSTALL_TARGET}/bin/cf-tcp-router" .
+popd
+
+chmod +x "${BOSH_INSTALL_TARGET}/bin/cf-tcp-router"
+
+rm -rf "${GOPATH}/src" "${GOPATH}/pkg"

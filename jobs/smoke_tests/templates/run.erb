@@ -1,26 +1,23 @@
 #!/bin/bash -l
 
-set -e -x
+set -ex
 
-export GOROOT=$(readlink -nf /var/vcap/packages/golang1.9)
-export PATH=${GOROOT}/bin:${PATH}
+source /var/vcap/packages/golang-1.9-linux/bosh/runtime.env
 
-export GOPATH=/var/vcap/packages/acceptance_tests
-export PATH=${GOPATH}/bin:${PATH}
+mkdir -p $GOPATH/src
+cp -R /var/vcap/packages/acceptance_tests/src/* $GOPATH/src
 
 export PATH=/var/vcap/packages/cf-cli/bin:${PATH} # put the cf cli on the path
-
-export GOPATH=${PWD}/Godeps/_workspace:${GOPATH}
-export PATH=${PWD}/Godeps/_workspace/bin:${PATH}
-
 export CONFIG=/var/vcap/jobs/smoke_tests/bin/config.json
 
 mkdir -p /var/vcap/sys/log/smoke_tests
-cd /var/vcap/packages/acceptance_tests/src/code.cloudfoundry.org/routing-acceptance-tests
 
 EXITSTATUS=0
 verbose=<%= properties.acceptance_tests.verbose ? "-v" : "" %>
-bin/smoke_tests -randomizeAllSpecs $verbose -keepGoing || EXITSTATUS=$?
+
+pushd $GOPATH/src/code.cloudfoundry.org/routing-acceptance-tests
+  bin/smoke_tests -randomizeAllSpecs $verbose -keepGoing || EXITSTATUS=$?
+popd
 
 echo "Smoke Tests Complete; exit status: $EXITSTATUS"
 

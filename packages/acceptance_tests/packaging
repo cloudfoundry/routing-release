@@ -1,13 +1,4 @@
-set -e -x
+set -ex
 
-export GOROOT=$(readlink -nf /var/vcap/packages/golang1.9)
-export PATH=${GOROOT}/bin:${PATH}
-
-export GOPATH=$BOSH_INSTALL_TARGET
-
-mkdir -p ${GOPATH}/src
-cp -a . ${GOPATH}/src
-
-cd ${GOPATH}/src/code.cloudfoundry.org/routing-acceptance-tests
-
-go install github.com/onsi/ginkgo/ginkgo
+mkdir -p "${BOSH_INSTALL_TARGET}/src"
+cp -a . "${BOSH_INSTALL_TARGET}/src"

@@ -1,7 +1,9 @@
 ---
 name: gorouter
+
 dependencies:
-- golang1.9
+- golang-1.9-linux
+
 files:
   - routing-release/src/code.cloudfoundry.org/gorouter/**/*.{go,golden,proto,c,h,}
   - routing-release/src/code.cloudfoundry.org/gorouter/LICENSE
