@@ -54,7 +54,7 @@ properties:
     description: "Number of CPUs to utilize, the default (-1) will equal the number of available CPUs"
     default: -1
   router.debug_address:
-    description: "Address at which to serve debug info"
+    description: "Endpoint for process profiling. For more info see https://github.com/cloudfoundry/debugserver"
     default: "127.0.0.1:17002"
   router.secure_cookies:
     description: "Set secure flag on http cookies"
