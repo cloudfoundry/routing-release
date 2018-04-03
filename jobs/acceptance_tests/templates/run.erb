@@ -2,7 +2,7 @@
 
 set -ex
 
-source /var/vcap/packages/golang-1.10-linux/bosh/runtime.env
+source /var/vcap/packages/golang-*-linux/bosh/runtime.env
 
 mkdir -p $GOPATH/src
 cp -R /var/vcap/packages/acceptance_tests/src/* $GOPATH/src
