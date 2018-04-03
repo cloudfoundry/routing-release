@@ -2,7 +2,7 @@
 name: tcp_router
 
 dependencies:
-  - golang-1.9-linux
+  - golang-1.10-linux
 
 files:
   - code.cloudfoundry.org/cf-tcp-router/*.go # gosub

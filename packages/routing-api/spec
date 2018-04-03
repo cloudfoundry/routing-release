@@ -2,7 +2,7 @@
 name: routing-api
 
 dependencies:
-  - golang-1.9-linux
+  - golang-1.10-linux
 
 files:
   - code.cloudfoundry.org/lager/**/*.go
