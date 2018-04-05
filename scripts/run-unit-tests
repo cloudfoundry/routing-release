@@ -70,6 +70,7 @@ else
     go build -race .
 
     go vet ./...
+    go tool vet --shadow .
 
     $GINKGO_FLAGS
     popd
