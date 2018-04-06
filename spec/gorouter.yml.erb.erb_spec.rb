@@ -73,6 +73,7 @@ describe 'gorouter.yml.erb' do
           'extra_headers_to_log' => 'test-header',
           'enable_proxy' => false,
           'force_forwarded_proto_https' => false,
+          'sanitize_forwarded_proto' => false,
           'suspend_pruning_if_nats_unavailable' => false,
           'max_idle_connections' => 100,
           'backends' => {
