@@ -3,6 +3,10 @@
 This repo is a [BOSH release](https://github.com/cloudfoundry/bosh) that
 delivers HTTP and TCP routing for Cloud Foundry.
 
+## Getting Help
+
+For help or questions with this release or any of its submodules, you can reach the maintainers on Slack at [cloudfoundry.slack.com](https://cloudfoundry.slack.com) in the `#routing` channel. 
+
 ## Developer Workflow
 
 When working on individual components of TCP Router, work out of the submodules
