@@ -5,7 +5,6 @@ dependencies:
   - golang-1.10-linux
 
 files:
-  - code.cloudfoundry.org/lager/**/*.go
   - code.cloudfoundry.org/cf-tcp-router/utils/*.go # gosub
   - code.cloudfoundry.org/cfhttp/*.go # gosub
   - code.cloudfoundry.org/cfhttp/unix_transport/*.go # gosub
@@ -35,6 +34,7 @@ files:
   - code.cloudfoundry.org/uaa-go-client/*.go # gosub
   - code.cloudfoundry.org/uaa-go-client/config/*.go # gosub
   - code.cloudfoundry.org/uaa-go-client/schema/*.go # gosub
+  - code.cloudfoundry.org/uaa-go-client/vendor/github.com/dgrijalva/jwt-go/*.go # gosub
   - github.com/bmizerany/pat/*.go # gosub
   - github.com/cactus/go-statsd-client/statsd/*.go # gosub
   - github.com/cloudfoundry/dropsonde/*.go # gosub
@@ -51,7 +51,6 @@ files:
   - github.com/cloudfoundry/dropsonde/metrics/*.go # gosub
   - github.com/cloudfoundry/dropsonde/runtime_stats/*.go # gosub
   - github.com/cloudfoundry/sonde-go/events/*.go # gosub
-  - github.com/dgrijalva/jwt-go/*.go # gosub
   - github.com/go-sql-driver/mysql/*.go # gosub
   - github.com/gogo/protobuf/gogoproto/*.go # gosub
   - github.com/gogo/protobuf/proto/*.go # gosub
