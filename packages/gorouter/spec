@@ -66,7 +66,6 @@ files:
   - routing-release/src/code.cloudfoundry.org/uaa-go-client/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/uaa-go-client/config/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/uaa-go-client/schema/*.go # gosub
-  - routing-release/src/code.cloudfoundry.org/uaa-go-client/vendor/github.com/dgrijalva/jwt-go/*.go # gosub
   - routing-release/src/github.com/armon/go-proxyproto/*.go # gosub
   - routing-release/src/github.com/bmizerany/pat/*.go # gosub
   - routing-release/src/github.com/cloudfoundry/dropsonde/*.go # gosub
@@ -84,6 +83,7 @@ files:
   - routing-release/src/github.com/cloudfoundry/dropsonde/runtime_stats/*.go # gosub
   - routing-release/src/github.com/cloudfoundry/sonde-go/events/*.go # gosub
   - routing-release/src/github.com/codegangsta/cli/*.go # gosub
+  - routing-release/src/github.com/dgrijalva/jwt-go/*.go # gosub
   - routing-release/src/github.com/gogo/protobuf/gogoproto/*.go # gosub
   - routing-release/src/github.com/gogo/protobuf/proto/*.go # gosub
   - routing-release/src/github.com/gogo/protobuf/protoc-gen-gogo/descriptor/*.go # gosub
