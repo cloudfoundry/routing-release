@@ -12,5 +12,5 @@ function tee_output_to_sys_log() {
 }
 
 function prepend_datetime() {
-  perl -ne 'BEGIN { use POSIX strftime; STDOUT->autoflush(1) }; my $time = strftime("[%Y-%m-%d %H:%M:%S%z]", localtime); print("$time $_")'
+  perl -ne 'BEGIN { use Time::HiRes "time"; use POSIX "strftime"; STDOUT->autoflush(1) }; my $t = time; my $fsec = sprintf ".%06d", ($t-int($t))*1000000; my $time = strftime("%Y-%m-%dT%H:%M:%S".$fsec."%z", localtime $t); print("$time $_")'
 }
