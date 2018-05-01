@@ -49,6 +49,7 @@ describe 'gorouter.yml.erb' do
           'requested_route_registration_interval_in_seconds' => 10,
           'load_balancer_healthy_threshold' => 10,
           'balancing_algorithm' => 'round-robin',
+          'disable_log_forwarded_for' => true,
           'tls_pem' => [
             {
               'cert_chain' => 'test-chain',
