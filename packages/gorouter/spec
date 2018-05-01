@@ -11,9 +11,9 @@ files:
   - routing-release/src/code.cloudfoundry.org/clock/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/debugserver/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/*.go # gosub
-  - routing-release/src/code.cloudfoundry.org/gorouter/access_log/*.go # gosub
-  - routing-release/src/code.cloudfoundry.org/gorouter/access_log/fakes/*.go # gosub
-  - routing-release/src/code.cloudfoundry.org/gorouter/access_log/schema/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/accesslog/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/accesslog/fakes/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/accesslog/schema/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/common/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/common/health/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/common/http/*.go # gosub
@@ -26,6 +26,7 @@ files:
   - routing-release/src/code.cloudfoundry.org/gorouter/config/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/fakes/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/handlers/*.go # gosub
+  - routing-release/src/code.cloudfoundry.org/gorouter/integration/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/logger/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/logger/fakes/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/gorouter/mbus/*.go # gosub
