@@ -163,7 +163,6 @@ properties:
       When force_forwarded_proto_https: true, this property will be ignored.
       Otherwise,  we recommend setting the property to true if Gorouter is the first component to terminate TLS, and set to false when your load balancer is terminating TLS and setting the X-Forwarded-Proto header.
     default: false
-
   router.frontend_idle_timeout:
     description: |
       (optional, integer) Duration in seconds to maintain an open connection when client supports keep-alive.
@@ -171,7 +170,6 @@ properties:
       Generally, this timeout must be greater than that of the load balancer. As examples, GCP has a default timeout of 600 seconds so a value greater than 600 is recommended and AWS ELB has a default timeout of 60 seconds so a value greater than 60 is recommended.
       However, depending on the IaaS, this timeout may need to be shorter than the load balancer's timeout, e.g., Azure's load balancer times out at 240 seconds (by default) without sending a TCP RST to clients, so a value lower than this is recommended in order to force it to send the TCP RST.
     default: 900
-
   router.backends.enable_tls:
     description:
       (optional, boolean) By default, Gorouter forwards requests to backends over unencrypted connections and will ignore routes registered with a TLS port,
@@ -181,11 +179,9 @@ properties:
   router.backends.max_conns:
     description: "Maximum concurrent TCP connections per backend. When set to 0 there is no limit"
     default: 0
-
   router.tracing.enable_zipkin:
     description: "Enables the addition of the X-B3-Trace-Id header to incoming requests. If the header already exists on the incoming request, it will not be overwritten."
     default: false
-
   router.isolation_segments:
     description: "Routes with these isolation segments will be registered. Used in combination with routing_table_sharding_mode."
     default: []
@@ -195,6 +191,11 @@ properties:
       shared-and-segments: both routes for the configured isolation segments and those that do not have an isolation segment specified will be registered.
       segments: only routes for the configured isolation segments will be registered.
     default: all
+  router.disable_log_forwarded_for:
+    description: |
+      (optional, boolean) When false, gorouter will include the value of the HTTP header X-Forwarded-For which it sends to a backend.
+      When true, the value of this header will not be logged. This is to comply with EU regulations that do not allow persisting personal data.
+    default: false
 
   nats.user:
     description: User name for NATS authentication

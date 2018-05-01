@@ -46,6 +46,7 @@ logging:
   level: <%= p("router.logging_level") %>
   loggregator_enabled: true
   metron_address: "localhost:<%=p("metron.port") %>"
+  disable_log_forwarded_for: <%= p("router.disable_log_forwarded_for") %>
 
 tracing:
   enable_zipkin: <%= p("router.tracing.enable_zipkin") %>
