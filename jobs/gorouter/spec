@@ -196,6 +196,12 @@ properties:
       (optional, boolean) When false, gorouter will include the value of the HTTP header X-Forwarded-For which it sends to a backend.
       When true, the value of this header will not be logged. This is to comply with EU regulations that do not allow persisting personal data.
     default: false
+  router.disable_log_source_ip:
+    description: |
+      (optional, boolean) When false, gorouter will include the source IP in access logs. When true, the source IP will not be logged.
+      This is to comply with EU regulations that do not allow persisting personal data. When Gorouter is behind an L3 load balancer that
+      persists the IP of the originating client, set this to true to comply with GDPR.
+    default: false
 
   nats.user:
     description: User name for NATS authentication

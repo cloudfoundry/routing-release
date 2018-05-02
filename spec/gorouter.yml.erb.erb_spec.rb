@@ -50,6 +50,7 @@ describe 'gorouter.yml.erb' do
           'load_balancer_healthy_threshold' => 10,
           'balancing_algorithm' => 'round-robin',
           'disable_log_forwarded_for' => true,
+          'disable_log_source_ip' => true,
           'tls_pem' => [
             {
               'cert_chain' => 'test-chain',
