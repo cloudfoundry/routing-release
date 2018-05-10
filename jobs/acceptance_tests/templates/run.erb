@@ -4,8 +4,9 @@ set -ex
 
 source /var/vcap/packages/golang-*-linux/bosh/runtime.env
 
-mkdir -p $GOPATH/src
-cp -R /var/vcap/packages/acceptance_tests/src/* $GOPATH/src
+mkdir -p ${GOPATH}/src
+rm -rf ${GOPATH}/src/*
+cp -R /var/vcap/packages/acceptance_tests/src/* ${GOPATH}/src
 
 export PATH=/var/vcap/packages/rtr/bin:${PATH} # put the routing-api cli on the path
 export PATH=/var/vcap/packages/cf-cli/bin:${PATH} # put the cf cli on the path
@@ -18,7 +19,7 @@ EXITSTATUS=0
 nodes=<%= properties.acceptance_tests.nodes %>
 verbose=<%= properties.acceptance_tests.verbose ? "-v" : "" %>
 
-pushd $GOPATH/src/code.cloudfoundry.org/routing-acceptance-tests
+pushd ${GOPATH}/src/code.cloudfoundry.org/routing-acceptance-tests
   bin/acceptance_tests -randomizeAllSpecs $verbose -skipPackage=$packagesToSkip -nodes=$nodes -keepGoing || EXITSTATUS=$?
 popd
 
