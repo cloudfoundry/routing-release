@@ -8,7 +8,7 @@ templates:
 packages:
  - golang-1.9-linux
  - acceptance_tests
- - cf-cli
+ - cf-cli-6-linux
 
 properties:
   acceptance_tests.verbose:

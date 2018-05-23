@@ -8,7 +8,7 @@ mkdir -p ${GOPATH}/src
 rm -rf ${GOPATH}/src/*
 cp -R /var/vcap/packages/acceptance_tests/src/* ${GOPATH}/src
 
-export PATH=/var/vcap/packages/cf-cli/bin:${PATH} # put the cf cli on the path
+export PATH=/var/vcap/packages/cf-cli-6-linux/bin:${PATH} # put the cf cli on the path
 export CONFIG=/var/vcap/jobs/smoke_tests/bin/config.json
 
 mkdir -p /var/vcap/sys/log/smoke_tests
