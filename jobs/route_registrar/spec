@@ -33,6 +33,10 @@ properties:
     description: Password for NATS authentication
     example: natSpa55w0rd
 
+  host:
+    description: Destination hostname or IP for the routes being registered
+    example: 192.168.60.25
+
   route_registrar.routes:
     description: |
       * Array of hashes determining which routes will be registered.

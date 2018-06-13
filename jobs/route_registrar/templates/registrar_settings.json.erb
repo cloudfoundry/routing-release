@@ -45,9 +45,16 @@
     end
   end
 
+  host = nil
+  if_p('host') do |prop|
+    host = prop
+  end.else do
+    host = spec.ip
+  end
+
   config = {
     message_bus_servers: message_bus_servers,
-    host: spec.ip,
+    host: host,
     routes: routes,
   }
   JSON.pretty_generate(config)
