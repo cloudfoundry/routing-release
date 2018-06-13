@@ -22,4 +22,10 @@ export GODEBUG=netdns=cgo
 
 tee_output_to_sys_log "${LOG_DIR}" "gorouter"
 
-exec /var/vcap/packages/gorouter/bin/gorouter -c /var/vcap/jobs/gorouter/config/gorouter.yml
+/sbin/start-stop-daemon \
+  --pidfile "$PIDFILE" \
+  --make-pidfile \
+  --chuid vcap:vcap \
+  --start \
+  --exec /var/vcap/packages/gorouter/bin/gorouter \
+    -- -c /var/vcap/jobs/gorouter/config/gorouter.yml
