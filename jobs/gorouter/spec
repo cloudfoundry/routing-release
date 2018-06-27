@@ -91,13 +91,12 @@ properties:
   router.tls_pem:
     description: "Array of private keys and certificates used for TLS handshakes with downstream clients. Each element in the array is an object containing fields 'private_key' and 'cert_chain', each of which supports a PEM block. Required if router.enable_ssl is true."
     example: |
-        tls_pem:
-        - cert_chain: |
+      - cert_chain: |
           -----BEGIN CERTIFICATE-----
           -----END CERTIFICATE-----
           -----BEGIN CERTIFICATE-----
           -----END CERTIFICATE-----
-          private_key: |
+        private_key: |
           -----BEGIN RSA PRIVATE KEY-----
           -----END RSA PRIVATE KEY-----
   router.ca_certs:
