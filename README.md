@@ -94,13 +94,18 @@ range").
     routing_api:
     router_groups:
     - name: default-tcp
-      reservable_ports: 1024-1123
+      reservable_ports: 
+        - 1024-1123
       type: tcp
-    - name: default-tcp
-      reservable_ports: [1066,1266]
+    - name: test1
+      reservable_ports: 
+        - 1066
+        - 1266
       type: tcp
-    - name: default-tcp
-      reservable_ports: 1111-2222,4444
+    - name: test2
+      reservable_ports: 
+        - 1111-2222
+        - 4444
       type: tcp
 
 ```
