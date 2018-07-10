@@ -6,9 +6,9 @@ templates:
   config.json.erb: bin/config.json
 
 packages:
- - golang1.8
+ - golang-1.9-linux
  - acceptance_tests
- - cf-cli
+ - cf-cli-6-linux
 
 properties:
   acceptance_tests.verbose:

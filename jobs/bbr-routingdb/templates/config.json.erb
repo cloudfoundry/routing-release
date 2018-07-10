@@ -1,0 +1,12 @@
+<%=
+    require 'json'
+    db = link('routing_api_db').p('routing_api.sqldb')
+    JSON.pretty_generate(
+      'username' => db['username'],
+      'password' => db['password'],
+      'host' => db['host'],
+      'port' => db['port'],
+      'adapter' => db['type'],
+      'database' => db['schema']
+    )
+%>

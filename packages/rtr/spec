@@ -1,5 +1,24 @@
----		
+---
 name: rtr
 
-files:		
-  - rtr/rtr-linux-amd64.tgz
+dependencies:
+- golang-1.9-linux
+
+files:
+- routing-release/src/code.cloudfoundry.org/clock/**
+- routing-release/src/code.cloudfoundry.org/lager/**
+- routing-release/src/code.cloudfoundry.org/lager/lagerflags/**
+- routing-release/src/code.cloudfoundry.org/routing-api/**
+- routing-release/src/code.cloudfoundry.org/routing-api-cli/**
+- routing-release/src/code.cloudfoundry.org/routing-api-cli/commands/**
+- routing-release/src/code.cloudfoundry.org/routing-api/models/**
+- routing-release/src/code.cloudfoundry.org/trace-logger/**
+- routing-release/src/code.cloudfoundry.org/uaa-go-client/**
+- routing-release/src/code.cloudfoundry.org/uaa-go-client/config/**
+- routing-release/src/code.cloudfoundry.org/uaa-go-client/schema/**
+- routing-release/src/github.com/bmizerany/pat/**
+- routing-release/src/github.com/codegangsta/cli/**
+- routing-release/src/github.com/dgrijalva/jwt-go/**
+- routing-release/src/github.com/nu7hatch/gouuid/**
+- routing-release/src/github.com/tedsuo/rata/**
+- routing-release/src/github.com/vito/go-sse/sse/**

@@ -1,0 +1,13 @@
+---
+name: bbr-routingdb
+templates:
+  backup.erb: bin/bbr/backup
+  restore.erb: bin/bbr/restore
+  config.json.erb: config/config.json
+
+consumes:
+- name: routing_api_db
+  type: routing_api_db
+
+packages: []
+properties: {}

@@ -4,18 +4,34 @@ templates:
   routing-api_ctl.erb: bin/routing-api_ctl
   dns_health_check.erb: bin/dns_health_check
   pre-start: bin/pre-start
-  etcd_ca.crt.erb: config/certs/etcd/ca.crt
-  etcd_client.crt.erb: config/certs/etcd/client.crt
   uaa_ca.crt.erb: config/certs/uaa/ca.crt
-  etcd_client.key.erb: config/certs/etcd/client.key
   routing-api.yml.erb: config/routing-api.yml
   locket_ca.crt.erb: config/certs/locket/ca.crt
   locket_client.crt.erb: config/certs/locket/client.crt
   locket_client.key.erb: config/certs/locket/client.key
+  bbr-metadata: bin/bbr/metadata
+  pre-backup-lock.erb: bin/bbr/pre-backup-lock
+  post-backup-unlock.erb: bin/bbr/post-backup-unlock
+  pre-restore-lock.erb: bin/bbr/pre-restore-lock
+  post-restore-unlock.erb: bin/bbr/post-restore-unlock
 
 packages:
 - routing-api
 - routing_utils
+
+provides:
+- name: routing_api
+  type: routing_api
+  properties:
+  - routing_api.clients
+  - routing_api.system_domain
+  - uaa.ca_cert
+  - skip_ssl_validation
+- name: routing_api_db
+  type: routing_api_db
+  properties:
+  - routing_api.sqldb
+  - release_level_backup
 
 properties:
   routing_api.max_ttl:
@@ -48,28 +64,13 @@ properties:
     description: "Port on which Routing API is running. If this is changed and routing_api.enabled:true in cf-release, it will break management of routes and domains until routing_api.port is updated in cf-release."
     default: 3000
 
-  routing_api.etcd.servers:
-    description: "When require_ssl:true, this must be an array of the internal DNS name for the etcd cluster. When require_ssl:false this must be an array of either the DNS name or the IP addresses of the etcd servers."
-  routing_api.etcd.client_cert:
-     description: "Client certificate for communication between clients and etcd"
-     default: ""
-  routing_api.etcd.client_key:
-     description: "Client key for communication between clients and etcd"
-     default: ""
-  routing_api.etcd.ca_cert:
-     description: "Certificate authority used to sign cert hosted by etcd"
-     default: ""
-  routing_api.etcd.require_ssl:
-     description: "etcd requires client to communicate via TLS"
-     default: false
-
   metron.port:
     description: "The port used to emit dropsonde messages to the Metron agent."
     default: 3457
 
   dns_health_check_host:
     description: "Host to ping for confirmation of DNS resolution"
-    default: consul.service.cf.internal
+    default: uaa.service.cf.internal
 
   routing_api.sqldb.host:
     description: "Host for SQL database"
@@ -87,6 +88,8 @@ properties:
     description: "Username used for connecting to SQL database"
   routing_api.sqldb.password:
     description: "Password used for connecting to SQL database"
+  routing_api.sqldb.ca_cert:
+    description: (optional, string) When present, force database connections via TLS.
 
   uaa.ca_cert:
     description : "Certificate authority for communication between clients and UAA."
@@ -98,6 +101,12 @@ properties:
 
   uaa.tls_port:
     description: "Port on which UAA is listening for TLS connections. This is required for obtaining a key to verify client OAuth tokens."
+
+  routing_api.clients:
+    description: "OAuth client ids and secrets provided via link to jobs in other BOSH deployments that need to read and/or write to Routing API. These clients must be configured in UAA via API or using the property uaa.clients with the desired scopes. For a list of scopes supported see https://github.com/cloudfoundry-incubator/routing-api/blob/master/docs/api_docs.md. Jobs consuming the link should use these credentials to fetch a token from UAA with which to authenticate with Routing API."
+    example:
+      cfcr_routing_api_client:
+        secret: "((uaa_clients_cfcr_routing_api_client_secret))"
 
   routing_api.router_groups:
     description: "Array of router groups that will be seeded into routing_api database. Once some value is included with a deploy, subsequent changes to this property will be ignored. TCP Routing requires a router group of type: tcp."
@@ -138,3 +147,12 @@ properties:
   routing_api.skip_consul_lock:
     description: "When false, Routing API will obtain a lock from both Consul and Locket. When true, Routing API will obtain the lock from Locket only. Requires locket.api_location to be set and Locket, which is not deployed with cf-release by default."
     default: false
+
+  routing_api.admin_port:
+    description: "Local port to listen on with admin endpoint (used for backup/restore locking)"
+    default: 15897
+
+
+  release_level_backup:
+    default: false
+    description: "Include routing api database in backup and restore operations"

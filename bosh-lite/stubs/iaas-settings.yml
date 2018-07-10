@@ -156,11 +156,5 @@ iaas_settings:
       cloud_properties: {}
     - name: tcp_router_z3
       cloud_properties: {}
-    - name: tcp_emitter_z1
-      cloud_properties: {}
-    - name: tcp_emitter_z2
-      cloud_properties: {}
-    - name: tcp_emitter_z3
-      cloud_properties: {}
     - name: small_errand
       cloud_properties: {}

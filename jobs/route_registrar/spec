@@ -15,7 +15,7 @@ consumes:
 templates:
   pre-start: bin/pre-start
   route_registrar_ctl.erb: bin/route_registrar_ctl
-  registrar_settings.yml.erb: config/registrar_settings.yml
+  registrar_settings.json.erb: config/registrar_settings.json
 
 properties:
   nats.machines:
@@ -39,18 +39,25 @@ properties:
 
       route object
         name (required, string): Human-readable reference for the route
-        uris (required, array): URIs to which clients will make requests
-        port (required, integer): Port to which requests for the URIs should be forwarded by the
-          router. The IP is determined automatically from the host on which route-registrar is run.
+        uris (required, array): When Gorouter receives a request that matches one of these URIs,
+          it will forward them to the IP of the host on which route_registrar runs, and either port or tls_port.
+        port (required, integer): Either `port` or `tls_port` are required; if both are provided, Gorouter will prefer tls_port.
+          Requests for associated URIs will be forwarded unencypted by the router to this port. 
+          The IP is determined automatically from the host on which route-registrar is run.
+        tls_port (required, integer): Either `port` or `tls_port` are required; if both are provided, Gorouter will prefer tls_port.
+          Requests for associated URIs will be forwarded over TLS by the router to this port. 
+          The IP is determined automatically from the host on which route-registrar is run.
+        server_cert_domain_san (conditional, string): Required if tls_port is present. 
+          Gorouter will validate that the TLS certificate presented by the destination host contains this as a Subject Alternative Name (SAN).
         registration_interval (required, string): Interval between heartbeated route registrations
           (e.g. 10s). It must parse to a positive time duration i.e. "-5s" is not permitted.
         tags (optional, array of objects): Arbitrary key-value pairs emitted with metrics to support
           filtering of metrics
-        health_check (optional, object): Script executed on frequency of `registration_interval`. If
-          healthcheck script exits with success, route registration heartbeat is sent. If script exits
-          with error, the route is unregistered.
         prepend_instance_index (optional, boolean): When set to true the values in `uris` will be
           prepended with the instance index. e.g. 'some-uri.system-domain.com' will become '0-some-uri.system-domain.com' on the instance with index 0, and '2-some-url.system-domain.com' on the instance with index 2. When this value is enabled, each instance will register its own, unique, set of uris. To additionally continue to register these original uris, create another route with the same uris and set 'prepend_instance_index' to false (or omit the key entirely).
+        health_check (optional, object): Script executed on frequency of `registration_interval`. If
+          healthcheck script exits with success, route registration heartbeat is sent. If script exits
+          with error, the route is unregistered. 
 
       health_check object
         name (required, string): Human-readable reference for the healthcheck
@@ -74,6 +81,11 @@ properties:
           name: my-service-health_check
           script_path: /path/to/script
           timeout: 5s
+      - name: my-tls-endpoint
+        tls_port: 12346
+        server_cert_domain_san: "my-tls-endpoint.internal.com"
+        uris:
+          - my-service.system-domain.com
       - name: my-debug-endpoint
         uris:
           - my-service.system-domain.com/debug

@@ -6,11 +6,10 @@ templates:
   config.json.erb: bin/config.json
 
 packages:
- - golang1.8
+ - golang-1.9-linux
  - acceptance_tests
- - tcp_emitter
  - rtr
- - cf-cli
+ - cf-cli-6-linux
 
 properties:
   acceptance_tests.nodes:
@@ -66,18 +65,3 @@ properties:
   acceptance_tests.tcp_router_group:
     default: "default-tcp"
     description: "The name of the the router group associated with the default TCP Router"
-
-  acceptance_tests.xfcc.always_forward:
-    default: []
-    description: "List of addresses of routers with `forward_client_cert` configured to `always_forward`. Used for testing `X-Forwarded-Client-Cert`."
-
-  acceptance_tests.xfcc.forward:
-    default: []
-    description: "List of addresses of routers with `forward_client_cert` configured to `forward`. Used for testing `X-Forwarded-Client-Cert`."
-
-  acceptance_tests.xfcc.sanitize_set:
-    default: []
-    description: "List of addresses of routers with `forward_client_cert` configured to `sanitize_set`. Used for testing `X-Forwarded-Client-Cert`."
-
-  acceptance_tests.xfcc.client_pem:
-    description: "Array of private keys and certs for client mTLS authentication. Each element in the array supports a chain of certificates and private keys in PEM format. Required if any of xfcc.always_forward, xfcc.forward, or xfcc.sanitize_set are non-empty arrays."

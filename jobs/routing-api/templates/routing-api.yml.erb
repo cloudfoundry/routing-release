@@ -18,30 +18,29 @@ debug_address: <%= p("routing_api.debug_address") %>
 statsd_client_flush_interval: <%= p("routing_api.statsd_client_flush_interval") %>
 router_groups: <%= p("routing_api.router_groups").to_yaml.gsub("---","") %>
 uuid: <%= spec.id %>
+admin_port: <%= p("routing_api.admin_port") %>
 
 consul_cluster:
   servers: <%= p("consul.servers") %>
   lock_ttl: <%= p("routing_api.lock_ttl") %>
   retry_interval: <%= p("routing_api.lock_retry_interval") %>
 
-<% if_p("routing_api.etcd.servers") do %>
-etcd:
-  require_ssl: <%= p("routing_api.etcd.require_ssl") %>
-  ca_file: "/var/vcap/jobs/routing-api/config/certs/etcd/ca.crt"
-  cert_file: "/var/vcap/jobs/routing-api/config/certs/etcd/client.crt"
-  key_file: "/var/vcap/jobs/routing-api/config/certs/etcd/client.key"
-  node_urls: <%= p("routing_api.etcd.servers").map { |addr|
-  "#{p("routing_api.etcd.require_ssl") ? "https" : "http"}://#{addr}:4001"
-  } %>
-<% end %>
-
-sqldb:
-  host: <%= p("routing_api.sqldb.host") %>
-  port: <%= p("routing_api.sqldb.port") %>
-  type: <%= p("routing_api.sqldb.type") %>
-  schema: <%= p("routing_api.sqldb.schema") %>
-  username: <%= p("routing_api.sqldb.username") %>
-  password: <%= p("routing_api.sqldb.password") %>
+<%=
+  sqldb = {
+    'sqldb' => {
+      'host' => p("routing_api.sqldb.host"),
+      'port' => p("routing_api.sqldb.port"),
+      'type' => p("routing_api.sqldb.type"),
+      'schema' => p("routing_api.sqldb.schema"),
+      'username' => p("routing_api.sqldb.username"),
+      'password' => p("routing_api.sqldb.password"),
+    }
+  }
+  if_p("routing_api.sqldb.ca_cert") do |cert|
+    sqldb['sqldb']['ca_cert'] = cert
+  end
+  sqldb.to_yaml[4..-2]
+%>
 
 locket:
   locket_address: <%= p("routing_api.locket.api_location") %>

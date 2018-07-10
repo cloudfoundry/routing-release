@@ -15,6 +15,10 @@ packages:
   - tcp_router
   - haproxy
 
+provides:
+  - name: tcp_router
+    type: tcp-router
+
 properties:
   tcp_router.debug_address:
     description: "Address at which to serve debug info"
@@ -61,7 +65,7 @@ properties:
 
   dns_health_check_host:
     description: "Host to ping for confirmation of DNS resolution"
-    default: consul.service.cf.internal
+    default: uaa.service.cf.internal
 
   metron.port:
     description: "The port used to emit dropsonde messages to the Metron agent."
@@ -70,4 +74,3 @@ properties:
   uaa.ca_cert:
     description : "Certificate authority for communication between clients and uaa."
     default: ""
-

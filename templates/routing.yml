@@ -61,21 +61,6 @@ resource_pools:
     stemcell: (( iaas_settings.stemcell ))
     cloud_properties: (( iaas_settings.resource_pool_cloud_properties.tcp_router_z3.cloud_properties ))
 
-  - name: tcp_emitter_z1
-    network: router1
-    stemcell: (( iaas_settings.stemcell ))
-    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.tcp_emitter_z1.cloud_properties ))
-
-  - name: tcp_emitter_z2
-    network: router2
-    stemcell: (( iaas_settings.stemcell ))
-    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.tcp_emitter_z2.cloud_properties ))
-
-  - name: tcp_emitter_z3
-    network: router3
-    stemcell: (( iaas_settings.stemcell ))
-    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.tcp_emitter_z3.cloud_properties ))
-
   - name: small_errand
     network: router1
     stemcell: (( iaas_settings.stemcell ))
@@ -119,48 +104,6 @@ jobs:
     networks:
       - name: router3
         static_ips: (( static_ips(0) ))
-    update:
-      serial: true
-      max_in_flight: 1
-    properties:
-      metron_agent:
-        zone: z3
-  - name: tcp_emitter_z1
-    templates: (( base_job_templates.tcp_emitter ))
-    instances: (( instance_count_overrides.tcp_emitter_z1.instances || 1 ))
-    persistent_disk: (( persistent_disk_overrides.tcp_emitter_z1 || 1024 ))
-    resource_pool: tcp_emitter_z1
-    networks:
-      - name: router1
-        static_ips: (( static_ips(1) ))
-    update:
-      serial: true
-      max_in_flight: 1
-    properties:
-      metron_agent:
-        zone: z1
-  - name: tcp_emitter_z2
-    templates: (( base_job_templates.tcp_emitter ))
-    instances: (( instance_count_overrides.tcp_emitter_z2.instances || 0 ))
-    persistent_disk: (( persistent_disk_overrides.tcp_emitter_z2 || 1024 ))
-    resource_pool: tcp_emitter_z2
-    networks:
-      - name: router2
-        static_ips: (( static_ips(1) ))
-    update:
-      serial: true
-      max_in_flight: 1
-    properties:
-      metron_agent:
-        zone: z2
-  - name: tcp_emitter_z3
-    templates: (( base_job_templates.tcp_emitter ))
-    instances: (( instance_count_overrides.tcp_emitter_z3.instances || 0 ))
-    persistent_disk: (( persistent_disk_overrides.tcp_emitter_z3 || 1024 ))
-    resource_pool: tcp_emitter_z3
-    networks:
-      - name: router3
-        static_ips: (( static_ips(1) ))
     update:
       serial: true
       max_in_flight: 1
@@ -322,16 +265,7 @@ properties:
     request_timeout_in_seconds: (( property_overrides.tcp_router.request_timeout_in_seconds || 300 ))
     health_check_port: (( property_overrides.tcp_router.health_check_port || nil ))
   tcp_emitter:
-    bbs:
-      client_cert: (( property_overrides.tcp_emitter.bbs.client_cert ))
-      client_key: (( property_overrides.tcp_emitter.bbs.client_key ))
-    debug_address: (( property_overrides.tcp_emitter.debug_address ))
-    log_level: (( property_overrides.tcp_emitter.log_level || nil ))
     oauth_secret: (( config_from_cf.uaa.clients.tcp_emitter.secret ))
-    lock_ttl: (( property_overrides.tcp_emitter.lock_ttl || nil ))
-    sync_interval: (( property_overrides.tcp_emitter.sync_interval || nil ))
-    route_ttl: (( property_overrides.tcp_emitter.route_ttl || nil ))
-    lock_retry_interval: (( property_overrides.tcp_emitter.lock_retry_interval || nil ))
   skip_ssl_validation: (( property_overrides.skip_ssl_validation || nil ))
   bbs:
     api_location: (( "bbs.service.cf.internal:8889" ))

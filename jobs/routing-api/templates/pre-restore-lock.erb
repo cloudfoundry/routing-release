@@ -1,0 +1,8 @@
+#!/bin/bash
+
+<% if p('release_level_backup') %>
+  /var/vcap/bosh/bin/monit stop routing-api
+  sleep 15
+<% else %>
+echo "script deactivated due to release_level_backup being set to FALSE\n"
+<% end %>

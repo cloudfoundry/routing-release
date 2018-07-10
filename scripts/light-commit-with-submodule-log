@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -euo pipefail
+
+git ci -t <($(dirname $0)/submodule-log "$@" )

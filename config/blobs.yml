@@ -1,16 +1,4 @@
-cf-cli/cf-cli_6.25.0_linux_x86-64.tgz:
-  size: 5088758
-  object_id: ecf1a0ee-5c0b-4f3f-4cf1-f77b14b23d8a
-  sha: 82728ff9fed87554a14a2e5d2b4b743b8f2885ae
-golang/go1.8.3.linux-amd64.tar.gz:
-  size: 90029041
-  object_id: 8b0e203b-76cd-455f-64be-fd01d52ba5e4
-  sha: 838c415896ef5ecd395dfabde5e7e6f8ac943c8e
 haproxy/haproxy-1.5.19.tar.gz:
   size: 1362834
   object_id: 03a79a93-2124-4dc7-bad4-566e28b079db
   sha: 8aa56f4cca4c1bf27c82f60ec2a040f91acb0bc1
-rtr/rtr-linux-amd64.tgz:
-  size: 2638231
-  object_id: 82080b7f-42ca-4d55-5068-be4161dfcf49
-  sha: a702c7fc3316881387b2d333f7a4b0d01b6552c2

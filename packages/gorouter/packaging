@@ -1,12 +1,14 @@
-set -e -x
+set -ex
 
-export GOROOT=$(readlink -nf /var/vcap/packages/golang1.8)
-export PATH=$GOROOT/bin:$PATH
+source /var/vcap/packages/golang-*-linux/bosh/compile.env
 
-mkdir -p ${BOSH_INSTALL_TARGET}/src
+mkdir -p "${BOSH_INSTALL_TARGET}/bin"
+mkdir -p "${GOPATH}/src"
 
-cp -a ./routing-release/src/* ${BOSH_INSTALL_TARGET}/src
+cp -R routing-release/src/* "${GOPATH}/src"
 
-export GOPATH=${BOSH_INSTALL_TARGET}
+pushd ${GOPATH}/src/code.cloudfoundry.org/gorouter
+  go build -o "${BOSH_INSTALL_TARGET}/bin/gorouter" .
+popd
 
-go install code.cloudfoundry.org/gorouter
+chmod +x "${BOSH_INSTALL_TARGET}/bin/gorouter"

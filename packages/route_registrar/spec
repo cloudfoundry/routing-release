@@ -1,7 +1,9 @@
 ---
 name: route_registrar
+
 dependencies:
-- golang1.8
+- golang-1.9-linux
+
 files:
   - routing-release/src/code.cloudfoundry.org/lager/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/lager/lagerflags/*.go # gosub
@@ -15,9 +17,9 @@ files:
   - routing-release/src/code.cloudfoundry.org/route-registrar/messagebus/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/route-registrar/messagebus/fakes/*.go # gosub
   - routing-release/src/code.cloudfoundry.org/route-registrar/registrar/*.go # gosub
-  - routing-release/src/github.com/nats-io/nats/*.go # gosub
-  - routing-release/src/github.com/nats-io/nats/encoders/builtin/*.go # gosub
+  - routing-release/src/github.com/nats-io/go-nats/*.go # gosub
+  - routing-release/src/github.com/nats-io/go-nats/encoders/builtin/*.go # gosub
+  - routing-release/src/github.com/nats-io/go-nats/util/*.go # gosub
   - routing-release/src/github.com/nats-io/nuid/*.go # gosub
   - routing-release/src/github.com/nu7hatch/gouuid/*.go # gosub
   - routing-release/src/github.com/tedsuo/ifrit/*.go # gosub
-  - routing-release/src/gopkg.in/yaml.v2/*.go # gosub

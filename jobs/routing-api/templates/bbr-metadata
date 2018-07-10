@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+echo "---
+restore_should_be_locked_before:
+- job_name: uaa
+  release: uaa"
