@@ -6,7 +6,7 @@ templates:
   config.json.erb: bin/config.json
 
 packages:
- - golang-1.9-linux
+ - golang-1-linux
  - acceptance_tests
  - rtr
  - cf-cli-6-linux

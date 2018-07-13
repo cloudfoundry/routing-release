@@ -2,7 +2,7 @@
 name: rtr
 
 dependencies:
-- golang-1.9-linux
+- golang-1-linux
 
 files:
 - routing-release/src/code.cloudfoundry.org/clock/**

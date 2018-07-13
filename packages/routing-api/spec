@@ -2,7 +2,7 @@
 name: routing-api
 
 dependencies:
-  - golang-1.9-linux
+  - golang-1-linux
 
 files:
   - code.cloudfoundry.org/cf-tcp-router/utils/*.go # gosub
