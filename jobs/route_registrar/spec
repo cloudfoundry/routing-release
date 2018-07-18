@@ -34,7 +34,7 @@ properties:
     example: natSpa55w0rd
 
   host:
-    description: Destination hostname or IP for the routes being registered
+    description: (string, optional) By default, route_registrar will detect the IP of the VM and use it, in combination with port as the backend destination for each uri being registered. This property enables overriding the destination hostname or IP.
     example: 192.168.60.25
 
   route_registrar.routes:
