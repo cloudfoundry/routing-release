@@ -1,0 +1,28 @@
+processes:
+  - name: route_registrar
+    executable: /var/vcap/packages/route_registrar/bin/route-registrar
+    args:
+    - --configPath
+    - /var/vcap/jobs/route_registrar/config/registrar_settings.json
+<%
+  paths = []
+  routes = p('route_registrar.routes')
+  routes.each do |route|
+    if route['health_check']
+      # valid path is /var/vcap/jobs/JOB
+      matched = /(^\/var\/vcap\/jobs\/[^\/]*)\/.*/.match(route['health_check']['script_path'])
+      if matched
+        paths << matched[1]
+      end
+    end
+  end
+
+  unless paths.empty? %>
+    unsafe:
+      unrestricted_volumes:
+<% end
+   paths.each do |path| %>
+         - path: <%= path %>
+           allow_executions: true
+         - path: <%= path.sub! 'jobs', 'data' %>
+<% end %>

@@ -13,9 +13,8 @@ consumes:
   optional: true
 
 templates:
-  pre-start: bin/pre-start
-  route_registrar_ctl.erb: bin/route_registrar_ctl
   registrar_settings.json.erb: config/registrar_settings.json
+  bpm.yml.erb: config/bpm.yml
 
 properties:
   nats.machines:

@@ -1,7 +1,5 @@
 check process route_registrar
-  with pidfile /var/vcap/sys/run/route_registrar/route_registrar.pid
-  start program "/var/vcap/jobs/route_registrar/bin/route_registrar_ctl start"
-    as uid vcap and gid vcap
-  stop program "/var/vcap/jobs/route_registrar/bin/route_registrar_ctl stop"
-    as uid vcap and gid vcap
+  with pidfile /var/vcap/sys/run/bpm/route_registrar/route_registrar.pid
+  start program "/var/vcap/jobs/bpm/bin/bpm start route_registrar"
+  stop program "/var/vcap/jobs/bpm/bin/bpm stop route_registrar"
   group vcap
