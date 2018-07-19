@@ -1,0 +1,16 @@
+processes:
+  - name: routing-api
+    executable: /var/vcap/packages/routing-api/bin/routing-api
+    args:
+    - -config
+    - /var/vcap/jobs/routing-api/config/routing-api.yml
+    - -port
+    - <%= p("routing_api.port") %>
+    - -logLevel
+    - <%= p("routing_api.log_level") %>
+    - -ip
+    - <%= spec.ip %>
+    <% if p("routing_api.auth_disabled") == true %> - --devMode <% end %>
+
+    hooks:
+      pre_start: /var/vcap/jobs/routing-api/bin/bpm-pre-start
