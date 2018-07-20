@@ -10,7 +10,7 @@ processes:
     - <%= p("routing_api.log_level") %>
     - -ip
     - <%= spec.ip %>
-    <% if p("routing_api.auth_disabled") == true %> - --devMode <% end %>
+    <% if p("routing_api.auth_disabled") == true %>- -devMode <% end %>
 
     hooks:
       pre_start: /var/vcap/jobs/routing-api/bin/bpm-pre-start
