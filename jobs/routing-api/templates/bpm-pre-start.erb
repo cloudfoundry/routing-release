@@ -1,11 +1,5 @@
 #!/bin/bash -e
 
-LOG_DIR=/var/vcap/sys/log/routing-api
-
-source /var/vcap/packages/routing_utils/syslog_utils.sh
-
-tee_output_to_sys_log "${LOG_DIR}" "routing_api"
-
 set +e
 host -r <%= p("dns_health_check_host") %>
 if [[ "0" != "$?" ]]; then
