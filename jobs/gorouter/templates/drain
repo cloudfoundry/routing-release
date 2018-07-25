@@ -3,7 +3,7 @@
 
 set -e -x
 
-pidfile=/var/vcap/sys/run/gorouter/gorouter.pid
+pidfile=/var/vcap/sys/run/bpm/gorouter/gorouter.pid
 logfile=/var/vcap/sys/log/gorouter/drain.log
 
 mkdir -p "$(dirname ${logfile})"

@@ -4,15 +4,15 @@ name: gorouter
 description: "Gorouter maintains a dynamic routing table based on updates received from NATS and (when enabled) the Routing API. This routing table maps URLs to backends. The router finds the URL in the routing table that most closely matches the host header of the request and load balances across the associated backends."
 
 templates:
-  gorouter_ctl: bin/gorouter_ctl
   pre-start.erb: bin/pre-start
   post-start.erb: bin/post-start
-  run_gorouter.erb: bin/run_gorouter
   dns_health_check.erb: bin/dns_health_check
   publish_to_nats.erb: bin/publish_to_nats
   gorouter.yml.erb: config/gorouter.yml
   drain: bin/drain
   uaa_ca.crt.erb: config/certs/uaa/ca.crt
+  bpm.yml.erb: config/bpm.yml
+  bpm-pre-start.erb: bin/bpm-pre-start
 
 packages:
   - routing_utils

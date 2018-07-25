@@ -1,0 +1,15 @@
+---
+processes:
+- name: gorouter
+  executable: /var/vcap/packages/gorouter/bin/gorouter
+  args:
+  - -c
+  - /var/vcap/jobs/gorouter/config/gorouter.yml
+  limits:
+    open_files: 100000
+  env:
+    GODEBUG: netdns=cgo
+  hooks:
+    pre_start: /var/vcap/jobs/gorouter/bin/bpm-pre-start
+  capabilities:
+  - NET_BIND_SERVICE
