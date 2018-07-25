@@ -66,6 +66,10 @@ properties:
       During this time the server will reject requests to the /health endpoint.
       This accommodates requests forwarded by a load balancer until it considers the router unhealthy.
     default: 20
+  router.drain_timeout:
+    description: |
+      Maximum delay in seconds after shut down is initiated before server stops completely.
+    default: 900
   router.healthcheck_user_agent:
     description: DEPRECATED. Use /health endpoint on port specified by status.port. User-Agent for the health check agent (usually the Load Balancer).
     example: "ELB-HealthChecker/1.0"
