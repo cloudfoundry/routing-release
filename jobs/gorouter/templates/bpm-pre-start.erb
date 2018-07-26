@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+setcap cap_net_bind_service=+ep /var/vcap/packages/gorouter/bin/gorouter
+
 <% if p("routing_api.enabled") %>
   set +e
 
