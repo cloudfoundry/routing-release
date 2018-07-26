@@ -149,4 +149,3 @@ files:
   - google.golang.org/grpc/tap/*.go # gosub
   - google.golang.org/grpc/transport/*.go # gosub
   - gopkg.in/yaml.v2/*.go # gosub
-  - routing-release/src/code.cloudfoundry.org/routing-api/db/*.go # gosub

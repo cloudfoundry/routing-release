@@ -5,7 +5,10 @@ source /var/vcap/packages/golang-*-linux/bosh/compile.env
 mkdir -p "${BOSH_INSTALL_TARGET}/bin"
 mkdir -p "${GOPATH}/src"
 
-cp -R routing-release/src/* "${GOPATH}/src"
+mv code.cloudfoundry.org "${GOPATH}/src"
+mv github.com "${GOPATH}/src"
+mv golang.org "${GOPATH}/src"
+mv gopkg.in "${GOPATH}/src"
 
 pushd ${GOPATH}/src/code.cloudfoundry.org/gorouter
   go build -o "${BOSH_INSTALL_TARGET}/bin/gorouter" .
