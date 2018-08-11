@@ -167,8 +167,8 @@ properties:
     description: |
       (optional, integer) Duration in seconds to maintain an open connection when client supports keep-alive.
       This property must be configured with regards to how an IaaS-provided load balancer behaves in order to prevent connections from being closed prematurely.
-      Generally, this timeout must be greater than that of the load balancer. As examples, GCP has a default timeout of 600 seconds so a value greater than 600 is recommended and AWS ELB has a default timeout of 60 seconds so a value greater than 60 is recommended.
-      However, depending on the IaaS, this timeout may need to be shorter than the load balancer's timeout, e.g., Azure's load balancer times out at 240 seconds (by default) without sending a TCP RST to clients, so a value lower than this is recommended in order to force it to send the TCP RST.
+      Generally, this timeout must be greater than that of the load balancer. As examples, GCP HTTP(S) load balancer has a default timeout of 600 seconds so a value greater than 600 is recommended and AWS ELB has a default timeout of 60 seconds so a value greater than 60 is recommended.
+      However, depending on the IaaS, this timeout may need to be shorter than the load balancer's timeout, e.g., Azure's load balancer times out at 240 seconds (by default) and GCP TCP load balancer times out at 600 seconds without sending a TCP RST to clients, so a value lower than this is recommended in order to force it to send the TCP RST.
     default: 900
   router.backends.enable_tls:
     description:
