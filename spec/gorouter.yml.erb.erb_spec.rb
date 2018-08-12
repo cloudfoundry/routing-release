@@ -84,7 +84,8 @@ describe 'gorouter.yml.erb' do
             'cert_chain' => TEST_CERT,
             'private_key' => TEST_KEY
           },
-          'frontend_idle_timeout' => 5
+          'frontend_idle_timeout' => 5,
+          'ip_local_port_range' => '1024 65535'
         },
         'request_timeout_in_seconds' => 100,
         'routing_api' => {

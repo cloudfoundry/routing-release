@@ -268,5 +268,9 @@ properties:
     default: false
 
   uaa.ca_cert:
-    description : "Certificate authority for communication between clients and uaa."
+    description: "Certificate authority for communication between clients and uaa."
     default: ""
+
+  router.ip_local_port_range:
+    description: "Ephemeral port range"
+    default: "1024 65535"
