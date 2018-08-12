@@ -6,7 +6,7 @@ if running_in_container; then
     echo "Not setting /proc/sys/net/ipv4 parameters, since I'm running inside a linux container"
 else
     # Ephemeral port range
-    echo "1024 65535" > /proc/sys/net/ipv4/ip_local_port_range
+    echo "<%= p("router.ip_local_port_range") %>" > /proc/sys/net/ipv4/ip_local_port_range
 
     # TCP_FIN_TIMEOUT
     # This setting determines the time that must elapse before TCP/IP can release a closed connection and reuse
