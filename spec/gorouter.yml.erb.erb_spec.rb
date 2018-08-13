@@ -27,6 +27,7 @@ describe 'gorouter.yml.erb' do
             'password' => 'pass'
           },
           'enable_ssl' => true,
+          'tls_port' => 443,
           'client_cert_validation' => 'none',
           'logging_level' => 'info',
           'tracing' => {
