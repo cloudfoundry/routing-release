@@ -13,6 +13,7 @@ templates:
   uaa_ca.crt.erb: config/certs/uaa/ca.crt
   bpm.yml.erb: config/bpm.yml
   bpm-pre-start.erb: bin/bpm-pre-start
+  retrieve-local-routes.erb: bin/retrieve-local-routes
 
 packages:
   - routing_utils
