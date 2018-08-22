@@ -52,10 +52,30 @@
     host = spec.ip
   end
 
+  routing_api = {
+    ca_certs: '/var/vcap/jobs/route_registrar/config/certs/ca.crt'
+  }
+  if_p('route_registrar.routing_api.api_url') do |prop|
+    routing_api['api_url'] = prop
+  end
+  if_p('route_registrar.routing_api.oauth_url') do |prop|
+    routing_api['oauth_url'] = prop
+  end
+  if_p('route_registrar.routing_api.client_id') do |prop|
+    routing_api['client_id'] = prop
+  end
+  if_p('route_registrar.routing_api.client_secret') do |prop|
+    routing_api['client_secret'] = prop
+  end
+  if_p('route_registrar.routing_api.skip_cert_validation') do |prop|
+    routing_api['skip_cert_validation'] = prop
+  end
+
   config = {
     message_bus_servers: message_bus_servers,
     host: host,
     routes: routes,
+    routing_api: routing_api,
   }
   JSON.pretty_generate(config)
 %>
