@@ -15,6 +15,7 @@ consumes:
 templates:
   registrar_settings.json.erb: config/registrar_settings.json
   bpm.yml.erb: config/bpm.yml
+  ca.crt.erb: config/certs/ca.crt
 
 properties:
   nats.machines:
@@ -36,31 +37,52 @@ properties:
     description: (string, optional) By default, route_registrar will detect the IP of the VM and use it, in combination with port as the backend destination for each uri being registered. This property enables overriding the destination hostname or IP.
     example: 192.168.60.25
 
+  route_registrar.routing_api.api_url:
+    description: (optional, string) The routing API's URL. This is required to register any TCP routes.
+    default: http://routing-api.service.cf.internal:3000
+  route_registrar.routing_api.oauth_url:
+    description: (optional, string) The OAuth server's URL. This is required to register any TCP routes.
+    default: https://uaa.service.cf.internal:8443
+  route_registrar.routing_api.client_id:
+    description: (optional, string) An OAuth client ID for a client that is permitted to add new TCP routes. This is required to register any TCP routes.
+    default: routing_api_client
+  route_registrar.routing_api.client_secret:
+    description: (optional, string) The OAuth client secret for the above client. This is required to register any TCP routes.
+  route_registrar.routing_api.ca_certs:
+    description: (optional, array of strings) The certificate authority certificates for any APIs that the route registrar is communicating with over HTTPS, e.g., the OAuth server. This is required to register any TCP routes.
+  route_registrar.routing_api.skip_cert_validation:
+    description: (optional, boolean) Option to skip TLS validation.
+    default: false
+
   route_registrar.routes:
     description: |
       (required, array of objects): Routes that will be registered
 
       route object
-        name (required, string): Human-readable reference for the route
-        uris (required, array): When Gorouter receives a request that matches one of these URIs,
+        name (required, string, for all routes): Human-readable reference for the route
+        type (optional, string, for all routes): Defaults to http, can specify http or tcp.
+        uris (required, array, for http routes): When Gorouter receives a request that matches one of these URIs,
           it will forward them to the IP of the host on which route_registrar runs, and either port or tls_port.
-        port (required, integer): Either `port` or `tls_port` are required; if both are provided, Gorouter will prefer tls_port.
-          Requests for associated URIs will be forwarded unencypted by the router to this port. 
+        port (required, integer, for all routes): Either `port` or `tls_port` are required; if both are provided, Gorouter will prefer tls_port.
+          Requests for associated URIs will be forwarded unencypted by the router to this port.
           The IP is determined automatically from the host on which route-registrar is run.
-        tls_port (required, integer): Either `port` or `tls_port` are required; if both are provided, Gorouter will prefer tls_port.
-          Requests for associated URIs will be forwarded over TLS by the router to this port. 
+        tls_port (required, integer, for http routes): Either `port` or `tls_port` are required; if both are provided, Gorouter will prefer tls_port.
+          Requests for associated URIs will be forwarded over TLS by the router to this port.
           The IP is determined automatically from the host on which route-registrar is run.
-        server_cert_domain_san (conditional, string): Required if tls_port is present. 
+        server_cert_domain_san (conditional, string, for http routes): Required if tls_port is present.
           Gorouter will validate that the TLS certificate presented by the destination host contains this as a Subject Alternative Name (SAN).
-        registration_interval (required, string): Interval between heartbeated route registrations
+        registration_interval (required, string, for all routes): Interval between heartbeated route registrations
           (e.g. 10s). It must parse to a positive time duration i.e. "-5s" is not permitted.
-        tags (optional, array of objects): Arbitrary key-value pairs emitted with metrics to support
+        tags (optional, array of objects, for http routes): Arbitrary key-value pairs emitted with metrics to support
           filtering of metrics
-        prepend_instance_index (optional, boolean): When set to true the values in `uris` will be
+        prepend_instance_index (optional, boolean, for http routes): When set to true the values in `uris` will be
           prepended with the instance index. e.g. 'some-uri.system-domain.com' will become '0-some-uri.system-domain.com' on the instance with index 0, and '2-some-url.system-domain.com' on the instance with index 2. When this value is enabled, each instance will register its own, unique, set of uris. To additionally continue to register these original uris, create another route with the same uris and set 'prepend_instance_index' to false (or omit the key entirely).
-        health_check (optional, object): Script executed on frequency of `registration_interval`. If
+        health_check (optional, object, for all routes): Script executed on frequency of `registration_interval`. If
           healthcheck script exits with success, route registration heartbeat is sent. If script exits
-          with error, the route is unregistered. 
+          with error, the route is unregistered.
+        router_group (required, string, for tcp routes): Name of the router group to which the TCP route should be added.
+        backend_host (required, string, for tcp routes): DNS or IP address of the backend server that the TCP route should be routed to.
+        backend_port (required, string, for tcp routes): Port of the backend server that the TCP route should be routed to.
 
       health_check object
         name (required, string): Human-readable reference for the healthcheck
@@ -102,3 +124,10 @@ properties:
         uris:
         - proxy-cf-mysql.system.domain
         port: 8081
+      - name: my-tcp-route
+        type: tcp
+        port: 56789
+        router_group: my-router-group
+        backend_host: server.my-cf.com
+        backend_port: 1234
+        registration_interval: 10s
