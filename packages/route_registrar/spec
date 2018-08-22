@@ -5,21 +5,5 @@ dependencies:
 - golang-1-linux
 
 files:
-  - code.cloudfoundry.org/lager/*.go # gosub
-  - code.cloudfoundry.org/lager/lagerflags/*.go # gosub
-  - code.cloudfoundry.org/multierror/*.go # gosub
-  - code.cloudfoundry.org/route-registrar/*.go # gosub
-  - code.cloudfoundry.org/route-registrar/commandrunner/*.go # gosub
-  - code.cloudfoundry.org/route-registrar/commandrunner/fakes/*.go # gosub
-  - code.cloudfoundry.org/route-registrar/config/*.go # gosub
-  - code.cloudfoundry.org/route-registrar/healthchecker/*.go # gosub
-  - code.cloudfoundry.org/route-registrar/healthchecker/fakes/*.go # gosub
-  - code.cloudfoundry.org/route-registrar/messagebus/*.go # gosub
-  - code.cloudfoundry.org/route-registrar/messagebus/fakes/*.go # gosub
-  - code.cloudfoundry.org/route-registrar/registrar/*.go # gosub
-  - github.com/nats-io/go-nats/*.go # gosub
-  - github.com/nats-io/go-nats/encoders/builtin/*.go # gosub
-  - github.com/nats-io/go-nats/util/*.go # gosub
-  - github.com/nats-io/nuid/*.go # gosub
-  - github.com/nu7hatch/gouuid/*.go # gosub
-  - github.com/tedsuo/ifrit/*.go # gosub
+  - code.cloudfoundry.org/**/*.go
+  - github.com/**/*.go
