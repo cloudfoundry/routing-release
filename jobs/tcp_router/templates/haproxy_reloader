@@ -1,13 +1,102 @@
 #!/bin/bash
 
-set -e
+set -eo pipefail
 
-PATH=/var/vcap/packages/tcp_router/bin:$PATH
+HAPROXY_PID_FILE=/var/vcap/data/tcp_router/config/haproxy.pid
+PATH=/var/vcap/packages/haproxy/bin:$PATH
+CONFIG=/var/vcap/data/tcp_router/config/haproxy.conf
 DAEMON=$(which haproxy)
-CONFIG=/var/vcap/jobs/tcp_router/config/haproxy.conf
-HAPROXY_PID_FILE=/var/vcap/sys/run/tcp_router/haproxy.pid
+TIMESTAMP=$(which date)
 
 test -x "${DAEMON}"
 test -f "${CONFIG}"
 
-"${DAEMON}" -f "${CONFIG}" -p "${HAPROXY_PID_FILE}" -D -sf $(cat $HAPROXY_PID_FILE) 0<&-
+RETVAL=0
+
+hot_reload() {
+  local haproxy_pid
+  haproxy_pid=$(cat $HAPROXY_PID_FILE)
+
+	echo "$("${TIMESTAMP}"): hot reloading the HAProxy which has PID ${haproxy_pid}"
+	"${DAEMON}" -f "${CONFIG}" -p "${HAPROXY_PID_FILE}" -D -sf "${haproxy_pid}" 0<&-
+}
+
+remove_haproxy_pid() {
+    rm -f "${HAPROXY_PID_FILE}"
+}
+
+start_haproxy() {
+    status_haproxy
+    if [ "${RETVAL}" = 0 ]; then
+        echo "HAProxy is currently running"
+    else
+        RETVAL=0
+        echo "$("${TIMESTAMP}"): Starting HAProxy"
+        set +e
+        "${DAEMON}" -f "${CONFIG}" -D -p "${HAPROXY_PID_FILE}" 0<&-
+        RETVAL=$?
+        set -e
+        case "${RETVAL}" in
+            0)
+                echo "$("${TIMESTAMP}"): Successfully started HAProxy with PID $(cat ${HAPROXY_PID_FILE})"
+                ;;
+            *)
+                echo "$("${TIMESTAMP}"): Errored starting HAProxy"
+                echo "$("${TIMESTAMP}"): Errored starting HAProxy" >&2
+                echo "$("${TIMESTAMP}"): Removing stale PID file for HAProxy"
+                remove_haproxy_pid
+                echo "FAILED - check logs"
+                RETVAL=1
+                ;;
+        esac
+    fi
+  }
+
+
+stop_haproxy() {
+    status_haproxy
+    if [ "${RETVAL}" = 0 ]; then
+        set +e
+        for pid in $(cat "${HAPROXY_PID_FILE}"); do
+            kill ${pid} || RETVAL=$?
+        done
+        set -e
+        if [ "${RETVAL}" = 0 ]; then
+            remove_haproxy_pid
+        else
+            echo "FAILED - check logs"
+        fi
+    else
+        echo "HAProxy not running"
+    fi
+}
+
+# RETVAL = 0 if running, != 0 if stopped
+status_haproxy() {
+    if [[ -f "${HAPROXY_PID_FILE}" ]]; then
+        RETVAL=0
+        set +e
+        for pid in $(cat "${HAPROXY_PID_FILE}"); do
+            kill -0 "${pid}" > /dev/null 2>&1 || RETVAL=3
+        done
+        kill -0 $(cat "${HAPROXY_PID_FILE}") > /dev/null 2>&1
+        if [[ $? != 0 ]]; then
+            RETVAL=3
+        fi
+        set -e
+    else
+        RETVAL=1
+    fi
+  }
+
+
+trap hot_reload SIGUSR1
+
+trap stop_haproxy SIGTERM
+
+start_haproxy
+
+while kill -0 "$(cat ${HAPROXY_PID_FILE})"; do
+  sleep 1
+done
+

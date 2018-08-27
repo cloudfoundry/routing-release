@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -eo pipefail
+
+PID=$(/var/vcap/jobs/bpm/bin/bpm pid tcp_router -p haproxy)
+
+echo "going to kill ${PID}"
+kill -USR1 "${PID}"
+echo "killed"

@@ -1,0 +1,36 @@
+---
+processes:
+- name: haproxy
+  additional_volumes:
+    - path: /var/vcap/data/tcp_router/config
+      writable: true
+  capabilities:
+  - NET_BIND_SERVICE
+  - SYS_RESOURCE
+  hooks:
+    pre_start: /var/vcap/jobs/tcp_router/bin/bpm-pre-start
+  executable: /var/vcap/jobs/tcp_router/bin/haproxy_reloader
+- name: tcp_router
+  additional_volumes:
+    - path: /var/vcap/data/tcp_router/config
+      writable: true
+  executable: /var/vcap/packages/tcp_router/bin/cf-tcp-router
+  args:
+  - -debugAddr
+  - <%= p("tcp_router.debug_address") %>
+  - -logLevel
+  - <%= p("tcp_router.log_level") %>
+  - -tcpLoadBalancerConfig
+  - "/var/vcap/data/tcp_router/config/haproxy.conf"
+  - -tcpLoadBalancerBaseConfig
+  - "/var/vcap/jobs/tcp_router/config/haproxy.conf.template"
+  - -config
+  - "/var/vcap/jobs/tcp_router/config/tcp_router.yml"
+  - -tcpLoadBalancerStatsUnixSocket
+  - "/var/vcap/data/tcp_router/config/haproxy.sock"
+  - -statsCollectionInterval
+  - <%= p("tcp_router.tcp_stats_collection_interval") %>
+  - -haproxyReloader
+  - "/var/vcap/jobs/tcp_router/bin/noop"
+  - -dropsondePort
+  - <%=p("metron.port") %>
