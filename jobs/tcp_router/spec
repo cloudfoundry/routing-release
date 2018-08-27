@@ -2,13 +2,15 @@
 name: tcp_router
 
 templates:
-  tcp_router_ctl.erb: bin/tcp_router_ctl
   haproxy_reloader: bin/haproxy_reloader
-  pre-start: bin/pre-start
+  noop: bin/noop
+  killer: bin/killer
   tcp_router.yml.erb: config/tcp_router.yml
   uaa_ca.crt.erb: config/certs/uaa/ca.crt
   haproxy.conf.erb: config/haproxy.conf
   haproxy.conf.template.erb: config/haproxy.conf.template
+  bpm.yml.erb: config/bpm.yml
+  bpm-pre-start.erb: bin/bpm-pre-start
 
 packages:
   - routing_utils

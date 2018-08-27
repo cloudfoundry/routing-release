@@ -13,5 +13,5 @@ routing_api:
   port: <%= p("routing_api.port") %>
   auth_disabled: <%= p("routing_api.auth_disabled") %>
 
-haproxy_pid_file: "/var/vcap/sys/run/tcp_router/haproxy.pid"
+haproxy_pid_file: "/var/vcap/data/tcp_router/config/haproxy.pid"
 isolation_segments: <%= p("tcp_router.isolation_segments") %>
