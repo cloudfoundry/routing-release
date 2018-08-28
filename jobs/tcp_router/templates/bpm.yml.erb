@@ -1,0 +1,12 @@
+---
+processes:
+- name: tcp_router
+  hooks:
+    pre_start: /var/vcap/jobs/tcp_router/bin/bpm-pre-start
+  additional_volumes:
+    - path: /var/vcap/data/tcp_router/config
+      writable: true
+  capabilities:
+  - NET_BIND_SERVICE
+  - SYS_RESOURCE
+  executable: /var/vcap/jobs/tcp_router/bin/tcp_router_ctl

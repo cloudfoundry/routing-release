@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -eo pipefail
+
+CONF_DIR=/var/vcap/data/tcp_router/config
+
+function copy_conf() {
+    cp /var/vcap/jobs/tcp_router/config/haproxy.conf "${CONF_DIR}/haproxy.conf"
+    chown -R vcap:vcap "${CONF_DIR}/haproxy.conf"
+}
+
+copy_conf
