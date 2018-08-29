@@ -1,7 +1,7 @@
-set -e -x
+set -ex
 
-tar xzf haproxy/haproxy-1.5.19.tar.gz
-cd haproxy-1.5.19
+tar xzf haproxy/haproxy-*.tar.gz
+cd haproxy-*
 make TARGET=linux2628 USE_OPENSSL=1
 mkdir ${BOSH_INSTALL_TARGET}/bin
 cp haproxy ${BOSH_INSTALL_TARGET}/bin/
