@@ -50,7 +50,7 @@ properties:
     description: (optional, string) The OAuth client secret for the above client. This is required to register any TCP routes.
   route_registrar.routing_api.ca_certs:
     description: (optional, array of strings) The certificate authority certificates for any APIs that the route registrar is communicating with over HTTPS, e.g., the OAuth server. This is required to register any TCP routes.
-  route_registrar.routing_api.skip_cert_validation:
+  route_registrar.routing_api.skip_ssl_validation:
     description: (optional, boolean) Option to skip TLS validation.
     default: false
 
@@ -81,8 +81,7 @@ properties:
           healthcheck script exits with success, route registration heartbeat is sent. If script exits
           with error, the route is unregistered.
         router_group (required, string, for tcp routes): Name of the router group to which the TCP route should be added.
-        backend_host (required, string, for tcp routes): DNS or IP address of the backend server that the TCP route should be routed to.
-        backend_port (required, string, for tcp routes): Port of the backend server that the TCP route should be routed to.
+        external_port (required, string, for tcp routes): Port that the TCP router will listen on.
 
       health_check object
         name (required, string): Human-readable reference for the healthcheck
@@ -126,8 +125,7 @@ properties:
         port: 8081
       - name: my-tcp-route
         type: tcp
-        port: 56789
+        port: 6263
         router_group: my-router-group
-        backend_host: server.my-cf.com
-        backend_port: 1234
+        external_port: 1234
         registration_interval: 10s
