@@ -3,6 +3,7 @@
 
 config = {
   addresses: p("acceptance_tests.addresses"),
+  artifacts_directory: "/var/vcap/data/acceptance_tests/results",
   api: p("acceptance_tests.cloud_controller.api"),
   apps_domain: Array(p("acceptance_tests.cloud_controller.apps_domain")).first,
   admin_user: p("acceptance_tests.cloud_controller.admin_user"),

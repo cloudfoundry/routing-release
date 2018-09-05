@@ -4,6 +4,7 @@ name: acceptance_tests
 templates:
   run.erb: bin/run
   config.json.erb: bin/config.json
+  bpm.yml.erb: config/bpm.yml
 
 packages:
  - golang-1-linux

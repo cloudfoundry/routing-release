@@ -3,6 +3,7 @@ name: acceptance_tests
 
 dependencies:
   - rtr
+  - golang-1-linux
 
 files:
   - code.cloudfoundry.org/routing-acceptance-tests/bin/*

@@ -1,0 +1,6 @@
+processes:
+- name: acceptance_tests
+  additional_volumes:
+  - path: /var/vcap/data/acceptance_tests/results
+    writable: true
+  executable: /var/vcap/jobs/acceptance_tests/bin/run

@@ -1,0 +1,6 @@
+processes:
+- name: smoke_tests
+  additional_volumes:
+  - path: /var/vcap/data/smoke_tests/results
+    writable: true
+  executable: /var/vcap/jobs/smoke_tests/bin/run

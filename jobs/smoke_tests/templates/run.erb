@@ -2,23 +2,18 @@
 
 set -ex
 
-source /var/vcap/packages/golang-*-linux/bosh/runtime.env
-
-mkdir -p ${GOPATH}/src
-rm -rf ${GOPATH}/src/*
-cp -R /var/vcap/packages/acceptance_tests/src/* ${GOPATH}/src
-
 export PATH=/var/vcap/packages/cf-cli-6-linux/bin:${PATH} # put the cf cli on the path
 export CONFIG=/var/vcap/jobs/smoke_tests/bin/config.json
+
+ACCEPTANCE_BIN=/var/vcap/packages/acceptance_tests/bin
 
 mkdir -p /var/vcap/sys/log/smoke_tests
 
 EXITSTATUS=0
 verbose=<%= properties.acceptance_tests.verbose ? "-v" : "" %>
 
-pushd ${GOPATH}/src/code.cloudfoundry.org/routing-acceptance-tests
-  bin/smoke_tests -randomizeAllSpecs $verbose -keepGoing || EXITSTATUS=$?
-popd
+"${ACCEPTANCE_BIN}/ginkgo" "${ACCEPTANCE_BIN}/smoke.test" \
+  -randomizeAllSpecs $verbose -slowSpecThreshold=120 -keepGoing || EXITSTATUS=$?
 
 echo "Smoke Tests Complete; exit status: $EXITSTATUS"
 
