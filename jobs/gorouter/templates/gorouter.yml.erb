@@ -91,7 +91,6 @@ frontend_idle_timeout: <%= p("router.frontend_idle_timeout") %>s
   end
 
   backends = {
-    "enable_tls" => p("router.backends.enable_tls"),
     "max_conns" => p("router.backends.max_conns"),
     "cert_chain" => backend_cert_chain,
     "private_key" => backend_private_key,
@@ -152,7 +151,8 @@ min_tls_version: <%= p("router.min_tls_version") %>
 
 disable_http: <%= p("router.disable_http") %>
 
-<% if_p("router.ca_certs") do |ca_certs|
+<% if p("router.ca_certs")
+     ca_certs = p("router.ca_certs")
      if !ca_certs.is_a?(String)
        raise 'ca_certs must be provided as a single string block'
      end

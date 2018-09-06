@@ -79,7 +79,6 @@ describe 'gorouter.yml.erb' do
           'suspend_pruning_if_nats_unavailable' => false,
           'max_idle_connections' => 100,
           'backends' => {
-            'enable_tls' => false,
             'max_conns' => 100,
             'cert_chain' => TEST_CERT,
             'private_key' => TEST_KEY
@@ -226,8 +225,8 @@ describe 'gorouter.yml.erb' do
         before do
           deployment_manifest_fragment['properties']['router']['ca_certs'] = nil
         end
-        it 'does not error' do
-          expect(parsed_yaml).to_not have_key('ca_certs')
+        it 'returns a helpful error message' do
+          expect { raise parsed_yaml }.to raise_error(/Can\'t find property \'\[\"router.ca_certs\"\]\'/)
         end
       end
       context 'when a simple array is provided' do
