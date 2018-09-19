@@ -74,6 +74,9 @@ properties:
   router.enable_ssl:
     description: "When enabled, Gorouter will listen on port 443 and terminate TLS for requests received on this port."
     default: false
+  router.tls_port:
+    description: Listening port for SSL connections to the router, when SSL is enabled.
+    default: 443
   router.client_cert_validation:
     description: |
       none - Gorouter will not request client certificates in TLS handshakes, and will ignore them if presented. Incompatible with `forwarded_client_cert: forward` or `sanitize_set`.
