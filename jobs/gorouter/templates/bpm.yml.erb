@@ -13,9 +13,3 @@ processes:
     pre_start: /var/vcap/jobs/gorouter/bin/bpm-pre-start
   capabilities:
   - NET_BIND_SERVICE
-<%- if p("router.enable_access_log_streaming") -%>
-  unsafe:
-    unrestricted_volumes:
-    - path: /dev/log
-      mount_only: true
-<% end %>

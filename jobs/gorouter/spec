@@ -251,9 +251,6 @@ properties:
   routing_api.enabled:
     description: "When enabled, GoRouter will fetch HTTP routes from the Routing API in addition to routes obtained via NATS."
     default: false
-  router.enable_access_log_streaming:
-    description: "Enables streaming of access log to syslog."
-    default: false
   router.write_access_logs_locally:
     description: "Enables writing access log to local disk."
     default: true

@@ -61,7 +61,6 @@ secure_cookies: <%= p("router.secure_cookies") %>
 
 access_log:
   file: <%= p("router.write_access_logs_locally") ? "/var/vcap/sys/log/gorouter/access.log" : "" %>
-  enable_streaming: <%= p("router.enable_access_log_streaming") %>
 
 publish_start_message_interval: 30s
 prune_stale_droplets_interval: 30s

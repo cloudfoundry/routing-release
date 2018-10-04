@@ -40,7 +40,6 @@ describe 'gorouter.yml.erb' do
           'trace_key' => 'key',
           'debug_address' => '127.0.0.1',
           'secure_cookies' => false,
-          'enable_access_log_streaming' => false,
           'write_access_logs_locally' => true,
           'access_log' => {
             'enable_streaming' => false
