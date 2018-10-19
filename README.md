@@ -5,15 +5,14 @@ delivers HTTP and TCP routing for Cloud Foundry.
 
 ## Getting Help
 
-For help or questions with this release or any of its submodules, you can reach the maintainers on Slack at [cloudfoundry.slack.com](https://cloudfoundry.slack.com) in the `#routing` channel. 
+For help or questions with this release or any of its submodules, you can reach the maintainers on Slack at [cloudfoundry.slack.com](https://cloudfoundry.slack.com) in the `#routing` channel.
 
 ## Developer Workflow
 
-When working on individual components of TCP Router, work out of the submodules
+When working on individual components of the Routing Release, work out of the submodules
 under `src/`.
 
-Run the individual component unit tests as you work on them using
-[ginkgo](https://github.com/onsi/ginkgo).
+Run the appropriate unit tests (see Testing).
 
 Commits to this repo (including Pull Requests) should be made on the Develop
 branch.
@@ -50,17 +49,28 @@ branch.
 
 ### Running Unit Tests
 
-1. Install ginkgo
+#### In a Docker container
+
+* Run unit tests using the script provided. This script pulls a docker image
+   and runs the unit tests in there, as some tests in Gorouter check things like
+   file descriptors and need to be run on a Linux machine.
 
   ```
-  go install github.com/onsi/ginkgo/ginkgo
+  ./scripts/run-unit-tests-in-docker
   ```
 
-2. Run unit tests
+* If you'd like to run a specific component's unit tests in a Docker container,
+  the `run-unit-tests` script also takes a package name as an argument:
 
   ```
-  ./scripts/run-unit-tests
+  ./scripts/run-unit-tests-in-docker gorouter
   ```
+
+#### Locally
+
+* If you'd like to run the unit tests for an individual component locally, we recommend
+  you run `bin/test` in that component's directory. Please make sure it's a
+  component that doesn't require a Linux operating system.
 
 ## Deploying Routing for Cloud Foundry
 
@@ -71,7 +81,7 @@ branch.
 1. Choose domain names from which developers will configure HTTP and TCP routes for their applications. Separate domain names will be required for HTTP and TCP routing. Configure DNS to resolve these domain names to the load balancer in front of the routers. You may use the same or separate load balancers for the HTTP and TCP domains. If high-availability is not required configure DNS to resolve the domains directly to a single instance of the routers.
 
 1. If your manifest is configured with self-signed certificates for UAA, configure routing components to skip validation of the TLS certificate; see [Validation of TLS Certificates from Route Services and UAA](#validation-of-tls-certificates-from-route-services-and-uaa).
-   
+
 1. Deploy Cloud Foundry using the instructions for [cf-deployment](https://github.com/cloudfoundry/cf-deployment/blob/master/deployment-guide.md).
 
 ### Port Requirements for TCP Routing
