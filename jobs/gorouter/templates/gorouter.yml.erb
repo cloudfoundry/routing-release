@@ -179,6 +179,10 @@ token_fetcher_expiration_buffer_time: 30
 enable_proxy: <%= p("router.enable_proxy") %>
 force_forwarded_proto_https: <%= p("router.force_forwarded_proto_https") %>
 sanitize_forwarded_proto: <%= p("router.sanitize_forwarded_proto") %>
+<% if_p("router.strict_transport_security_header") do |h| %>
+strict_transport_security_header: <%= h %>
+<% end %>
+
 pid_file: /var/vcap/sys/run/gorouter/gorouter.pid
 
 ip_local_port_range: <%= p("router.ip_local_port_range") %>

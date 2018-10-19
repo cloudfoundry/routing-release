@@ -167,6 +167,9 @@ properties:
       When force_forwarded_proto_https: true, this property will be ignored.
       Otherwise,  we recommend setting the property to true if Gorouter is the first component to terminate TLS, and set to false when your load balancer is terminating TLS and setting the X-Forwarded-Proto header.
     default: false
+  router.strict_transport_security_header:
+    description: (optional, string) If set, gorouter will inject the HSTS (HTTP Strict Transport Security) Header if not set by the backend into the response using the provided value. The value must follow the HSTS spec.
+    example: "max-age=31536000; includeSubDomains; preload"
   router.frontend_idle_timeout:
     description: |
       (optional, integer) Duration in seconds to maintain an open connection when client supports keep-alive.
