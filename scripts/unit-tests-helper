@@ -32,7 +32,7 @@ consul --version
 consul_status=$?
 set -e
 if [[ ${consul_status} -ne 0 ]]; then
-  curl -L -o "${tmpdir}/consul-0.6.3.zip" "https://releases.hashicorp.com/consul/0.6.3/consul_0.6.3_${OS}_amd64.zip"
+  curl -L -o "${tmpdir}/consul-0.6.3.zip" "https://releases.hashicorp.com/consul/0.6.3/consul_0.6.3_linux_amd64.zip"
   unzip -o "${tmpdir}/consul-0.6.3.zip" -d "./${bin_dir}"
   rm "${tmpdir}/consul-0.6.3.zip"
 fi
