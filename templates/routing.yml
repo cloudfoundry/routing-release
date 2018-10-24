@@ -5,12 +5,20 @@ releases:
   version: (( release_version_overrides.routing.version || "latest" ))
 - name: cf
   version: (( release_version_overrides.cf.version || "latest" ))
+- name: bpm
+  version: latest
 
 compilation:
   network: router1
   reuse_compilation_vms: true
   workers: (( iaas_settings.compilation_workers || 6))
   cloud_properties: (( iaas_settings.compilation_cloud_properties ))
+
+addons:
+- name: bpm
+  jobs:
+  - name: bpm
+    release: bpm
 
 update:
   canaries: 1
