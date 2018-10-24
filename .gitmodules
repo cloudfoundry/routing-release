@@ -190,3 +190,9 @@
 [submodule "src/github.com/mailru/easyjson"]
 	path = src/github.com/mailru/easyjson
 	url = https://github.com/mailru/easyjson.git
+[submodule "src/code.cloudfoundry.org/durationjson"]
+	path = src/code.cloudfoundry.org/durationjson
+	url = https://github.com/cloudfoundry/durationjson
+[submodule "src/code.cloudfoundry.org/go-diodes"]
+	path = src/code.cloudfoundry.org/go-diodes
+	url = https://github.com/cloudfoundry/go-diodes
