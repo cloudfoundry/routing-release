@@ -5,5 +5,34 @@ dependencies:
 - golang-1-linux
 
 files:
-  - code.cloudfoundry.org/**/*.go
-  - github.com/**/*.go
+  - code.cloudfoundry.org/clock/*.go # gosub
+  - code.cloudfoundry.org/lager/*.go # gosub
+  - code.cloudfoundry.org/lager/lagerflags/*.go # gosub
+  - code.cloudfoundry.org/multierror/*.go # gosub
+  - code.cloudfoundry.org/route-registrar/*.go # gosub
+  - code.cloudfoundry.org/route-registrar/commandrunner/*.go # gosub
+  - code.cloudfoundry.org/route-registrar/commandrunner/fakes/*.go # gosub
+  - code.cloudfoundry.org/route-registrar/config/*.go # gosub
+  - code.cloudfoundry.org/route-registrar/healthchecker/*.go # gosub
+  - code.cloudfoundry.org/route-registrar/healthchecker/fakes/*.go # gosub
+  - code.cloudfoundry.org/route-registrar/integration/*.go # gosub
+  - code.cloudfoundry.org/route-registrar/messagebus/*.go # gosub
+  - code.cloudfoundry.org/route-registrar/messagebus/fakes/*.go # gosub
+  - code.cloudfoundry.org/route-registrar/registrar/*.go # gosub
+  - code.cloudfoundry.org/route-registrar/routingapi/*.go # gosub
+  - code.cloudfoundry.org/routing-api/*.go # gosub
+  - code.cloudfoundry.org/routing-api/models/*.go # gosub
+  - code.cloudfoundry.org/trace-logger/*.go # gosub
+  - code.cloudfoundry.org/uaa-go-client/*.go # gosub
+  - code.cloudfoundry.org/uaa-go-client/config/*.go # gosub
+  - code.cloudfoundry.org/uaa-go-client/schema/*.go # gosub
+  - github.com/bmizerany/pat/*.go # gosub
+  - github.com/dgrijalva/jwt-go/*.go # gosub
+  - github.com/nats-io/go-nats/*.go # gosub
+  - github.com/nats-io/go-nats/encoders/builtin/*.go # gosub
+  - github.com/nats-io/go-nats/util/*.go # gosub
+  - github.com/nats-io/nuid/*.go # gosub
+  - github.com/nu7hatch/gouuid/*.go # gosub
+  - github.com/tedsuo/ifrit/*.go # gosub
+  - github.com/tedsuo/rata/*.go # gosub
+  - github.com/vito/go-sse/sse/*.go # gosub
