@@ -167,9 +167,9 @@ properties:
       When force_forwarded_proto_https: true, this property will be ignored.
       Otherwise,  we recommend setting the property to true if Gorouter is the first component to terminate TLS, and set to false when your load balancer is terminating TLS and setting the X-Forwarded-Proto header.
     default: false
-  router.http_rewrite.inject_response_headers:
+  router.http_rewrite.responses.add_headers_if_not_present:
     description: |
-      (optional, array pairs name-value) If set, gorouter will inject the given headers if into the response unless the backend already set a header with the same name.
+      (optional, array pairs name-value) If set, gorouter will add the given headers into the response if they are not already present.
     example:
     - name: "Strict-Transport-Security"
       value: "max-age=31536000; includeSubDomains; preload"
