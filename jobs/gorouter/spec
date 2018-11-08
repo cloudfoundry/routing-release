@@ -175,6 +175,12 @@ properties:
       value: "max-age=31536000; includeSubDomains; preload"
     - name: "Cache-Control"
       value: "no-cache"
+  router.http_rewrite.responses.remove_headers:
+    description: |
+      (optional, array pairs name-value) List of HTTP headers that will be stripped from responses.
+    example:
+    - name: X-Vcap-Request-Id
+    - name: Accept-Ranges
   router.frontend_idle_timeout:
     description: |
       (optional, integer) Duration in seconds to maintain an open connection when client supports keep-alive.
