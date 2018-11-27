@@ -178,6 +178,9 @@ properties:
   routing_api.enabled:
     description: "When enabled, GoRouter will fetch HTTP routes from the Routing API in addition to routes obtained via NATS."
     default: false
+  router.access_log_file:
+    description: "The file to write access logs to. Set to empty string to disable access logs."
+    default: "/var/vcap/sys/log/gorouter/access.log"
   router.enable_access_log_streaming:
     description: "Enables streaming of access log to syslog."
     default: false
