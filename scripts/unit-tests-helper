@@ -33,6 +33,11 @@ echo "Running template tests"
   bundle exec rspec
 echo "Finished running template tests"
 
+export PATH=$PATH:$PWD/bin
+go get github.com/nats-io/gnatsd
+go get github.com/onsi/ginkgo/ginkgo
+go get github.com/onsi/gomega
+
 if [[ -n "${PACKAGE}" ]]; then
   pushd "./src/code.cloudfoundry.org/${PACKAGE}"
     ./bin/test
