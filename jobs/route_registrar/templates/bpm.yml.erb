@@ -4,6 +4,8 @@ processes:
     args:
     - --configPath
     - /var/vcap/jobs/route_registrar/config/registrar_settings.json
+    - -timeFormat
+    - rfc3339
 <%
   paths = []
   routes = p('route_registrar.routes')
