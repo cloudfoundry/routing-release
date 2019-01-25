@@ -1,5 +1,8 @@
 #!/bin/bash -x
 
+BASEDIR="$(cd $(dirname "$0") && pwd)"
+ROUTING_RELEASE_DIR="${BASEDIR}/.."
+
 # COMPONENT takes only single package name
 COMPONENT=$1
 IMAGE="cloudfoundry/cf-routing-pipeline"
@@ -8,6 +11,6 @@ RUN_UNIT_TESTS="cd ${MOUNT_DIR}; source .envrc; scripts/unit-tests-helper ${COMP
 
 docker pull "${IMAGE}"
 docker run -it \
-  -v "${PWD}:${MOUNT_DIR}" \
+  -v "${ROUTING_RELEASE_DIR}:${MOUNT_DIR}" \
   "${IMAGE}" \
   /bin/bash -c "${RUN_UNIT_TESTS}"
