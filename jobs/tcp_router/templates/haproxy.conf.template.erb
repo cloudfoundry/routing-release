@@ -3,7 +3,7 @@ global
     daemon
     maxconn 64000
     spread-checks 4
-    stats socket /var/vcap/data/tcp_router/config/haproxy.sock user vcap mode 600 level operator
+    stats socket /var/vcap/data/tcp_router/config/haproxy.sock user vcap group vcap mode 600 level operator expose-fd listeners
 
 defaults
     log global

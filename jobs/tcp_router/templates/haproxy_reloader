@@ -6,8 +6,9 @@ PATH=/var/vcap/packages/tcp_router/bin:$PATH
 DAEMON=$(which haproxy)
 CONFIG=/var/vcap/data/tcp_router/config/haproxy.conf
 HAPROXY_PID_FILE=/var/vcap/data/tcp_router/config/haproxy.pid
+HAPROXY_SOCKET_FILE=/var/vcap/data/tcp_router/config/haproxy.sock
 
 test -x "${DAEMON}"
 test -f "${CONFIG}"
 
-"${DAEMON}" -f "${CONFIG}" -p "${HAPROXY_PID_FILE}" -D -sf $(cat $HAPROXY_PID_FILE) 0<&-
+"${DAEMON}" -f "${CONFIG}" -p "${HAPROXY_PID_FILE}" -x "${HAPROXY_SOCKET_FILE}" -D -sf $(cat $HAPROXY_PID_FILE) 0<&-
