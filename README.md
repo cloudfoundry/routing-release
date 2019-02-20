@@ -5,7 +5,7 @@ delivers HTTP and TCP routing for Cloud Foundry.
 
 ## Getting Help
 
-For help or questions with this release or any of its submodules, you can reach the maintainers on Slack at [cloudfoundry.slack.com](https://cloudfoundry.slack.com) in the `#routing` channel.
+For help or questions with this release or any of its submodules, you can reach the maintainers on Slack at [cloudfoundry.slack.com](https://cloudfoundry.slack.com) in the `#networking` channel.
 
 ## Developer Workflow
 
