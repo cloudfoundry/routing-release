@@ -17,9 +17,6 @@ multi line key'.freeze
 describe 'gorouter.yml.erb' do
   let(:deployment_manifest_fragment) do
     {
-      'index' => 0,
-      'job' => { 'name' => 'i_like_bosh' },
-      'properties' => {
         'router' => {
           'status' => {
             'port' => 80,
@@ -111,17 +108,17 @@ describe 'gorouter.yml.erb' do
         'metron' => {
           'port' => 3745
         }
-      }
     }
   end
 
-  let(:erb_yaml) do
-    File.read(File.join(File.dirname(__FILE__), '../jobs/gorouter/templates/gorouter.yml.erb'))
-  end
+  let(:release_path) {File.join(File.dirname(__FILE__), '..')}
+  let(:release) {Bosh::Template::Test::ReleaseDir.new(release_path)}
+  let(:job) {release.job('gorouter')}
 
   subject(:parsed_yaml) do
-    binding = Bosh::Template::EvaluationContext.new(deployment_manifest_fragment).get_binding
-    YAML.safe_load(ERB.new(erb_yaml).result(binding))
+    template = job.template('config/gorouter.yml')
+    
+    YAML.safe_load(template.render(deployment_manifest_fragment))
   end
 
   context 'given a generally valid manifest' do
@@ -134,7 +131,7 @@ describe 'gorouter.yml.erb' do
 
       context 'when the value is not valid' do
         before do
-          deployment_manifest_fragment['properties']['router']['client_cert_validation'] = 'meow'
+          deployment_manifest_fragment['router']['client_cert_validation'] = 'meow'
         end
         it 'should error' do
           expect { raise parsed_yaml }.to raise_error(RuntimeError, 'router.client_cert_validation must be "none", "request", or "require"')
@@ -155,7 +152,7 @@ describe 'gorouter.yml.erb' do
 
       context 'when an incorrect tls_pem value is provided with missing cert' do
         before do
-          deployment_manifest_fragment['properties']['router']['tls_pem'] = [{ 'private_key' => 'test-key' }]
+          deployment_manifest_fragment['router']['tls_pem'] = [{ 'private_key' => 'test-key' }]
         end
         it 'should error' do
           expect { raise parsed_yaml }.to raise_error(RuntimeError, 'must provide cert_chain and private_key with tls_pem')
@@ -164,7 +161,7 @@ describe 'gorouter.yml.erb' do
 
       context 'when an incorrect tls_pem value is provided with missing key' do
         before do
-          deployment_manifest_fragment['properties']['router']['tls_pem'] = [{ 'cert_chain' => 'test-chain' }]
+          deployment_manifest_fragment['router']['tls_pem'] = [{ 'cert_chain' => 'test-chain' }]
         end
         it 'should error' do
           expect { raise parsed_yaml }.to raise_error(RuntimeError, 'must provide cert_chain and private_key with tls_pem')
@@ -173,7 +170,7 @@ describe 'gorouter.yml.erb' do
 
       context 'when an incorrect tls_pem value is provided as wrong format' do
         before do
-          deployment_manifest_fragment['properties']['router']['tls_pem'] = ['cert']
+          deployment_manifest_fragment['router']['tls_pem'] = ['cert']
         end
         it 'should error' do
           expect { raise parsed_yaml }.to raise_error(RuntimeError, 'must provide cert_chain and private_key with tls_pem')
@@ -189,7 +186,7 @@ describe 'gorouter.yml.erb' do
       end
       context 'when cert_chain is provided but not private_key' do
         before do
-          deployment_manifest_fragment['properties']['router']['backends']['private_key'] = nil
+          deployment_manifest_fragment['router']['backends']['private_key'] = nil
         end
         it 'should error' do
           expect { raise parsed_yaml }.to raise_error(RuntimeError, 'backends.cert_chain and backends.private_key must be both provided or not at all')
@@ -197,7 +194,7 @@ describe 'gorouter.yml.erb' do
       end
       context 'when private_key is provided but not cert_chain' do
         before do
-          deployment_manifest_fragment['properties']['router']['backends']['cert_chain'] = nil
+          deployment_manifest_fragment['router']['backends']['cert_chain'] = nil
         end
         it 'should error' do
           expect { raise parsed_yaml }.to raise_error(RuntimeError, 'backends.cert_chain and backends.private_key must be both provided or not at all')
@@ -205,8 +202,8 @@ describe 'gorouter.yml.erb' do
       end
       context 'when neither cert_chain nor private_key are provided' do
         before do
-          deployment_manifest_fragment['properties']['router']['backends']['cert_chain'] = nil
-          deployment_manifest_fragment['properties']['router']['backends']['private_key'] = nil
+          deployment_manifest_fragment['router']['backends']['cert_chain'] = nil
+          deployment_manifest_fragment['router']['backends']['private_key'] = nil
         end
         it 'should not error and should not configure the properties' do
           expect(parsed_yaml['backends']['cert_chain']).to eq('')
@@ -223,7 +220,7 @@ describe 'gorouter.yml.erb' do
       end
       context 'when ca_certs is blank' do
         before do
-          deployment_manifest_fragment['properties']['router']['ca_certs'] = nil
+          deployment_manifest_fragment['router']['ca_certs'] = nil
         end
         it 'returns a helpful error message' do
           expect { raise parsed_yaml }.to raise_error(/Can\'t find property \'\[\"router.ca_certs\"\]\'/)
@@ -231,7 +228,7 @@ describe 'gorouter.yml.erb' do
       end
       context 'when a simple array is provided' do
         before do
-          deployment_manifest_fragment['properties']['router']['ca_certs'] = ['some-tls-cert']
+          deployment_manifest_fragment['router']['ca_certs'] = ['some-tls-cert']
         end
         it 'raises error' do
           expect { raise parsed_yaml }.to raise_error(RuntimeError, 'ca_certs must be provided as a single string block')
@@ -239,7 +236,7 @@ describe 'gorouter.yml.erb' do
       end
       context 'when an empty array is provided' do
         before do
-          deployment_manifest_fragment['properties']['router']['ca_certs'] = []
+          deployment_manifest_fragment['router']['ca_certs'] = []
         end
         it 'raises error' do
           expect { raise parsed_yaml }.to raise_error(RuntimeError, 'ca_certs must be provided as a single string block')
@@ -263,7 +260,7 @@ whitespace
         end
 
         before do
-          deployment_manifest_fragment['properties']['router']['ca_certs'] = test_certs
+          deployment_manifest_fragment['router']['ca_certs'] = test_certs
         end
         it 'suceessfully configures the property' do
           expect(parsed_yaml['ca_certs']).to eq(test_certs)
