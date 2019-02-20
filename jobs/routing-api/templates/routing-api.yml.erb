@@ -34,6 +34,7 @@ consul_cluster:
       'schema' => p("routing_api.sqldb.schema"),
       'username' => p("routing_api.sqldb.username"),
       'password' => p("routing_api.sqldb.password"),
+      'skip_hostname_validation' => p("routing_api.sqldb.skip_hostname_validation"),
     }
   }
   if_p("routing_api.sqldb.ca_cert") do |cert|

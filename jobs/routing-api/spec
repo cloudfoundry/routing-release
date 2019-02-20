@@ -90,6 +90,9 @@ properties:
     description: "Password used for connecting to SQL database"
   routing_api.sqldb.ca_cert:
     description: (optional, string) When present, force database connections via TLS.
+  routing_api.sqldb.skip_hostname_validation:
+    description: "skip checking the hostname of the server cert when connecting via TLS"
+    default: false
 
   uaa.ca_cert:
     description : "Certificate authority for communication between clients and UAA."
