@@ -17,107 +17,107 @@ multi line key'.freeze
 describe 'gorouter.yml.erb' do
   let(:deployment_manifest_fragment) do
     {
-        'router' => {
-          'status' => {
-            'port' => 80,
-            'user' => 'test',
-            'password' => 'pass'
-          },
-          'enable_ssl' => true,
-          'tls_port' => 443,
-          'client_cert_validation' => 'none',
-          'logging_level' => 'info',
-          'tracing' => {
-            'enable_zipkin' => false
-          },
-          'ssl_skip_validation' => false,
+      'router' => {
+        'status' => {
           'port' => 80,
-          'offset' => 0,
-          'number_of_cpus' => 0,
-          'trace_key' => 'key',
-          'debug_address' => '127.0.0.1',
-          'secure_cookies' => false,
-          'write_access_logs_locally' => true,
-          'access_log' => {
-            'enable_streaming' => false
-          },
-          'drain_wait' => 10,
-          'healthcheck_user_agent' => 'test-agent',
-          'requested_route_registration_interval_in_seconds' => 10,
-          'load_balancer_healthy_threshold' => 10,
-          'balancing_algorithm' => 'round-robin',
-          'disable_log_forwarded_for' => true,
-          'disable_log_source_ip' => true,
-          'tls_pem' => [
-            {
-              'cert_chain' => 'test-chain',
-              'private_key' => 'test-key'
-            },
-            {
-              'cert_chain' => 'test-chain2',
-              'private_key' => 'test-key2'
-            }
-          ],
-          'min_tls_version' => 1.2,
-          'disable_http' => false,
-          'ca_certs' => 'test-certs',
-          'cipher_suites' => 'test-suites',
-          'forwarded_client_cert' => ['test-cert'],
-          'isolation_segments' => '[is1]',
-          'routing_table_sharding_mode' => 'sharding',
-          'route_services_timeout' => 10,
-          'route_services_secret' => 'secret',
-          'route_services_secret_decrypt_only' => 'secret',
-          'route_services_recommend_https' => false,
-          'extra_headers_to_log' => 'test-header',
-          'enable_proxy' => false,
-          'force_forwarded_proto_https' => false,
-          'sanitize_forwarded_proto' => false,
-          'suspend_pruning_if_nats_unavailable' => false,
-          'max_idle_connections' => 100,
-          'backends' => {
-            'max_conns' => 100,
-            'cert_chain' => TEST_CERT,
-            'private_key' => TEST_KEY
-          },
-          'frontend_idle_timeout' => 5,
-          'ip_local_port_range' => '1024 65535'
-        },
-        'request_timeout_in_seconds' => 100,
-        'routing_api' => {
-          'enabled' => false
-        },
-        'uaa' => {
-          'ca_cert' => 'blah-cert',
-          'ssl' => {
-            'port' => 900
-          },
-          'clients' => {
-            'gorouter' => {
-              'secret' => 'secret'
-            }
-          },
-          'token_endpoint' => 'uaa.token_endpoint'
-        },
-        'nats' => {
-          'machines' => ['127.0.0.1'],
-          'port' => 8080,
           'user' => 'test',
-          'password' => 'test_pass'
+          'password' => 'pass'
         },
-        'metron' => {
-          'port' => 3745
-        }
+        'enable_ssl' => true,
+        'tls_port' => 443,
+        'client_cert_validation' => 'none',
+        'logging_level' => 'info',
+        'tracing' => {
+          'enable_zipkin' => false
+        },
+        'ssl_skip_validation' => false,
+        'port' => 80,
+        'offset' => 0,
+        'number_of_cpus' => 0,
+        'trace_key' => 'key',
+        'debug_address' => '127.0.0.1',
+        'secure_cookies' => false,
+        'write_access_logs_locally' => true,
+        'access_log' => {
+          'enable_streaming' => false
+        },
+        'drain_wait' => 10,
+        'healthcheck_user_agent' => 'test-agent',
+        'requested_route_registration_interval_in_seconds' => 10,
+        'load_balancer_healthy_threshold' => 10,
+        'balancing_algorithm' => 'round-robin',
+        'disable_log_forwarded_for' => true,
+        'disable_log_source_ip' => true,
+        'tls_pem' => [
+          {
+            'cert_chain' => 'test-chain',
+            'private_key' => 'test-key'
+          },
+          {
+            'cert_chain' => 'test-chain2',
+            'private_key' => 'test-key2'
+          }
+        ],
+        'min_tls_version' => 1.2,
+        'disable_http' => false,
+        'ca_certs' => 'test-certs',
+        'cipher_suites' => 'test-suites',
+        'forwarded_client_cert' => ['test-cert'],
+        'isolation_segments' => '[is1]',
+        'routing_table_sharding_mode' => 'sharding',
+        'route_services_timeout' => 10,
+        'route_services_secret' => 'secret',
+        'route_services_secret_decrypt_only' => 'secret',
+        'route_services_recommend_https' => false,
+        'extra_headers_to_log' => 'test-header',
+        'enable_proxy' => false,
+        'force_forwarded_proto_https' => false,
+        'sanitize_forwarded_proto' => false,
+        'suspend_pruning_if_nats_unavailable' => false,
+        'max_idle_connections' => 100,
+        'backends' => {
+          'max_conns' => 100,
+          'cert_chain' => TEST_CERT,
+          'private_key' => TEST_KEY
+        },
+        'frontend_idle_timeout' => 5,
+        'ip_local_port_range' => '1024 65535'
+      },
+      'request_timeout_in_seconds' => 100,
+      'routing_api' => {
+        'enabled' => false
+      },
+      'uaa' => {
+        'ca_cert' => 'blah-cert',
+        'ssl' => {
+          'port' => 900
+        },
+        'clients' => {
+          'gorouter' => {
+            'secret' => 'secret'
+          }
+        },
+        'token_endpoint' => 'uaa.token_endpoint'
+      },
+      'nats' => {
+        'machines' => ['127.0.0.1'],
+        'port' => 8080,
+        'user' => 'test',
+        'password' => 'test_pass'
+      },
+      'metron' => {
+        'port' => 3745
+      }
     }
   end
 
-  let(:release_path) {File.join(File.dirname(__FILE__), '..')}
-  let(:release) {Bosh::Template::Test::ReleaseDir.new(release_path)}
-  let(:job) {release.job('gorouter')}
+  let(:release_path) { File.join(File.dirname(__FILE__), '..') }
+  let(:release) { Bosh::Template::Test::ReleaseDir.new(release_path) }
+  let(:job) { release.job('gorouter') }
 
   subject(:parsed_yaml) do
     template = job.template('config/gorouter.yml')
-    
+
     YAML.safe_load(template.render(deployment_manifest_fragment))
   end
 

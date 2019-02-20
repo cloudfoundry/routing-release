@@ -9,7 +9,7 @@ diffs.each do |diff|
   end
 end
 
-puts "Bump #{locations.keys.join(", ")}"
+puts "Bump #{locations.keys.join(', ')}"
 puts # Second line of git commit message should always be empty
 
 locations.each do |location, shas|
@@ -21,8 +21,8 @@ locations.each do |location, shas|
 
     commit_messages_by_author = Hash.new([])
     `git log #{shas} --pretty=format:'%h %an: %s'`.split("\n").each do |commit|
-      _sha, rest_of_commit = commit.split(" ", 2)
-      author, message = rest_of_commit.split(":", 2)
+      _sha, rest_of_commit = commit.split(' ', 2)
+      author, message = rest_of_commit.split(':', 2)
       commit_messages_by_author[author] += [message]
     end
 
@@ -33,6 +33,6 @@ locations.each do |location, shas|
   end
 end
 
-ARGV.each do|a|
-    puts "[finishes ##{a}]"
+ARGV.each do |a|
+  puts "[finishes ##{a}]"
 end
