@@ -8,8 +8,6 @@ processes:
     - <%= p("routing_api.port") %>
     - -logLevel
     - <%= p("routing_api.log_level") %>
-    - -timeFormat
-    - rfc3339
     - -ip
     - <%= spec.ip %>
     <% if p("routing_api.auth_disabled") == true %>- -devMode <% end %>
