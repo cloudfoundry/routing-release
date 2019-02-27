@@ -15,7 +15,6 @@ files:
   - code.cloudfoundry.org/cf-routing-test-helpers/schema/*.go # gosub
   - code.cloudfoundry.org/clock/*.go # gosub
   - code.cloudfoundry.org/lager/*.go # gosub
-  - code.cloudfoundry.org/lager/internal/truncate/*.go # gosub
   - code.cloudfoundry.org/lager/lagerctx/*.go # gosub
   - code.cloudfoundry.org/lager/lagertest/*.go # gosub
   - code.cloudfoundry.org/routing-acceptance-tests/assets/golang/*.go # gosub

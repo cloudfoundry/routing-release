@@ -77,7 +77,6 @@ set -e
 exec /var/vcap/packages/tcp_router/bin/cf-tcp-router\
   -debugAddr=<%= p("tcp_router.debug_address") %> \
   -logLevel=<%= p("tcp_router.log_level") %> \
-  -timeFormat=rfc3339 \
   -tcpLoadBalancerConfig="${CONFIG}" \
   -tcpLoadBalancerBaseConfig="/var/vcap/jobs/tcp_router/config/haproxy.conf.template" \
   -config="/var/vcap/jobs/tcp_router/config/tcp_router.yml" \
