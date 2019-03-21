@@ -139,6 +139,22 @@ describe 'gorouter.yml.erb' do
       end
     end
 
+    context 'route_services_internal_lookup' do
+      it 'defaults to false' do
+        expect(parsed_yaml['route_services_hairpinning']).to eq(false)
+      end
+
+      context 'when enabled' do
+        before do
+          deployment_manifest_fragment['router']['route_services_internal_lookup'] = true
+        end
+
+        it 'parses to true' do
+          expect(parsed_yaml['route_services_hairpinning']).to eq(true)
+        end
+      end
+    end
+
     context 'tls_pem' do
       context 'when correct tls_pem is provided' do
         it 'should configure the property' do
@@ -177,6 +193,7 @@ describe 'gorouter.yml.erb' do
         end
       end
     end
+
     describe 'backends' do
       context 'when both cert_chain and private_key are provided' do
         it 'should configure the property' do
