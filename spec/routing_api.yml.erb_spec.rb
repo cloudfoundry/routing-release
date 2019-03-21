@@ -55,6 +55,9 @@ describe 'routing_api.yml.erb' do
                                       'port' => 8080,
                                       'skip_ssl_validation' => false
                                     },
+                                    'api' => {
+                                      'listen_port' => 3000
+                                    },
                                     'router_groups' => [],
                                     'skip_consul_lock' => false,
                                     'sqldb' => {
@@ -70,6 +73,16 @@ describe 'routing_api.yml.erb' do
                                     'statsd_endpoint' => 'localhost:8125',
                                     'system_domain' => 'the.system.domain',
                                     'uuid' => 'xxxxxx-xxxxxxxx-xxxxx')
+    end
+
+    describe 'when overrideing the api listen port' do
+      before do
+        merged_manifest_properties['routing_api']['port'] = 6000
+      end
+
+      it 'renders the overridden port' do
+        expect(rendered_config['api']['listen_port']).to eq(6000)
+      end
     end
     describe 'when the db connection should skip hostname validation' do
       before do

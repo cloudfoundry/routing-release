@@ -20,6 +20,9 @@ router_groups: <%= p("routing_api.router_groups").to_yaml.gsub("---","") %>
 uuid: <%= spec.id %>
 admin_port: <%= p("routing_api.admin_port") %>
 
+api:
+  listen_port: <%= p("routing_api.port") %>
+
 consul_cluster:
   servers: <%= p("consul.servers") %>
   lock_ttl: <%= p("routing_api.lock_ttl") %>

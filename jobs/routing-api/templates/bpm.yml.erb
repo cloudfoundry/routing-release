@@ -4,8 +4,6 @@ processes:
     args:
     - -config
     - /var/vcap/jobs/routing-api/config/routing-api.yml
-    - -port
-    - <%= p("routing_api.port") %>
     - -logLevel
     - <%= p("routing_api.log_level") %>
     - -timeFormat
