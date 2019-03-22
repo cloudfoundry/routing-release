@@ -5,7 +5,7 @@ require 'bosh/template/test'
 require 'yaml'
 require 'json'
 
-describe 'routing_api.yml.erb' do
+describe 'routing_api' do
   let(:release_path) { File.join(File.dirname(__FILE__), '..') }
   let(:release) { Bosh::Template::Test::ReleaseDir.new(release_path) }
   let(:job) { release.job('routing-api') }
@@ -30,10 +30,6 @@ describe 'routing_api.yml.erb' do
         'tls_port' => 8080
       }
     }
-  end
-
-  subject(:rendered_config) do
-    YAML.safe_load(template.render(merged_manifest_properties))
   end
 
   describe 'config/certs/routing-api/client_ca.crt' do
@@ -65,6 +61,10 @@ describe 'routing_api.yml.erb' do
 
   describe 'routing-api.yml' do
     let(:template) { job.template('config/routing-api.yml') }
+
+    subject(:rendered_config) do
+      YAML.safe_load(template.render(merged_manifest_properties))
+    end
 
     it 'renders a file with default properties' do
       expect(rendered_config).to eq('admin_port' => 15_897,
