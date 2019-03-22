@@ -21,7 +21,10 @@ describe 'routing_api.yml.erb' do
           'schema' => 'schema',
           'username' => 'username',
           'password' => 'password'
-        }
+        },
+        'mtls_client_ca' => 'the client ca cert',
+        'mtls_server_cert' => 'the server cert',
+        'mtls_server_key' => 'the server key'
       },
       'uaa' => {
         'tls_port' => 8080
@@ -31,6 +34,33 @@ describe 'routing_api.yml.erb' do
 
   subject(:rendered_config) do
     YAML.safe_load(template.render(merged_manifest_properties))
+  end
+
+  describe 'config/certs/routing-api/client_ca.crt' do
+    let(:template) { job.template('config/certs/routing-api/client_ca.crt') }
+
+    it 'renders the client ca cert' do
+      client_ca = template.render(merged_manifest_properties)
+      expect(client_ca).to eq('the client ca cert')
+    end
+  end
+
+  describe 'config/certs/routing-api/server.crt' do
+    let(:template) { job.template('config/certs/routing-api/server.crt') }
+
+    it 'renders the server certificate' do
+      client_ca = template.render(merged_manifest_properties)
+      expect(client_ca).to eq('the server cert')
+    end
+  end
+
+  describe 'config/certs/routing-api/server.key' do
+    let(:template) { job.template('config/certs/routing-api/server.key') }
+
+    it 'renders the server private key' do
+      client_ca = template.render(merged_manifest_properties)
+      expect(client_ca).to eq('the server key')
+    end
   end
 
   describe 'routing-api.yml' do
@@ -56,7 +86,11 @@ describe 'routing_api.yml.erb' do
                                       'skip_ssl_validation' => false
                                     },
                                     'api' => {
-                                      'listen_port' => 3000
+                                      'listen_port' => 3000,
+                                      'mtls_listen_port' => 3001,
+                                      'mtls_client_ca_file' => '/var/vcap/jobs/routing-api/config/certs/routing-api/client_ca.crt',
+                                      'mtls_server_cert_file' => '/var/vcap/jobs/routing-api/config/certs/routing-api/server.crt',
+                                      'mtls_server_key_file' => '/var/vcap/jobs/routing-api/config/certs/routing-api/server.key'
                                     },
                                     'router_groups' => [],
                                     'skip_consul_lock' => false,
@@ -73,6 +107,16 @@ describe 'routing_api.yml.erb' do
                                     'statsd_endpoint' => 'localhost:8125',
                                     'system_domain' => 'the.system.domain',
                                     'uuid' => 'xxxxxx-xxxxxxxx-xxxxx')
+    end
+
+    describe 'when overrideing the mTLS api listen port' do
+      before do
+        merged_manifest_properties['routing_api']['mtls_port'] = 6000
+      end
+
+      it 'renders the overridden port' do
+        expect(rendered_config['api']['mtls_listen_port']).to eq(6000)
+      end
     end
 
     describe 'when overrideing the api listen port' do
