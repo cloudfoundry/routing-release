@@ -21,10 +21,7 @@ describe 'routing_api' do
           'schema' => 'schema',
           'username' => 'username',
           'password' => 'password'
-        },
-        'mtls_client_ca' => 'the client ca cert',
-        'mtls_server_cert' => 'the server cert',
-        'mtls_server_key' => 'the server key'
+        }
       },
       'uaa' => {
         'tls_port' => 8080
@@ -35,27 +32,97 @@ describe 'routing_api' do
   describe 'config/certs/routing-api/client_ca.crt' do
     let(:template) { job.template('config/certs/routing-api/client_ca.crt') }
 
-    it 'renders the client ca cert' do
-      client_ca = template.render(merged_manifest_properties)
-      expect(client_ca).to eq('the client ca cert')
+    describe 'when server mtls is enabled' do
+      before do
+        merged_manifest_properties['routing_api']['mtls_enabled'] = true
+      end
+
+      it 'renders the client ca cert' do
+        merged_manifest_properties['routing_api']['mtls_client_ca'] = 'the client ca cert'
+        client_ca = template.render(merged_manifest_properties)
+        expect(client_ca).to eq('the client ca cert')
+      end
+
+      describe 'when the client ca is not provided' do
+        it 'should err' do
+          expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
+        end
+      end
+    end
+
+    describe 'when server mtls not enabled' do
+      before do
+        merged_manifest_properties['routing_api']['mtls_enabled'] = false
+      end
+
+      it 'should not err when the client ca is not specified' do
+        client_ca = template.render(merged_manifest_properties)
+        expect(client_ca).to eq('')
+      end
     end
   end
 
   describe 'config/certs/routing-api/server.crt' do
     let(:template) { job.template('config/certs/routing-api/server.crt') }
 
-    it 'renders the server certificate' do
-      client_ca = template.render(merged_manifest_properties)
-      expect(client_ca).to eq('the server cert')
+    describe 'when server mtls is enabled' do
+      before do
+        merged_manifest_properties['routing_api']['mtls_enabled'] = true
+      end
+
+      it 'renders the server cert' do
+        merged_manifest_properties['routing_api']['mtls_server_cert'] = 'the server cert'
+        client_ca = template.render(merged_manifest_properties)
+        expect(client_ca).to eq('the server cert')
+      end
+
+      describe 'when the server cert is not provided' do
+        it 'should err' do
+          expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
+        end
+      end
+    end
+
+    describe 'when server mtls not enabled' do
+      before do
+        merged_manifest_properties['routing_api']['mtls_enabled'] = false
+      end
+
+      it 'should not err when the server cert is not specified' do
+        expect(template.render(merged_manifest_properties)).to eq('')
+      end
     end
   end
 
-  describe 'config/certs/routing-api/server.key' do
+  describe 'config/keys/routing-api/server.key' do
     let(:template) { job.template('config/certs/routing-api/server.key') }
 
-    it 'renders the server private key' do
-      client_ca = template.render(merged_manifest_properties)
-      expect(client_ca).to eq('the server key')
+    describe 'when server mtls is enabled' do
+      before do
+        merged_manifest_properties['routing_api']['mtls_enabled'] = true
+      end
+
+      it 'renders the server key' do
+        merged_manifest_properties['routing_api']['mtls_server_key'] = 'the server key'
+        client_ca = template.render(merged_manifest_properties)
+        expect(client_ca).to eq('the server key')
+      end
+
+      describe 'when the server key is not provided' do
+        it 'should err' do
+          expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
+        end
+      end
+    end
+
+    describe 'when server mtls not enabled' do
+      before do
+        merged_manifest_properties['routing_api']['mtls_enabled'] = false
+      end
+
+      it 'should not err when the server key is not specified' do
+        expect(template.render(merged_manifest_properties)).to eq('')
+      end
     end
   end
 
