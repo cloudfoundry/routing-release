@@ -22,6 +22,7 @@ admin_port: <%= p("routing_api.admin_port") %>
 
 api:
   listen_port: <%= p("routing_api.port") %>
+  mtls_enabled: <%= p("routing_api.mtls_enabled") %>
   mtls_listen_port: <%= p("routing_api.mtls_port") %>
   mtls_client_ca_file: "/var/vcap/jobs/routing-api/config/certs/routing-api/client_ca.crt"
   mtls_server_cert_file: "/var/vcap/jobs/routing-api/config/certs/routing-api/server.crt"

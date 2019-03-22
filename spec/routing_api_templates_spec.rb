@@ -154,6 +154,7 @@ describe 'routing_api' do
                                     },
                                     'api' => {
                                       'listen_port' => 3000,
+                                      'mtls_enabled' => false,
                                       'mtls_listen_port' => 3001,
                                       'mtls_client_ca_file' => '/var/vcap/jobs/routing-api/config/certs/routing-api/client_ca.crt',
                                       'mtls_server_cert_file' => '/var/vcap/jobs/routing-api/config/certs/routing-api/server.crt',
@@ -195,6 +196,17 @@ describe 'routing_api' do
         expect(rendered_config['api']['listen_port']).to eq(6000)
       end
     end
+
+    describe 'when mtls is enabled' do
+      before do
+        merged_manifest_properties['routing_api']['mtls_enabled'] = true
+      end
+
+      it 'renders the truth' do
+        expect(rendered_config['api']['mtls_enabled']).to eq(true)
+      end
+    end
+
     describe 'when the db connection should skip hostname validation' do
       before do
         merged_manifest_properties['routing_api']['sqldb']['skip_hostname_validation'] = true
