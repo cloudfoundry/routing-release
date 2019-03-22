@@ -67,8 +67,8 @@
   if_p('route_registrar.routing_api.client_secret') do |prop|
     routing_api['client_secret'] = prop
   end
-  if_p('route_registrar.routing_api.skip_cert_validation') do |prop|
-    routing_api['skip_cert_validation'] = prop
+  if_p('route_registrar.routing_api.skip_ssl_validation') do |prop|
+    routing_api['skip_ssl_validation'] = prop
   end
 
   config = {
