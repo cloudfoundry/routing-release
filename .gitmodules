@@ -196,3 +196,6 @@
 [submodule "src/code.cloudfoundry.org/go-diodes"]
 	path = src/code.cloudfoundry.org/go-diodes
 	url = https://github.com/cloudfoundry/go-diodes
+[submodule "src/code.cloudfoundry.org/tlsconfig"]
+	path = src/code.cloudfoundry.org/tlsconfig
+	url = https://github.com/cloudfoundry/tlsconfig

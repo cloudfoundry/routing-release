@@ -34,6 +34,7 @@ files:
   - code.cloudfoundry.org/routing-api/migration/*.go # gosub
   - code.cloudfoundry.org/routing-api/models/*.go # gosub
   - code.cloudfoundry.org/routing-api/test_helpers/*.go # gosub
+  - code.cloudfoundry.org/tlsconfig/*.go # gosub
   - code.cloudfoundry.org/trace-logger/*.go # gosub
   - code.cloudfoundry.org/uaa-go-client/*.go # gosub
   - code.cloudfoundry.org/uaa-go-client/config/*.go # gosub
