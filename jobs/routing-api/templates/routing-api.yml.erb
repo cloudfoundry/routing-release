@@ -22,7 +22,19 @@ admin_port: <%= p("routing_api.admin_port") %>
 
 api:
   listen_port: <%= p("routing_api.port") %>
-  mtls_enabled: <%= p("routing_api.mtls_enabled") %>
+<% case p("routing_api.enabled_api_endpoints")
+  when "http" -%>
+  http_enabled: true
+  mtls_enabled: false
+<% when "mtls" -%>
+  http_enabled: false
+  mtls_enabled: true
+<% when "both" -%>
+  http_enabled: true
+  mtls_enabled: true
+<% else -%>
+  <% raise "expected routing_api.enabled_api_endpoints to be one of 'http', 'mtls', or 'both' but got '#{p('routing_api.enabled_api_endpoints')}'" -%>
+<% end -%>
   mtls_listen_port: <%= p("routing_api.mtls_port") %>
   mtls_client_ca_file: "/var/vcap/jobs/routing-api/config/certs/routing-api/client_ca.crt"
   mtls_server_cert_file: "/var/vcap/jobs/routing-api/config/certs/routing-api/server.crt"
