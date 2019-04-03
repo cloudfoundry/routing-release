@@ -25,6 +25,7 @@ files:
   - code.cloudfoundry.org/cf-tcp-router/testutil/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/utils/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/watcher/*.go # gosub
+  - code.cloudfoundry.org/cfhttp/v2/*.go # gosub
   - code.cloudfoundry.org/clock/*.go # gosub
   - code.cloudfoundry.org/debugserver/*.go # gosub
   - code.cloudfoundry.org/lager/*.go # gosub
