@@ -13,6 +13,9 @@ describe 'routing_api' do
   let(:merged_manifest_properties) do
     {
       'routing_api' => {
+        'locket' => {
+          'api_location' => 'locket_server'
+        },
         'system_domain' => 'the.system.domain',
         'sqldb' => {
           'host' => 'host',
@@ -189,10 +192,11 @@ describe 'routing_api' do
 
     it 'renders a file with default properties' do
       expect(rendered_config).to eq('admin_port' => 15_897,
-                                    'consul_cluster' => { 'servers' => 'http://127.0.0.1:8500', 'lock_ttl' => '10s', 'retry_interval' => '5s' },
+                                    'lock_ttl' => '10s',
+                                    'retry_interval' => '5s',
                                     'debug_address' => '127.0.0.1:17002',
                                     'locket' => {
-                                      'locket_address' => nil,
+                                      'locket_address' => 'locket_server',
                                       'locket_ca_cert_file' => '/var/vcap/jobs/routing-api/config/certs/locket/ca.crt',
                                       'locket_client_cert_file' => '/var/vcap/jobs/routing-api/config/certs/locket/client.crt',
                                       'locket_client_key_file' => '/var/vcap/jobs/routing-api/config/certs/locket/client.key'
@@ -216,7 +220,6 @@ describe 'routing_api' do
                                       'mtls_server_key_file' => '/var/vcap/jobs/routing-api/config/certs/routing-api/server.key'
                                     },
                                     'router_groups' => [],
-                                    'skip_consul_lock' => false,
                                     'sqldb' => {
                                       'host' => 'host',
                                       'port' => 1234,
