@@ -141,10 +141,6 @@ properties:
         reservable_ports: 1024-10000,12000
         type: tcp
 
-  consul.servers:
-    description: "comma-separated list of consul server URLs (scheme://ip:port)"
-    default: "http://127.0.0.1:8500"
-
   routing_api.lock_ttl:
     description: "TTL for service lock"
     default: "10s"
@@ -154,24 +150,19 @@ properties:
     default: "5s"
 
   routing_api.locket.api_location:
-    description: "Hostname and port of the Locket server. Used to obtain a lock so only one instance of Routing API is active at a time. Requires Locket, which is not deployed with cf-release by default."
-    default: ""
+    description: "Hostname and port of the Locket server. Used to obtain a lock so only one instance of Routing API is active at a time."
 
   routing_api.locket.ca_cert:
-    description: "CA cert for the Locket server. Requires Locket, which is not deployed with cf-release by default."
+    description: "CA cert for the Locket server."
     default: ""
 
   routing_api.locket.client_cert:
-    description: "Client cert for the Locket server. Requires Locket, which is not deployed with cf-release by default."
+    description: "Client cert for the Locket server."
     default: ""
 
   routing_api.locket.client_key:
-    description: "Client key for the Locket server. Requires Locket, which is not deployed with cf-release by default."
+    description: "Client key for the Locket server."
     default: ""
-
-  routing_api.skip_consul_lock:
-    description: "When false, Routing API will obtain a lock from both Consul and Locket. When true, Routing API will obtain the lock from Locket only. Requires locket.api_location to be set and Locket, which is not deployed with cf-release by default."
-    default: false
 
   routing_api.admin_port:
     description: "Local port to listen on with admin endpoint (used for backup/restore locking)"

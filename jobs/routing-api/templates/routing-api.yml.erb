@@ -40,11 +40,6 @@ api:
   mtls_server_cert_file: "/var/vcap/jobs/routing-api/config/certs/routing-api/server.crt"
   mtls_server_key_file: "/var/vcap/jobs/routing-api/config/certs/routing-api/server.key"
 
-consul_cluster:
-  servers: <%= p("consul.servers") %>
-  lock_ttl: <%= p("routing_api.lock_ttl") %>
-  retry_interval: <%= p("routing_api.lock_retry_interval") %>
-
 <%=
   sqldb = {
     'sqldb' => {
@@ -63,10 +58,11 @@ consul_cluster:
   sqldb.to_yaml[4..-2]
 %>
 
+lock_ttl: <%= p("routing_api.lock_ttl") %>
+retry_interval: <%= p("routing_api.lock_retry_interval") %>
+
 locket:
   locket_address: <%= p("routing_api.locket.api_location") %>
   locket_ca_cert_file: "/var/vcap/jobs/routing-api/config/certs/locket/ca.crt"
   locket_client_cert_file: "/var/vcap/jobs/routing-api/config/certs/locket/client.crt"
   locket_client_key_file: "/var/vcap/jobs/routing-api/config/certs/locket/client.key"
-
-skip_consul_lock: <%= p("routing_api.skip_consul_lock") %>
