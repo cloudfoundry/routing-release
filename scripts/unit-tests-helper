@@ -5,7 +5,9 @@ BASEDIR="$(dirname "$0")"
 PACKAGE="$1"
 
 function printStatus {
-  if [[ $? -eq 0 ]]; then
+  local last_exit_status=$?
+  set +x
+  if [[ last_exit_status -eq 0 ]]; then
     echo -e '\\nSWEET SUITE SUCCESS'
   else
     echo -e '\\nSUITE FAILURE'

@@ -1,9 +1,11 @@
 #!/bin/bash
 
+set -e
+
 PACKAGE="$1"
 
 if [[ -n "${PACKAGE}" ]]; then
-    pushd "./src/code.cloudfoundry.org/${PACKAGE}"
+  pushd "./src/code.cloudfoundry.org/${PACKAGE}"
     echo "Testing component: ${PACKAGE}"
     ./bin/test
   popd
