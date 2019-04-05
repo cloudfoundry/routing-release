@@ -74,7 +74,7 @@ properties:
     default: 3000
 
   routing_api.enabled_api_endpoints:
-    description: "Protocols that the routing api will enable. Posible values: 'http', 'mtls', or 'both'"
+    description: "Protocols that the routing api will enable. Possible values: 'http', 'mtls', or 'both'"
     default: "http"
   routing_api.mtls_port:
     description: "Port on which Routing API is running, listening with mTLS."
