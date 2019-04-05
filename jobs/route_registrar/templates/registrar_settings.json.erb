@@ -39,7 +39,11 @@
 
   routes = p('route_registrar.routes')
 
-  routes.each do |route|
+  routes.each_with_index do |route, index|
+    if route['tls_port'] != nil && (route['server_cert_domain_san'] == nil || route['server_cert_domain_san'].length <= 0)
+      raise "expected route_registrar.routes[#{index}].route.server_cert_domain_san when tls_port is provided"
+    end
+
     if route['prepend_instance_index']
       route['uris'].map! { |uri| "#{spec.index}-#{uri}" }
     end
