@@ -124,12 +124,13 @@ properties:
     description: |
       How to handle the x-forwarded-client-cert (XFCC) HTTP header. Possible values are:
       - always_forward: Always forward the XFCC header in the request, regardless of whether the client connection is mTLS.
-        Use this value when your load balancer is forwarding the client certificate and requests are not forwarded to Gorouter over mTLS. In the case where the connection between load balancer and Gorouter is mTLS, the client certificate received by Gorouter in the TLS handshake will not be forwarded.
+        Use this value when your load balancer is forwarding the client certificate and requests are not forwarded to Gorouter over mTLS. 
+        In the case where the connection between load balancer and Gorouter is mTLS, the client certificate received by Gorouter in the TLS handshake will not be put in the XFCC header.
       - forward: Forward the XFCC header received from the client only when the client connection is mTLS.
-        This is a more secure version of `always_forward`. The client certificate received by Gorouter in the TLS handshake will not be forwarded.
+        This is a more secure version of `always_forward`. The client certificate received by Gorouter in the TLS handshake will not be put in the XFCC header.
         Requires `client_cert_validation: request` or `require`.
       - sanitize_set: Strip any instances of XFCC headers from the client request.
-        When the client connection is mTLS, the client certificate received by Gorouter in the TLS handshake will be forwarded in this header.
+        When the client connection is mTLS, the client certificate received by Gorouter in the TLS handshake will be put in this header.
         Values will be base64 encoded PEM. Use this value when Gorouter is the first component to terminate TLS.
         Requires `client_cert_validation: request` or `require`.
     default: always_forward
