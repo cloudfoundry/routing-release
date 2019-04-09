@@ -7,7 +7,7 @@ ROUTING_RELEASE_DIR="${BASEDIR}/.."
 COMPONENT=$1
 IMAGE="cloudfoundry/cf-routing-pipeline"
 MOUNT_DIR="/routing-release"
-RUN_UNIT_TESTS="cd ${MOUNT_DIR}; source .envrc; scripts/unit-tests-helper ${COMPONENT}"
+RUN_UNIT_TESTS="cd ${MOUNT_DIR}; source .envrc; scripts/run-unit-tests ${COMPONENT}"
 
 docker pull "${IMAGE}"
 docker run -it \
