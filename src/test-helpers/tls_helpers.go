@@ -18,22 +18,34 @@ import (
 	. "github.com/onsi/gomega"
 )
 
+func GenerateCa() (string, *rsa.PrivateKey) {
+	caFileName, privKey, err := buildCaFile()
+	Expect(err).NotTo(HaveOccurred())
+	return caFileName, privKey
+}
+
+func GenerateCertAndKey(caFileName string, caPrivateKey *rsa.PrivateKey) (clientCertFileName string, clientPrivateKeyFileName string, cert tls.Certificate) {
+	certPem, keyPem, err := buildCertPem(caPrivateKey, caFileName)
+	Expect(err).NotTo(HaveOccurred())
+	clientCertFileName = writeClientCredFile(certPem)
+	clientPrivateKeyFileName = writeClientCredFile(keyPem)
+
+	cert, err = tls.X509KeyPair(certPem, keyPem)
+	Expect(err).NotTo(HaveOccurred())
+
+	return
+}
+
 func GenerateCaAndMutualTlsCerts() (caFileName string, certFileName string, privateKeyFileName string, cert tls.Certificate) {
 	var (
 		err     error
 		privKey *rsa.PrivateKey
 	)
 
-	caFileName, privKey, err = buildCaFile()
+	caFileName, privKey = GenerateCa()
 	Expect(err).NotTo(HaveOccurred())
 
-	certPem, keyPem, err := buildCertPem(privKey, caFileName)
-	Expect(err).NotTo(HaveOccurred())
-	certFileName = writeClientCredFile(certPem)
-	privateKeyFileName = writeClientCredFile(keyPem)
-
-	cert, err = tls.X509KeyPair(certPem, keyPem)
-	Expect(err).NotTo(HaveOccurred())
+	certFileName, privateKeyFileName, cert = GenerateCertAndKey(caFileName, privKey)
 
 	return
 }
