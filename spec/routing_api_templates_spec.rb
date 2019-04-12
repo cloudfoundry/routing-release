@@ -70,17 +70,6 @@ describe 'routing_api' do
         end
       end
     end
-
-    describe 'when server mtls not enabled' do
-      before do
-        merged_manifest_properties['routing_api']['enabled_api_endpoints'] = 'http'
-      end
-
-      it 'should not err when the client ca is not specified' do
-        client_ca = template.render(merged_manifest_properties)
-        expect(client_ca).to eq('')
-      end
-    end
   end
 
   describe 'config/certs/routing-api/server.crt' do
@@ -119,16 +108,6 @@ describe 'routing_api' do
         it 'should err' do
           expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
         end
-      end
-    end
-
-    describe 'when server mtls not enabled' do
-      before do
-        merged_manifest_properties['routing_api']['enabled_api_endpoints'] = 'http'
-      end
-
-      it 'should not err when the server cert is not specified' do
-        expect(template.render(merged_manifest_properties)).to eq('')
       end
     end
   end
@@ -171,16 +150,6 @@ describe 'routing_api' do
         end
       end
     end
-
-    describe 'when server mtls not enabled' do
-      before do
-        merged_manifest_properties['routing_api']['enabled_api_endpoints'] = 'http'
-      end
-
-      it 'should not err when the server key is not specified' do
-        expect(template.render(merged_manifest_properties)).to eq('')
-      end
-    end
   end
 
   describe 'routing-api.yml' do
@@ -213,7 +182,6 @@ describe 'routing_api' do
                                     'api' => {
                                       'listen_port' => 3000,
                                       'http_enabled' => true,
-                                      'mtls_enabled' => false,
                                       'mtls_listen_port' => 3001,
                                       'mtls_client_ca_file' => '/var/vcap/jobs/routing-api/config/certs/routing-api/client_ca.crt',
                                       'mtls_server_cert_file' => '/var/vcap/jobs/routing-api/config/certs/routing-api/server.crt',
@@ -255,17 +223,6 @@ describe 'routing_api' do
       end
     end
 
-    describe 'when http is enabled' do
-      before do
-        merged_manifest_properties['routing_api']['enabled_api_endpoints'] = 'http'
-      end
-
-      it 'enables just the HTTP API endpoint' do
-        expect(rendered_config['api']['http_enabled']).to eq(true)
-        expect(rendered_config['api']['mtls_enabled']).to eq(false)
-      end
-    end
-
     describe 'when mtls is enabled' do
       before do
         merged_manifest_properties['routing_api']['enabled_api_endpoints'] = 'mtls'
@@ -273,7 +230,6 @@ describe 'routing_api' do
 
       it 'enables just the mTLS API endpoint' do
         expect(rendered_config['api']['http_enabled']).to eq(false)
-        expect(rendered_config['api']['mtls_enabled']).to eq(true)
       end
     end
 
@@ -282,9 +238,8 @@ describe 'routing_api' do
         merged_manifest_properties['routing_api']['enabled_api_endpoints'] = 'both'
       end
 
-      it 'enables both API endpoints' do
+      it 'enables the HTTP API endpoint' do
         expect(rendered_config['api']['http_enabled']).to eq(true)
-        expect(rendered_config['api']['mtls_enabled']).to eq(true)
       end
     end
 
@@ -293,8 +248,8 @@ describe 'routing_api' do
         merged_manifest_properties['routing_api']['enabled_api_endpoints'] = 'junk'
       end
 
-      it 'enables both API endpoints' do
-        expect { template.render(merged_manifest_properties) }.to raise_error(RuntimeError, "expected routing_api.enabled_api_endpoints to be one of 'http', 'mtls', or 'both' but got 'junk'")
+      it 'raises a validation error' do
+        expect { template.render(merged_manifest_properties) }.to raise_error(RuntimeError, "expected routing_api.enabled_api_endpoints to be one of 'mtls' or 'both' but got 'junk'")
       end
     end
 
