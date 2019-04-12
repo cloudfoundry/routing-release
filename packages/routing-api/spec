@@ -13,6 +13,7 @@ files:
   - code.cloudfoundry.org/consuladapter/*.go # gosub
   - code.cloudfoundry.org/debugserver/*.go # gosub
   - code.cloudfoundry.org/diego-logging-client/*.go # gosub
+  - code.cloudfoundry.org/durationjson/*.go # gosub
   - code.cloudfoundry.org/eventhub/*.go # gosub
   - code.cloudfoundry.org/go-diodes/*.go # gosub
   - code.cloudfoundry.org/go-loggregator/*.go # gosub
@@ -21,6 +22,8 @@ files:
   - code.cloudfoundry.org/lager/internal/truncate/*.go # gosub
   - code.cloudfoundry.org/lager/lagerflags/*.go # gosub
   - code.cloudfoundry.org/locket/*.go # gosub
+  - code.cloudfoundry.org/locket/cmd/locket/config/*.go # gosub
+  - code.cloudfoundry.org/locket/cmd/locket/testrunner/*.go # gosub
   - code.cloudfoundry.org/locket/lock/*.go # gosub
   - code.cloudfoundry.org/locket/models/*.go # gosub
   - code.cloudfoundry.org/routing-api/*.go # gosub
