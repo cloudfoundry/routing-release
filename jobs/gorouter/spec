@@ -134,6 +134,10 @@ properties:
         Values will be base64 encoded PEM. Use this value when Gorouter is the first component to terminate TLS.
         Requires `client_cert_validation: request` or `require`.
     default: always_forward
+  router.route_services.cert_chain:
+    description: Certificate chain used for client authentication to TLS-registered route services.  In PEM format.
+  router.route_services.private_key:
+    description: Private key used for client authentication to TLS-registered route services.  In PEM format.
   router.route_services_secret:
     description: "Support for route services is disabled when no value is configured. A robust passphrase is recommended."
     default: ""

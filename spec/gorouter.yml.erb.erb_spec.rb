@@ -14,6 +14,17 @@ TEST_KEY = 'some
 
 multi line key'.freeze
 
+ROUTE_SERVICES_CLIENT_TEST_CERT = 'route services
+
+multiline
+
+cert'.freeze
+
+ROUTE_SERVICES_CLIENT_TEST_KEY = 'route services
+
+multi line key'.freeze
+
+
 describe 'gorouter.yml.erb' do
   let(:deployment_manifest_fragment) do
     {
@@ -79,6 +90,10 @@ describe 'gorouter.yml.erb' do
           'max_conns' => 100,
           'cert_chain' => TEST_CERT,
           'private_key' => TEST_KEY
+        },
+        'route_services' => {
+          'cert_chain' => ROUTE_SERVICES_CLIENT_TEST_CERT,
+          'private_key' => ROUTE_SERVICES_CLIENT_TEST_KEY
         },
         'frontend_idle_timeout' => 5,
         'ip_local_port_range' => '1024 65535'
@@ -190,6 +205,41 @@ describe 'gorouter.yml.erb' do
         end
         it 'should error' do
           expect { raise parsed_yaml }.to raise_error(RuntimeError, 'must provide cert_chain and private_key with tls_pem')
+        end
+      end
+    end
+
+    describe 'route_services' do
+      context 'when both cert_chain and private_key are provided' do
+        it 'should configure the property' do
+          expect(parsed_yaml['route_services']['cert_chain']).to eq(ROUTE_SERVICES_CLIENT_TEST_CERT)
+          expect(parsed_yaml['route_services']['private_key']).to eq(ROUTE_SERVICES_CLIENT_TEST_KEY)
+        end
+      end
+      context 'when cert_chain is provided but not private_key' do
+        before do
+          deployment_manifest_fragment['router']['route_services']['private_key'] = nil
+        end
+        it 'should error' do
+          expect { raise parsed_yaml }.to raise_error(RuntimeError, 'route_services.cert_chain and route_services.private_key must be both provided or not at all')
+        end
+      end
+      context 'when private_key is provided but not cert_chain' do
+        before do
+          deployment_manifest_fragment['router']['route_services']['cert_chain'] = nil
+        end
+        it 'should error' do
+          expect { raise parsed_yaml }.to raise_error(RuntimeError, 'route_services.cert_chain and route_services.private_key must be both provided or not at all')
+        end
+      end
+      context 'when neither cert_chain nor private_key are provided' do
+        before do
+          deployment_manifest_fragment['router']['route_services']['cert_chain'] = nil
+          deployment_manifest_fragment['router']['route_services']['private_key'] = nil
+        end
+        it 'should not error and should not configure the properties' do
+          expect(parsed_yaml['route_services']['cert_chain']).to eq('')
+          expect(parsed_yaml['route_services']['private_key']).to eq('')
         end
       end
     end

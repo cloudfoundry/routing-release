@@ -98,6 +98,24 @@ frontend_idle_timeout: <%= p("router.frontend_idle_timeout") %>s
   { "backends" => backends }.to_yaml[3..-1]
 %>
 
+<%=
+  route_services_cert_chain = ''
+  route_services_private_key = ''
+  if_p("router.route_services.cert_chain") { |val| route_services_cert_chain  = val }
+  if_p("router.route_services.private_key") { |val| route_services_private_key = val }
+
+  if (route_services_cert_chain != '') ^ (route_services_private_key != '')
+    raise 'route_services.cert_chain and route_services.private_key must be both provided or not at all'
+  end
+
+  route_services = {
+    "cert_chain" => route_services_cert_chain,
+    "private_key" => route_services_private_key,
+  }
+
+  { "route_services" => route_services }.to_yaml[3..-1]
+%>
+
 oauth:
   token_endpoint: <%= p("uaa.token_endpoint") %>
   client_name: "gorouter"
