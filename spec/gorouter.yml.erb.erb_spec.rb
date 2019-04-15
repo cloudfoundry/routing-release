@@ -24,7 +24,6 @@ ROUTE_SERVICES_CLIENT_TEST_KEY = 'route services
 
 multi line key'.freeze
 
-
 describe 'gorouter.yml.erb' do
   let(:deployment_manifest_fragment) do
     {
