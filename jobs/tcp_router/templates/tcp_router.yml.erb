@@ -12,6 +12,9 @@ routing_api:
   uri: <%= p("routing_api.uri") %>
   port: <%= p("routing_api.port") %>
   auth_disabled: <%= p("routing_api.auth_disabled") %>
+  client_cert_path: "/var/vcap/jobs/tcp_router/config/certs/routing-api/client.crt"
+  ca_cert_path: "/var/vcap/jobs/tcp_router/config/certs/routing-api/ca_cert.crt"
+  client_private_key_path: "/var/vcap/jobs/tcp_router/config/keys/routing-api/client.key"
 
 haproxy_pid_file: "/var/vcap/data/tcp_router/config/haproxy.pid"
 isolation_segments: <%= p("tcp_router.isolation_segments") %>

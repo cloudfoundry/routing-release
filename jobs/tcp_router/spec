@@ -7,6 +7,9 @@ templates:
   bpm-pre-start.erb: bin/bpm-pre-start
   tcp_router.yml.erb: config/tcp_router.yml
   uaa_ca.crt.erb: config/certs/uaa/ca.crt
+  routing_api_client_certificate.crt.erb: config/certs/routing-api/client.crt
+  routing_api_client_private.key.erb: config/keys/routing-api/client.key
+  routing_api_ca_certificate.crt.erb: config/certs/routing-api/ca_cert.crt
   haproxy.conf.erb: config/haproxy.conf
   haproxy.conf.template.erb: config/haproxy.conf.template
   bpm.yml.erb: config/bpm.yml
@@ -45,6 +48,12 @@ properties:
   routing_api.auth_disabled:
     description: "Disables UAA authentication"
     default: false
+  routing_api.client_cert:
+    description: "Routing API Client Certificate"
+  routing_api.client_private_key:
+    description: "Routing API Client Private Key"
+  routing_api.ca_cert:
+    description: "Routing API Certificate Authority"
 
   tcp_router.request_timeout_in_seconds:
     description: "Server and client timeouts in seconds"
