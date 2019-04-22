@@ -67,7 +67,7 @@ status_haproxy() {
 start_haproxy
 
 set +e
-  host -r <%= p("dns_health_check_host") %>
+  host <%= p("dns_health_check_host") %>
   if [[ "0" != "$?" ]]; then
     echo "DNS is not up"
     exit 1
