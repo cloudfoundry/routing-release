@@ -72,9 +72,21 @@ describe 'route_registrar' do
             'ca_certs' => '/var/vcap/jobs/route_registrar/config/certs/ca.crt',
             'api_url' => 'http://routing-api.service.cf.internal:3000',
             'oauth_url' => 'https://uaa.service.cf.internal:8443',
-            'client_id' => 'routing_api_client'
+            'client_id' => 'routing_api_client',
+            'skip_ssl_validation' => false
           }
         )
+      end
+    end
+
+    describe 'when skip_ssl_validation is enabled' do
+      before do
+        merged_manifest_properties['route_registrar']['routing_api'] = { 'skip_ssl_validation' => true }
+      end
+
+      it 'renders skip_ssl_validation as true' do
+        rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+        expect(rendered_hash['routing_api']['skip_ssl_validation']).to be true
       end
     end
 
