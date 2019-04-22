@@ -57,7 +57,10 @@
   end
 
   routing_api = {
-    ca_certs: '/var/vcap/jobs/route_registrar/config/certs/ca.crt'
+    ca_certs: '/var/vcap/jobs/route_registrar/config/certs/ca.crt',
+    client_cert_path: '/var/vcap/jobs/route_registrar/config/routing_api/certs/client.crt',
+    client_private_key_path: '/var/vcap/jobs/route_registrar/config/routing_api/keys/client_private.key',
+    server_ca_cert_path: '/var/vcap/jobs/route_registrar/config/routing_api/certs/server_ca.crt'
   }
   if_p('route_registrar.routing_api.api_url') do |prop|
     routing_api['api_url'] = prop
