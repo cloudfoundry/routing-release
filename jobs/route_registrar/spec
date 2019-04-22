@@ -17,6 +17,10 @@ templates:
   bpm.yml.erb: config/bpm.yml
   ca.crt.erb: config/certs/ca.crt
 
+  client.crt.erb: config/routing_api/certs/client.crt
+  client_private.key.erb: config/routing_api/keys/client_private.key
+  server_ca.crt.erb: config/routing_api/certs/server_ca.crt
+
 properties:
   nats.machines:
     description: IPs of each NATS cluster member
@@ -53,6 +57,13 @@ properties:
   route_registrar.routing_api.skip_ssl_validation:
     description: (optional, boolean) Option to skip TLS validation.
     default: false
+
+  route_registrar.routing_api.client_cert:
+    description: "Routing API Client Certificate"
+  route_registrar.routing_api.client_private_key:
+    description: "Routing API Client Private Key"
+  route_registrar.routing_api.server_ca_cert:
+    description: "Routing API Certificate Authority"
 
   route_registrar.routes:
     description: |
