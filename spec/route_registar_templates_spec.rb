@@ -31,38 +31,9 @@ describe 'route_registrar' do
               '*.login.uaa-acceptance.cf-app.com'
             ]
           }
-        ],
-        'routing_api' => {
-          'client_cert' => 'some client cert',
-          'client_private_key' => 'some client private key',
-          'server_ca_cert' => 'some server ca cert'
-        }
+        ]
       }
     }
-  end
-
-  describe 'config/routing_api/certs/client.crt' do
-    let(:template) { job.template('config/routing_api/certs/client.crt') }
-
-    it 'renders the client cert for the routing api' do
-      expect(template.render(merged_manifest_properties)).to eq('some client cert')
-    end
-  end
-
-  describe 'config/routing_api/keys/client_private.key' do
-    let(:template) { job.template('config/routing_api/keys/client_private.key') }
-
-    it 'renders the client private key for the routing api' do
-      expect(template.render(merged_manifest_properties)).to eq('some client private key')
-    end
-  end
-
-  describe 'config/routing_api/certs/server_ca.crt' do
-    let(:template) { job.template('config/routing_api/certs/server_ca.crt') }
-
-    it 'renders the client private key for the routing api' do
-      expect(template.render(merged_manifest_properties)).to eq('some server ca cert')
-    end
   end
 
   describe 'config/registrar_settings.json' do
@@ -102,10 +73,7 @@ describe 'route_registrar' do
             'api_url' => 'http://routing-api.service.cf.internal:3000',
             'oauth_url' => 'https://uaa.service.cf.internal:8443',
             'client_id' => 'routing_api_client',
-            'skip_ssl_validation' => false,
-            'client_cert_path' => '/var/vcap/jobs/route_registrar/config/routing_api/certs/client.crt',
-            'client_private_key_path' => '/var/vcap/jobs/route_registrar/config/routing_api/keys/client_private.key',
-            'server_ca_cert_path' => '/var/vcap/jobs/route_registrar/config/routing_api/certs/server_ca.crt'
+            'skip_ssl_validation' => false
           }
         )
       end
