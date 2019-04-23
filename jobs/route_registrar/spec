@@ -43,7 +43,7 @@ properties:
 
   route_registrar.routing_api.api_url:
     description: (optional, string) The routing API's URL. This is required to register any TCP routes.
-    default: http://routing-api.service.cf.internal:3000
+    default: https://routing-api.service.cf.internal:3001
   route_registrar.routing_api.oauth_url:
     description: (optional, string) The OAuth server's URL. This is required to register any TCP routes.
     default: https://uaa.service.cf.internal:8443

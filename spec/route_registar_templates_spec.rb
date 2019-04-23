@@ -99,7 +99,7 @@ describe 'route_registrar' do
           ],
           'routing_api' => {
             'ca_certs' => '/var/vcap/jobs/route_registrar/config/certs/ca.crt',
-            'api_url' => 'http://routing-api.service.cf.internal:3000',
+            'api_url' => 'https://routing-api.service.cf.internal:3001',
             'oauth_url' => 'https://uaa.service.cf.internal:8443',
             'client_id' => 'routing_api_client',
             'skip_ssl_validation' => false,
