@@ -41,7 +41,7 @@ properties:
 
   routing_api.uri:
     description: "URL where the routing API can be reached internally"
-    default: http://routing-api.service.cf.internal
+    default: https://routing-api.service.cf.internal
   routing_api.port:
     description: "Port of routing api"
     default: "3001"

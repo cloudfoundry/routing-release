@@ -92,7 +92,7 @@ describe 'tcp_router' do
                                       'skip_ssl_validation' => false
                                     },
                                     'routing_api' => {
-                                      'uri' => 'http://routing-api.service.cf.internal',
+                                      'uri' => 'https://routing-api.service.cf.internal',
                                       'port' => 3001,
                                       'auth_disabled' => false,
                                       'client_cert_path' => '/var/vcap/jobs/tcp_router/config/certs/routing-api/client.crt',
