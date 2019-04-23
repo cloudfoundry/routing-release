@@ -44,7 +44,7 @@ properties:
     default: http://routing-api.service.cf.internal
   routing_api.port:
     description: "Port of routing api"
-    default: "3000"
+    default: "3001"
   routing_api.auth_disabled:
     description: "Disables UAA authentication"
     default: false

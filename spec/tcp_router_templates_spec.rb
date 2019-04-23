@@ -93,7 +93,7 @@ describe 'tcp_router' do
                                     },
                                     'routing_api' => {
                                       'uri' => 'http://routing-api.service.cf.internal',
-                                      'port' => 3000,
+                                      'port' => 3001,
                                       'auth_disabled' => false,
                                       'client_cert_path' => '/var/vcap/jobs/tcp_router/config/certs/routing-api/client.crt',
                                       'ca_cert_path' => '/var/vcap/jobs/tcp_router/config/certs/routing-api/ca_cert.crt',
