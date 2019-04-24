@@ -128,12 +128,9 @@ describe 'gorouter.yml.erb' do
   let(:release_path) { File.join(File.dirname(__FILE__), '..') }
   let(:release) { Bosh::Template::Test::ReleaseDir.new(release_path) }
   let(:job) { release.job('gorouter') }
-
-  subject(:parsed_yaml) do
-    template = job.template('config/gorouter.yml')
-
-    YAML.safe_load(template.render(deployment_manifest_fragment))
-  end
+  let(:template) { job.template('config/gorouter.yml') }
+  let(:rendered_template) { template.render(deployment_manifest_fragment) }
+  subject(:parsed_yaml) { YAML.safe_load(rendered_template) }
 
   context 'given a generally valid manifest' do
     describe 'client_cert_validation' do
