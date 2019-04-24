@@ -32,36 +32,175 @@ describe 'route_registrar' do
             ]
           }
         ],
-        'routing_api' => {
-          'client_cert' => 'some client cert',
-          'client_private_key' => 'some client private key',
-          'server_ca_cert' => 'some server ca cert'
-        }
+        'routing_api' => {}
       }
     }
   end
 
   describe 'config/routing_api/certs/client.crt' do
     let(:template) { job.template('config/routing_api/certs/client.crt') }
+    let(:links) do
+      [
+        Bosh::Template::Test::Link.new(
+          name: 'routing_api',
+          properties: {
+            'routing_api' => {
+              'mtls_client_cert' => 'the client cert from link'
+            }
+          }
+        )
+      ]
+    end
+    context 'when properties and link is provided' do
+      before do
+        merged_manifest_properties['route_registrar']['routing_api']['client_cert'] = 'the client cert from properties'
+      end
 
-    it 'renders the client cert for the routing api' do
-      expect(template.render(merged_manifest_properties)).to eq('some client cert')
+      it "should prefer the value in the properties" do
+        rendered_template = template.render(merged_manifest_properties, consumes: links)
+        expect(rendered_template).to eq('the client cert from properties')
+      end
+    end
+
+    context 'when no properties and link is provided' do
+      it 'should render the value from the link' do
+        rendered_template = template.render({}, consumes: links)
+        expect(rendered_template).to eq('the client cert from link')
+      end
+    end
+
+    context 'when properties and no link is provided' do
+      before do
+        merged_manifest_properties['route_registrar']['routing_api']['client_cert'] = 'the client cert from properties'
+      end
+
+      it "should prefer the value in the properties" do
+        rendered_template = template.render(merged_manifest_properties)
+        expect(rendered_template).to eq('the client cert from properties')
+      end
+    end
+
+    context 'when no properties and no link is provided' do
+      it 'should error' do
+        expect {
+          template.render(merged_manifest_properties)
+        }.to raise_error(
+          RuntimeError,
+          'Routing API client certificate not found in properties nor in routing_api Link. This value can be specified using the route_registrar.routing_api.client_cert property.'
+        )
+      end
     end
   end
 
   describe 'config/routing_api/keys/client_private.key' do
     let(:template) { job.template('config/routing_api/keys/client_private.key') }
+    let(:links) do
+      [
+        Bosh::Template::Test::Link.new(
+          name: 'routing_api',
+          properties: {
+            'routing_api' => {
+              'mtls_client_key' => 'the client key from link'
+            }
+          }
+        )
+      ]
+    end
 
-    it 'renders the client private key for the routing api' do
-      expect(template.render(merged_manifest_properties)).to eq('some client private key')
+    context 'when properties and link is provided' do
+      before do
+        merged_manifest_properties['route_registrar']['routing_api']['client_private_key'] = 'the client key from properties'
+      end
+
+      it "should prefer the value in the properties" do
+        rendered_template = template.render(merged_manifest_properties, consumes: links)
+        expect(rendered_template).to eq('the client key from properties')
+      end
+    end
+
+    context 'when no properties and link is provided' do
+      it 'should render the value from the link' do
+        rendered_template = template.render({}, consumes: links)
+        expect(rendered_template).to eq('the client key from link')
+      end
+    end
+
+    context 'when properties and no link is provided' do
+      before do
+        merged_manifest_properties['route_registrar']['routing_api']['client_private_key'] = 'the client key from properties'
+      end
+
+      it "should prefer the value in the properties" do
+        rendered_template = template.render(merged_manifest_properties)
+        expect(rendered_template).to eq('the client key from properties')
+      end
+    end
+
+    context 'when no properties and no link is provided' do
+      it 'should error' do
+        expect {
+          template.render(merged_manifest_properties)
+        }.to raise_error(
+          RuntimeError,
+          'Routing API client private key not found in properties nor in routing_api Link. This value can be specified using the route_registrar.routing_api.client_private_key property.'
+        )
+      end
     end
   end
 
   describe 'config/routing_api/certs/server_ca.crt' do
     let(:template) { job.template('config/routing_api/certs/server_ca.crt') }
+    let(:links) do
+      [
+        Bosh::Template::Test::Link.new(
+          name: 'routing_api',
+          properties: {
+            'routing_api' => {
+              'mtls_ca' => 'the mtls ca from link'
+            }
+          }
+        )
+      ]
+    end
 
-    it 'renders the client private key for the routing api' do
-      expect(template.render(merged_manifest_properties)).to eq('some server ca cert')
+    context 'when properties and link is provided' do
+      before do
+        merged_manifest_properties['route_registrar']['routing_api']['server_ca_cert'] = 'the server ca cert from properties'
+      end
+
+      it "should prefer the value in the properties" do
+        rendered_template = template.render(merged_manifest_properties, consumes: links)
+        expect(rendered_template).to eq('the server ca cert from properties')
+      end
+    end
+
+    context 'when no properties and link is provided' do
+      it 'should render the value from the link' do
+        rendered_template = template.render({}, consumes: links)
+        expect(rendered_template).to eq('the mtls ca from link')
+      end
+    end
+
+    context 'when properties and no link is provided' do
+      before do
+        merged_manifest_properties['route_registrar']['routing_api']['server_ca_cert'] = 'the server ca cert from properties'
+      end
+
+      it "should prefer the value in the properties" do
+        rendered_template = template.render(merged_manifest_properties)
+        expect(rendered_template).to eq('the server ca cert from properties')
+      end
+    end
+
+    context 'when no properties and no link is provided' do
+      it 'should error' do
+        expect {
+          template.render(merged_manifest_properties)
+        }.to raise_error(
+          RuntimeError,
+          'Routing API server ca certificate not found in properties nor in routing_api Link. This value can be specified using the route_registrar.routing_api.server_ca_cert property.'
+        )
+      end
     end
   end
 

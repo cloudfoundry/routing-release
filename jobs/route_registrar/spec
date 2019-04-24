@@ -11,6 +11,9 @@ consumes:
 - name: nats
   type: nats
   optional: true
+- name: routing_api
+  type: routing_api
+  optional: true
 
 templates:
   registrar_settings.json.erb: config/registrar_settings.json

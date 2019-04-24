@@ -13,6 +13,11 @@ describe 'routing_api' do
   let(:merged_manifest_properties) do
     {
       'routing_api' => {
+        'mtls_ca' => 'the ca cert',
+        'mtls_server_key' => 'the server key',
+        'mtls_server_cert' => 'the server cert',
+        'mtls_client_cert' => 'the client cert',
+        'mtls_client_key' => 'the client key',
         'locket' => {
           'api_location' => 'locket_server'
         },
@@ -35,39 +40,18 @@ describe 'routing_api' do
   describe 'config/certs/routing-api/client_ca.crt' do
     let(:template) { job.template('config/certs/routing-api/client_ca.crt') }
 
-    describe 'when server mtls is enabled' do
-      before do
-        merged_manifest_properties['routing_api']['enabled_api_endpoints'] = 'mtls'
-      end
-
-      it 'renders the client ca cert' do
-        merged_manifest_properties['routing_api']['mtls_client_ca'] = 'the client ca cert'
-        client_ca = template.render(merged_manifest_properties)
-        expect(client_ca).to eq('the client ca cert')
-      end
-
-      describe 'when the client ca is not provided' do
-        it 'should err' do
-          expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
-        end
-      end
+    it 'renders the client ca cert' do
+      client_ca = template.render(merged_manifest_properties)
+      expect(client_ca).to eq('the ca cert')
     end
 
-    describe 'when server accepts mtls and http' do
+    describe 'when the client ca is not provided' do
       before do
-        merged_manifest_properties['routing_api']['enabled_api_endpoints'] = 'both'
+        merged_manifest_properties['routing_api'].delete('mtls_ca')
       end
 
-      it 'renders the client ca cert' do
-        merged_manifest_properties['routing_api']['mtls_client_ca'] = 'the client ca cert'
-        client_ca = template.render(merged_manifest_properties)
-        expect(client_ca).to eq('the client ca cert')
-      end
-
-      describe 'when the client ca is not provided' do
-        it 'should err' do
-          expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
-        end
+      it 'should err' do
+        expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
       end
     end
   end
@@ -75,39 +59,18 @@ describe 'routing_api' do
   describe 'config/certs/routing-api/server.crt' do
     let(:template) { job.template('config/certs/routing-api/server.crt') }
 
-    describe 'when server mtls is enabled' do
-      before do
-        merged_manifest_properties['routing_api']['enabled_api_endpoints'] = 'mtls'
-      end
-
-      it 'renders the server cert' do
-        merged_manifest_properties['routing_api']['mtls_server_cert'] = 'the server cert'
-        client_ca = template.render(merged_manifest_properties)
-        expect(client_ca).to eq('the server cert')
-      end
-
-      describe 'when the server cert is not provided' do
-        it 'should err' do
-          expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
-        end
-      end
+    it 'renders the server cert' do
+      client_ca = template.render(merged_manifest_properties)
+      expect(client_ca).to eq('the server cert')
     end
 
-    describe 'when server accepts mtls and http' do
+    describe 'when the server cert is not provided' do
       before do
-        merged_manifest_properties['routing_api']['enabled_api_endpoints'] = 'both'
+        merged_manifest_properties['routing_api'].delete('mtls_server_cert')
       end
 
-      it 'renders the server cert' do
-        merged_manifest_properties['routing_api']['mtls_server_cert'] = 'the server cert'
-        client_ca = template.render(merged_manifest_properties)
-        expect(client_ca).to eq('the server cert')
-      end
-
-      describe 'when the server cert is not provided' do
-        it 'should err' do
-          expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
-        end
+      it 'should err' do
+        expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
       end
     end
   end
@@ -115,39 +78,17 @@ describe 'routing_api' do
   describe 'config/keys/routing-api/server.key' do
     let(:template) { job.template('config/certs/routing-api/server.key') }
 
-    describe 'when server mtls is enabled' do
-      before do
-        merged_manifest_properties['routing_api']['enabled_api_endpoints'] = 'mtls'
-      end
-
-      it 'renders the server key' do
-        merged_manifest_properties['routing_api']['mtls_server_key'] = 'the server key'
-        client_ca = template.render(merged_manifest_properties)
-        expect(client_ca).to eq('the server key')
-      end
-
-      describe 'when the server key is not provided' do
-        it 'should err' do
-          expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
-        end
-      end
+    it 'renders the server key' do
+      expect(template.render(merged_manifest_properties)).to eq('the server key')
     end
 
-    describe 'when server accepts mtls and http' do
+    describe 'when the server key is not provided' do
       before do
-        merged_manifest_properties['routing_api']['enabled_api_endpoints'] = 'both'
+        merged_manifest_properties['routing_api'].delete('mtls_server_key')
       end
 
-      it 'renders the server key' do
-        merged_manifest_properties['routing_api']['mtls_server_key'] = 'the server key'
-        client_ca = template.render(merged_manifest_properties)
-        expect(client_ca).to eq('the server key')
-      end
-
-      describe 'when the server key is not provided' do
-        it 'should err' do
-          expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
-        end
+      it 'should err' do
+        expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
       end
     end
   end
@@ -157,6 +98,26 @@ describe 'routing_api' do
 
     subject(:rendered_config) do
       YAML.safe_load(template.render(merged_manifest_properties))
+    end
+
+    describe "when the client cert isn't supplied" do
+      before do
+        merged_manifest_properties['routing_api'].delete('mtls_client_cert')
+      end
+
+      it 'should error so that link consumers are ensured to have the property' do
+        expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
+      end
+    end
+
+    describe "when the client key isn't supplied" do
+      before do
+        merged_manifest_properties['routing_api'].delete('mtls_client_key')
+      end
+
+      it 'should error so that link consumers are ensured to have the property' do
+        expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
+      end
     end
 
     it 'renders a file with default properties' do

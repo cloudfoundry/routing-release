@@ -34,6 +34,11 @@ api:
   mtls_client_ca_file: "/var/vcap/jobs/routing-api/config/certs/routing-api/client_ca.crt"
   mtls_server_cert_file: "/var/vcap/jobs/routing-api/config/certs/routing-api/server.crt"
   mtls_server_key_file: "/var/vcap/jobs/routing-api/config/certs/routing-api/server.key"
+  <%
+    # Used to ensure that properties for bosh links are included for consumers
+    p("routing_api.mtls_client_cert")
+    p("routing_api.mtls_client_key")
+  %>
 
 <%=
   sqldb = {

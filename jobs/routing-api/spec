@@ -34,6 +34,13 @@ provides:
   properties:
   - routing_api.clients
   - routing_api.system_domain
+  - routing_api.port
+  - routing_api.mtls_port
+  - routing_api.mtls_ca
+  - routing_api.mtls_server_cert
+  - routing_api.mtls_server_key
+  - routing_api.mtls_client_cert
+  - routing_api.mtls_client_key
   - uaa.ca_cert
   - skip_ssl_validation
 - name: routing_api_db
@@ -79,12 +86,16 @@ properties:
   routing_api.mtls_port:
     description: "Port on which Routing API is running, listening with mTLS."
     default: 3001
-  routing_api.mtls_client_ca:
-    description: "Routing API client CA cert"
+  routing_api.mtls_ca:
+    description: "Routing API CA cert"
   routing_api.mtls_server_cert:
     description: "Routing API server cert"
   routing_api.mtls_server_key:
     description: "Routing API server key"
+  routing_api.mtls_client_cert:
+    description: "Routing API client cert (provided to clients by bosh link)"
+  routing_api.mtls_client_key:
+    description: "Routing API client key (provided to clients by bosh link)"
 
   metron.port:
     description: "The port used to emit dropsonde messages to the Metron agent."
