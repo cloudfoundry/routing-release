@@ -286,7 +286,7 @@ describe 'gorouter.yml.erb' do
           deployment_manifest_fragment['router']['ca_certs'] = nil
         end
         it 'returns a helpful error message' do
-          expect { raise parsed_yaml }.to raise_error(/Can\'t find property \'\[\"router.ca_certs\"\]\'/)
+          expect { parsed_yaml }.to raise_error(/Can\'t find property \'\[\"router.ca_certs\"\]\'/)
         end
       end
       context 'when a simple array is provided' do
@@ -294,7 +294,7 @@ describe 'gorouter.yml.erb' do
           deployment_manifest_fragment['router']['ca_certs'] = ['some-tls-cert']
         end
         it 'raises error' do
-          expect { raise parsed_yaml }.to raise_error(RuntimeError, 'ca_certs must be provided as a single string block')
+          expect { parsed_yaml }.to raise_error(RuntimeError, 'ca_certs must be provided as a single string block')
         end
       end
       context 'when an empty array is provided' do
@@ -302,7 +302,7 @@ describe 'gorouter.yml.erb' do
           deployment_manifest_fragment['router']['ca_certs'] = []
         end
         it 'raises error' do
-          expect { raise parsed_yaml }.to raise_error(RuntimeError, 'ca_certs must be provided as a single string block')
+          expect { parsed_yaml }.to raise_error(RuntimeError, 'ca_certs must be provided as a single string block')
         end
       end
       context 'when set to a multi-line string' do
