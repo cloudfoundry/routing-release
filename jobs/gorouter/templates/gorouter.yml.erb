@@ -126,11 +126,27 @@ oauth:
   ca_certs: "/var/vcap/jobs/gorouter/config/certs/uaa/ca.crt"
   <% end %>
 
+<% if p("routing_api.enabled")
+  ca_certs = p("routing_api.ca_certs")
+  private_key = p("routing_api.private_key")
+  cert_chain = p("routing_api.cert_chain")
+
+  if !ca_certs.is_a?(String)
+    raise 'routing_api.ca_certs must be provided as a single string block'
+  end
+  if !cert_chain.is_a?(String)
+    raise 'routing_api.cert_chain must be provided as a single string block'
+  end
+end %>
+
 <% if p("routing_api.enabled") %>
 routing_api:
   uri: <%= p("routing_api.uri") %>
   port: <%= p("routing_api.port") %>
   auth_disabled: <%= p("routing_api.auth_disabled") %>
+  ca_certs: <%= ca_certs.to_yaml[3..-1] %>
+  private_key: <%= private_key.to_yaml[3..-1] %>
+  cert_chain: <%= cert_chain.to_yaml[3..-1] %>
 <% end %>
 
 drain_wait: <%= p("router.drain_wait") %>s

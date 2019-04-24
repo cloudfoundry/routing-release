@@ -273,6 +273,13 @@ properties:
   routing_api.auth_disabled:
     description: "When false, Routing API requires OAuth tokens for authentication."
     default: false
+  routing_api.ca_certs:
+    description: "String of concatenated certificate authorities in PEM format, used to validate certificates provided by the routing API."
+  routing_api.cert_chain:
+    description: Certificate chain used for client authentication to the routing API. In PEM format.
+  routing_api.private_key:
+    description: Private key used for client authentication to the routing API. In PEM format.
+
   router.write_access_logs_locally:
     description: "Enables writing access log to local disk."
     default: true

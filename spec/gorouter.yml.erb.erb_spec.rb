@@ -99,7 +99,10 @@ describe 'gorouter.yml.erb' do
       },
       'request_timeout_in_seconds' => 100,
       'routing_api' => {
-        'enabled' => false
+        'enabled' => false,
+        'ca_certs' => 'CA CERTS',
+        'private_key' => 'PRIVATE KEY',
+        'cert_chain' => 'CERT CHAIN',
       },
       'uaa' => {
         'ca_cert' => 'blah-cert',
@@ -327,6 +330,122 @@ whitespace
         end
         it 'suceessfully configures the property' do
           expect(parsed_yaml['ca_certs']).to eq(test_certs)
+        end
+      end
+    end
+    # ca_certs, private_key, cert_chain
+    context 'routing-api' do
+      context 'when the routing API is disabled' do
+        before do
+          deployment_manifest_fragment['routing_api']['enabled'] = false
+        end
+
+        context 'when ca_certs is not set' do
+          before do
+            deployment_manifest_fragment['routing_api']['ca_certs'] = 'nice'
+          end
+
+          it 'is happy' do
+            expect { parsed_yaml }.not_to raise_error
+          end
+        end
+      end
+
+      context 'when the routing API is enabled' do
+        before do
+          deployment_manifest_fragment['routing_api']['enabled'] = true
+        end
+
+        describe 'ca_certs' do
+          context 'when it is blank' do
+            before do
+              deployment_manifest_fragment['routing_api']['ca_certs'] = nil
+            end
+
+            it 'returns a helpful error message' do
+              expect { parsed_yaml }.to raise_error(/Can\'t find property \'\[\"routing_api.ca_certs\"\]\'/)
+            end
+          end
+
+          context 'when a simple array is provided' do
+            before do
+              deployment_manifest_fragment['routing_api']['ca_certs'] = ['some-tls-cert']
+            end
+
+            it 'raises error' do
+              expect { parsed_yaml }.to raise_error(RuntimeError, 'routing_api.ca_certs must be provided as a single string block')
+            end
+          end
+
+          context 'when set to a multi-line string' do
+            let(:str) { "some   \nmulti\nline\n  string" }
+
+            before do
+              deployment_manifest_fragment['routing_api']['ca_certs'] = str
+            end
+
+            it 'successfully configures the property' do
+              expect(parsed_yaml['routing_api']['ca_certs']).to eq(str)
+            end
+          end
+        end
+
+        describe 'private_key' do
+          context 'when it is blank' do
+            before do
+              deployment_manifest_fragment['routing_api']['private_key'] = nil
+            end
+
+            it 'returns a helpful error message' do
+              expect { parsed_yaml }.to raise_error(/Can\'t find property \'\[\"routing_api.private_key\"\]\'/)
+            end
+          end
+
+          context 'when set to a multi-line string' do
+            let(:str) { "some   \nmulti\nline\n  string" }
+
+            before do
+              deployment_manifest_fragment['routing_api']['private_key'] = str
+            end
+
+            it 'successfully configures the property' do
+              expect(parsed_yaml['routing_api']['private_key']).to eq(str)
+            end
+          end
+        end
+
+        describe 'cert_chain' do
+          context 'when it is blank' do
+            before do
+              deployment_manifest_fragment['routing_api']['cert_chain'] = nil
+            end
+
+            it 'returns a helpful error message' do
+              expect { parsed_yaml }.to raise_error(/Can\'t find property \'\[\"routing_api.cert_chain\"\]\'/)
+            end
+          end
+
+          context 'when a simple array is provided' do
+            before do
+              deployment_manifest_fragment['routing_api']['cert_chain'] = ['some-tls-cert']
+            end
+
+            it 'raises error' do
+              expect { parsed_yaml }.to raise_error(RuntimeError, 'routing_api.cert_chain must be provided as a single string block')
+            end
+          end
+
+          context 'when set to a multi-line string' do
+            let(:str) { "some   \nmulti\nline\n  string" }
+
+            before do
+              deployment_manifest_fragment['routing_api']['cert_chain'] = str
+            end
+
+            it 'successfully configures the property' do
+              expect(parsed_yaml['routing_api']['cert_chain']).to eq(str)
+            end
+          end
         end
       end
     end
