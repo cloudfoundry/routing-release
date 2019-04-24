@@ -100,7 +100,7 @@ describe 'gorouter.yml.erb' do
       'request_timeout_in_seconds' => 100,
       'routing_api' => {
         'enabled' => false,
-        'ca_certs' => 'CA CERTS',
+        'ca_certs' => "CA CERTS\n",
         'private_key' => 'PRIVATE KEY',
         'cert_chain' => 'CERT CHAIN'
       },

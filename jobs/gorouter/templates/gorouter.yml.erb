@@ -137,16 +137,21 @@ oauth:
   if !cert_chain.is_a?(String)
     raise 'routing_api.cert_chain must be provided as a single string block'
   end
+
+  routing_api_config = {
+    'routing_api' => {
+      'uri' => p('routing_api.uri'),
+      'port' => p('routing_api.port'),
+      'auth_disabled' => p('routing_api.auth_disabled'),
+      'private_key' => private_key,
+      'ca_certs' => ca_certs,
+      'cert_chain' => cert_chain,
+    }
+  }
 end %>
 
 <% if p("routing_api.enabled") %>
-routing_api:
-  uri: <%= p("routing_api.uri") %>
-  port: <%= p("routing_api.port") %>
-  auth_disabled: <%= p("routing_api.auth_disabled") %>
-  ca_certs: <%= ca_certs.to_yaml[3..-1] %>
-  private_key: <%= private_key.to_yaml[3..-1] %>
-  cert_chain: <%= cert_chain.to_yaml[3..-1] %>
+<%= routing_api_config.to_yaml.gsub("---", "") %>
 <% end %>
 
 drain_wait: <%= p("router.drain_wait") %>s
