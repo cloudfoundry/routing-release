@@ -102,7 +102,7 @@ describe 'gorouter.yml.erb' do
         'enabled' => false,
         'ca_certs' => 'CA CERTS',
         'private_key' => 'PRIVATE KEY',
-        'cert_chain' => 'CERT CHAIN',
+        'cert_chain' => 'CERT CHAIN'
       },
       'uaa' => {
         'ca_cert' => 'blah-cert',
