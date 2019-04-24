@@ -56,7 +56,7 @@ describe 'route_registrar' do
         merged_manifest_properties['route_registrar']['routing_api']['client_cert'] = 'the client cert from properties'
       end
 
-      it "should prefer the value in the properties" do
+      it 'should prefer the value in the properties' do
         rendered_template = template.render(merged_manifest_properties, consumes: links)
         expect(rendered_template).to eq('the client cert from properties')
       end
@@ -74,7 +74,7 @@ describe 'route_registrar' do
         merged_manifest_properties['route_registrar']['routing_api']['client_cert'] = 'the client cert from properties'
       end
 
-      it "should prefer the value in the properties" do
+      it 'should prefer the value in the properties' do
         rendered_template = template.render(merged_manifest_properties)
         expect(rendered_template).to eq('the client cert from properties')
       end
@@ -82,9 +82,9 @@ describe 'route_registrar' do
 
     context 'when no properties and no link is provided' do
       it 'should error' do
-        expect {
+        expect do
           template.render(merged_manifest_properties)
-        }.to raise_error(
+        end.to raise_error(
           RuntimeError,
           'Routing API client certificate not found in properties nor in routing_api Link. This value can be specified using the route_registrar.routing_api.client_cert property.'
         )
@@ -112,7 +112,7 @@ describe 'route_registrar' do
         merged_manifest_properties['route_registrar']['routing_api']['client_private_key'] = 'the client key from properties'
       end
 
-      it "should prefer the value in the properties" do
+      it 'should prefer the value in the properties' do
         rendered_template = template.render(merged_manifest_properties, consumes: links)
         expect(rendered_template).to eq('the client key from properties')
       end
@@ -130,7 +130,7 @@ describe 'route_registrar' do
         merged_manifest_properties['route_registrar']['routing_api']['client_private_key'] = 'the client key from properties'
       end
 
-      it "should prefer the value in the properties" do
+      it 'should prefer the value in the properties' do
         rendered_template = template.render(merged_manifest_properties)
         expect(rendered_template).to eq('the client key from properties')
       end
@@ -138,9 +138,9 @@ describe 'route_registrar' do
 
     context 'when no properties and no link is provided' do
       it 'should error' do
-        expect {
+        expect do
           template.render(merged_manifest_properties)
-        }.to raise_error(
+        end.to raise_error(
           RuntimeError,
           'Routing API client private key not found in properties nor in routing_api Link. This value can be specified using the route_registrar.routing_api.client_private_key property.'
         )
@@ -168,7 +168,7 @@ describe 'route_registrar' do
         merged_manifest_properties['route_registrar']['routing_api']['server_ca_cert'] = 'the server ca cert from properties'
       end
 
-      it "should prefer the value in the properties" do
+      it 'should prefer the value in the properties' do
         rendered_template = template.render(merged_manifest_properties, consumes: links)
         expect(rendered_template).to eq('the server ca cert from properties')
       end
@@ -186,7 +186,7 @@ describe 'route_registrar' do
         merged_manifest_properties['route_registrar']['routing_api']['server_ca_cert'] = 'the server ca cert from properties'
       end
 
-      it "should prefer the value in the properties" do
+      it 'should prefer the value in the properties' do
         rendered_template = template.render(merged_manifest_properties)
         expect(rendered_template).to eq('the server ca cert from properties')
       end
@@ -194,9 +194,9 @@ describe 'route_registrar' do
 
     context 'when no properties and no link is provided' do
       it 'should error' do
-        expect {
+        expect do
           template.render(merged_manifest_properties)
-        }.to raise_error(
+        end.to raise_error(
           RuntimeError,
           'Routing API server ca certificate not found in properties nor in routing_api Link. This value can be specified using the route_registrar.routing_api.server_ca_cert property.'
         )
