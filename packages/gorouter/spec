@@ -23,6 +23,7 @@ files:
   - code.cloudfoundry.org/gorouter/common/secure/*.go # gosub
   - code.cloudfoundry.org/gorouter/common/secure/fakes/*.go # gosub
   - code.cloudfoundry.org/gorouter/common/spec/*.go # gosub
+  - code.cloudfoundry.org/gorouter/common/threading/*.go # gosub
   - code.cloudfoundry.org/gorouter/common/uuid/*.go # gosub
   - code.cloudfoundry.org/gorouter/config/*.go # gosub
   - code.cloudfoundry.org/gorouter/fakes/*.go # gosub
@@ -65,6 +66,7 @@ files:
   - code.cloudfoundry.org/localip/*.go # gosub
   - code.cloudfoundry.org/routing-api/*.go # gosub
   - code.cloudfoundry.org/routing-api/models/*.go # gosub
+  - code.cloudfoundry.org/tlsconfig/*.go # gosub
   - code.cloudfoundry.org/trace-logger/*.go # gosub
   - code.cloudfoundry.org/uaa-go-client/*.go # gosub
   - code.cloudfoundry.org/uaa-go-client/config/*.go # gosub
