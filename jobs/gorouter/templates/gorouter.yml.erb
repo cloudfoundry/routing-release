@@ -151,7 +151,7 @@ oauth:
 end %>
 
 <% if p("routing_api.enabled") %>
-<%= routing_api_config.to_yaml.gsub("---", "") %>
+<%= routing_api_config.to_yaml[3..-1] %>
 <% end %>
 
 drain_wait: <%= p("router.drain_wait") %>s

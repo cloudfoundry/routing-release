@@ -388,6 +388,18 @@ whitespace
               expect(parsed_yaml['routing_api']['ca_certs']).to eq(str)
             end
           end
+
+          context 'when containing dashes' do
+            let(:str) { "---some---string------with--dashes" }
+
+            before do
+              deployment_manifest_fragment['routing_api']['ca_certs'] = str
+            end
+
+            it 'successfully configures the property' do
+              expect(parsed_yaml['routing_api']['ca_certs']).to eq(str)
+            end
+          end
         end
 
         describe 'private_key' do
