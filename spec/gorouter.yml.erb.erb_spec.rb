@@ -390,7 +390,7 @@ whitespace
           end
 
           context 'when containing dashes' do
-            let(:str) { "---some---string------with--dashes" }
+            let(:str) { '---some---string------with--dashes' }
 
             before do
               deployment_manifest_fragment['routing_api']['ca_certs'] = str
