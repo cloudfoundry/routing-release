@@ -35,3 +35,4 @@ tags
 # go packages
 src/golang.org/x/tools/
 src/github.com/kisielk/
+src/golang.org/x/sync/
