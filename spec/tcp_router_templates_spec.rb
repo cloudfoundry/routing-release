@@ -18,67 +18,195 @@ describe 'tcp_router' do
       'uaa' => {
         'tls_port' => 1000
       },
-      'routing_api' => {
-        'client_cert' => 'the client cert',
-        'client_private_key' => 'the client key',
-        'ca_cert' => 'the ca cert'
-      }
+      'routing_api' => {}
     }
   end
 
   describe 'config/certs/routing-api/client.crt' do
     let(:template) { job.template('config/certs/routing-api/client.crt') }
-
-    it 'renders the client cert' do
-      client_ca = template.render(merged_manifest_properties)
-      expect(client_ca).to eq('the client cert')
+    let(:links) do
+      [
+        Bosh::Template::Test::Link.new(
+          name: 'routing_api',
+          properties: {
+            'routing_api' => {
+              'mtls_client_cert' => 'the mtls client cert from link'
+            }
+          }
+        )
+      ]
     end
 
-    describe 'when the client cert is not provided' do
-      it 'should not error' do
-        merged_manifest_properties['routing_api']['client_cert'] = nil
-        expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
+    describe 'when properties and link is provided' do
+      before do
+        merged_manifest_properties['routing_api']['client_cert'] = 'the client cert from properties'
+      end
+
+      it 'should prefer the value in the properties' do
+        rendered_template = template.render(merged_manifest_properties, consumes: links)
+        expect(rendered_template).to eq('the client cert from properties')
+      end
+    end
+
+    describe 'when no properties and link is provided' do
+      it 'should render the value from the link' do
+        rendered_template = template.render({}, consumes: links)
+        expect(rendered_template).to eq('the mtls client cert from link')
+      end
+    end
+
+    describe 'when properties and no link is provided' do
+      before do
+        merged_manifest_properties['routing_api']['client_cert'] = 'the client cert from properties'
+      end
+
+      it 'should prefer the value in the properties' do
+        rendered_template = template.render(merged_manifest_properties)
+        expect(rendered_template).to eq('the client cert from properties')
+      end
+    end
+
+    describe 'when no properties and no link is provided' do
+      it 'should error' do
+        expect do
+          template.render(merged_manifest_properties)
+        end.to raise_error(
+          RuntimeError,
+          'Routing API client certificate not found in properties nor in routing_api Link. This value can be specified using the routing_api.client_cert property.'
+        )
       end
     end
   end
 
   describe 'config/keys/routing-api/client.key' do
     let(:template) { job.template('config/keys/routing-api/client.key') }
-
-    it 'renders the private client key' do
-      client_ca = template.render(merged_manifest_properties)
-      expect(client_ca).to eq('the client key')
+    let(:links) do
+      [
+        Bosh::Template::Test::Link.new(
+          name: 'routing_api',
+          properties: {
+            'routing_api' => {
+              'mtls_client_key' => 'the mtls client key from link'
+            }
+          }
+        )
+      ]
     end
 
-    describe 'when the private client key is not provided' do
-      it 'should err' do
-        merged_manifest_properties['routing_api']['client_private_key'] = nil
-        expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
+    describe 'when properties and link is provided' do
+      before do
+        merged_manifest_properties['routing_api']['client_private_key'] = 'the client key from properties'
+      end
+
+      it 'should prefer the value in the properties' do
+        rendered_template = template.render(merged_manifest_properties, consumes: links)
+        expect(rendered_template).to eq('the client key from properties')
+      end
+    end
+
+    describe 'when no properties and link is provided' do
+      it 'should render the value from the link' do
+        rendered_template = template.render({}, consumes: links)
+        expect(rendered_template).to eq('the mtls client key from link')
+      end
+    end
+
+    describe 'when properties and no link is provided' do
+      before do
+        merged_manifest_properties['routing_api']['client_private_key'] = 'the client key from properties'
+      end
+
+      it 'should prefer the value in the properties' do
+        rendered_template = template.render(merged_manifest_properties)
+        expect(rendered_template).to eq('the client key from properties')
+      end
+    end
+
+    describe 'when no properties and no link is provided' do
+      it 'should error' do
+        expect do
+          template.render(merged_manifest_properties)
+        end.to raise_error(
+          RuntimeError,
+          'Routing API client private key not found in properties nor in routing_api Link. This value can be specified using the routing_api.client_private_key property.'
+        )
       end
     end
   end
 
   describe 'config/certs/routing-api/ca_cert.crt' do
     let(:template) { job.template('config/certs/routing-api/ca_cert.crt') }
-
-    it 'renders the client cert' do
-      client_ca = template.render(merged_manifest_properties)
-      expect(client_ca).to eq('the ca cert')
+    let(:links) do
+      [
+        Bosh::Template::Test::Link.new(
+          name: 'routing_api',
+          properties: {
+            'routing_api' => {
+              'mtls_ca' => 'the mtls ca from link'
+            }
+          }
+        )
+      ]
     end
 
-    describe 'when the ca cert is not provided' do
-      it 'should err' do
-        merged_manifest_properties['routing_api']['ca_cert'] = nil
-        expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
+    describe 'when properties and link is provided' do
+      before do
+        merged_manifest_properties['routing_api']['ca_cert'] = 'the ca from properties'
+      end
+
+      it 'should prefer the value in the properties' do
+        rendered_template = template.render(merged_manifest_properties, consumes: links)
+        expect(rendered_template).to eq('the ca from properties')
+      end
+    end
+
+    describe 'when no properties and link is provided' do
+      it 'should render the value from the link' do
+        rendered_template = template.render({}, consumes: links)
+        expect(rendered_template).to eq('the mtls ca from link')
+      end
+    end
+
+    describe 'when properties and no link is provided' do
+      before do
+        merged_manifest_properties['routing_api']['ca_cert'] = 'the ca from properties'
+      end
+
+      it 'should prefer the value in the properties' do
+        rendered_template = template.render(merged_manifest_properties)
+        expect(rendered_template).to eq('the ca from properties')
+      end
+    end
+
+    describe 'when no properties and no link is provided' do
+      it 'should error' do
+        expect do
+          template.render(merged_manifest_properties)
+        end.to raise_error(
+          RuntimeError,
+          'Routing API server ca certificate not found in properties nor in routing_api Link. This value can be specified using the routing_api.ca_cert property.'
+        )
       end
     end
   end
 
   describe 'tcp_router.yml' do
     let(:template) { job.template('config/tcp_router.yml') }
+    let(:links) do
+      [
+        Bosh::Template::Test::Link.new(
+          name: 'routing_api',
+          properties: {
+            'routing_api' => {
+              'mtls_port' => 1337
+            }
+          }
+        )
+      ]
+    end
 
     subject(:rendered_config) do
-      YAML.safe_load(template.render(merged_manifest_properties))
+      YAML.safe_load(template.render(merged_manifest_properties, consumes: links))
     end
 
     it 'renders a file with default properties' do
@@ -93,12 +221,49 @@ describe 'tcp_router' do
                                     },
                                     'routing_api' => {
                                       'uri' => 'https://routing-api.service.cf.internal',
-                                      'port' => 3001,
+                                      'port' => 1337,
                                       'auth_disabled' => false,
                                       'client_cert_path' => '/var/vcap/jobs/tcp_router/config/certs/routing-api/client.crt',
                                       'ca_cert_path' => '/var/vcap/jobs/tcp_router/config/certs/routing-api/ca_cert.crt',
                                       'client_private_key_path' => '/var/vcap/jobs/tcp_router/config/keys/routing-api/client.key'
                                     })
+    end
+
+    describe 'routing_api.port' do
+      describe 'when the property and link is defined' do
+        before do
+          merged_manifest_properties['routing_api']['port'] = 1234
+        end
+
+        it 'prefers the property' do
+          expect(rendered_config['routing_api']['port']).to eq(1234)
+        end
+      end
+
+      describe 'when no property and link is defined' do
+        it 'prefers the link' do
+          expect(rendered_config['routing_api']['port']).to eq(1337)
+        end
+      end
+
+      describe 'when property and no link is defined' do
+        before do
+          merged_manifest_properties['routing_api']['port'] = 1234
+        end
+
+        it 'prefers the property' do
+          expect(rendered_config['routing_api']['port']).to eq(1234)
+        end
+      end
+
+      describe 'when no property and no link is defined' do
+        it 'should error' do
+          expect { template.render(merged_manifest_properties) }.to raise_error(
+            RuntimeError,
+            'Routing API port not found in properties nor in routing_api Link. This value can be specified using the routing_api.port property.'
+          )
+        end
+      end
     end
   end
 end

@@ -1,3 +1,17 @@
+<%
+
+def routing_api_port
+  if_p('routing_api.port') do |prop|
+    return prop
+  end.else do
+    if_link('routing_api') do |link|
+      return link.p('routing_api.mtls_port')
+    end
+  end
+  raise RuntimeError, 'Routing API port not found in properties nor in routing_api Link. This value can be specified using the routing_api.port property.'
+end
+
+%>
 oauth:
   token_endpoint: <%= p("uaa.token_endpoint") %>
   client_name: "tcp_router"
@@ -10,7 +24,7 @@ oauth:
 
 routing_api:
   uri: <%= p("routing_api.uri") %>
-  port: <%= p("routing_api.port") %>
+  port: <%= routing_api_port %>
   auth_disabled: <%= p("routing_api.auth_disabled") %>
   client_cert_path: "/var/vcap/jobs/tcp_router/config/certs/routing-api/client.crt"
   ca_cert_path: "/var/vcap/jobs/tcp_router/config/certs/routing-api/ca_cert.crt"

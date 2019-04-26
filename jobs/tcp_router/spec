@@ -23,6 +23,11 @@ provides:
   - name: tcp_router
     type: tcp-router
 
+consumes:
+  - name: routing_api
+    type: routing_api
+    optional: true
+
 properties:
   tcp_router.debug_address:
     description: "Address at which to serve debug info"
@@ -44,7 +49,6 @@ properties:
     default: https://routing-api.service.cf.internal
   routing_api.port:
     description: "Port of routing api"
-    default: "3001"
   routing_api.auth_disabled:
     description: "Disables UAA authentication"
     default: false
