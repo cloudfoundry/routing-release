@@ -199,3 +199,9 @@
 [submodule "src/code.cloudfoundry.org/tlsconfig"]
 	path = src/code.cloudfoundry.org/tlsconfig
 	url = https://github.com/cloudfoundry/tlsconfig
+[submodule "src/github.com/honeycombio/libhoney-go"]
+	path = src/github.com/honeycombio/libhoney-go
+	url = https://github.com/honeycombio/libhoney-go
+[submodule "src/github.com/cloudfoundry/custom-cats-reporters"]
+	path = src/github.com/cloudfoundry/custom-cats-reporters
+	url = https://github.com/cloudfoundry/custom-cats-reporters
