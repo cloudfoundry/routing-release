@@ -205,3 +205,12 @@
 [submodule "src/github.com/cloudfoundry/custom-cats-reporters"]
 	path = src/github.com/cloudfoundry/custom-cats-reporters
 	url = https://github.com/cloudfoundry/custom-cats-reporters
+[submodule "src/github.com/facebookgo/limitgroup"]
+	path = src/github.com/facebookgo/limitgroup
+	url = https://github.com/facebookgo/limitgroup
+[submodule "src/github.com/facebookgo/clock"]
+	path = src/github.com/facebookgo/clock
+	url = https://github.com/facebookgo/clock
+[submodule "src/github.com/facebookgo/muster"]
+	path = src/github.com/facebookgo/muster
+	url = https://github.com/facebookgo/muster
