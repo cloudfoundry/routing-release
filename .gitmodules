@@ -214,3 +214,6 @@
 [submodule "src/github.com/facebookgo/muster"]
 	path = src/github.com/facebookgo/muster
 	url = https://github.com/facebookgo/muster
+[submodule "src/gopkg.in/alexcesaro/statsd.v2"]
+	path = src/gopkg.in/alexcesaro/statsd.v2
+	url = https://gopkg.in/alexcesaro/statsd.v2
