@@ -9,7 +9,9 @@ GEM
     parser (2.4.0.0)
       ast (~> 2.2)
     powerpack (0.1.1)
-    rainbow (2.1.0)
+    rainbow (2.2.2)
+      rake
+    rake (12.3.2)
     rspec (3.6.0)
       rspec-core (~> 3.6.0)
       rspec-expectations (~> 3.6.0)
@@ -44,4 +46,4 @@ DEPENDENCIES
   semi_semantic (~> 1.2)
 
 BUNDLED WITH
-   1.16.4
+   2.0.1
