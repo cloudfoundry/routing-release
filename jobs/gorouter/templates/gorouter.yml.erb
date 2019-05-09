@@ -127,9 +127,33 @@ oauth:
   <% end %>
 
 <% if p("routing_api.enabled")
-  ca_certs = p("routing_api.ca_certs")
-  private_key = p("routing_api.private_key")
-  cert_chain = p("routing_api.cert_chain")
+  def property_or_link(description, property, link_path)
+    link_name = link_path.split('.').first
+    if_p(property) do |prop|
+      return prop
+    end.else do
+      if_link(link_name) do |link_object|
+        return link_object.p(link_path)
+      end
+    end
+    raise RuntimeError, "#{description} not found in properties nor in \"#{link_name}\" link. This value can be specified using the \"#{property}\" property."
+  end
+
+  ca_certs = property_or_link(
+    'Routing API server CA certificate',
+    'routing_api.ca_certs',
+    'routing_api.mtls_ca',
+  )
+  private_key = property_or_link(
+    'Routing API client private key',
+    'routing_api.private_key',
+    'routing_api.mtls_client_key',
+  )
+  cert_chain = property_or_link(
+    'Routing API client certificate',
+    'routing_api.cert_chain',
+    'routing_api.mtls_client_cert',
+  )
 
   if !ca_certs.is_a?(String)
     raise 'routing_api.ca_certs must be provided as a single string block'
@@ -138,10 +162,16 @@ oauth:
     raise 'routing_api.cert_chain must be provided as a single string block'
   end
 
+  port = property_or_link(
+    'Routing API port',
+    'routing_api.port',
+    'routing_api.mtls_port',
+  )
+
   routing_api_config = {
     'routing_api' => {
       'uri' => p('routing_api.uri'),
-      'port' => p('routing_api.port'),
+      'port' => port,
       'auth_disabled' => p('routing_api.auth_disabled'),
       'private_key' => private_key,
       'ca_certs' => ca_certs,
