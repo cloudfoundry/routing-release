@@ -2,9 +2,7 @@
 
 source /var/vcap/packages/routing_utils/pid_utils.sh
 
-if running_in_container; then
-    echo "Not setting /proc/sys/net/ipv4 parameters, since I'm running inside a linux container"
-else
+<% if p('router.set_kernel_parameters') %>
     # Ephemeral port range
     echo "<%= p("router.ip_local_port_range") %>" > /proc/sys/net/ipv4/ip_local_port_range
 
@@ -33,7 +31,9 @@ else
     # Allow a few more queued connections than are allowed by default
 
     echo 1024 > /proc/sys/net/core/somaxconn
-fi
+<% else %>
+    echo "Not setting /proc/sys/net/ipv4 parameters, since I'm running inside a linux container"
+<% end %>
 
 # Allowed number of open file descriptors
 ulimit -n 100000

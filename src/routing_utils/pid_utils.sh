@@ -119,7 +119,3 @@ function kill_and_wait() {
     rm -f "${pidfile}"
   fi
 }
-
-running_in_container() {
-  grep --quiet --invert-match ':/$' /proc/self/cgroup
-}

@@ -297,6 +297,18 @@ properties:
     description: "Certificate authority for communication between clients and uaa."
     default: ""
 
+  router.set_kernel_parameters:
+    description: |
+      Optimize kernel networking settings for GoRouter. If you deploy GoRouter in a container set this to false.
+      This configures the following kernel parameters:
+        * Increases the number of allowed IP local port ranges specified by the `router.ip_local_port_range` value.
+        * Reduces the timeout of TCP_FIN_TIMEOUT, so that TCP/IP can release closed connections faster, making more
+          resources available for new connections.
+        * Disables TCP_TW_RECYCLE to enable fast recycling of TIME_WAIT sockets.
+        * Enables TCP_TW_REUSE to reuse sockets in TIME_WAIT state for new connections when it is safe from protocol viewpoint
+        * Increase the number of max queued connections than are allowed by default.
+    default: true
+
   router.ip_local_port_range:
-    description: "Ephemeral port range"
+    description: "Ephemeral port range. `router.set_kernel_parameters` must be enabled."
     default: "1024 65535"
