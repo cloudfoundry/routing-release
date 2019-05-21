@@ -15,13 +15,6 @@ source /var/vcap/packages/routing_utils/pid_utils.sh
 
     echo 5 > /proc/sys/net/ipv4/tcp_fin_timeout
 
-    # TCP_TW_RECYCLE
-    # It enables fast recycling of TIME_WAIT sockets. The default value is 0 (disabled). The sysctl documentation
-    # incorrectly states the default as enabled. It can be changed to 1 (enabled) in many cases. Known to cause some
-    # issues with hoststated (load balancing and fail over) if enabled, should be used with caution.
-
-    echo 0 > /proc/sys/net/ipv4/tcp_tw_recycle
-
     # TCP_TW_REUSE
     # This allows reusing sockets in TIME_WAIT state for new connections when it is safe from protocol viewpoint.
     # Default value is 0 (disabled). It is generally a safer alternative to tcp_tw_recycle
