@@ -285,6 +285,14 @@ properties:
   router.write_access_logs_locally:
     description: "Enables writing access log to local disk."
     default: true
+  router.prune_all_stale_routes:
+    description: |
+      (Temporary): Enables TTL pruning on all routes in gorouter, TLS and non-TLS.
+      This new flag allows mitigates the issue where a NATs deregistration
+      message is missed by the GoRouter, and it hence keeps the route in its
+      table forever while the app developer wanted the route gone.
+      This configuration will be removed in the near future.
+    default: false
   router.suspend_pruning_if_nats_unavailable:
     description: |
       Suspend pruning of routes when NATs is unavailable and maintain the
