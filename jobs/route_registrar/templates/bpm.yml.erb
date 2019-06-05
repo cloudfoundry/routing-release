@@ -6,6 +6,8 @@ processes:
     - /var/vcap/jobs/route_registrar/config/registrar_settings.json
     - -timeFormat
     - rfc3339
+    - -logLevel
+    - <%= p('route_registrar.logging_level') %>
 <%
   paths = []
   routes = p('route_registrar.routes')

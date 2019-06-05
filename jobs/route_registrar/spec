@@ -44,6 +44,9 @@ properties:
     description: (string, optional) By default, route_registrar will detect the IP of the VM and use it, in combination with port as the backend destination for each uri being registered. This property enables overriding the destination hostname or IP.
     example: 192.168.60.25
 
+  route_registrar.logging_level:
+    description: "Log level for route_registrar"
+    default: "info"
   route_registrar.routing_api.api_url:
     description: (optional, string) The routing API's URL. This is required to register any TCP routes.
     default: https://routing-api.service.cf.internal:3001
