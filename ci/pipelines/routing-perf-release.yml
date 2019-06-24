@@ -1,0 +1,60 @@
+resources:
+- name: routing-perf-release
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cloudfoundry/routing-perf-release.git
+    private_key: ((github_private_key.private_key))
+
+- name: deployments-routing
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cloudfoundry/deployments-routing.git
+    private_key: ((github_private_key.private_key))
+
+- name: routing-release-ci
+  type: git
+  source:
+    branch: develop
+    uri: git@github.com:cloudfoundry/routing-release.git
+    private_key: ((github_private_key.private_key))
+    paths:
+      - ci
+
+- name: golang-release-latest
+  type: git
+  source:
+    branch: master
+    tag_filter: v*
+    uri: https://github.com/bosh-packages/golang-release.git
+
+jobs:
+- name: upgrade-go1.x
+  plan:
+  - aggregate:
+    - get: routing-perf-release
+    - get: golang-release-latest
+      trigger: true
+    - get: routing-release-ci
+    - get: deployments-routing
+  - task: upgrade-go1.x
+    file: routing-release-ci/ci/tasks/upgrade-package-in-release/task.yml
+    params:
+      PACKAGE: golang-1-linux
+      BRANCH: master
+      RELEASE: release
+      AWS_SECRET_ACCESS_KEY: ((blobstore_aws_secret_access_key))
+      AWS_ACCESS_KEY_ID: ((blobstore_aws_access_key_id))
+    input_mapping:
+      release: routing-perf-release
+      package-release: golang-release-latest
+  - task: save-golang-version-to-file
+    file: routing-release-ci/ci/tasks/save-golang-version-to-file/task.yml
+    params:
+      BRANCH: master
+    input_mapping:
+      release: modified-release
+  - put: routing-perf-release
+    params:
+      repository: modified-release
