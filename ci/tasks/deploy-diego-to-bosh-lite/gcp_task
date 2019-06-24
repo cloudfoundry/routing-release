@@ -1,0 +1,37 @@
+#!/bin/bash
+set -ex -o pipefail
+
+source routing-release-ci/ci/scripts/script_helpers.sh
+
+ENVIRONMENT="${ENVIRONMENT:?"ENVIRONMENT not set"}"
+bosh_login "${ENVIRONMENT}"
+
+function cleanup() {
+  pkill ssh || true
+}
+trap 'cleanup' EXIT
+
+bosh2 -e "${ENVIRONMENT}" ur "${DIEGO_RELEASE_TARBALL_DIR}"/garden-runc-*.tgz
+bosh2 -e "${ENVIRONMENT}" ur "${DIEGO_RELEASE_TARBALL_DIR}"/cflinuxfs2-*.tgz
+bosh2 -e "${ENVIRONMENT}" ur "${DIEGO_RELEASE_TARBALL_DIR}"/diego-*.tgz
+
+bosh2 -e "${ENVIRONMENT}" -d cf-warden manifest > /tmp/cf.yml
+CF_RELEASE_MANIFEST=/tmp/cf.yml
+
+pushd "${DIEGO_RELEASE_DIR}"
+  bosh2 int -o ../deployments-routing/"${ENVIRONMENT}"/stub-ops/diego.yml manifest-generation/bosh-lite-stubs/property-overrides.yml > /tmp/property-overrides.yml
+  mkdir -p bosh-lite/deployments
+  ./scripts/generate-deployment-manifest \
+  -c "${CF_RELEASE_MANIFEST}" \
+  -i manifest-generation/bosh-lite-stubs/iaas-settings.yml \
+  -p /tmp/property-overrides.yml \
+  -n ../deployments-routing/"${ENVIRONMENT}"/stubs/diego/instance-count-overrides.yml \
+  -R \
+  -x \
+  -Q \
+  -s manifest-generation/bosh-lite-stubs/postgres/diego-sql.yml \
+  -v manifest-generation/bosh-lite-stubs/release-versions.yml \
+  > bosh-lite/deployments/diego.yml
+popd
+
+bosh2 -n -e "${ENVIRONMENT}" -d cf-warden-diego deploy diego-release-src/bosh-lite/deployments/diego.yml

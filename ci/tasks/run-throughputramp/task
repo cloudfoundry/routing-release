@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -exo pipefail
+
+source routing-release-ci/ci/scripts/script_helpers.sh
+
+FINAL_OUTPUT_DIR="${PWD}/final-comparison-report"
+CSV_DIR="${PWD}/csv-dir"
+mkdir -p "${FINAL_OUTPUT_DIR}" "${CSV_DIR}"
+
+set +ex
+  bosh_login "${ENVIRONMENT}"
+set -ex
+
+bosh -n -d ${DEPLOYMENT} run-errand throughputramp --download-logs --logs-dir "${FINAL_OUTPUT_DIR}" > output
+
+perfResults=$(grep "csv uploaded to" output | awk '{print $4}' | head -n 1)
+cpuResults=$(grep "cpu csv uploaded to" output | awk '{print $5}' | head -n 1)
+
+pushd "${FINAL_OUTPUT_DIR}"
+  log_file=$(find . -type f -print)
+  tar xvf "${log_file}"
+  mv cpuStats.csv "${CSV_DIR}/cpuStats.csv"
+  mv perfResults.csv "${CSV_DIR}/perfResults.csv"
+popd

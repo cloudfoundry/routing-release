@@ -1,0 +1,20 @@
+
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+
+inputs:
+- name: release
+- name: routing-release-ci
+
+outputs:
+- name: vars-files
+
+params:
+
+run:
+  path: routing-release-ci/ci/tasks/write-repo-sha-var-file/task

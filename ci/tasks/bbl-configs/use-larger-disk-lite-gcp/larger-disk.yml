@@ -1,0 +1,3 @@
+- type: replace
+  path: /disk_pools/name=disks/disk_size
+  value: 250_000

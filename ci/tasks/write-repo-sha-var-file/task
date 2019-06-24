@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+pushd ${PWD}/release
+  GIT_SHA=$(git rev-parse HEAD)
+popd
+
+cat << EOF > "${PWD}/vars-files/release-vars.yml"
+---
+routing_release_version: $GIT_SHA
+EOF

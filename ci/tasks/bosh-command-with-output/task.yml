@@ -1,0 +1,27 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+    tag: bbl3
+
+inputs:
+  - name: deployments-routing
+  - name: routing-release-ci
+
+outputs:
+  - name: command-output
+
+run:
+  path: routing-release-ci/ci/tasks/bosh-command-with-output/task
+
+params:
+  NUMBER_OF_RUNS:
+  BOSH_DIRECTOR:
+  BOSH_USER:
+  BOSH_PASSWORD:
+  BOSH_DEPLOYMENT:
+  COMMAND:
+  OUTPUT_DIR: command-output

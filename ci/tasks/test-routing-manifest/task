@@ -1,0 +1,37 @@
+#!/bin/bash
+
+set -e -x -u
+
+cat >> bosh <<"EOF"
+# !/bin/bash -ex
+
+if [[ $@ == "status --uuid" ]] ; then
+echo "director-uuid"
+fi
+EOF
+chmod +x bosh
+mv bosh `which bosh`
+
+DIRECTOR_UUID="bosh-lite-director-uuid"
+
+pushd cf-release
+  mkdir -p "bosh-lite/deployments"
+
+  "./scripts/generate_deployment_manifest" \
+    bosh-lite \
+    <(echo "director_uuid: ${DIRECTOR_UUID}") \
+    > "bosh-lite/deployments/cf.yml"
+popd
+
+pushd diego-release
+  ./scripts/generate-bosh-lite-manifests
+popd
+
+ROOT_DIR=$PWD
+
+pushd routing-release
+  ./scripts/generate-bosh-lite-manifest -c $ROOT_DIR/cf-release/bosh-lite/deployments/cf.yml -d $ROOT_DIR/diego-release/bosh-lite/deployments/diego.yml
+
+  echo "===GENERATED MANIFEST==="
+  cat bosh-lite/deployments/routing-manifest.yml
+popd

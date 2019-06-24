@@ -1,0 +1,33 @@
+#!/bin/bash
+
+set -e -x -u
+
+environment_path="${PWD}/deployments-routing/${ENVIRONMENT}"
+stubs_list="${environment_path}/stubs/routing/iaas-settings.yml,${environment_path}/stubs/routing/instance-count-overrides.yml,${environment_path}/stubs/routing/persistent-disk-overrides.yml,${environment_path}/stubs/routing/property-overrides.yml"
+deployments_path="${environment_path}/deployments"
+diego_manifest_file="${PWD}/diego-deployment.yml"
+cf_manifest_file="/tmp/cf.yml"
+
+cf_deployment_name="cf-${ENVIRONMENT}"
+diego_deployment_name="cf-${ENVIRONMENT}-diego"
+
+root_dir=${PWD}
+OUTPUT_DIR=${root_dir}/routing-manifest
+mkdir -p $OUTPUT_DIR
+router_manifest_file="${OUTPUT_DIR}/router-deployment.yml"
+
+pushd routing-release
+
+  export BOSH_USER=${BOSH_USER}
+  export BOSH_PASSWORD=${BOSH_PASSWORD}
+  bosh -n target ${BOSH_TARGET}
+
+  bosh download manifest ${cf_deployment_name} ${cf_manifest_file}
+  bosh download manifest ${diego_deployment_name} ${diego_manifest_file}
+
+  ./scripts/generate-manifest -l ${stubs_list} -c ${cf_manifest_file} -d ${diego_manifest_file}  > ${router_manifest_file}
+
+  echo "===GENERATED MANIFEST==="
+  cat ${router_manifest_file}
+
+popd

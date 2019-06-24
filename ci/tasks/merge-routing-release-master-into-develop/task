@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -e -x -u
+
+root_dir=${PWD}
+pushd cf-routing-release-develop
+  echo "----- Set git identity"
+  git config user.email "cf-routing-eng@pivotal.io"
+  git config user.name "Routing CI (Automated)"
+
+  git remote add -f master-repo ../cf-routing-release-master
+  git merge --no-edit "master-repo/master"
+
+  git status
+  git show --color | cat
+  cp -a ./ ${root_dir}/cf-routing-release-mergedmaster/
+popd

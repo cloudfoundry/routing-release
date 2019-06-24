@@ -1,0 +1,58 @@
+#!/bin/bash
+
+set -eux -o pipefail
+
+JUPYTER_DIR="${PWD}/routing-perf-release/src/jupyter_notebook"
+REPORT_NAME="report.html"
+RC_REPORT_NAME="rc-report.html"
+RC_OUTPUT_DIR="${PWD}/rc-comparison-report"
+OUTPUT_DIR="${PWD}/final-comparison-report"
+METADATA_CUR_FILE_NAME="metadata.yml"
+METADATA_PREV_FILE_NAME="old_metadata.yml"
+NEXT_VERSION=$(cat "${PWD}/rc-version/version")
+
+# Prepare path for Jupyter
+mv rc-csv-dir/*.csv "${JUPYTER_DIR}"
+mv master-csv-dir/cpuStats.csv "${JUPYTER_DIR}/old_cpuStats.csv"
+mv master-csv-dir/perfResults.csv "${JUPYTER_DIR}/old_perfResults.csv"
+
+pushd routing-release-rc
+# Find sha of RC and add it to Jupyter metadata
+CURRENT_METADATA_FILENAME="$JUPYTER_DIR/$METADATA_CUR_FILE_NAME"
+current_sha=$(git log --pretty=format:'%h' -n 1)
+touch "${CURRENT_METADATA_FILENAME}"
+cat > "${CURRENT_METADATA_FILENAME}"<<EOF
+---
+sha: "${current_sha}"
+EOF
+
+PREVIOUS_METADATA_FILENAME="${JUPYTER_DIR}/${METADATA_PREV_FILE_NAME}"
+CURRENT_VERSION=$(git describe --tags | cut -d '-' -f1)
+touch "${PREVIOUS_METADATA_FILENAME}"
+cat > "${PREVIOUS_METADATA_FILENAME}"<<EOF
+---
+sha: "${CURRENT_VERSION}"
+EOF
+popd
+
+# Create comparison report between last and latest RC
+pushd "${JUPYTER_DIR}"
+jupyter nbconvert --ExecutePreprocessor.timeout=600 --to html --execute Performance_Data.ipynb
+popd
+
+cp "${JUPYTER_DIR}/Performance_Data.html" "${RC_OUTPUT_DIR}/${RC_REPORT_NAME}"
+
+# Get version of next final release and add it to Jupyter metadata
+pushd routing-release-master
+cat > "${CURRENT_METADATA_FILENAME}"<<EOF
+---
+sha: "${NEXT_VERSION}"
+EOF
+popd
+
+# Create comparison report between most recent final release and latest RC
+pushd "${JUPYTER_DIR}"
+jupyter nbconvert --ExecutePreprocessor.timeout=600 --to html --execute Performance_Data.ipynb
+popd
+
+cp "${JUPYTER_DIR}/Performance_Data.html" "${OUTPUT_DIR}/${REPORT_NAME}"

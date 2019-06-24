@@ -1,0 +1,57 @@
+#!/bin/bash
+set -ex -o pipefail
+
+source routing-release-ci/ci/scripts/script_helpers.sh
+
+ENVIRONMENT="${ENVIRONMENT:?"ENVIRONMENT not set"}"
+bosh_login "${ENVIRONMENT}"
+
+function cleanup() {
+  pkill ssh || true
+}
+trap 'cleanup' EXIT
+
+root_dir="${PWD}"
+
+# Inputs
+OUTPUT_DIR="${root_dir}/${OUTPUT_DIR:?"OUTPUT_DIR must be provided"}"
+
+FIRST_ROUTER_IP=$(bosh2 -d cf vms | grep ^router/ | awk '{print $4}' | head -n1)
+
+main() {
+
+  echo "instance_groups:
+- azs:
+  - z1
+  instances: 1
+  jobs:
+  - name: run_cipher_test
+    properties:
+      router:
+        ciphers: ${CIPHERS}
+        ip: ${FIRST_ROUTER_IP}
+        port: 443
+    release: cipher-test
+  lifecycle: errand
+  name: run-cipher-test
+  networks:
+  - name: default
+  stemcell: trusty
+  vm_type: default
+name: cipher
+releases:
+- name: cipher-test
+  version: latest
+stemcells:
+- alias: trusty
+  os: ubuntu-trusty
+  version: latest
+update:
+  canaries: 1
+  canary_watch_time: 5000-120000
+  max_in_flight: 1
+  serial: false
+  update_watch_time: 5000-120000" > "$OUTPUT_DIR/cipher.yml"
+}
+
+main

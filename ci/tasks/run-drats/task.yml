@@ -1,0 +1,22 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+
+inputs:
+- name: disaster-recovery-acceptance-tests
+  path: src/github.com/cloudfoundry-incubator/disaster-recovery-acceptance-tests
+- name: bbr-binary-release
+- name: deployments-routing
+- name: routing-release-ci
+
+params:
+  ENVIRONMENT:
+  FOCUSED_SUITE_NAME: cf-routing
+  DEFAULT_TIMEOUT_MINS: 90
+
+run:
+  path: routing-release-ci/ci/tasks/run-drats/task

@@ -1,0 +1,26 @@
+#!/bin/bash
+set -e -o pipefail
+
+source routing-release-ci/ci/scripts/script_helpers.sh
+
+ENVIRONMENT="${ENVIRONMENT:?"ENVIRONMENT not set"}"
+bosh_login "${ENVIRONMENT}"
+
+function cleanup() {
+  pkill ssh || true
+}
+trap 'cleanup' EXIT
+
+if [ -n "${LOGS_DIR}" ]; then
+  mkdir "${LOGS_DIR}"
+fi
+
+num_runs="${NUMBER_OF_RUNS:-1}"
+
+export BOSH_DEPLOYMENT="${DEPLOYMENT:-cf}"
+
+for ((i=0; i<${num_runs}; i++)); do
+    echo "Starting run ${i}"
+    bosh ${COMMAND}
+    echo "Finished run ${i}"
+done

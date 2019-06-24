@@ -1,0 +1,24 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+
+inputs:
+  - name: deployments-routing
+  - name: gcp-stemcell
+  - name: release-tarball
+  - name: cipher-manifest
+  - name: routing-release-ci
+
+run:
+  path: routing-release-ci/ci/tasks/run-cipher-suite/task
+
+params:
+  ENVIRONMENT:
+  BOSH_DEPLOYMENT:
+  MANIFEST:
+  RELEASES_DIR:
+  STEMCELL_REGEX:

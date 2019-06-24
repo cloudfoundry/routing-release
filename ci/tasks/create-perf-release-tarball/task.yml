@@ -1,0 +1,21 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+
+inputs:
+  - name: deployments-routing
+  - name: routing-perf-release
+  - name: routing-release-ci
+
+outputs:
+  - name: routing-perf-release-tarball
+
+run:
+  path: routing-release-ci/ci/tasks/create-perf-release-tarball/task
+
+params:
+  ROUTING_PERF_RELEASE_DIR: routing-perf-release

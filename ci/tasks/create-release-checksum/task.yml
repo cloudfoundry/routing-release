@@ -1,0 +1,19 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+
+inputs:
+  - name: rc-version
+  - name: deployments-routing
+  - name: cf-routing-bosh-release
+  - name: routing-release-ci
+
+outputs:
+  - name: release-checksum
+
+run:
+  path: routing-release-ci/ci/tasks/create-release-checksum/task

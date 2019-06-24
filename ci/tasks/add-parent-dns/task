@@ -1,0 +1,45 @@
+#!/bin/bash
+set -e -x -u -o pipefail
+
+indir=./bbl-state
+outdir=./updated-bbl-state
+git clone "${indir}" "${outdir}"
+
+dest_dir="${outdir}/${ENVIRONMENT}/bbl-state/terraform/"
+mkdir -p "${dest_dir}"
+
+if [[ "${IS_BOSH_LITE}" == "true" ]]; then
+  cp "${PWD}/routing-release-ci/ci/tasks/add-parent-dns/bbl-lite-parent-dns_override.tf" "${dest_dir}"
+  cp "${PWD}/bosh-bootloader/plan-patches/bosh-lite-gcp/terraform/bosh-lite_override.tf" "${dest_dir}"
+else
+  cp "${PWD}/routing-release-ci/ci/tasks/add-parent-dns/bbl-full-parent-dns_override.tf" "${dest_dir}"
+fi
+
+function set_git_config() {
+  if [ -z "${GIT_COMMIT_USERNAME}" ]; then
+    GIT_COMMIT_USERNAME="CI Bot"
+  fi
+
+  if [ -z "${GIT_COMMIT_EMAIL}" ]; then
+    GIT_COMMIT_EMAIL="cf-routing-eng@pivotal.io"
+  fi
+
+  git config user.name "${GIT_COMMIT_USERNAME}"
+  git config user.email "${GIT_COMMIT_EMAIL}"
+}
+
+function commit_dns_tf {
+  local root_dir
+  root_dir="${1}"
+  local commit_message
+  commit_message="${2}"
+
+  pushd "${root_dir}/${outdir}/${ENVIRONMENT}"
+    if [[ -n $(git status --porcelain) ]]; then
+    set_git_config
+    git add bbl-state/terraform
+    git commit -m "${commit_message}"
+  fi
+}
+
+commit_dns_tf "${PWD}" "Adding dns terraform templates"

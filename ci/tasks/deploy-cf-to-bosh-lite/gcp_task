@@ -1,0 +1,41 @@
+#!/bin/bash
+set -ex -o pipefail
+
+source routing-release-ci/ci/scripts/script_helpers.sh
+
+ENVIRONMENT="${ENVIRONMENT:?"ENVIRONMENT not set"}"
+bosh_login "${ENVIRONMENT}"
+
+function cleanup() {
+  pkill ssh || true
+}
+trap 'cleanup' EXIT
+
+bosh2 -e "${ENVIRONMENT}" ur "${CF_RELEASE_TARBALL_DIR}"/cf-*.tgz
+
+# discover routing-release SHA
+pushd routing-release
+  ROUTING_SHA="$(git rev-parse --short HEAD)"
+  local_git_remote="$PWD"
+popd
+
+# update cf-release/src/routing-release submodule to SHA
+pushd "${CF_RELEASE_DIR}/src/routing-release"
+  echo "Checking out routing release sha: $ROUTING_SHA"
+  git remote add local "$local_git_remote"
+  git fetch local
+  git checkout "$ROUTING_SHA"
+  ./scripts/update
+popd
+
+pushd "${CF_RELEASE_DIR}"
+  mkdir -p bosh-lite/deployments
+  DIRECTOR_UUID=$(bosh2 -e "${ENVIRONMENT}" env --json | jq .Tables[0].Rows[0].uuid)
+  ./scripts/generate_deployment_manifest \
+  bosh-lite \
+  <(echo "director_uuid: ${DIRECTOR_UUID}") \
+  ../deployments-routing/"${ENVIRONMENT}"/stubs/**/*.yml \
+  > bosh-lite/deployments/cf.yml
+
+  bosh2 -n -e "${ENVIRONMENT}" -d cf-warden deploy bosh-lite/deployments/cf.yml
+popd

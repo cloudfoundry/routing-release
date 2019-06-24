@@ -1,0 +1,24 @@
+#!/bin/bash
+set -ex
+
+# Cannot set -u before sourcing .bashrc because of all
+# the unbound variables in things beyond our control.
+source ~/.bashrc
+
+if [ ${CF_SKIP_SSL_VALIDATION} == 'true' ] ;
+then
+  cf api ${CF_API} --skip-ssl-validation
+else
+  cf api ${CF_API}
+fi
+
+cf auth ${CF_ADMIN_USER} ${CF_ADMIN_PASSWORD}
+
+cf create-quota ${CF_ORG}_quota -m 10G -r 1000 -s 100
+
+ORG_DEF_GUID=$(cf curl /v2/quota_definitions?q=name:${CF_ORG}_quota | grep guid | cut -f 4 -d"\"")
+
+cf curl /v2/quota_definitions/${ORG_DEF_GUID} -X PUT -d '{"total_reserved_route_ports": 10}'
+
+cf set-quota ${CF_ORG} ${CF_ORG}_quota
+

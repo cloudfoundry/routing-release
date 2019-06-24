@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -e -x -u
+
+root_dir=${PWD}
+RELEASE_DIR="${root_dir}/${RELEASE_DIR:?"\$RELEASE_DIR not set"}"
+
+OUTPUT_DIR=${root_dir}/release-tarball
+mkdir -p $OUTPUT_DIR
+
+pushd "${RELEASE_DIR}"
+  git_describe_output=$(git describe --long --tags)
+  major=$(echo "${git_describe_output}" | cut -f1 -d-)
+  trimmed_major=${major%.*}
+  patch=$(echo "${git_describe_output}" | cut -f2 -d-)
+
+  echo "----- Create dev release"
+  SHA=$(git rev-parse --short HEAD)
+  version=$trimmed_major.$patch+$SHA
+
+  bosh -v
+  bosh --parallel 4 -n create-release --version ${version} --tarball=release-${version}.tgz --force
+
+  mv *.tgz ${OUTPUT_DIR}/
+popd

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e -x -u
+
+OUTPUT_DIR="${PWD}/release-tarball"
+
+cd release-dir
+SHA=$(git rev-parse --short HEAD)
+tarball_name="release-dev-$SHA.tgz"
+
+bosh -v
+bosh --parallel 4 -n create-release --timestamp-version --tarball="${tarball_name}"
+
+mv "${tarball_name}" "${OUTPUT_DIR}/"

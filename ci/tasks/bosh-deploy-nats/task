@@ -1,0 +1,32 @@
+#!/bin/bash -exu
+
+# shellcheck disable=SC1091
+source cf-deployment-concourse-tasks/shared-functions
+
+function bosh_upload_nats_release() {
+  pushd nats-release
+    bosh create-release --force
+    bosh upload-release --rebase
+  popd
+}
+
+function bosh-deploy-nats() {
+  pushd stemcell
+    bosh upload-stemcell stemcell.tgz
+  popd
+
+  pushd nats-release
+    bosh \
+      -n \
+      -d "nats" \
+      deploy "${PWD}/example-manifests/nats.yml"
+  popd
+}
+
+function main() {
+  setup_bosh_env_vars
+  bosh_upload_nats_release
+  bosh-deploy-nats
+}
+
+main

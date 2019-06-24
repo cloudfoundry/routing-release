@@ -1,0 +1,5 @@
+- type: replace
+  path: /releases/name=cf-networking
+  value:
+    name: cf-networking
+    version: latest

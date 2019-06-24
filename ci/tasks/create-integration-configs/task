@@ -1,0 +1,118 @@
+#!/bin/bash
+
+set -e -o pipefail
+
+# shellcheck disable=SC1091
+source cf-deployment-concourse-tasks/shared-functions
+source routing-release-ci/ci/scripts/script_helpers.sh
+
+SYSTEM_DOMAIN="${ENVIRONMENT}.routing.cf-app.com"
+CF_SMOKE_TESTS_CONFIG="${ENVIRONMENT}/cf_smoke_tests_config.json"
+CATS_INTEGRATION_CONFIG="${ENVIRONMENT}/cats_integration_config.json"
+RATS_INTEGRATION_CONFIG="${ENVIRONMENT}/rats_integration_config.json"
+ADMIN_PASS=$(extract_var "${ENVIRONMENT}" cf_admin_password)
+
+pushd deployments-routing
+  set_git_config
+
+  echo "Creating ${CATS_INTEGRATION_CONFIG}"
+  cat > "${CATS_INTEGRATION_CONFIG}" <<EOF
+{
+  "api": "api.${SYSTEM_DOMAIN}",
+  "admin_user": "admin",
+  "admin_password": "PROGRAMMATICALLY REPLACED",
+  "apps_domain": "${SYSTEM_DOMAIN}",
+  "artifacts_directory": "logs",
+  "skip_ssl_validation": true,
+  "use_http": true,
+  "timeout_scale": 2,
+  "backend": "diego",
+  "include_apps": true,
+  "include_backend_compatibility": false,
+  "include_detect": true,
+  "include_docker": false,
+  "include_ssh": false,
+  "include_internet_dependent": true,
+  "include_privileged_container_support": false,
+  "include_route_services": true,
+  "include_routing": true,
+  "include_security_groups": true,
+  "include_services": true,
+  "include_sso": false,
+  "include_tasks": false,
+  "include_v3": false,
+  "include_zipkin": true,
+  "stacks": ["cflinuxfs3"]
+}
+EOF
+
+  git add "${CATS_INTEGRATION_CONFIG}"
+
+  echo "Creating ${RATS_INTEGRATION_CONFIG}"
+  cat > "${RATS_INTEGRATION_CONFIG}" <<EOF
+{
+  "addresses": [
+    "tcp.${SYSTEM_DOMAIN}"
+  ],
+  "api": "api.${SYSTEM_DOMAIN}",
+  "admin_user": "admin",
+  "admin_password": "PROGRAMMATICALLY REPLACED",
+  "skip_ssl_validation": true,
+  "use_http": true,
+  "apps_domain": "${SYSTEM_DOMAIN}",
+  "include_http_routes": true,
+  "default_timeout": 120,
+  "cf_push_timeout": 120,
+  "tcp_router_group": "default-tcp",
+  "oauth": {
+    "token_endpoint": "https://uaa.${SYSTEM_DOMAIN}",
+    "client_name": "routing_api_client",
+    "client_secret": "PROGRAMMATICALLY REPLACED",
+    "port": 443,
+    "skip_ssl_validation": true
+  }
+}
+EOF
+
+  git add "${RATS_INTEGRATION_CONFIG}"
+
+  echo "Creating ${CF_SMOKE_TESTS_CONFIG}"
+  cat > "${CF_SMOKE_TESTS_CONFIG}" <<EOF
+{
+  "suite_name": "CF_SMOKE_TESTS",
+  "api": "api.${SYSTEM_DOMAIN}",
+  "apps_domain": "${SYSTEM_DOMAIN}",
+  "user": "admin",
+  "password": "PROGRAMMATICALLY REPLACED",
+  "org": "",
+  "space": "",
+  "isolation_segment_space": "",
+  "cleanup": true,
+  "use_existing_org": false,
+  "use_existing_space": false,
+  "logging_app": "",
+  "runtime_app": "",
+  "enable_windows_tests": false,
+  "windows_stack": "windows2012R2",
+  "enable_etcd_cluster_check_tests": false,
+  "etcd_ip_address": "",
+  "backend": "diego",
+  "isolation_segment_name": "${ISO_SEG_NAME}",
+  "isolation_segment_domain": "${ISO_SEG_DOMAIN_PREFIX}.${SYSTEM_DOMAIN}",
+  "enable_isolation_segment_tests": ${ENABLE_ISOLATION_SEGMENT_TESTS},
+  "skip_ssl_validation": true
+}
+EOF
+
+
+ tmpfile=$(mktemp /tmp/replace-result.json.XXXXXX)
+
+ jq --arg admin_pass "${ADMIN_PASS}" '.password=$admin_pass' "${CF_SMOKE_TESTS_CONFIG}" > "${tmpfile}" \
+   && mv "${tmpfile}" "${CF_SMOKE_TESTS_CONFIG}"
+
+  git add "${CF_SMOKE_TESTS_CONFIG}"
+
+  git commit -m"creating integration configs for ${ENVIRONMENT}"
+popd
+
+git clone deployments-routing created-integration-configs/

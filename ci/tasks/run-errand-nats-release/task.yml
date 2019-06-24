@@ -1,0 +1,20 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: relintdockerhubpushbot/cf-deployment-concourse-tasks
+
+inputs:
+- name: bbl-state
+- name: routing-release-ci
+- name: cf-deployment-concourse-tasks
+
+run:
+  path: routing-release-ci/ci/tasks/run-errand-nats-release/task
+
+params:
+  BBL_STATE_DIR: bbl-state
+  DEPLOYMENT_NAME: cf
+  ERRAND_NAME:

@@ -1,0 +1,27 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+
+inputs:
+  - name: routing-release
+  - name: routing-release-master
+  - name: rc-version
+  - name: deployments-routing
+  - name: routing-release-ci
+
+outputs:
+  - name: cf-routing-bosh-release
+  - name: routing-release-final
+
+run:
+  path: routing-release-ci/ci/tasks/create-final-routing-release/task
+
+params:
+  CF_ROUTING_RELEASE_RC_DIR:
+  GCP_BLOBSTORE_SERVICE_ACCOUNT_KEY:
+  AWS_SECRET_ACCESS_KEY:
+  AWS_ACCESS_KEY_ID:

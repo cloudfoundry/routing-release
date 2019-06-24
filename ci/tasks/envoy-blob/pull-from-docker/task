@@ -1,0 +1,23 @@
+#!/bin/bash
+set -euxo pipefail
+
+# discover the version from envoy-source
+# this will capture the semver tag if present
+# otherwise it will just be the commit SHA
+TAG="$(cat envoy-source/.git/ref)"
+
+# construct JSON to feed into the docker-image-resource
+# see: http://concourse.ci/implementing-resources.html
+SRC=" \"source\": { \"repository\": \"${DOCKER_REPO}\", \"tag\": \"${TAG}\" } "
+VER="$(echo "{ $SRC }" | /opt/resource/check | jq .[0])"
+
+# pull the correct version of the docker image
+# and extract the rootfs into the image/ directory
+mkdir -p "$PWD/image"
+echo "{ $SRC , \"version\": $VER }" | /opt/resource/in image/
+
+ls -la image/rootfs/usr/local/bin/envoy
+
+tar -czf envoy-tarball/envoy.tgz -C image/rootfs/usr/local/bin envoy
+echo -n "${TAG}" > envoy-tarball/version
+ls -la envoy-tarball

@@ -1,0 +1,82 @@
+#!/bin/bash
+set -ex
+
+# Cannot set -u before sourcing .bashrc because of all
+# the unbound variables in things beyond our control.
+source ~/.bashrc
+
+set -u
+
+root_dir=${PWD}
+
+# Inputs
+BOSH_LITE_IP_DIR="${root_dir}/${BOSH_LITE_IP_DIR:?"\$BOSH_LITE_IP_DIR not set"}"
+DIEGO_RELEASE_DIR="${root_dir}/${DIEGO_RELEASE_DIR:?"\$DIEGO_RELEASE_DIR not set"}"
+DIEGO_RELEASE_TARBALL_DIR="${root_dir}/${DIEGO_RELEASE_TARBALL_DIR:?"\$DIEGO_RELEASE_TARBALL_DIR not set"}"
+BOSH_ADMIN_PASSWORD="${BOSH_ADMIN_PASSWORD:?"BOSH_ADMIN_PASSWORD must be provided"}"
+
+configure() {
+  export BOSH_LITE_IP="$(cat "${BOSH_LITE_IP_DIR}/bosh-lite-ip")"
+}
+
+log_in_to_bosh_lite() {
+  set +e
+  local bosh_password=$1
+  n=0
+  while [ true ]
+  do
+    # The bosh director may not yet be available
+    bosh -n target "${BOSH_LITE_IP}" && break
+    n=$[$n+1]
+    if [ $n ge 5 ]
+    then
+      exit 1
+    fi
+    sleep 15
+  done
+  set -e
+  bosh login admin ${bosh_password}
+}
+
+build_manifest() {
+  pushd "${DIEGO_RELEASE_DIR}" > /dev/null
+
+    bosh -n download manifest cf-warden > /tmp/cf.yml
+
+    scripts/generate-deployment-manifest \
+      -c /tmp/cf.yml \
+      -i manifest-generation/bosh-lite-stubs/iaas-settings.yml \
+      -p manifest-generation/bosh-lite-stubs/property-overrides.yml \
+      -n manifest-generation/bosh-lite-stubs/instance-count-overrides.yml \
+      -v manifest-generation/bosh-lite-stubs/release-versions.yml \
+      -s manifest-generation/bosh-lite-stubs/postgres/diego-sql.yml \
+      -r \
+      -x \
+      > diego.yml
+
+  popd > /dev/null
+  DIEGO_RELEASE_MANIFEST="${DIEGO_RELEASE_DIR}/diego.yml"
+}
+
+create_and_deploy_release() {
+    bosh -n upload release --skip-if-exists "${DIEGO_RELEASE_TARBALL_DIR}"/etcd-*.tgz
+    bosh -n upload release --skip-if-exists "${DIEGO_RELEASE_TARBALL_DIR}"/garden-runc-*.tgz
+    bosh -n upload release --skip-if-exists "${DIEGO_RELEASE_TARBALL_DIR}"/cflinuxfs2-*.tgz
+
+    pushd "${DIEGO_RELEASE_DIR}"
+      bosh -n create release --name diego --force
+      bosh -n upload release --name diego --rebase --skip-if-exists
+    popd
+
+    bosh -n -d "${DIEGO_RELEASE_MANIFEST}" deploy
+}
+
+main() {
+  configure
+  log_in_to_bosh_lite ${BOSH_ADMIN_PASSWORD}
+  build_manifest
+  create_and_deploy_release
+  echo "Successfully deployed diego"
+}
+
+main

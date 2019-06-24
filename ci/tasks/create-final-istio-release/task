@@ -1,0 +1,54 @@
+#!/bin/bash
+
+set -exuo pipefail
+
+root_dir="${PWD}"
+release_repo_dir="${root_dir}/istio-release"
+master_repo_dir="${root_dir}/istio-release-master"
+OUTPUT_DIR="${root_dir}/final-release-repo"
+
+FINAL_VERSION=$(cat ${root_dir}/final-version/version)
+
+RELEASE_NAME="${RELEASE_NAME:?"\$RELEASE_NAME not set"}"
+
+set +x
+if [[ -n "${GCP_BLOBSTORE_SERVICE_ACCOUNT_KEY}" ]]; then
+FORMATTED_KEY="$(sed 's/^/      /' <(echo ${GCP_BLOBSTORE_SERVICE_ACCOUNT_KEY}))"
+cat > "${release_repo_dir}/config/private.yml" <<EOF
+---
+blobstore:
+  options:
+    credentials_source: static
+    json_key: |
+${FORMATTED_KEY}
+EOF
+fi
+set -x
+
+pushd "${release_repo_dir}" > /dev/null
+  echo "----- Set git identity"
+  git config user.name "${GIT_COMMIT_USERNAME}"
+  git config user.email "${GIT_COMMIT_EMAIL}"
+
+  git remote add -f master-repo ../istio-release-master
+  git merge "master-repo/master" -m "Merge with master"
+
+  git status
+  git diff-index --quiet HEAD -- || ( echo "There are uncommitted changes! Investigate immediately." && exit 1 )
+
+  echo "----- Create final release"
+  bosh -v
+  bosh -n create-release --sha2 --final --version=${FINAL_VERSION} --tarball=${OUTPUT_DIR}/routing-${FINAL_VERSION}.tgz
+
+  echo "----- Update master and develop branches on origin"
+
+  git add .final_builds releases
+  git commit -m "Create final release ${FINAL_VERSION}"
+
+  echo "----- DEBUG: show the commit we just created"
+  git --no-pager show HEAD
+  cp -a ./  ${root_dir}/final-release-repo/
+  echo ${FINAL_VERSION} > ${root_dir}/final-release-repo/version_number
+popd > /dev/null
+
+shopt -s dotglob

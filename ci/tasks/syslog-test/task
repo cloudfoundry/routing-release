@@ -1,0 +1,24 @@
+#!/bin/bash
+set -eu -o pipefail
+
+source routing-release-ci/ci/scripts/script_helpers.sh
+
+ENVIRONMENT="${ENVIRONMENT:?"ENVIRONMENT not set"}"
+bosh_login "${ENVIRONMENT}"
+
+function cleanup() {
+  pkill ssh || true
+}
+trap 'cleanup' EXIT
+
+pushd "${PWD}/deployments-routing"
+  set +x
+  cmd='sudo chmod a+w /var/vcap/store/syslog_storer/syslog.log; tail -n 100 /var/vcap/store/syslog_storer/syslog.log > /var/vcap/store/syslog_storer/syslog.log'
+  bosh ssh -c "$cmd" syslog_storer
+  sleep 60
+  bosh scp syslog_storer:/var/vcap/store/syslog_storer/syslog.log .
+  set -x
+  grep "$(date -u +%Y-%m-%dT)$(($(date -u +%H)-1))\|$(date -u +%Y-%m-%dT%H)" syslog.log | grep "routing-api"
+  grep "$(date -u +%Y-%m-%dT)$(($(date -u +%H)-1))\|$(date -u +%Y-%m-%dT%H)" syslog.log | grep "gorouter"
+  grep "$(date -u +%Y-%m-%dT)$(($(date -u +%H)-1))\|$(date -u +%Y-%m-%dT%H)" syslog.log | grep "tcp_router"
+popd

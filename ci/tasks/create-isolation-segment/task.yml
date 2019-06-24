@@ -1,0 +1,22 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+
+inputs:
+  - name: deployments-routing
+  - name: routing-release-ci
+
+run:
+  path: routing-release-ci/ci/tasks/create-isolation-segment/task
+
+params:
+  CF_API:
+  CF_ADMIN_USER: admin
+  CF_SKIP_SSL_VALIDATION:
+  ENVIRONMENT:
+  ISO_SEG_NAME:
+  VARS_FILE: deployment-vars.yml

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -ex
+
+source routing-release-ci/ci/scripts/script_helpers.sh
+
+set +x
+  cf_login "${ENVIRONMENT}"
+set -x
+
+cf create-isolation-segment "${ISO_SEG_NAME}"

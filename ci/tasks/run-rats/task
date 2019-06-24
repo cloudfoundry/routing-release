@@ -1,0 +1,24 @@
+#!/bin/bash
+set -xeu
+
+export CONFIG
+CONFIG="$PWD/integration-config/${CONFIG_FILE_PATH}"
+
+echo "Moving cf-routing-acceptance-tests onto the gopath..."
+mkdir -p $GOPATH
+cp -R routing-release/src $GOPATH
+
+go install github.com/onsi/ginkgo/ginkgo
+
+cd ${GOPATH}/src/code.cloudfoundry.org/routing-acceptance-tests
+
+packages=("http_routes" "tcp_routing" "smoke_tests")
+for i in "${packages[@]}"
+do
+  ginkgo -r "$i" "$GINKGO_ARGS" \
+    -keepGoing \
+    -randomizeAllSpecs \
+    -skipPackage=helpers \
+    -slowSpecThreshold=120 \
+    -nodes="${NODES}"
+done

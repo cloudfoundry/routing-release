@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -eux -o pipefail
+
+mkdir -p ops-file
+VERSION=$(cat ${PWD}/release-version/version)
+touch ops-file/release-version.yml
+cat > ops-file/release-version.yml <<EOF
+---
+- type: replace
+  path: /releases/name=routing/version
+  value: "${VERSION}"
+EOF

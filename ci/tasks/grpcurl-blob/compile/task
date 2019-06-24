@@ -1,0 +1,13 @@
+#!/bin/bash
+set -ex -o pipefail
+
+go get -u github.com/fullstorydev/grpcurl
+
+pushd grpcurl-source
+  go build ./cmd/grpcurl/
+popd
+
+cp grpcurl-source/grpcurl grpcurl-bin/grpcurl
+chmod a+x grpcurl-bin/grpcurl
+
+ls -la .

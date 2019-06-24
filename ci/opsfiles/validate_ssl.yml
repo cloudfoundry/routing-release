@@ -1,0 +1,7 @@
+- type: replace
+  path: /instance_groups/name=router/jobs/name=gorouter/properties/router/ssl_skip_validation?
+  value: false
+
+- type: replace
+  path: /instance_groups/name=smoke-tests/jobs/name=smoke_tests/properties/skip_ssl_validation?
+  value: false

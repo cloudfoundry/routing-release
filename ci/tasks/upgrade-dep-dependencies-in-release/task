@@ -1,0 +1,43 @@
+#!/bin/bash
+set -exuo pipefail
+
+GOPATH="${PWD}/release"
+PATH="$PATH:$GOPATH/bin"
+
+pushd release
+  mkdir bin
+  # install latest release of dep
+  curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+  go get github.com/onsi/ginkgo
+  go install github.com/onsi/ginkgo/ginkgo
+
+  # build the hey binary since the performance tests require it
+  go install github.com/rakyll/hey
+
+  IFS=',' read -ra DIRS <<< "$PACKAGES_TO_UPDATE"
+  for dir in "${DIRS[@]}"; do
+    pushd "src/${dir}"
+      dep ensure --update
+      ginkgo -r .
+
+      git add .
+    popd
+  done
+
+  git config user.name "${GIT_COMMIT_USERNAME}"
+  git config user.email "${GIT_COMMIT_EMAIL}"
+
+  # this is actually due to the go get of ginkgo
+  git clean -ffd
+
+  if [[ -n $(git status --porcelain) ]]; then
+    echo "changes detected, will commit..."
+    git commit -m "Upgrade vendored dependencies"
+    git log -1 --color | cat
+  else
+   echo "no changes in repo, no commit necessary"
+  fi
+popd
+
+shopt -s dotglob
+cp -R release/* modified-release/

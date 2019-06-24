@@ -1,0 +1,22 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+
+inputs:
+  - name: cf-release-rc
+    path: cf-release
+  - name: deployments-routing
+  - name: diego-release-src
+    path: diego-release
+  - name: routing-release
+  - name: routing-release-ci
+
+outputs:
+  - name: routing-manifest
+
+run:
+  path: routing-release-ci/ci/tasks/test_routing_manifest/task

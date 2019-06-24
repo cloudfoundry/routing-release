@@ -1,0 +1,33 @@
+#!/bin/bash
+
+set -ex
+
+set +x
+cat > /tmp/private.json <<EOF
+${GCP_PKS_SERVICE_ACCOUNT_KEY}
+EOF
+set -x
+
+gcloud auth activate-service-account pks-routing@cf-routing.iam.gserviceaccount.com --key-file /tmp/private.json
+
+gcloud container clusters create ${CLUSTER_NAME} --cluster-version=${CLUSTER_VERSION} --zone ${ZONE} --project ${PROJECT}
+
+apt-get update && apt-get --only-upgrade install kubectl google-cloud-sdk google-cloud-sdk-app-engine-grpc google-cloud-sdk-pubsub-emulator google-cloud-sdk-app-engine-go google-cloud-sdk-cloud-build-local google-cloud-sdk-datastore-emulator google-cloud-sdk-app-engine-python google-cloud-sdk-cbt google-cloud-sdk-bigtable-emulator google-cloud-sdk-app-engine-python-extras google-cloud-sdk-datalab google-cloud-sdk-app-engine-java
+
+gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${ZONE} --project ${PROJECT}
+
+if ${USE_ISTIO}; then
+  kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account)
+
+  pushd istio-source/install/kubernetes/helm/istio
+    helm init
+    helm dependency update
+    helm template . --name istio --namespace istio-system > /tmp/istio.yaml
+
+    kubectl create namespace istio-system
+
+    kubectl apply -f /tmp/istio.yaml
+  popd
+fi
+
+

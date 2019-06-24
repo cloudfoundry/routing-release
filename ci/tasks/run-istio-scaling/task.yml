@@ -1,0 +1,24 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cfrouting/cf-routing-webdriver
+
+inputs:
+  - name: routing-release-ci
+  - name: deployments-routing
+  - name: istio-scaling
+
+run:
+  path: routing-release-ci/ci/tasks/run-istio-scaling/task
+
+params:
+  DEPLOYMENT_NAME:
+  VARS_LOCATION:
+  SYSTEM_DOMAIN:
+  NUMBER_OF_APPS:
+  PASSING_THRESHOLD:
+  DATADOG_API_KEY:
+  CLEANUP_ORG:

@@ -1,0 +1,19 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+
+inputs:
+  - name: routing-release-ci
+
+run:
+  path: routing-release-ci/ci/tasks/delete-k8s-cluster/task
+
+params:
+  ZONE: us-west1-a
+  CLUSTER_NAME:
+  PROJECT: cf-routing
+  GCP_PKS_SERVICE_ACCOUNT_KEY:

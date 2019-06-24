@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -x
+
+set +x
+cat > /tmp/private.json <<EOF
+${GCP_PKS_SERVICE_ACCOUNT_KEY}
+EOF
+set -x
+
+gcloud auth activate-service-account pks-routing@cf-routing.iam.gserviceaccount.com --key-file /tmp/private.json
+
+gcloud -q container clusters delete ${CLUSTER_NAME} --zone=${ZONE} --project=${PROJECT}

@@ -1,0 +1,31 @@
+#!/bin/bash
+set -ex -o pipefail
+
+source routing-release-ci/ci/scripts/script_helpers.sh
+
+ENVIRONMENT="${ENVIRONMENT:?"ENVIRONMENT not set"}"
+bosh_login "${ENVIRONMENT}"
+
+function cleanup() {
+  pkill ssh || true
+}
+trap 'cleanup' EXIT
+
+STEMCELL_PATH=$(ls $STEMCELL_REGEX)
+
+BOSH_DEPLOYMENT="${DEPLOYMENT:-$BOSH_DEPLOYMENT}"
+
+bosh -n us "${STEMCELL_PATH}"
+
+IFS=', ' read -r -a array <<< "${RELEASES_DIR}"
+
+for element in "${array[@]}"
+do
+  RELEASE_PATH=$(ls $element)
+  bosh -n ur "${RELEASE_PATH}"
+done
+
+bosh -n -e "${ENVIRONMENT}" deploy "${MANIFEST}"
+
+echo "Running cipher test suite"
+bosh run-errand run-cipher-test --keep-alive --download-logs

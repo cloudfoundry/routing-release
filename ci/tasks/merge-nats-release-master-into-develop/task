@@ -1,0 +1,23 @@
+#!/bin/bash
+set -exu
+
+MERGED_REPO="${PWD}/${MERGED_REPO:?"MERGED_REPO required"}"
+MASTER_BRANCH="${MASTER_BRANCH:-master}"
+
+pushd release-repo > /dev/null
+  git config user.name "CF MEGA BOT"
+  git config user.email "cf-mega@pivotal.io"
+
+  git remote add -f master-repo ../release-repo-master
+  if (env | grep -E '^MERGE_MESSAGE=.*\w+' >/dev/null); then
+    git merge --no-ff --no-edit -m "${MERGE_MESSAGE}" "master-repo/${MASTER_BRANCH}"
+  else
+    git merge --no-edit "master-repo/${MASTER_BRANCH}"
+  fi
+
+  git status
+  git show --color | cat
+popd > /dev/null
+
+shopt -s dotglob
+cp -R release-repo/* $MERGED_REPO

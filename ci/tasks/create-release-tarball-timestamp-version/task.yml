@@ -1,0 +1,17 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+
+inputs:
+  - name: release-dir
+  - name: routing-release-ci
+
+outputs:
+  - name: release-tarball
+
+run:
+  path: routing-release-ci/ci/tasks/create-release-tarball-timestamp-version/task

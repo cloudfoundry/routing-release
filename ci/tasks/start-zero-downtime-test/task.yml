@@ -1,0 +1,22 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+
+inputs:
+  - name: deployments-routing
+  - name: routing-release-ci
+
+run:
+  path: routing-release-ci/ci/tasks/start-zero-downtime-test/task
+
+params:
+  CF_APP_NAME:
+  CF_ORG:
+  CF_SPACE:
+  CF_APP_DOMAIN:
+  ENVIRONMENT:
+  TCP: false

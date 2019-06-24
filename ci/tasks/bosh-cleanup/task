@@ -1,0 +1,6 @@
+#!/bin/bash
+set -e -x
+
+source ~/.bashrc
+
+bosh -n -t $BOSH_DIRECTOR cleanup

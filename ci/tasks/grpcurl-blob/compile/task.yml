@@ -1,0 +1,17 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+
+inputs:
+- name: routing-release-ci
+- name: grpcurl-source
+
+outputs:
+- name: grpcurl-bin
+
+run:
+  path: routing-release-ci/ci/tasks/grpcurl-blob/compile/task

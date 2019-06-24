@@ -1,0 +1,6 @@
+#!/bin/bash
+set -ex
+
+echo "Stopping zero downtime test..."
+APP_URL="http://${CF_APP_NAME}.${CF_APP_DOMAIN}"
+curl "${APP_URL}/stop" -d '{}'

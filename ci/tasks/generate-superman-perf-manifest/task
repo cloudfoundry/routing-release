@@ -1,0 +1,25 @@
+#!/bin/bash
+set -ex
+
+# Cannot set -u before sourcing .bashrc because of all
+# the unbound variables in things beyond our control.
+source ~/.bashrc
+
+set -u
+
+root_dir="${PWD}"
+
+# Inputs
+ENV_DIR="${root_dir}/${ENV_DIR:?"\$ENV_DIR not set"}"
+OUTPUT_DIR="${root_dir}/${OUTPUT_DIR:?"OUTPUT_DIR must be provided"}"
+
+main() {
+  manifest=$ENV_DIR/deployments/perf.yml
+
+  echo "=============  MANIFEST  ====================="
+  cat $manifest
+
+  cp $manifest $OUTPUT_DIR/.
+}
+
+main

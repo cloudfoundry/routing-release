@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+set -ex
+
+source routing-release-ci/ci/scripts/script_helpers.sh
+
+ENVIRONMENT="${ENVIRONMENT:?"ENVIRONMENT not set"}"
+ENV_ROOT="${PWD}/deployments-routing/${ENVIRONMENT}"
+
+set_username_password() {
+  set +x
+    local json_output
+    json_output=$(extract_var ${ENVIRONMENT} /jubilee/cf-user)
+    CF_USERNAME=$(echo ${json_output} | jq -r .username)
+    CF_PASSWORD=$(echo ${json_output} | jq -r .password)
+  set -x
+}
+
+CF_API="api.${ENVIRONMENT}.${SYSTEM_DOMAIN}"
+
+if [[ "${CF_SKIP_SSL_VALIDATION}" == 'true' ]];
+then
+ cf api "${CF_API}" --skip-ssl-validation
+else
+ cf api "${CF_API}"
+fi
+
+set +ex
+  bosh_login "${ENVIRONMENT}"
+  admin_password=$(extract_var ${ENVIRONMENT} cf_admin_password)
+
+  if [[ -z ${admin_password} ]]; then
+    admin_password=$(bosh interpolate  "${ENV_ROOT}/creds.yml" --path=/cf_admin_password)
+  fi
+
+  cf auth "${CF_ADMIN_USER}" "${admin_password}"
+
+  if [[ -z ${CF_USERNAME} && -z ${CF_PASSWORD} ]]; then
+    credhub get -n /jubilee/cf-user > /dev/null
+    exit_code=$?
+
+    if [[ ${exit_code} == "1" ]]; then
+      credhub generate -t user -n /jubilee/cf-user > /dev/null
+    fi
+
+    set_username_password
+  fi
+set -ex
+
+set +x
+  cf create-user "${CF_USERNAME}" "${CF_PASSWORD}"
+set -x
+
+
+cf create-org "${CF_ORG}"
+cf target -o "${CF_ORG}"
+cf create-space "${CF_SPACE}"
+cf target -o "${CF_ORG}" -s "${CF_SPACE}"
+cf set-space-role "${CF_USERNAME}" "${CF_ORG}" "${CF_SPACE}" "${CF_SPACE_ROLE}"
+
+cf create-quota "${CF_ORG}_quota" -m 10G -r 1000 -s 100
+
+ORG_DEF_GUID=$(cf curl /v2/quota_definitions?q=name:${CF_ORG}_quota | grep guid | cut -f 4 -d"\"")
+
+cf curl "/v2/quota_definitions/${ORG_DEF_GUID}" -X PUT -d '{"total_reserved_route_ports": 10}'
+
+cf set-quota "${CF_ORG}" "${CF_ORG}_quota"

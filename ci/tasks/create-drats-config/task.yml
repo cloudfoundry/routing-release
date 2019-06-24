@@ -1,0 +1,22 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+
+inputs:
+  - name: routing-release-ci
+  - name: deployments-routing
+
+outputs:
+  - name: created-drats-config
+
+params:
+  ENVIRONMENT:
+  GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+  GIT_COMMIT_USERNAME: "CI Bot"
+
+run:
+  path: routing-release-ci/ci/tasks/create-drats-config/task

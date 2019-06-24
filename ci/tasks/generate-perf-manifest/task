@@ -1,0 +1,31 @@
+#!/bin/bash
+set -e
+
+# Cannot set -u before sourcing .bashrc because of all
+# the unbound variables in things beyond our control.
+source ~/.bashrc
+
+set -u
+
+root_dir="${PWD}"
+
+# Inputs
+ENV_DIR="${root_dir}/${ENV_DIR:?"\$ENV_DIR not set"}"
+ROUTING_RELEASE_DIR="${root_dir}/${ROUTING_RELEASE_DIR:?"ROUTING_RELEASE_DIR must be provided"}"
+OUTPUT_DIR="${root_dir}/${OUTPUT_DIR:?"OUTPUT_DIR must be provided"}"
+
+main() {
+  pushd $ROUTING_RELEASE_DIR
+    sha=$(git rev-parse HEAD)
+  popd
+
+  manifest=$ENV_DIR/deployments/perf.yml
+  sed -i'' "s/ROUTING_RELEASE_VERSION/$sha/g" $manifest
+
+  echo "=============  MANIFEST  ====================="
+  cat $manifest
+
+  cp $manifest $OUTPUT_DIR/.
+}
+
+main

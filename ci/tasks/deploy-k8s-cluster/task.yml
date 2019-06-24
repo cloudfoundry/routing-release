@@ -1,0 +1,22 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+
+inputs:
+  - name: routing-release-ci
+  - name: istio-source
+
+run:
+  path: routing-release-ci/ci/tasks/deploy-k8s-cluster/task
+
+params:
+  ZONE: us-west1-a
+  CLUSTER_NAME:
+  PROJECT: cf-routing
+  CLUSTER_VERSION: 1.10.6-gke.6
+  USE_ISTIO:
+  GCP_PKS_SERVICE_ACCOUNT_KEY:

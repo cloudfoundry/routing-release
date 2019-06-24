@@ -1,0 +1,31 @@
+- type: replace
+  path: /instance_groups/name=routing_smoke_tests?
+  value:
+    name: routing_smoke_tests
+    lifecycle: errand
+    azs:
+    - z1
+    instances: 1
+    vm_type: minimal
+    stemcell: default
+    networks:
+    - name: default
+    jobs:
+    - name: smoke_tests
+      release: routing
+      properties:
+        tcp_emitter:
+          oauth_secret: "((uaa_clients_tcp_emitter_secret))"
+        acceptance_tests:
+          default_timeout: 120
+          tcp_router_group: default-tcp
+          addresses: [ "tcp.((system_domain))" ]
+          tcp_apps_domain: "tcp.((system_domain))"
+          cloud_controller:
+            api: "api.((system_domain))"
+            admin_user: admin
+            admin_password: "((cf_admin_password))"
+            apps_domain: "((system_domain))"
+            use_http: true
+          system_domain: "((system_domain))"
+          skip_ssl_validation: true

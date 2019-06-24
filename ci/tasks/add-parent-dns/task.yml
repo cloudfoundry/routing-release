@@ -1,0 +1,24 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: relintdockerhubpushbot/cf-deployment-concourse-tasks
+
+inputs:
+- name: bbl-state
+- name: routing-release-ci
+- name: bosh-bootloader
+
+outputs:
+- name: updated-bbl-state
+
+params:
+  ENVIRONMENT: ~
+  IS_BOSH_LITE: false
+  GIT_COMMIT_EMAIL:
+  GIT_COMMIT_USERNAME:
+
+run:
+  path: routing-release-ci/ci/tasks/add-parent-dns/task

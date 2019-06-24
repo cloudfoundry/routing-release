@@ -1,0 +1,25 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: relintdockerhubpushbot/cf-deployment-concourse-tasks
+
+inputs:
+  - name: routing-release-ci
+  - name: istio-release-master
+  - name: istio-release
+  - name: final-version
+
+outputs:
+  - name: final-release-repo
+
+run:
+  path: routing-release-ci/ci/tasks/create-final-istio-release/task
+
+params:
+  GIT_COMMIT_USERNAME: CI Bot
+  GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+  RELEASE_NAME: istio
+  GCP_BLOBSTORE_SERVICE_ACCOUNT_KEY:

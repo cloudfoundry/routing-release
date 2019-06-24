@@ -1,0 +1,1605 @@
+groups:
+- name: routing-ci
+  jobs:
+  - upgrade-go1.x-in-routing-release
+  - upgrade-go1.x-in-zdt-release
+  - upgrade-cf-cli-in-routing-release
+  - upgrade-dep-dependencies-in-routing-perf-release
+  - routing-release-unit
+  - batman-deploy-cf
+  - batman-syslog-test
+  - batman-cf-smoke-tests
+  - batman-rats
+  - batman-cats
+  - batman-drats
+  - orinoco-http-perf-tests
+  - diana-tcp-perf-tests
+  - ci-lite-deploy-cf
+  - ci-lite-cats
+  - ci-lite-rats
+  - jubilee-no-downtime
+  - promote-to-batman-passed
+
+- name: maintenance
+  jobs:
+  - batman-setup
+  - batman-destroy
+  - batman-bosh-cleanup
+  - batman-delete-deployment
+  - diana-setup
+  - diana-destroy
+  - diana-bosh-cleanup
+  - orinoco-setup
+  - orinoco-destroy
+  - orinoco-delete-deployment
+  - ci-lite-bbl-up
+  - ci-lite-destroy
+
+- name: upgrade-verification
+  jobs:
+  - jubilee-setup
+  - jubilee-deploy-cf
+  - jubilee-no-downtime
+  - jubilee-destroy
+  - jubilee-manual-lock-release
+
+resource_types:
+- name: bosh-deployment
+  type: docker-image
+  source:
+    repository: cloudfoundry/bosh-deployment-resource
+
+resources:
+#RELEASES
+- name: postgres-release
+  type: git
+  source:
+    branch: master
+    tag_filter: v*
+    uri: https://github.com/cloudfoundry/postgres-release.git
+
+- name: diego-release
+  type: git
+  source:
+    branch: master
+    tag_filter: v*
+    uri: https://github.com/cloudfoundry/diego-release.git
+
+- name: bosh-dns-aliases-release
+  type: git
+  source:
+    branch: master
+    tag_filter: v*
+    uri: https://github.com/cloudfoundry/bosh-dns-aliases-release.git
+
+- name: bosh-dns-release
+  type: git
+  source:
+    branch: master
+    tag_filter: v*
+    uri: https://github.com/cloudfoundry/bosh-dns-release.git
+
+- name: bpm-release
+  type: git
+  source:
+    branch: master
+    tag_filter: v*
+    uri: https://github.com/cloudfoundry-incubator/bpm-release.git
+
+- name: golang-release-latest
+  type: git
+  source:
+    branch: master
+    tag_filter: v*
+    uri: https://github.com/bosh-packages/golang-release.git
+
+- name: routing-release
+  type: git
+  source:
+    branch: develop
+    uri: git@github.com:cloudfoundry/routing-release.git
+    private_key: ((github_private_key.private_key))
+
+- name: cf-cli-release
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/bosh-packages/cf-cli-release.git
+
+- name: routing-release-batman-passed
+  type: git
+  source:
+    branch: batman-passed
+    uri: git@github.com:cloudfoundry/routing-release.git
+    private_key: ((github_private_key.private_key))
+
+- name: routing-perf-release
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cloudfoundry/routing-perf-release.git
+    private_key: ((github_private_key.private_key))
+
+- name: disaster-recovery-acceptance-tests
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/disaster-recovery-acceptance-tests.git
+
+- name: bbr-binary-release
+  type: github-release
+  source:
+    user: cloudfoundry-incubator
+    repository: bosh-backup-and-restore
+    access_token: ((github_access_token))
+
+#REPOS
+- name: deployments-routing
+  type: git
+  source:
+    branch: master
+    private_key: ((github_private_key.private_key))
+    uri: git@github.com:cloudfoundry/deployments-routing.git
+
+- name: routing-release-ci
+  type: git
+  source:
+    branch: develop
+    uri: git@github.com:cloudfoundry/routing-release.git
+    paths:
+      - ci
+
+- name: bosh-bootloader
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/bosh-bootloader.git
+
+- name: zero-downtime-release
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cf-routing/zero-downtime-release.git
+    private_key: ((github_private_key.private_key))
+
+# BOSH Deployments
+- name: diana-tcp-perf-deployment
+  type: bosh-deployment
+  source:
+
+# CF Deployment
+- name: cf-deployment
+  type: git
+  source:
+    branch: release-candidate
+    uri: https://github.com/cloudfoundry/cf-deployment.git
+
+- name: cf-deployment-release-latest
+  type: git
+  source:
+    branch: master
+    tag_filter: v*
+    uri: https://github.com/cloudfoundry/cf-deployment.git
+
+- name: cf-smoke-tests-release
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/cf-smoke-tests-release.git
+
+# Concourse Tasks
+- name: cf-deployment-concourse-tasks
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks.git
+    tag_filter: v8.*
+
+- name: cf-acceptance-tests
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/cf-acceptance-tests
+
+#STEMCELLS
+- name: gcp-stemcell-xenial
+  type: bosh-io-stemcell
+  source:
+    name: bosh-google-kvm-ubuntu-xenial-go_agent
+
+#TIMERS
+- name: two-hours
+  type: time
+  source:
+    interval: 120m
+
+- name: morning-trigger
+  type: time
+  source:
+    location: America/Los_Angeles
+    start: 6:00 AM
+    stop: 6:01 AM
+    days: [Monday, Tuesday, Wednesday, Thursday, Friday]
+
+- name: evening-trigger
+  type: time
+  source:
+    location: America/Los_Angeles
+    start: 8:00 PM
+    stop: 8:01 PM
+    days: [Monday, Tuesday, Wednesday, Thursday, Friday]
+
+- name: friday-trigger
+  type: time
+  source:
+    location: America/Los_Angeles
+    start: 6:00 AM
+    stop: 6:01 AM
+    days: [Friday]
+
+#LOCKS
+- name: jubilee-env
+  type: pool
+  source:
+    uri: git@github.com:cloudfoundry/deployments-routing.git
+    branch: master
+    pool: jubilee
+    private_key: ((github_private_key.private_key))
+
+jobs:
+- name: upgrade-go1.x-in-routing-release
+  plan:
+  - aggregate:
+    - get: routing-release
+    - get: golang-release-latest
+      trigger: true
+    - get: routing-release-ci
+  - task: upgrade-go1.x-in-routing-release
+    file: routing-release/ci/tasks/upgrade-package-in-release/task.yml
+    params:
+      PACKAGE: golang-1-linux
+      AWS_SECRET_ACCESS_KEY: ((routing_release_aws_blobstore_secret_access_key))
+      AWS_ACCESS_KEY_ID: ((routing_release_aws_blobstore_access_key_id))
+      RELEASE: release
+    input_mapping:
+      release: routing-release
+      package-release: golang-release-latest
+  - task: save-golang-version-to-file
+    file: routing-release/ci/tasks/save-golang-version-to-file/task.yml
+    params:
+      BRANCH: develop
+    input_mapping:
+      release: modified-release
+  - put: routing-release
+    params:
+      repository: modified-release
+
+- name: upgrade-go1.x-in-zdt-release
+  plan:
+  - aggregate:
+    - get: zero-downtime-release
+    - get: golang-release-latest
+      trigger: true
+    - get: routing-release-ci
+  - task: upgrade-go1.x-in-zero-downtime-release
+    file: routing-release/ci/tasks/upgrade-package-in-release/task.yml
+    params:
+      PACKAGE: golang-1-linux
+      AWS_SECRET_ACCESS_KEY: ((routing_release_aws_blobstore_secret_access_key))
+      AWS_ACCESS_KEY_ID: ((routing_release_aws_blobstore_access_key_id))
+      RELEASE: release
+      BRANCH: master
+    input_mapping:
+      release: zero-downtime-release
+      package-release: golang-release-latest
+  - put: zero-downtime-release
+    params:
+      repository: modified-release
+
+- name: upgrade-dep-dependencies-in-routing-perf-release
+  plan:
+  - aggregate:
+    - get: routing-perf-release
+    - get: routing-release-ci
+  - task: upgrade-dep-dependencies-in-routing-perf-release
+    file: routing-release/ci/tasks/upgrade-dep-dependencies-in-release/task.yml
+    params:
+      PACKAGES_TO_UPDATE: cpumonitor,http_route_populator,throughputramp
+    input_mapping:
+      release: routing-perf-release
+  - put: routing-perf-release
+    params:
+      rebase: true
+      repository: modified-release
+
+- name: routing-release-unit
+  serial: true
+  plan:
+  - aggregate:
+    - get: routing-release
+      trigger: true
+      params:
+        submodules: all
+  - task: unit
+    timeout: 20m
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: cloudfoundry/cf-routing-pipeline
+      inputs:
+      - name: routing-release
+      run:
+        path: bash
+        args:
+          - -exc
+          - |
+            pushd "routing-release"
+              source .envrc; HONEYCOMB_KEY=b00668765362642ad3d8b150158bc531 scripts/run-unit-tests
+            popd
+
+- name: upgrade-cf-cli-in-routing-release
+  plan:
+  - aggregate:
+    - get: routing-release
+    - get: cf-cli-release
+      trigger: true
+    - get: routing-release-ci
+    - get: deployments-routing
+  - task: upgrade-cf-cli-in-routing-release
+    file: routing-release/ci/tasks/upgrade-package-in-release/task.yml
+    params:
+      PACKAGE: cf-cli-6-linux
+      AWS_SECRET_ACCESS_KEY: ((routing_release_aws_blobstore_secret_access_key))
+      AWS_ACCESS_KEY_ID: ((routing_release_aws_blobstore_access_key_id))
+      RELEASE: release
+    input_mapping:
+      release: routing-release
+      package-release: cf-cli-release
+  - put: routing-release
+    params:
+      repository: modified-release
+
+# INFRASTRUCTURE - ci-lite
+- name: ci-lite-bbl-up
+  serial_groups: [ci-lite]
+  plan:
+  - aggregate:
+    - get: cf-deployment-concourse-tasks
+    - get: deployments-routing
+    - get: routing-release-ci
+    - get: bosh-bootloader # needed to get latest plan-patches
+  - task: merge-bbl-config
+    file: routing-release/ci/tasks/merge-bbl-config/task.yml
+    params:
+      SOURCE1_DIR: plan-patches/bosh-lite-gcp
+      SOURCE2_DIR: bbl-configs/add-parent-dns-lite
+      SOURCE3_DIR: bbl-configs/use-larger-disk-lite-gcp
+    input_mapping:
+      source1: bosh-bootloader
+      source2: routing-release-ci/ci/tasks
+      source3: routing-release-ci/ci/tasks
+  - task: bbl-up
+    file: cf-deployment-concourse-tasks/bbl-up/task.yml
+    params:
+      BBL_CONFIG_DIR: .
+      BBL_IAAS: gcp
+      BBL_GCP_SERVICE_ACCOUNT_KEY: ((shared_gcp_account_creds))
+      BBL_GCP_REGION: us-west1
+      BBL_ENV_NAME: ci-lite
+      BBL_STATE_DIR: ci-lite/bbl-state
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+      SKIP_LB_CREATION: true
+    input_mapping:
+      bbl-state: deployments-routing
+      bbl-config: merged-bbl-config
+    ensure:
+      put: deployments-routing
+      params:
+        repository: updated-bbl-state
+        rebase: true
+
+- name: ci-lite-destroy
+  serial_groups: [ci-lite]
+  build_logs_to_retain: 100
+  plan:
+  - aggregate:
+    - get: deployments-routing
+    - get: cf-deployment-concourse-tasks
+  - task: destroy-ci-lite
+    file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+    params:
+      BBL_GCP_SERVICE_ACCOUNT_KEY: ((shared_gcp_account_creds))
+      BBL_STATE_DIR: ci-lite/bbl-state
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+    input_mapping:
+      bbl-state: deployments-routing
+    ensure:
+      put: deployments-routing
+      params:
+        repository: updated-bbl-state
+        rebase: true
+
+# INFRASTRUCTURE - batman
+- name: batman-setup
+  serial_groups: [batman]
+  build_logs_to_retain: 100
+  plan:
+  - aggregate:
+    - get: cf-deployment-concourse-tasks
+    - get: deployments-routing
+    - get: routing-release-ci
+    - get: bosh-bootloader
+    - get: friday-trigger
+      trigger: true
+  - task: add-parent-dns
+    file: routing-release/ci/tasks/add-parent-dns/task.yml
+    params:
+      ENVIRONMENT: batman
+    input_mapping:
+      bbl-state: deployments-routing
+  - task: inject-plan-patches
+    file: routing-release/ci/tasks/inject-plan-patches/task.yml
+    params:
+      BBL_STATE_DIR: batman/bbl-state
+      PLAN_PATCH_DIR: plan-patches/iso-segs-gcp
+    input_mapping:
+      bbl-state: updated-bbl-state
+      plan-patches: bosh-bootloader
+  - task: make-certs
+    file: routing-release/ci/tasks/make-certs/task.yml
+    params:
+      ENVIRONMENT: batman
+    input_mapping:
+      bbl-state: updated-bbl-state
+  - task: setup-batman
+    file: cf-deployment-concourse-tasks/bbl-up/task.yml
+    params:
+      BBL_IAAS: gcp
+      BBL_GCP_SERVICE_ACCOUNT_KEY: ((shared_gcp_account_creds))
+      BBL_GCP_REGION: us-west1
+      BBL_LB_CERT: ../lb_certs/cert.pem
+      BBL_LB_KEY: ../lb_certs/key.pem
+      LB_DOMAIN: batman.routing.cf-app.com
+      BBL_ENV_NAME: batman
+      BBL_STATE_DIR: batman/bbl-state
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+    input_mapping:
+      bbl-config: updated-bbl-state
+      bbl-state: updated-bbl-state
+    ensure:
+      put: deployments-routing
+      params:
+        repository: updated-bbl-state
+        rebase: true
+  - task: add-credhub-value
+    file: routing-release/ci/tasks/add-credhub-value/task.yml
+    params:
+      ENVIRONMENT: batman
+      NAME: /bosh-batman/cf/datadog_api_key
+      VALUE: ((datadog_api_key))
+
+- name: batman-deploy-cf
+  serial_groups: [batman]
+  plan:
+  - aggregate:
+    - get: cf-deployment-concourse-tasks
+    - get: cf-deployment
+      trigger: true
+    - get: deployments-routing
+    - get: routing-release
+      trigger: true
+      passed:
+      - routing-release-unit
+    - get: routing-release-ci
+  - task: upload-stemcell
+    file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+    params:
+      BBL_STATE_DIR: batman/bbl-state
+  - task: merge-ops-files
+    file: routing-release/ci/tasks/merge-ops-files/task.yml
+    params:
+      ENVIRONMENT: batman
+  - task: deploy-batman-with-created-routing
+    file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+      release: routing-release
+      ops-files: merged-operations
+      vars-store: deployments-routing
+      vars-files: deployments-routing
+    params:
+      SYSTEM_DOMAIN: batman.routing.cf-app.com
+      OPS_FILES: |
+        use-compiled-releases.yml
+        update_watch.yml
+        syslog.yml
+        routing_acceptance_tests.yml
+        routing_smoke_tests.yml
+        add-datadog-firehose-nozzle.yml
+        test/add-persistent-isolation-segment-diego-cell.yml
+        test/add-persistent-isolation-segment-router.yml
+        add-persistent-isolation-segment-router-ca-certs.yml
+        tls_pem.yml
+        smoke_tests.yml
+        xfcc.yml
+        backends_max_conns.yml
+        isolation_in_z3.yml
+        backup-and-restore/enable-backup-restore.yml
+        disable_bbr_non_routing.yml
+        disable-blobstore-backup.yml
+        enable_locket_isolated_diego.yml
+        enable-routing-integrity.yml
+        ca_certs.yml
+        add-routing-api-mtls-certificates.yml
+      BBL_STATE_DIR: batman/bbl-state
+  - task: create-isolation-segment
+    file: routing-release/ci/tasks/create-isolation-segment/task.yml
+    params:
+      ENVIRONMENT: batman
+      ISO_SEG_NAME: "persistent_isolation_segment"
+  - task: emit-datadog-deploy-end
+    file: routing-release/ci/tasks/emit-datadog-event/task.yml
+    params:
+      TITLE: end_deploy
+      TEXT: end_deploy
+      PRIORITY: normal
+      AWS_ENV: batman
+      DATADOG_API_KEY: ((datadog_api_key))
+
+- name: batman-cats
+  serial_groups: [batman]
+  build_logs_to_retain: 100
+  plan:
+  - aggregate:
+    - get: routing-release-ci
+    - get: cf-acceptance-tests
+    - get: cf-deployment
+      passed: [batman-cf-smoke-tests]
+      trigger: true
+    - get: deployments-routing
+      passed: [batman-cf-smoke-tests]
+    - get: cf-deployment-concourse-tasks
+    - get: routing-release
+      passed: [batman-cf-smoke-tests]
+      trigger: true
+  - task: create-integration-config
+    file: routing-release/ci/tasks/create-integration-configs/task.yml
+    params:
+      ENVIRONMENT: batman
+      ISO_SEG_NAME: "persistent_isolation_segment"
+  - task: update-integration-configs
+    file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
+    input_mapping:
+      bbl-state: created-integration-configs
+      integration-configs: created-integration-configs
+    params:
+      BBL_STATE_DIR: batman/bbl-state
+      CATS_INTEGRATION_CONFIG_FILE: batman/cats_integration_config.json
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+  - task: run-cats
+    input_mapping:
+      integration-config: updated-integration-configs
+    file: cf-deployment-concourse-tasks/run-cats/task.yml
+    params:
+      CONFIG_FILE_PATH: batman/cats_integration_config.json
+
+- name: batman-cf-smoke-tests
+  serial_groups: [batman]
+  plan:
+  - aggregate:
+    - get: routing-release
+      passed: [batman-deploy-cf]
+      trigger: true
+    - get: routing-release-ci
+    - get: cf-deployment-concourse-tasks
+    - get: deployments-routing
+      passed: [batman-deploy-cf]
+    - get: cf-smoke-tests-release
+    - get: cf-deployment
+      passed: [batman-deploy-cf]
+      trigger: true
+  - task: create-integration-config
+    file: routing-release/ci/tasks/create-integration-configs/task.yml
+    params:
+      ENVIRONMENT: batman
+      ISO_SEG_NAME: "persistent_isolation_segment"
+  - task: update-integration-configs
+    file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
+    input_mapping:
+      bbl-state: created-integration-configs
+      integration-configs: created-integration-configs
+    params:
+      BBL_STATE_DIR: batman/bbl-state
+      CATS_INTEGRATION_CONFIG_FILE: batman/cats_integration_config.json
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+  - task: run-cf-smoke-tests
+    input_mapping:
+      deployments-routing: updated-integration-configs
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: cloudfoundry/cf-routing-pipeline
+      inputs:
+      - name: deployments-routing
+      - name: cf-smoke-tests-release
+      run:
+        path: bash
+        args:
+          - -exc
+          - |
+            export CONFIG=${PWD}/deployments-routing/batman/cf_smoke_tests_config.json
+            mkdir -p "${GOPATH}/src/github.com/cloudfoundry"
+            cp -R "${PWD}"/cf-smoke-tests-release/src/smoke_tests "${GOPATH}"/src/github.com/cloudfoundry/cf-smoke-tests
+            pushd "${GOPATH}/src/github.com/cloudfoundry/cf-smoke-tests" > /dev/null
+              ./bin/test
+            popd > /dev/null
+
+- name: batman-drats
+  serial_groups: [batman]
+  plan:
+  - get: routing-release
+    passed: [batman-cf-smoke-tests]
+    trigger: true
+  - get: routing-release-ci
+  - get: deployments-routing
+  - get: bbr-binary-release
+  - get: disaster-recovery-acceptance-tests
+  - get: cf-deployment
+    trigger: true
+    passed: [batman-cf-smoke-tests]
+  - task: create-drats-config
+    file: routing-release/ci/tasks/create-drats-config/task.yml
+    params:
+      ENVIRONMENT: batman
+  - task: run-disaster-recovery-acceptance-tests
+    file: disaster-recovery-acceptance-tests/ci/drats-with-integration-config/task.yml
+    input_mapping:
+      drats-integration-config: created-drats-config
+    privileged: true
+    params:
+      CONFIG_FILE_PATH: batman/drats_integration_config.json
+      DEFAULT_TIMEOUT_MINS: 90
+
+- name: batman-rats
+  serial_groups: [batman]
+  build_logs_to_retain: 100
+  plan:
+  - timeout: 4h
+    do:
+    - aggregate:
+      - get: routing-release-ci
+      - get: deployments-routing
+        passed: [batman-cf-smoke-tests]
+      - get: cf-deployment
+        trigger: true
+        passed: [batman-cf-smoke-tests]
+      - get: routing-release
+        passed: [batman-cf-smoke-tests]
+        trigger: true
+      - get: cf-deployment-concourse-tasks
+    - task: create-integration-config
+      file: routing-release/ci/tasks/create-integration-configs/task.yml
+      params:
+        ENVIRONMENT: batman
+        ISO_SEG_NAME: "persistent_isolation_segment"
+    - task: update-integration-configs
+      file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
+      input_mapping:
+        bbl-state: created-integration-configs
+        integration-configs: created-integration-configs
+      params:
+        BBL_STATE_DIR: batman/bbl-state
+        RATS_INTEGRATION_CONFIG_FILE: batman/rats_integration_config.json
+        GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+    - task: run-rats
+      input_mapping:
+        integration-config: updated-integration-configs
+      params:
+        CONFIG_FILE_PATH: batman/rats_integration_config.json
+        GINKGO_ARGS: "-v"
+      file: routing-release/ci/tasks/run-rats/task.yml
+
+- name: batman-syslog-test
+  serial_groups: [batman]
+  plan:
+  - get: routing-release
+    passed: [batman-deploy-cf]
+    trigger: true
+  - get: deployments-routing
+  - get: routing-release-ci
+  - get: cf-deployment
+    passed: [batman-deploy-cf]
+    trigger: true
+  - task: syslog-test
+    file: routing-release/ci/tasks/syslog-test/task.yml
+    params:
+      ENVIRONMENT: batman
+
+- name: batman-bosh-cleanup
+  serial_groups: [batman]
+  plan:
+  - get: deployments-routing
+    passed: [batman-cats]
+    trigger: true
+  - get: cf-deployment-concourse-tasks
+  - task: cleanup-artifacts
+    file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
+    params:
+      BBL_STATE_DIR: batman/bbl-state
+    input_mapping:
+      bbl-state: deployments-routing
+
+- name: batman-destroy
+  serial_groups: [batman]
+  build_logs_to_retain: 100
+  plan:
+  - aggregate:
+    - get: deployments-routing
+    - get: cf-deployment-concourse-tasks
+  - task: destroy-batman
+    file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+    params:
+      BBL_STATE_DIR: batman/bbl-state
+      BBL_GCP_SERVICE_ACCOUNT_KEY: ((shared_gcp_account_creds))
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+    input_mapping:
+      bbl-state: deployments-routing
+    ensure:
+      put: deployments-routing
+      params:
+        repository: updated-bbl-state
+        rebase: true
+
+- name: batman-delete-deployment
+  serial_groups: [batman]
+  build_logs_to_retain: 100
+  plan:
+  - aggregate:
+    - get: cf-deployment-concourse-tasks
+    - get: deployments-routing
+    - get: routing-release
+  - task: delete-cf-deployment
+    file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+    params:
+      DEPLOYMENT_NAME: cf
+      BBL_STATE_DIR: batman/bbl-state
+
+- name: orinoco-http-perf-tests
+  serial: true
+  plan:
+  - aggregate:
+    - get: routing-release-ci
+    - get: two-hours
+      trigger: true
+    - get: deployments-routing
+    - get: cf-deployment
+    - get: routing-release
+      passed:
+      - routing-release-unit
+      trigger: true
+    - get: routing-perf-release
+      trigger: true
+  - task: deploy-gorouter-and-perf
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: cloudfoundry/cf-routing-pipeline
+      inputs:
+      - name: routing-release-ci
+      - name: deployments-routing
+      - name: cf-deployment
+      - name: routing-release
+      - name: routing-perf-release
+      run:
+        path: bash
+        args:
+          - -exc
+          - |
+            source routing-release-ci/ci/scripts/script_helpers.sh
+            bosh_login orinoco
+            deployments-routing/orinoco/deploy-gorouter 1 -n
+      params:
+        ROUTING_RELEASE_PATH: "../../routing-release"
+  - task: sleep-until-route-populates
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: cloudfoundry/cf-routing-pipeline
+      run:
+        path: sleep
+        args:
+        - 30
+  - task: http-perf-run
+    file: routing-release/ci/tasks/bosh2-command/task.yml
+    params:
+      ENVIRONMENT: orinoco
+      NUMBER_OF_RUNS: 9
+      DEPLOYMENT: gorouter-standalone-1
+      COMMAND: 'run-errand http_performance_tests --keep-alive --download-logs'
+    ensure:
+      task: final-run-and-cleanup-errand-vm
+      file: routing-release/ci/tasks/bosh2-command/task.yml
+      params:
+        ENVIRONMENT: orinoco
+        NUMBER_OF_RUNS: 1
+        DEPLOYMENT: gorouter-standalone-1
+        COMMAND: 'run-errand http_performance_tests --download-logs'
+
+# INFRASTRUCTURE - orinoco
+- name: orinoco-setup
+  serial_groups: [orinoco]
+  build_logs_to_retain: 100
+  plan:
+  - aggregate:
+    - get: cf-deployment-concourse-tasks
+    - get: deployments-routing
+    - get: routing-release-ci
+    - get: bosh-bootloader
+    - get: friday-trigger
+      trigger: true
+  - task: make-certs
+    file: routing-release/ci/tasks/make-certs/task.yml
+    params:
+      ENVIRONMENT: orinoco
+    input_mapping:
+      bbl-state: deployments-routing
+  - task: setup-orinoco
+    file: cf-deployment-concourse-tasks/bbl-up/task.yml
+    params:
+      BBL_IAAS: aws
+      BBL_AWS_ACCESS_KEY_ID: ((orinoco_aws_access_key_id))
+      BBL_AWS_SECRET_ACCESS_KEY: ((orinoco_aws_secret_access_key))
+      BBL_AWS_REGION: us-east-1
+      BBL_LB_CERT: ../lb_certs/cert.pem
+      BBL_LB_KEY: ../lb_certs/key.pem
+      LB_DOMAIN: orinoco.routing.cf-app.com
+      BBL_ENV_NAME: orinoco
+      BBL_STATE_DIR: orinoco/bbl-state
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+    input_mapping:
+      bbl-config: updated-bbl-state
+      bbl-state: updated-bbl-state
+    ensure:
+      put: deployments-routing
+      params:
+        repository: updated-bbl-state
+        rebase: true
+  - task: add-credhub-value
+    file: routing-release/ci/tasks/add-credhub-value/task.yml
+    params:
+      ENVIRONMENT: orinoco
+      NAME: /bosh-orinoco/gorouter-standalone-1/datadog_api_key
+      VALUE: ((datadog_api_key))
+
+- name: orinoco-destroy
+  serial_groups: [orinoco]
+  build_logs_to_retain: 100
+  plan:
+  - aggregate:
+    - get: deployments-routing
+    - get: cf-deployment-concourse-tasks
+  - task: destroy-orinoco
+    file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+    params:
+      BBL_STATE_DIR: orinoco/bbl-state
+      BBL_AWS_ACCESS_KEY_ID: ((orinoco_aws_access_key_id))
+      BBL_AWS_SECRET_ACCESS_KEY: ((orinoco_aws_secret_access_key))
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+    input_mapping:
+      bbl-state: deployments-routing
+    ensure:
+      put: deployments-routing
+      params:
+        repository: updated-bbl-state
+        rebase: true
+
+- name: orinoco-delete-deployment
+  serial_groups: [orinoco]
+  build_logs_to_retain: 100
+  plan:
+  - aggregate:
+    - get: cf-deployment-concourse-tasks
+    - get: deployments-routing
+    - get: routing-release
+  - task: delete-cf-deployment
+    file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+    params:
+      DEPLOYMENT_NAME: gorouter-standalone-1
+      BBL_STATE_DIR: orinoco/bbl-state
+
+- name: diana-tcp-perf-tests
+  serial_groups: [diana]
+  plan:
+  - aggregate:
+    - get: deployments-routing
+    - get: routing-release-ci
+    - get: gcp-stemcell-xenial
+      trigger: true
+    - get: bpm-release
+    - get: bosh-dns-release
+    - get: bosh-dns-aliases-release
+    - get: postgres-release
+    - get: diego-release
+    - get: two-hours
+      trigger: true
+    - get: routing-release
+      passed: [routing-release-unit]
+      trigger: true
+    - get: routing-perf-release
+      trigger: true
+    - get: cf-deployment-concourse-tasks
+  - task: upload-latest-diego
+    file: routing-release/ci/tasks/upload-local-release/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+      local-release: diego-release
+    params:
+      BBL_STATE_DIR: diana/bbl-state
+  - task: upload-latest-postgres
+    file: routing-release/ci/tasks/upload-local-release/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+      local-release: postgres-release
+    params:
+      BBL_STATE_DIR: diana/bbl-state
+  - task: upload-latest-bosh-dns-aliases
+    file: routing-release/ci/tasks/upload-local-release/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+      local-release: bosh-dns-aliases-release
+    params:
+      BBL_STATE_DIR: diana/bbl-state
+  - task: upload-latest-bpm
+    file: routing-release/ci/tasks/upload-local-release/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+      local-release: bpm-release
+    params:
+      BBL_STATE_DIR: diana/bbl-state
+  - task: upload-latest-bosh-dns
+    file: routing-release/ci/tasks/upload-local-release/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+      local-release: bosh-dns-release
+    params:
+      BBL_STATE_DIR: diana/bbl-state
+  - task: generate-perf-manifest
+    file: routing-release/ci/tasks/generate-perf-manifest/task.yml
+    params:
+      ENV_DIR: deployments-routing/diana
+  - task: create-perf-release-tarball
+    file: routing-release/ci/tasks/create-release-tarball/task.yml
+    input_mapping:
+      release-dir: routing-perf-release
+    output_mapping:
+      release-tarball: perf-release-tarball
+  - task: create-routing-release-tarball
+    file: routing-release/ci/tasks/create-release-tarball/task.yml
+    input_mapping:
+      release-dir: routing-release
+    output_mapping:
+      release-tarball: routing-release-tarball
+  - task: generate-bosh-deployment-source-json
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: cloudfoundry/cf-routing-pipeline
+      inputs:
+      - name: deployments-routing
+      outputs:
+      - name: bosh-director
+      run:
+        path: bash
+        args:
+        - -c
+        - |
+            set -e -o pipefail
+            pushd $(pwd)/deployments-routing/diana/bbl-state
+            echo '{}' | jq --arg target "$(bbl director-address)" \
+              --arg caCert "$(bbl director-ca-cert)" \
+              --arg client "$(bbl director-username)" \
+              --arg clientSecret "$(bbl director-password)" \
+              --arg jumpboxURL "$(bbl jumpbox-address):22" \
+              --arg jumpboxSSHKey "$(bbl ssh-key)" \
+              '{
+              "target": $target,
+              "ca_cert": $caCert,
+              "client": $client,
+              "client_secret": $clientSecret,
+              "deployment": "performance",
+              "jumpbox_url": $jumpboxURL,
+              "jumpbox_ssh_key": $jumpboxSSHKey
+            }' > source.json
+            popd
+            cp $(pwd)/deployments-routing/diana/bbl-state/source.json $(pwd)/bosh-director/
+  # deploy
+  - put: diana-tcp-perf-deployment
+    params:
+      source_file: bosh-director/source.json
+      manifest: perf-manifest/perf.yml
+      releases:
+      - routing-release-tarball/*.tgz
+      - perf-release-tarball/*.tgz
+      stemcells: [gcp-stemcell-xenial/*.tgz]
+      cleanup: true
+  - task: sleep-until-route-populates
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: cloudfoundry/cf-routing-pipeline
+      run:
+        path: sleep
+        args:
+        - 30
+  - task: tcp-perf-run
+    file: routing-release/ci/tasks/bosh2-command/task.yml
+    params:
+      NUMBER_OF_RUNS: 4
+      ENVIRONMENT: diana
+      DEPLOYMENT: performance
+      COMMAND: 'run-errand tcp_performance_tests --keep-alive --download-logs'
+    ensure:
+      task: final-run-and-cleanup-errand-vm
+      file: routing-release/ci/tasks/bosh2-command/task.yml
+      params:
+        NUMBER_OF_RUNS: 1
+        ENVIRONMENT: diana
+        DEPLOYMENT: performance
+        COMMAND: 'run-errand tcp_performance_tests --download-logs'
+
+- name: diana-bosh-cleanup
+  serial_groups: [diana]
+  plan:
+  - get: deployments-routing
+    trigger: true
+    passed: [diana-tcp-perf-tests]
+  - get: cf-deployment-concourse-tasks
+  - task: cleanup-artifacts
+    file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
+    params:
+      BBL_STATE_DIR: diana/bbl-state
+    input_mapping:
+      bbl-state: deployments-routing
+
+# BOSH LITE DEPLOY AND TEST - ci-lite
+- name: ci-lite-deploy-cf
+  serial: true
+  serial_groups: [ci-lite]
+  plan:
+  - aggregate:
+    - get: deployments-routing
+    - get: cf-deployment-concourse-tasks
+    - get: cf-deployment
+      trigger: true
+    - get: routing-release-ci
+    - get: routing-release
+      trigger: true
+      passed:
+      - routing-release-unit
+  - task: upload-stemcell
+    file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+    params:
+      BBL_STATE_DIR: ci-lite/bbl-state
+      INFRASTRUCTURE: bosh-lite
+  - task: merge-ops-files
+    file: routing-release/ci/tasks/merge-ops-files/task.yml
+    params:
+      ENVIRONMENT: ci-lite
+  - task: deploy-ci-lite-with-created-routing
+    file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+      release: routing-release
+      ops-files: merged-operations
+      vars-store: deployments-routing
+      vars-files: deployments-routing
+    params:
+      SYSTEM_DOMAIN: ci-lite.routing.cf-app.com
+      OPS_FILES: |
+        use-compiled-releases.yml
+        bosh-lite.yml
+        use-postgres.yml
+        routing_acceptance_tests.yml
+        routing_smoke_tests.yml
+        ca_certs.yml
+        add-routing-api-mtls-certificates.yml
+      BBL_STATE_DIR: ci-lite/bbl-state
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+  - task: bosh-cleanup
+    file: routing-release/ci/tasks/bosh2-command/task.yml
+    params:
+      ENVIRONMENT: ci-lite
+      DEPLOYMENT: cf
+      COMMAND: -n clean-up --all
+
+- name: ci-lite-cats
+  serial_groups: [ci-lite]
+  build_logs_to_retain: 100
+  plan:
+  - aggregate:
+    - get: routing-release-ci
+    - get: cf-acceptance-tests
+    - get: cf-deployment
+      trigger: true
+      passed: [ci-lite-deploy-cf]
+    - get: deployments-routing
+    - get: cf-deployment-concourse-tasks
+    - get: routing-release
+      passed: [ci-lite-deploy-cf]
+      trigger: true
+  - task: create-integration-configs
+    file: routing-release/ci/tasks/create-integration-configs/task.yml
+    params:
+      ENVIRONMENT: ci-lite
+  - task: update-integration-configs
+    file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
+    input_mapping:
+      bbl-state: created-integration-configs
+      integration-configs: created-integration-configs
+    params:
+      BBL_STATE_DIR: ci-lite/bbl-state
+      CATS_INTEGRATION_CONFIG_FILE: ci-lite/cats_integration_config.json
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+  - task: run-cats
+    input_mapping:
+      integration-config: updated-integration-configs
+    file: cf-deployment-concourse-tasks/run-cats/task.yml
+    params:
+      CONFIG_FILE_PATH: ci-lite/cats_integration_config.json
+      NODES: 4
+
+- name: ci-lite-rats
+  serial_groups: [ci-lite]
+  build_logs_to_retain: 100
+  plan:
+  - timeout: 4h
+    do:
+    - aggregate:
+      - get: routing-release-ci
+      - get: deployments-routing
+      - get: cf-deployment
+        trigger: true
+        passed: [ci-lite-deploy-cf]
+      - get: routing-release
+        passed: [ci-lite-deploy-cf]
+        trigger: true
+      - get: cf-deployment-concourse-tasks
+        passed: [ci-lite-deploy-cf]
+    - task: create-integration-configs
+      file: routing-release/ci/tasks/create-integration-configs/task.yml
+      params:
+        ENVIRONMENT: ci-lite
+    - task: update-integration-configs
+      file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
+      input_mapping:
+        bbl-state: created-integration-configs
+        integration-configs: created-integration-configs
+      params:
+        BBL_STATE_DIR: ci-lite/bbl-state
+        RATS_INTEGRATION_CONFIG_FILE: ci-lite/rats_integration_config.json
+        GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+    - task: run-rats
+      input_mapping:
+        integration-config: updated-integration-configs
+      params:
+        CONFIG_FILE_PATH: ci-lite/rats_integration_config.json
+        GINKGO_ARGS: "-v"
+      file: routing-release/ci/tasks/run-rats/task.yml
+
+- name: diana-setup
+  serial_groups: [diana]
+  build_logs_to_retain: 100
+  plan:
+  - aggregate:
+    - get: cf-deployment-concourse-tasks
+    - get: deployments-routing
+    - get: routing-release-ci
+    - get: bosh-bootloader
+    - get: friday-trigger
+      trigger: true
+  - task: add-parent-dns
+    file: routing-release/ci/tasks/add-parent-dns/task.yml
+    params:
+      ENVIRONMENT: diana
+    input_mapping:
+      bbl-state: deployments-routing
+  - task: setup-diana
+    file: cf-deployment-concourse-tasks/bbl-up/task.yml
+    params:
+      BBL_IAAS: gcp
+      BBL_GCP_SERVICE_ACCOUNT_KEY: ((shared_gcp_account_creds))
+      BBL_GCP_REGION: us-west1
+      BBL_LB_CERT: ../lb_certs/cert.pem
+      BBL_LB_KEY: ../lb_certs/key.pem
+      LB_DOMAIN: diana.routing.cf-app.com
+      BBL_ENV_NAME: diana
+      BBL_STATE_DIR: diana/bbl-state
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+    input_mapping:
+      bbl-state: updated-bbl-state
+      bbl-config: updated-bbl-state
+    ensure:
+      put: deployments-routing
+      params:
+        repository: updated-bbl-state
+        rebase: true
+
+- name: diana-destroy
+  serial_groups: [diana]
+  build_logs_to_retain: 100
+  plan:
+  - aggregate:
+    - get: deployments-routing
+    - get: cf-deployment-concourse-tasks
+  - task: destroy-diana
+    file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+    params:
+      BBL_STATE_DIR: diana/bbl-state
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+      BBL_GCP_SERVICE_ACCOUNT_KEY: ((shared_gcp_account_creds))
+    input_mapping:
+      bbl-state: deployments-routing
+    ensure:
+      put: deployments-routing
+      params:
+        repository: updated-bbl-state
+        rebase: true
+
+- name: jubilee-setup
+  serial_groups: [jubilee]
+  build_logs_to_retain: 100
+  plan:
+  - aggregate:
+    - get: cf-deployment-concourse-tasks
+    - get: deployments-routing
+    - get: routing-release-ci
+    - get: bosh-bootloader
+    - get: morning-trigger
+      trigger: true
+  - put: jubilee-env
+    params: {acquire: true}
+  - task: merge-bbl-config
+    file: routing-release/ci/tasks/merge-bbl-config/task.yml
+    input_mapping:
+      source1: routing-release-ci
+    params:
+      SOURCE1_DIR: bbl-configs/add-parent-dns-full
+  - task: make-certs
+    file: routing-release/ci/tasks/make-certs/task.yml
+    params:
+      ENVIRONMENT: jubilee
+    input_mapping:
+      bbl-state: deployments-routing
+  - task: setup-jubilee
+    file: cf-deployment-concourse-tasks/bbl-up/task.yml
+    input_mapping:
+      bbl-state: updated-bbl-state
+      bbl-config: merged-bbl-config
+    params:
+      BBL_IAAS: gcp
+      BBL_GCP_SERVICE_ACCOUNT_KEY: ((shared_gcp_account_creds))
+      BBL_GCP_REGION: us-central1
+      BBL_LB_CERT: ../lb_certs/cert.pem
+      BBL_LB_KEY: ../lb_certs/key.pem
+      LB_DOMAIN: jubilee.routing.cf-app.com
+      BBL_ENV_NAME: jubilee
+      BBL_STATE_DIR: jubilee/bbl-state
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+      BBL_CONFIG_DIR: "."
+    on_success:
+      put: jubilee-env
+      params: {release: jubilee-env}
+    ensure:
+      put: deployments-routing
+      params:
+        repository: updated-bbl-state
+        rebase: true
+
+- name: jubilee-manual-lock-release
+  plan:
+  - get: jubilee-env
+  - put: jubilee-env
+    params: {release: jubilee-env}
+
+- name: jubilee-deploy-cf
+  serial_groups: [jubilee]
+  plan:
+  - aggregate:
+    - get: cf-deployment-concourse-tasks
+    - get: cf-deployment-release-latest
+    - get: deployments-routing
+    - get: routing-release-ci
+    - get: morning-trigger
+      passed: [jubilee-setup]
+      trigger: true
+  - task: upload-stemcell
+    file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+      cf-deployment: cf-deployment-release-latest
+    params:
+      BBL_STATE_DIR: jubilee/bbl-state
+  - task: merge-ops-files
+    file: routing-release/ci/tasks/merge-ops-files/task.yml
+    input_mapping:
+      cf-deployment: cf-deployment-release-latest
+    params:
+      ENVIRONMENT: jubilee
+  - task: deploy-jubilee-with-base-cf
+    file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+      ops-files: merged-operations
+      vars-files: deployments-routing
+      cf-deployment: cf-deployment-release-latest
+    params:
+      SYSTEM_DOMAIN: jubilee.routing.cf-app.com
+      OPS_FILES: &jubilee-ops-files |
+        use-compiled-releases.yml
+        enable-routing-integrity.yml
+        add-routing-api-mtls-certificates.yml
+      BBL_STATE_DIR: jubilee/bbl-state
+
+- name: jubilee-no-downtime
+  serial_groups: [jubilee]
+  plan:
+  - aggregate:
+    - get: cf-deployment-release-latest
+      trigger: true
+    - get: cf-deployment-concourse-tasks
+    - get: routing-release-ci
+    - get: cf-smoke-tests-release
+    - get: zero-downtime-release
+    - get: routing-release
+      trigger: true
+      passed: [routing-release-unit]
+    - get: jubilee-env
+  - get: deployments-routing
+  - put: jubilee-env
+    params: {acquire: true}
+  - task: upload-stemcell
+    file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+      cf-deployment: cf-deployment-release-latest
+    params:
+      BBL_STATE_DIR: jubilee/bbl-state
+  - task: merge-ops-files
+    file: routing-release/ci/tasks/merge-ops-files/task.yml
+    input_mapping:
+      cf-deployment: cf-deployment-release-latest
+    params:
+      ENVIRONMENT: jubilee
+  - task: deploy-jubilee-cf
+    file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
+    input_mapping:
+      cf-deployment: cf-deployment-release-latest
+      bbl-state: deployments-routing
+      ops-files: merged-operations
+      vars-files: deployments-routing
+    params:
+      SYSTEM_DOMAIN: jubilee.routing.cf-app.com
+      OPS_FILES: *jubilee-ops-files
+      BBL_STATE_DIR: jubilee/bbl-state
+  - task: create-integration-config
+    file: routing-release/ci/tasks/create-integration-configs/task.yml
+    params:
+      ENVIRONMENT: jubilee
+      ENABLE_ISOLATION_SEGMENT_TESTS: false
+  - task: update-integration-configs
+    file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
+    input_mapping:
+      bbl-state: created-integration-configs
+      integration-configs: created-integration-configs
+    params:
+      BBL_STATE_DIR: jubilee/bbl-state
+      CATS_INTEGRATION_CONFIG_FILE: jubilee/cats_integration_config.json
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+  - task: run-cf-smoke-tests
+    attempts: 3
+    input_mapping:
+      deployments-routing: updated-integration-configs
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: cloudfoundry/cf-routing-pipeline
+      inputs:
+      - name: deployments-routing
+      - name: cf-smoke-tests-release
+      run:
+        path: bash
+        args:
+          - -exc
+          - |
+            export CONFIG=${PWD}/deployments-routing/jubilee/cf_smoke_tests_config.json
+            mkdir -p "${GOPATH}/src/github.com/cloudfoundry"
+            cp -R "${PWD}"/cf-smoke-tests-release/src/smoke_tests "${GOPATH}"/src/github.com/cloudfoundry/cf-smoke-tests
+            pushd "${GOPATH}/src/github.com/cloudfoundry/cf-smoke-tests" > /dev/null
+              ./bin/test
+            popd > /dev/null
+  - task: setup-jubilee-env
+    file: routing-release/ci/tasks/setup-cf-env/task.yml
+    params:
+      SYSTEM_DOMAIN: routing.cf-app.com
+      ENVIRONMENT: jubilee
+      CF_ORG: zdorg
+      CF_SPACE: zdspace
+  - aggregate:
+    - task: deploy-zero-downtime-backends
+      file: routing-release/ci/tasks/deploy-zero-downtime-backends/task.yml
+      params:
+        ENVIRONMENT: jubilee
+    - task: create-http-app
+      file: routing-release/ci/tasks/create-zd-app/task.yml
+      attempts: 3
+      params:
+        CF_APP_DOMAIN: jubilee.routing.cf-app.com
+        CF_APP_NAME: drroute
+        CF_ORG: zdorg
+        CF_SPACE: zdspace
+        ENVIRONMENT: jubilee
+    - task: create-tcp-app
+      file: routing-release/ci/tasks/create-zd-app/task.yml
+      attempts: 3
+      params:
+        CF_APP_DOMAIN: jubilee.routing.cf-app.com
+        CF_APP_NAME: drtcproute
+        CF_ORG: zdorg
+        CF_SPACE: zdspace
+        ENVIRONMENT: jubilee
+        TCP: true
+  - aggregate:
+    - task: start-zero-downtime-http-test
+      file: routing-release/ci/tasks/start-zero-downtime-test/task.yml
+      params:
+        CF_APP_NAME: drroute
+        CF_ORG: zdorg
+        CF_SPACE: zdspace
+        ENVIRONMENT: jubilee
+        CF_APP_DOMAIN: jubilee.routing.cf-app.com
+    - task: start-zero-downtime-tcp-test
+      file: routing-release/ci/tasks/start-zero-downtime-test/task.yml
+      params:
+        CF_APP_NAME: drtcproute
+        CF_ORG: zdorg
+        CF_SPACE: zdspace
+        ENVIRONMENT: jubilee
+        CF_APP_DOMAIN: jubilee.routing.cf-app.com
+        TCP: true
+  - task: merge-ops-files
+    file: routing-release/ci/tasks/merge-ops-files/task.yml
+    input_mapping:
+      cf-deployment: cf-deployment-release-latest
+    output_mapping:
+      merged-operations: merged-upgrade-operations
+    params:
+      ENVIRONMENT: jubilee
+  - task: deploy-jubilee-with-created-routing
+    file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
+    input_mapping:
+      cf-deployment: cf-deployment-release-latest
+      bbl-state: deployments-routing
+      release: routing-release
+      ops-files: merged-upgrade-operations
+      vars-files: deployments-routing
+    params:
+      SYSTEM_DOMAIN: jubilee.routing.cf-app.com
+      OPS_FILES: *jubilee-ops-files
+      BBL_STATE_DIR: jubilee/bbl-state
+  - aggregate:
+    - task: cleanup-artifacts
+      file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
+      params:
+        BBL_STATE_DIR: jubilee/bbl-state
+      input_mapping:
+        bbl-state: deployments-routing
+    - task: stop-zero-downtime-http-test
+      file: routing-release/ci/tasks/stop-zero-downtime-test/task.yml
+      params:
+        CF_APP_DOMAIN: jubilee.routing.cf-app.com
+        CF_APP_NAME: drroute
+    - task: stop-zero-downtime-tcp-test
+      file: routing-release/ci/tasks/stop-zero-downtime-test/task.yml
+      params:
+        CF_APP_DOMAIN: jubilee.routing.cf-app.com
+        CF_APP_NAME: drtcproute
+  - aggregate:
+    - task: check-zero-downtime-test-results
+      file: routing-release/ci/tasks/check-zero-downtime-test-results/task.yml
+      params:
+        CF_APP_DOMAIN: jubilee.routing.cf-app.com
+        CF_APP_NAME: drroute
+      on_success:
+        put: jubilee-env
+        params: {release: jubilee-env}
+    - try:
+        task: check-zero-downtime-tcp-test-results
+        file: routing-release/ci/tasks/check-zero-downtime-test-results/task.yml
+        params:
+          CF_APP_DOMAIN: jubilee.routing.cf-app.com
+          CF_APP_NAME: drtcproute
+
+- name: promote-to-batman-passed
+  serial: true
+  plan:
+  - get: routing-release
+    trigger: true
+    passed:
+      - batman-cats
+      - batman-rats
+      - batman-drats
+      - batman-syslog-test
+      - ci-lite-rats
+      - ci-lite-cats
+      - diana-tcp-perf-tests
+      - orinoco-http-perf-tests
+      - jubilee-no-downtime
+  - put: routing-release-batman-passed
+    params:
+      repository: routing-release
+
+- name: jubilee-destroy
+  serial_groups: [jubilee]
+  build_logs_to_retain: 100
+  plan:
+  - aggregate:
+    - get: deployments-routing
+    - get: cf-deployment-concourse-tasks
+    - get: routing-release
+    - get: evening-trigger
+      trigger: true
+    - get: jubilee-env
+  - put: jubilee-env
+    params: {acquire: true}
+  - task: delete-cf-deployment
+    file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+    params:
+      DEPLOYMENT_NAME: cf
+      BBL_STATE_DIR: jubilee/bbl-state
+  - task: delete-zero-downtime-deployment
+    file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+    params:
+      DEPLOYMENT_NAME: zero-downtime
+      BBL_STATE_DIR: jubilee/bbl-state
+  - task: destroy-jubilee
+    file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+    params:
+      BBL_STATE_DIR: jubilee/bbl-state
+      BBL_GCP_SERVICE_ACCOUNT_KEY: ((shared_gcp_account_creds))
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+    input_mapping:
+      bbl-state: deployments-routing
+    on_success:
+      put: jubilee-env
+      params: {release: jubilee-env}
+    ensure:
+      put: deployments-routing
+      params:
+        repository: updated-bbl-state
+        rebase: true

@@ -1,0 +1,26 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+
+inputs:
+  - name: routing-release-ci
+  - name: source1
+  - name: source2
+    optional: true
+  - name: source3
+    optional: true
+
+outputs:
+  - name: merged-bbl-config
+
+params:
+  SOURCE1_DIR: ~
+  SOURCE2_DIR: ~
+  SOURCE3_DIR: ~
+
+run:
+  path: routing-release-ci/ci/tasks/merge-bbl-config/task

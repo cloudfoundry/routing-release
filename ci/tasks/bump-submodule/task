@@ -1,0 +1,42 @@
+#!/bin/bash
+set -eu
+set -o pipefail
+
+if [ -z "$SUBMODULE_PATH" ]; then
+  echo "SUBMODULE_PATH has not been set"
+  exit 1
+fi
+
+# discover the SHA that we want to bump to
+pushd submodule-latest
+  SHA="$(git rev-parse HEAD)"
+  REMOTE=$PWD
+popd
+
+
+pushd needs-bump
+  git config user.name "${GIT_COMMIT_USERNAME}"
+  git config user.email "${GIT_COMMIT_EMAIL}"
+
+  git checkout "${BRANCH}"
+
+  pushd "${SUBMODULE_PATH}"
+    git remote add local "${REMOTE}"
+    git fetch local
+    git checkout "${SHA}"
+  popd
+
+  if git diff-index --quiet HEAD --
+  then
+   echo "no changes in the parent repo, no commit necessary"
+  else
+    echo "changes detected, will commit..."
+    git add .
+    git commit -m "bump ${SUBMODULE_PATH}
+
+$(git diff --cached --submodule)"
+    git log -1 --color | cat
+  fi
+popd
+
+git clone needs-bump bumped

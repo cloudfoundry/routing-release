@@ -1,0 +1,25 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+
+inputs:
+  - name: routing-release
+  - name: deployments-routing
+  - name: routing-release-ci
+
+outputs:
+  - name: routing-manifest
+
+params:
+  ENVIRONMENT: ~
+  BOSH_TARGET: ~
+  BOSH_USER: ~
+  BOSH_PASSWORD: ~
+  INFRASTRUCTURE: ~
+
+run:
+  path: routing-release-ci/ci/tasks/create-routing-manifest/task

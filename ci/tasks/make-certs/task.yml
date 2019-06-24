@@ -1,0 +1,23 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+
+inputs:
+- name: bbl-state
+- name: routing-release-ci
+
+outputs:
+- name: updated-bbl-state
+
+params:
+  ENVIRONMENT: ~  # name of the CI environment
+  GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+  GIT_COMMIT_USERNAME: CI Bot
+  GIT_COMMIT_MSG: Adding new certs
+
+run:
+  path: routing-release-ci/ci/tasks/make-certs/task

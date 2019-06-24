@@ -1,0 +1,60 @@
+#!/bin/bash
+
+set -euo pipefail
+
+env_dir=${HOME}/workspace/deployments-routing/lite
+cf_deployment_dir=${HOME}/workspace/cf-deployment
+
+pushd ${cf_deployment_dir}
+  echo "updating cf-deployment..."
+  git pull
+popd
+
+mkdir -p $env_dir/extra-ops-files
+
+echo "---
+- type: replace
+  path: /releases/name=capi/url
+  value: file:///${HOME}/workspace/capi-release
+
+- type: remove
+  path: /releases/name=capi/sha1
+
+- type: replace
+  path: /releases/name=capi/version
+  value: create" > $env_dir/extra-ops-files/local-capi.yml
+
+echo "---
+- type: replace
+  path: /releases/name=istio
+  value:
+    name: istio
+    url: file:///${HOME}/workspace/istio-release
+    version: create" > $env_dir/extra-ops-files/local-istio.yml
+
+ln -sf ${HOME}/workspace/istio-release/deploy/cf-deployment-operations/add-istio.yml $env_dir/extra-ops-files/add-istio.yml
+ln -sf ${HOME}/workspace/istio-release/deploy/cf-deployment-operations/add-route-syncer.yml $env_dir/extra-ops-files/add-route-syncer.yml
+ln -sf ${HOME}/workspace/cf-deployment/operations/experimental/use-bosh-dns-for-containers.yml $env_dir/extra-ops-files/use-bosh-dns.yml
+ln -sf ${HOME}/workspace/cf-deployment/operations/experimental/enable-service-discovery.yml $env_dir/extra-ops-files/enable-service-discovery.yml
+
+extra_ops_files=""
+
+shopt -s nullglob
+pushd $env_dir/extra-ops-files
+  for op in $env_dir/extra-ops-files/*.yml
+  do
+    extra_ops_files="${extra_ops_files} -o $op"
+  done
+popd
+
+bosh deploy --no-redact ${cf_deployment_dir}/cf-deployment.yml \
+-o ${cf_deployment_dir}/operations/use-compiled-releases.yml \
+-o ${cf_deployment_dir}/operations/experimental/disable-consul.yml \
+-o ${cf_deployment_dir}/operations/experimental/skip-consul-cell-registrations.yml \
+-o ${cf_deployment_dir}/operations/experimental/skip-consul-locks.yml \
+-o ${cf_deployment_dir}/operations/bosh-lite.yml \
+-o ${cf_deployment_dir}/operations/experimental/disable-consul-bosh-lite.yml \
+-o ${cf_deployment_dir}/operations/experimental/use-bosh-dns.yml \
+$extra_ops_files \
+--vars-store $env_dir/deployment-vars.yml \
+-v system_domain=bosh-lite.com

@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -e
+
+source routing-release-ci/ci/scripts/script_helpers.sh
+
+cf_login "${ENVIRONMENT}"
+cf target -o "${CF_ORG}" -s "${CF_SPACE}"
+
+# Expects the app to be already present
+cf apps | grep "${CF_APP_NAME}" | grep "started"
+
+echo "Starting zero downtime test..."
+APP_URL="http://${CF_APP_NAME}.${CF_APP_DOMAIN}"
+
+if [[ "${TCP}" = "true" ]]; then
+  TCP_DOMAIN=tcp.${CF_APP_DOMAIN}
+  TCP_PORT=$(cf routes | grep ${TCP_DOMAIN}| awk '{print $3}')
+  POLL_URL="${TCP_DOMAIN}:${TCP_PORT}"
+else
+  POLL_URL="${APP_URL}/health"
+fi
+
+curl -vvv "${APP_URL}/start" -d'{"Endpoint":"'${POLL_URL}'"}'

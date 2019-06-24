@@ -1,0 +1,23 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+
+inputs:
+  - name: release
+  - name: routing-release-ci
+
+outputs:
+  - name: modified-release
+
+params:
+  BRANCH: develop
+  # Identity to use for the git commit
+  GIT_COMMIT_USERNAME: "CF Networking Team CI Bot"
+  GIT_COMMIT_EMAIL: "CF-Networking@pivotal.io"
+
+run:
+  path: routing-release-ci/ci/tasks/save-golang-version-to-file/task

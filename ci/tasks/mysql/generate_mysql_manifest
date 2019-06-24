@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -e -x -u
+
+environment_path="${PWD}/${DEPLOYMENTS_DIR}/${ENVIRONMENT}"
+stubs_path="${environment_path}/stubs"
+
+cf_deployment_name="cf-${ENVIRONMENT}"
+
+root_dir=${PWD}
+OUTPUT_DIR=${root_dir}/mysql-manifest
+mkdir -p $OUTPUT_DIR
+mysql_manifest_file="${OUTPUT_DIR}/mysql-deployment.yml"
+
+bosh -n target ${BOSH_TARGET}
+bosh -n login ${BOSH_USER} ${BOSH_PASSWORD}
+
+pushd mysql-release-source
+
+  ./scripts/generate-deployment-manifest \
+    -c ${stubs_path}/mysql/dummy-cf-manifest.yml \
+    -i ${stubs_path}/mysql/iaas-settings.yml \
+    -p ${stubs_path}/mysql/property-overrides.yml \
+    -n ${stubs_path}/mysql/instance-count-overrides.yml \
+    > ${mysql_manifest_file}
+
+  echo "===GENERATED MANIFEST==="
+  cat ${mysql_manifest_file}
+
+popd
+
