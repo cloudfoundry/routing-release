@@ -259,7 +259,7 @@ jobs:
       trigger: true
     - get: routing-release-ci
   - task: upgrade-go1.x-in-routing-release
-    file: routing-release/ci/tasks/upgrade-package-in-release/task.yml
+    file: routing-release-ci/ci/tasks/upgrade-package-in-release/task.yml
     params:
       PACKAGE: golang-1-linux
       AWS_SECRET_ACCESS_KEY: ((routing_release_aws_blobstore_secret_access_key))
@@ -269,7 +269,7 @@ jobs:
       release: routing-release
       package-release: golang-release-latest
   - task: save-golang-version-to-file
-    file: routing-release/ci/tasks/save-golang-version-to-file/task.yml
+    file: routing-release-ci/ci/tasks/save-golang-version-to-file/task.yml
     params:
       BRANCH: develop
     input_mapping:
@@ -286,7 +286,7 @@ jobs:
       trigger: true
     - get: routing-release-ci
   - task: upgrade-go1.x-in-zero-downtime-release
-    file: routing-release/ci/tasks/upgrade-package-in-release/task.yml
+    file: routing-release-ci/ci/tasks/upgrade-package-in-release/task.yml
     params:
       PACKAGE: golang-1-linux
       AWS_SECRET_ACCESS_KEY: ((routing_release_aws_blobstore_secret_access_key))
@@ -306,7 +306,7 @@ jobs:
     - get: routing-perf-release
     - get: routing-release-ci
   - task: upgrade-dep-dependencies-in-routing-perf-release
-    file: routing-release/ci/tasks/upgrade-dep-dependencies-in-release/task.yml
+    file: routing-release-ci/ci/tasks/upgrade-dep-dependencies-in-release/task.yml
     params:
       PACKAGES_TO_UPDATE: cpumonitor,http_route_populator,throughputramp
     input_mapping:
@@ -352,7 +352,7 @@ jobs:
     - get: routing-release-ci
     - get: deployments-routing
   - task: upgrade-cf-cli-in-routing-release
-    file: routing-release/ci/tasks/upgrade-package-in-release/task.yml
+    file: routing-release-ci/ci/tasks/upgrade-package-in-release/task.yml
     params:
       PACKAGE: cf-cli-6-linux
       AWS_SECRET_ACCESS_KEY: ((routing_release_aws_blobstore_secret_access_key))
@@ -375,7 +375,7 @@ jobs:
     - get: routing-release-ci
     - get: bosh-bootloader # needed to get latest plan-patches
   - task: merge-bbl-config
-    file: routing-release/ci/tasks/merge-bbl-config/task.yml
+    file: routing-release-ci/ci/tasks/merge-bbl-config/task.yml
     params:
       SOURCE1_DIR: plan-patches/bosh-lite-gcp
       SOURCE2_DIR: bbl-configs/add-parent-dns-lite
@@ -438,13 +438,13 @@ jobs:
     - get: friday-trigger
       trigger: true
   - task: add-parent-dns
-    file: routing-release/ci/tasks/add-parent-dns/task.yml
+    file: routing-release-ci/ci/tasks/add-parent-dns/task.yml
     params:
       ENVIRONMENT: batman
     input_mapping:
       bbl-state: deployments-routing
   - task: inject-plan-patches
-    file: routing-release/ci/tasks/inject-plan-patches/task.yml
+    file: routing-release-ci/ci/tasks/inject-plan-patches/task.yml
     params:
       BBL_STATE_DIR: batman/bbl-state
       PLAN_PATCH_DIR: plan-patches/iso-segs-gcp
@@ -452,7 +452,7 @@ jobs:
       bbl-state: updated-bbl-state
       plan-patches: bosh-bootloader
   - task: make-certs
-    file: routing-release/ci/tasks/make-certs/task.yml
+    file: routing-release-ci/ci/tasks/make-certs/task.yml
     params:
       ENVIRONMENT: batman
     input_mapping:
@@ -478,7 +478,7 @@ jobs:
         repository: updated-bbl-state
         rebase: true
   - task: add-credhub-value
-    file: routing-release/ci/tasks/add-credhub-value/task.yml
+    file: routing-release-ci/ci/tasks/add-credhub-value/task.yml
     params:
       ENVIRONMENT: batman
       NAME: /bosh-batman/cf/datadog_api_key
@@ -504,7 +504,7 @@ jobs:
     params:
       BBL_STATE_DIR: batman/bbl-state
   - task: merge-ops-files
-    file: routing-release/ci/tasks/merge-ops-files/task.yml
+    file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
     params:
       ENVIRONMENT: batman
   - task: deploy-batman-with-created-routing
@@ -541,12 +541,12 @@ jobs:
         add-routing-api-mtls-certificates.yml
       BBL_STATE_DIR: batman/bbl-state
   - task: create-isolation-segment
-    file: routing-release/ci/tasks/create-isolation-segment/task.yml
+    file: routing-release-ci/ci/tasks/create-isolation-segment/task.yml
     params:
       ENVIRONMENT: batman
       ISO_SEG_NAME: "persistent_isolation_segment"
   - task: emit-datadog-deploy-end
-    file: routing-release/ci/tasks/emit-datadog-event/task.yml
+    file: routing-release-ci/ci/tasks/emit-datadog-event/task.yml
     params:
       TITLE: end_deploy
       TEXT: end_deploy
@@ -571,7 +571,7 @@ jobs:
       passed: [batman-cf-smoke-tests]
       trigger: true
   - task: create-integration-config
-    file: routing-release/ci/tasks/create-integration-configs/task.yml
+    file: routing-release-ci/ci/tasks/create-integration-configs/task.yml
     params:
       ENVIRONMENT: batman
       ISO_SEG_NAME: "persistent_isolation_segment"
@@ -607,7 +607,7 @@ jobs:
       passed: [batman-deploy-cf]
       trigger: true
   - task: create-integration-config
-    file: routing-release/ci/tasks/create-integration-configs/task.yml
+    file: routing-release-ci/ci/tasks/create-integration-configs/task.yml
     params:
       ENVIRONMENT: batman
       ISO_SEG_NAME: "persistent_isolation_segment"
@@ -658,7 +658,7 @@ jobs:
     trigger: true
     passed: [batman-cf-smoke-tests]
   - task: create-drats-config
-    file: routing-release/ci/tasks/create-drats-config/task.yml
+    file: routing-release-ci/ci/tasks/create-drats-config/task.yml
     params:
       ENVIRONMENT: batman
   - task: run-disaster-recovery-acceptance-tests
@@ -688,7 +688,7 @@ jobs:
         trigger: true
       - get: cf-deployment-concourse-tasks
     - task: create-integration-config
-      file: routing-release/ci/tasks/create-integration-configs/task.yml
+      file: routing-release-ci/ci/tasks/create-integration-configs/task.yml
       params:
         ENVIRONMENT: batman
         ISO_SEG_NAME: "persistent_isolation_segment"
@@ -707,7 +707,7 @@ jobs:
       params:
         CONFIG_FILE_PATH: batman/rats_integration_config.json
         GINKGO_ARGS: "-v"
-      file: routing-release/ci/tasks/run-rats/task.yml
+      file: routing-release-ci/ci/tasks/run-rats/task.yml
 
 - name: batman-syslog-test
   serial_groups: [batman]
@@ -721,7 +721,7 @@ jobs:
     passed: [batman-deploy-cf]
     trigger: true
   - task: syslog-test
-    file: routing-release/ci/tasks/syslog-test/task.yml
+    file: routing-release-ci/ci/tasks/syslog-test/task.yml
     params:
       ENVIRONMENT: batman
 
@@ -826,7 +826,7 @@ jobs:
         args:
         - 30
   - task: http-perf-run
-    file: routing-release/ci/tasks/bosh2-command/task.yml
+    file: routing-release-ci/ci/tasks/bosh2-command/task.yml
     params:
       ENVIRONMENT: orinoco
       NUMBER_OF_RUNS: 9
@@ -834,7 +834,7 @@ jobs:
       COMMAND: 'run-errand http_performance_tests --keep-alive --download-logs'
     ensure:
       task: final-run-and-cleanup-errand-vm
-      file: routing-release/ci/tasks/bosh2-command/task.yml
+      file: routing-release-ci/ci/tasks/bosh2-command/task.yml
       params:
         ENVIRONMENT: orinoco
         NUMBER_OF_RUNS: 1
@@ -854,7 +854,7 @@ jobs:
     - get: friday-trigger
       trigger: true
   - task: make-certs
-    file: routing-release/ci/tasks/make-certs/task.yml
+    file: routing-release-ci/ci/tasks/make-certs/task.yml
     params:
       ENVIRONMENT: orinoco
     input_mapping:
@@ -881,7 +881,7 @@ jobs:
         repository: updated-bbl-state
         rebase: true
   - task: add-credhub-value
-    file: routing-release/ci/tasks/add-credhub-value/task.yml
+    file: routing-release-ci/ci/tasks/add-credhub-value/task.yml
     params:
       ENVIRONMENT: orinoco
       NAME: /bosh-orinoco/gorouter-standalone-1/datadog_api_key
@@ -947,52 +947,52 @@ jobs:
       trigger: true
     - get: cf-deployment-concourse-tasks
   - task: upload-latest-diego
-    file: routing-release/ci/tasks/upload-local-release/task.yml
+    file: routing-release-ci/ci/tasks/upload-local-release/task.yml
     input_mapping:
       bbl-state: deployments-routing
       local-release: diego-release
     params:
       BBL_STATE_DIR: diana/bbl-state
   - task: upload-latest-postgres
-    file: routing-release/ci/tasks/upload-local-release/task.yml
+    file: routing-release-ci/ci/tasks/upload-local-release/task.yml
     input_mapping:
       bbl-state: deployments-routing
       local-release: postgres-release
     params:
       BBL_STATE_DIR: diana/bbl-state
   - task: upload-latest-bosh-dns-aliases
-    file: routing-release/ci/tasks/upload-local-release/task.yml
+    file: routing-release-ci/ci/tasks/upload-local-release/task.yml
     input_mapping:
       bbl-state: deployments-routing
       local-release: bosh-dns-aliases-release
     params:
       BBL_STATE_DIR: diana/bbl-state
   - task: upload-latest-bpm
-    file: routing-release/ci/tasks/upload-local-release/task.yml
+    file: routing-release-ci/ci/tasks/upload-local-release/task.yml
     input_mapping:
       bbl-state: deployments-routing
       local-release: bpm-release
     params:
       BBL_STATE_DIR: diana/bbl-state
   - task: upload-latest-bosh-dns
-    file: routing-release/ci/tasks/upload-local-release/task.yml
+    file: routing-release-ci/ci/tasks/upload-local-release/task.yml
     input_mapping:
       bbl-state: deployments-routing
       local-release: bosh-dns-release
     params:
       BBL_STATE_DIR: diana/bbl-state
   - task: generate-perf-manifest
-    file: routing-release/ci/tasks/generate-perf-manifest/task.yml
+    file: routing-release-ci/ci/tasks/generate-perf-manifest/task.yml
     params:
       ENV_DIR: deployments-routing/diana
   - task: create-perf-release-tarball
-    file: routing-release/ci/tasks/create-release-tarball/task.yml
+    file: routing-release-ci/ci/tasks/create-release-tarball/task.yml
     input_mapping:
       release-dir: routing-perf-release
     output_mapping:
       release-tarball: perf-release-tarball
   - task: create-routing-release-tarball
-    file: routing-release/ci/tasks/create-release-tarball/task.yml
+    file: routing-release-ci/ci/tasks/create-release-tarball/task.yml
     input_mapping:
       release-dir: routing-release
     output_mapping:
@@ -1054,7 +1054,7 @@ jobs:
         args:
         - 30
   - task: tcp-perf-run
-    file: routing-release/ci/tasks/bosh2-command/task.yml
+    file: routing-release-ci/ci/tasks/bosh2-command/task.yml
     params:
       NUMBER_OF_RUNS: 4
       ENVIRONMENT: diana
@@ -1062,7 +1062,7 @@ jobs:
       COMMAND: 'run-errand tcp_performance_tests --keep-alive --download-logs'
     ensure:
       task: final-run-and-cleanup-errand-vm
-      file: routing-release/ci/tasks/bosh2-command/task.yml
+      file: routing-release-ci/ci/tasks/bosh2-command/task.yml
       params:
         NUMBER_OF_RUNS: 1
         ENVIRONMENT: diana
@@ -1106,7 +1106,7 @@ jobs:
       BBL_STATE_DIR: ci-lite/bbl-state
       INFRASTRUCTURE: bosh-lite
   - task: merge-ops-files
-    file: routing-release/ci/tasks/merge-ops-files/task.yml
+    file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
     params:
       ENVIRONMENT: ci-lite
   - task: deploy-ci-lite-with-created-routing
@@ -1130,7 +1130,7 @@ jobs:
       BBL_STATE_DIR: ci-lite/bbl-state
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
   - task: bosh-cleanup
-    file: routing-release/ci/tasks/bosh2-command/task.yml
+    file: routing-release-ci/ci/tasks/bosh2-command/task.yml
     params:
       ENVIRONMENT: ci-lite
       DEPLOYMENT: cf
@@ -1152,7 +1152,7 @@ jobs:
       passed: [ci-lite-deploy-cf]
       trigger: true
   - task: create-integration-configs
-    file: routing-release/ci/tasks/create-integration-configs/task.yml
+    file: routing-release-ci/ci/tasks/create-integration-configs/task.yml
     params:
       ENVIRONMENT: ci-lite
   - task: update-integration-configs
@@ -1190,7 +1190,7 @@ jobs:
       - get: cf-deployment-concourse-tasks
         passed: [ci-lite-deploy-cf]
     - task: create-integration-configs
-      file: routing-release/ci/tasks/create-integration-configs/task.yml
+      file: routing-release-ci/ci/tasks/create-integration-configs/task.yml
       params:
         ENVIRONMENT: ci-lite
     - task: update-integration-configs
@@ -1208,7 +1208,7 @@ jobs:
       params:
         CONFIG_FILE_PATH: ci-lite/rats_integration_config.json
         GINKGO_ARGS: "-v"
-      file: routing-release/ci/tasks/run-rats/task.yml
+      file: routing-release-ci/ci/tasks/run-rats/task.yml
 
 - name: diana-setup
   serial_groups: [diana]
@@ -1222,7 +1222,7 @@ jobs:
     - get: friday-trigger
       trigger: true
   - task: add-parent-dns
-    file: routing-release/ci/tasks/add-parent-dns/task.yml
+    file: routing-release-ci/ci/tasks/add-parent-dns/task.yml
     params:
       ENVIRONMENT: diana
     input_mapping:
@@ -1283,13 +1283,13 @@ jobs:
   - put: jubilee-env
     params: {acquire: true}
   - task: merge-bbl-config
-    file: routing-release/ci/tasks/merge-bbl-config/task.yml
+    file: routing-release-ci/ci/tasks/merge-bbl-config/task.yml
     input_mapping:
       source1: routing-release-ci
     params:
       SOURCE1_DIR: bbl-configs/add-parent-dns-full
   - task: make-certs
-    file: routing-release/ci/tasks/make-certs/task.yml
+    file: routing-release-ci/ci/tasks/make-certs/task.yml
     params:
       ENVIRONMENT: jubilee
     input_mapping:
@@ -1344,7 +1344,7 @@ jobs:
     params:
       BBL_STATE_DIR: jubilee/bbl-state
   - task: merge-ops-files
-    file: routing-release/ci/tasks/merge-ops-files/task.yml
+    file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
     input_mapping:
       cf-deployment: cf-deployment-release-latest
     params:
@@ -1389,7 +1389,7 @@ jobs:
     params:
       BBL_STATE_DIR: jubilee/bbl-state
   - task: merge-ops-files
-    file: routing-release/ci/tasks/merge-ops-files/task.yml
+    file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
     input_mapping:
       cf-deployment: cf-deployment-release-latest
     params:
@@ -1406,7 +1406,7 @@ jobs:
       OPS_FILES: *jubilee-ops-files
       BBL_STATE_DIR: jubilee/bbl-state
   - task: create-integration-config
-    file: routing-release/ci/tasks/create-integration-configs/task.yml
+    file: routing-release-ci/ci/tasks/create-integration-configs/task.yml
     params:
       ENVIRONMENT: jubilee
       ENABLE_ISOLATION_SEGMENT_TESTS: false
@@ -1444,7 +1444,7 @@ jobs:
               ./bin/test
             popd > /dev/null
   - task: setup-jubilee-env
-    file: routing-release/ci/tasks/setup-cf-env/task.yml
+    file: routing-release-ci/ci/tasks/setup-cf-env/task.yml
     params:
       SYSTEM_DOMAIN: routing.cf-app.com
       ENVIRONMENT: jubilee
@@ -1452,11 +1452,11 @@ jobs:
       CF_SPACE: zdspace
   - aggregate:
     - task: deploy-zero-downtime-backends
-      file: routing-release/ci/tasks/deploy-zero-downtime-backends/task.yml
+      file: routing-release-ci/ci/tasks/deploy-zero-downtime-backends/task.yml
       params:
         ENVIRONMENT: jubilee
     - task: create-http-app
-      file: routing-release/ci/tasks/create-zd-app/task.yml
+      file: routing-release-ci/ci/tasks/create-zd-app/task.yml
       attempts: 3
       params:
         CF_APP_DOMAIN: jubilee.routing.cf-app.com
@@ -1465,7 +1465,7 @@ jobs:
         CF_SPACE: zdspace
         ENVIRONMENT: jubilee
     - task: create-tcp-app
-      file: routing-release/ci/tasks/create-zd-app/task.yml
+      file: routing-release-ci/ci/tasks/create-zd-app/task.yml
       attempts: 3
       params:
         CF_APP_DOMAIN: jubilee.routing.cf-app.com
@@ -1476,7 +1476,7 @@ jobs:
         TCP: true
   - aggregate:
     - task: start-zero-downtime-http-test
-      file: routing-release/ci/tasks/start-zero-downtime-test/task.yml
+      file: routing-release-ci/ci/tasks/start-zero-downtime-test/task.yml
       params:
         CF_APP_NAME: drroute
         CF_ORG: zdorg
@@ -1484,7 +1484,7 @@ jobs:
         ENVIRONMENT: jubilee
         CF_APP_DOMAIN: jubilee.routing.cf-app.com
     - task: start-zero-downtime-tcp-test
-      file: routing-release/ci/tasks/start-zero-downtime-test/task.yml
+      file: routing-release-ci/ci/tasks/start-zero-downtime-test/task.yml
       params:
         CF_APP_NAME: drtcproute
         CF_ORG: zdorg
@@ -1493,7 +1493,7 @@ jobs:
         CF_APP_DOMAIN: jubilee.routing.cf-app.com
         TCP: true
   - task: merge-ops-files
-    file: routing-release/ci/tasks/merge-ops-files/task.yml
+    file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
     input_mapping:
       cf-deployment: cf-deployment-release-latest
     output_mapping:
@@ -1520,18 +1520,18 @@ jobs:
       input_mapping:
         bbl-state: deployments-routing
     - task: stop-zero-downtime-http-test
-      file: routing-release/ci/tasks/stop-zero-downtime-test/task.yml
+      file: routing-release-ci/ci/tasks/stop-zero-downtime-test/task.yml
       params:
         CF_APP_DOMAIN: jubilee.routing.cf-app.com
         CF_APP_NAME: drroute
     - task: stop-zero-downtime-tcp-test
-      file: routing-release/ci/tasks/stop-zero-downtime-test/task.yml
+      file: routing-release-ci/ci/tasks/stop-zero-downtime-test/task.yml
       params:
         CF_APP_DOMAIN: jubilee.routing.cf-app.com
         CF_APP_NAME: drtcproute
   - aggregate:
     - task: check-zero-downtime-test-results
-      file: routing-release/ci/tasks/check-zero-downtime-test-results/task.yml
+      file: routing-release-ci/ci/tasks/check-zero-downtime-test-results/task.yml
       params:
         CF_APP_DOMAIN: jubilee.routing.cf-app.com
         CF_APP_NAME: drroute
@@ -1540,7 +1540,7 @@ jobs:
         params: {release: jubilee-env}
     - try:
         task: check-zero-downtime-tcp-test-results
-        file: routing-release/ci/tasks/check-zero-downtime-test-results/task.yml
+        file: routing-release-ci/ci/tasks/check-zero-downtime-test-results/task.yml
         params:
           CF_APP_DOMAIN: jubilee.routing.cf-app.com
           CF_APP_NAME: drtcproute
