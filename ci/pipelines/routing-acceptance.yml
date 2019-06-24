@@ -32,6 +32,9 @@ resources:
   source:
     branch: batman-passed
     uri: https://github.com/cloudfoundry/routing-release.git
+    ignore_paths:
+      - docs
+      - ci
 
 - name: routing-release-rc
   type: git
