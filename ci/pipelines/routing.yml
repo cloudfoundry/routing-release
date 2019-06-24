@@ -1,5 +1,5 @@
 groups:
-- name: routing-ci
+- name: routing-release-ci
   jobs:
   - upgrade-go1.x-in-routing-release
   - upgrade-go1.x-in-zdt-release
