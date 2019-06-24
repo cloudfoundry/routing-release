@@ -3,7 +3,7 @@
 function bosh_login() {
   ENV=${1}
   DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-  DEPLOYMENT_DIR="${DIR}/../../deployments-routing/${ENV}"
+  DEPLOYMENT_DIR="${DIR}/../../../deployments-routing/${ENV}"
   if [ "$ENV" = "lite" ]; then
     bosh_login_lite
     return
@@ -174,7 +174,7 @@ function concourse_credhub_login()
   local credhub_address
   concourse_env="concourse-gcp"
   DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-  DEPLOYMENT_DIR="${DIR}/../../deployments-routing/${concourse_env}"
+  DEPLOYMENT_DIR="${DIR}/../../../deployments-routing/${concourse_env}"
   web_ip=$(bosh int "${DEPLOYMENT_DIR}/options.yml" --path /web_ip_two)
   credhub_address="https://${web_ip}:8844"
   bosh_login "${concourse_env}" > /dev/null
