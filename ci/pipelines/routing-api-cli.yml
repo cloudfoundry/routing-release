@@ -1,0 +1,111 @@
+---
+resources:
+- name: final_routing_api_cli_version
+  type: semver
+  source:
+    access_key_id: ((concourse_aws_access_key_id))
+    secret_access_key: ((concourse_aws_secret_access_key))
+    bucket: routing-api-cli-release
+    initial_version: 2.3.0
+    key: final-version
+    region_name: us-east-1
+
+- name: deployments-routing
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cloudfoundry/deployments-routing.git
+    private_key: ((github_private_key.private_key))
+
+- name: routing-api-cli-release
+  type: github-release
+  source:
+    user: cloudfoundry
+    repository: routing-api-cli
+    access_token: ((github_access_token))
+
+- name: routing-release-develop
+  type: git
+  source:
+    branch: develop
+    uri: https://github.com/cloudfoundry/routing-release.git
+    ignore_paths:
+      - docs
+      - ci
+
+- name: routing-release-ci
+  type: git
+  source:
+    branch: develop
+    uri: git@github.com:cloudfoundry/routing-release.git
+    private_key: ((github_private_key.private_key))
+    paths:
+      - ci
+
+- name: routing-api-cli-src
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cloudfoundry/routing-api-cli.git
+    private_key: ((github_private_key.private_key))
+
+jobs:
+- name: routing-api-cli-unit
+  plan:
+    - get: routing-release-develop
+    - get: routing-api-cli-src
+      trigger: true
+    - task: run-unit-tests
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: cloudfoundry/cf-routing-pipeline
+        inputs:
+        - name: routing-release-develop
+        - name: routing-api-cli-src
+        run:
+          path: bash
+          args:
+          - -exc
+          - |
+            export GOPATH=${PWD}/routing-release-develop
+            export PATH=$GOPATH/bin:$PATH
+            go install github.com/onsi/ginkgo/ginkgo
+            rm -rf ${GOPATH}/src/code.cloudfoundry.org/routing-api-cli
+            cp -r ${PWD}/routing-api-cli-src/ ${GOPATH}/src/code.cloudfoundry.org/routing-api-cli
+            cd ${GOPATH}/src/code.cloudfoundry.org/routing-api-cli
+            ./bin/test
+
+- name: create-final-routing-api-cli-release
+  plan:
+  - aggregate:
+    - get: routing-release-develop
+      passed: [routing-api-cli-unit]
+    - get: routing-api-cli-src
+      passed: [routing-api-cli-unit]
+      trigger: true
+    - get: final_routing_api_cli_version
+      params:
+        bump: minor
+    - get: deployments-routing
+    - get: routing-api-cli-release
+    - get: routing-release-ci
+  - task: build-routing-api-cli
+    file: routing-release-ci/ci/tasks/create-final-routing-api-cli-release/task.yml
+    input_mapping:
+      version: final_routing_api_cli_version
+    params:
+      CF_ROUTING_RELEASE_DIR: routing-release-develop
+      OUTPUT_DIR: cli-output
+  - put: routing-api-cli-release
+    params:
+      name: final_routing_api_cli_version/version
+      tag: final_routing_api_cli_version/version
+      globs:
+      - cli-output/out/rtr-linux-*.tgz
+      - cli-output/out/rtr-darwin-*.tgz
+  - put: final_routing_api_cli_version
+    params:
+      file: final_routing_api_cli_version/version
