@@ -146,6 +146,7 @@ resources:
   source:
     branch: develop
     uri: git@github.com:cloudfoundry/routing-release.git
+    private_key: ((github_private_key.private_key))
     paths:
       - ci
 
