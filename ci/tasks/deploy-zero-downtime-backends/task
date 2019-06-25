@@ -48,6 +48,8 @@ instance_groups:
      nats: {from: nats, deployment: cf}
     properties:
       route_registrar:
+        routing_api:
+          client_cert: ((routing_api_tls_client.certificate))
         routes:
         - name: drroute
           port: 8080
