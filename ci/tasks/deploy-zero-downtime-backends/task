@@ -49,7 +49,10 @@ instance_groups:
     properties:
       route_registrar:
         routing_api:
+          enabled_api_endpoints: "both"
+          server_ca_cert: ((/bosh-jubilee/cf/routing_api_tls_client.ca))
           client_cert: ((/bosh-jubilee/cf/routing_api_tls_client.certificate))
+          client_private_key: ((/bosh-jubilee/cf/routing_api_tls_client.private_key))
         routes:
         - name: drroute
           port: 8080
