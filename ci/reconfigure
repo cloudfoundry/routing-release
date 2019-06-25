@@ -7,6 +7,8 @@ PIPELINE_DIR="$(dirname $0)/pipelines"
 : "${1?"Usage: update <pipeline-name>"}"
 PIPELINE_NAME=$1
 
+fly -t routing sync
+
 fly \
   --target routing \
   set-pipeline \
