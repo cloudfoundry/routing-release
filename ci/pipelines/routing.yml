@@ -538,7 +538,6 @@ jobs:
         enable_locket_isolated_diego.yml
         enable-routing-integrity.yml
         ca_certs.yml
-        add-routing-api-mtls-certificates.yml
       BBL_STATE_DIR: batman/bbl-state
   - task: create-isolation-segment
     file: routing-release-ci/ci/tasks/create-isolation-segment/task.yml
@@ -1126,7 +1125,6 @@ jobs:
         routing_acceptance_tests.yml
         routing_smoke_tests.yml
         ca_certs.yml
-        add-routing-api-mtls-certificates.yml
       BBL_STATE_DIR: ci-lite/bbl-state
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
   - task: bosh-cleanup
@@ -1361,7 +1359,6 @@ jobs:
       OPS_FILES: &jubilee-ops-files |
         use-compiled-releases.yml
         enable-routing-integrity.yml
-        add-routing-api-mtls-certificates.yml
       BBL_STATE_DIR: jubilee/bbl-state
 
 - name: jubilee-no-downtime
