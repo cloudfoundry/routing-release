@@ -3,6 +3,13 @@
 This repo is a [BOSH release](https://github.com/cloudfoundry/bosh) that
 delivers HTTP and TCP routing for Cloud Foundry.
 
+## Status
+Job | Status
+--- | ---
+unit tests | [![routing.ci.cf-app.com](https://routing.ci.cf-app.com/api/v1/pipelines/routing/jobs/routing-release-unit/badge)](https://routing.ci.cf-app.com/teams/main/pipelines/routing/jobs/routing-release-unit)
+performance tests | [![routing.ci.cf-app.com](https://routing.ci.cf-app.com/api/v1/pipelines/routing/jobs/diana-tcp-perf-tests/badge)](https://routing.ci.cf-app.com/teams/main/pipelines/routing/jobs/diana-tcp-perf-tests)
+smoke tests | [![routing.ci.cf-app.com](https://routing.ci.cf-app.com/api/v1/pipelines/routing/jobs/batman-cf-smoke-tests/badge)](https://routing.ci.cf-app.com/teams/main/pipelines/routing/jobs/batman-cf-smoke-tests)
+
 ## Getting Help
 
 For help or questions with this release or any of its submodules, you can reach the maintainers on Slack at [cloudfoundry.slack.com](https://cloudfoundry.slack.com) in the `#networking` channel.
