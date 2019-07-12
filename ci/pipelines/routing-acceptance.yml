@@ -238,7 +238,6 @@ jobs:
         routing_acceptance_tests.yml
         routing_smoke_tests.yml
         ca_certs.yml
-        add-routing-api-mtls-certificates.yml
       BBL_STATE_DIR: acceptance-lite/bbl-state
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
 
@@ -370,7 +369,6 @@ jobs:
         enable_locket_isolated_diego.yml
         enable-routing-integrity.yml
         ca_certs.yml
-        add-routing-api-mtls-certificates.yml
         use-internal-lookup-for-route-services.yml
       BBL_STATE_DIR: superman/bbl-state
 
