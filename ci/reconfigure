@@ -7,10 +7,10 @@ PIPELINE_DIR="$(dirname $0)/pipelines"
 : "${1?"Usage: update <pipeline-name>"}"
 PIPELINE_NAME=$1
 
-fly -t routing sync
+fly -t ga sync
 
 fly \
-  --target routing \
+  --target ga \
   set-pipeline \
   --pipeline "${PIPELINE_NAME}" \
   --config "${PIPELINE_DIR}/${PIPELINE_NAME}.yml"
