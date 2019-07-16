@@ -1,0 +1,79 @@
+resources:
+- name: ci-tasks
+  type: git
+  source:
+    branch: master
+    private_key: ((github_private_key.private_key))
+    uri: git@github.com:cloudfoundry/routing-release.git
+    paths:
+      - ci/dockerfiles/**/*
+
+- name: base
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+    username: ((dockerhub_public.username))
+    password: ((dockerhub_public.password))
+
+- name: webdriver
+  type: docker-image
+  source:
+    repository: cfrouting/cf-routing-webdriver
+    username: ((dockerhub_public.username))
+    password: ((dockerhub_public.password))
+
+- name: base-with-go1.10
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+    username: ((dockerhub_public.username))
+    password: ((dockerhub_public.password))
+    tag: go1.10
+
+jobs:
+- name: build-base
+  plan:
+  - get: ci-tasks
+    trigger: true
+  - put: base
+    params:
+      build: ci-tasks/ci/dockerfiles/base
+      cache: true
+
+- name: build-webdriver
+  plan:
+  - get: ci-tasks
+    passed: [build-base]
+  - get: base
+    passed: [build-base]
+    trigger: true
+    params:
+      save: true
+  - put: webdriver
+    params:
+      load_base: base
+      build: deployments-routing/docker/webdriver
+
+- name: build-base-with-go1.10
+  plan:
+  - get: ci-tasks
+    trigger: true
+  - task: create-tag-file
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: cloudfoundry/cf-routing-pipeline
+      outputs:
+      - name: tag-file
+      run:
+        path: bash
+        args:
+        - -exc
+        - echo "go1.10" > tag-file/tag
+  - put: base-with-go1.10
+    params:
+      build: ci-tasks/ci/dockerfiles/go1-10
+      tag_file: tag-file/tag
+      tag_as_latest: false
