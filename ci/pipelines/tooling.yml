@@ -2,7 +2,7 @@ resources:
 - name: ci-tasks
   type: git
   source:
-    branch: master
+    branch: develop
     private_key: ((github_private_key.private_key))
     uri: git@github.com:cloudfoundry/routing-release.git
     paths:
@@ -52,7 +52,7 @@ jobs:
   - put: webdriver
     params:
       load_base: base
-      build: deployments-routing/docker/webdriver
+      build: ci-tasks/ci/dockerfiles/webdriver
 
 - name: build-base-with-go1.10
   plan:
