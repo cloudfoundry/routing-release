@@ -536,7 +536,6 @@ jobs:
         disable_bbr_non_routing.yml
         disable-blobstore-backup.yml
         enable_locket_isolated_diego.yml
-        enable-routing-integrity.yml
         ca_certs.yml
       BBL_STATE_DIR: batman/bbl-state
   - task: create-isolation-segment
@@ -1358,7 +1357,6 @@ jobs:
       SYSTEM_DOMAIN: jubilee.routing.cf-app.com
       OPS_FILES: &jubilee-ops-files |
         use-compiled-releases.yml
-        enable-routing-integrity.yml
       BBL_STATE_DIR: jubilee/bbl-state
 
 - name: jubilee-no-downtime

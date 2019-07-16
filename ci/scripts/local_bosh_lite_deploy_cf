@@ -30,7 +30,6 @@ bosh -n update-runtime-config \
 bosh deploy --no-redact "${cf_deployment_dir}/cf-deployment.yml" \
 -o "${cf_deployment_dir}/operations/use-compiled-releases.yml" \
 -o "${cf_deployment_dir}/operations/bosh-lite.yml" \
--o "${cf_deployment_dir}/operations/enable-routing-integrity.yml" \
 $extra_ops_files \
 --vars-store "${env_dir}/deployment-vars.yml" \
 -v system_domain=bosh-lite.com

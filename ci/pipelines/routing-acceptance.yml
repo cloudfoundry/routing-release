@@ -367,7 +367,6 @@ jobs:
         isolation_in_z3.yml
         validate_ssl.yml
         enable_locket_isolated_diego.yml
-        enable-routing-integrity.yml
         ca_certs.yml
         use-internal-lookup-for-route-services.yml
       BBL_STATE_DIR: superman/bbl-state
