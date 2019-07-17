@@ -362,8 +362,7 @@ jobs:
   - task: create-final-release
     params:
       CF_ROUTING_RELEASE_RC_DIR: routing-release
-      AWS_SECRET_ACCESS_KEY: ((routing_release_aws_blobstore_secret_access_key))
-      AWS_ACCESS_KEY_ID: ((routing_release_aws_blobstore_access_key_id))
+      GCP_BLOBSTORE_SERVICE_ACCOUNT_KEY: ((gcp_routing_blobstore_service_account_key))
     file: routing-release-ci/ci/tasks/create-final-routing-release/task.yml
   - task: create-release-checksum
     file: routing-release-ci/ci/tasks/create-release-checksum/task.yml
