@@ -262,8 +262,7 @@ jobs:
     file: routing-release-ci/ci/tasks/upgrade-package-in-release/task.yml
     params:
       PACKAGE: golang-1-linux
-      AWS_SECRET_ACCESS_KEY: ((routing_release_aws_blobstore_secret_access_key))
-      AWS_ACCESS_KEY_ID: ((routing_release_aws_blobstore_access_key_id))
+      GCP_BLOBSTORE_SERVICE_ACCOUNT_KEY: ((gcp_routing_blobstore_service_account_key))
       RELEASE: release
     input_mapping:
       release: routing-release
@@ -289,8 +288,7 @@ jobs:
     file: routing-release-ci/ci/tasks/upgrade-package-in-release/task.yml
     params:
       PACKAGE: golang-1-linux
-      AWS_SECRET_ACCESS_KEY: ((routing_release_aws_blobstore_secret_access_key))
-      AWS_ACCESS_KEY_ID: ((routing_release_aws_blobstore_access_key_id))
+      GCP_BLOBSTORE_SERVICE_ACCOUNT_KEY: ((gcp_routing_blobstore_service_account_key))
       RELEASE: release
       BRANCH: master
     input_mapping:
@@ -355,8 +353,7 @@ jobs:
     file: routing-release-ci/ci/tasks/upgrade-package-in-release/task.yml
     params:
       PACKAGE: cf-cli-6-linux
-      AWS_SECRET_ACCESS_KEY: ((routing_release_aws_blobstore_secret_access_key))
-      AWS_ACCESS_KEY_ID: ((routing_release_aws_blobstore_access_key_id))
+      GCP_BLOBSTORE_SERVICE_ACCOUNT_KEY: ((gcp_routing_blobstore_service_account_key))
       RELEASE: release
     input_mapping:
       release: routing-release
