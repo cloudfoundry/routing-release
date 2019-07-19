@@ -80,7 +80,7 @@ jobs:
 
 - name: create-final-routing-api-cli-release
   plan:
-  - aggregate:
+  - in_parallel:
     - get: routing-release-develop
       passed: [routing-api-cli-unit]
     - get: routing-api-cli-src

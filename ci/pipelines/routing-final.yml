@@ -186,7 +186,7 @@ jobs:
   serial_groups:
     - final-release-group
   plan:
-  - aggregate:
+  - in_parallel:
     - get: routing-perf-release
       trigger: true
     - get: routing-release-rc
@@ -206,7 +206,7 @@ jobs:
     - get: rc-version
       resource: final-version
       params: {bump: minor}
-  - aggregate:
+  - in_parallel:
     - task: add-credhub-value
       file: routing-release-ci/ci/tasks/add-credhub-value/task.yml
       params:
@@ -336,7 +336,7 @@ jobs:
   serial_groups:
     - final-release-group
   plan:
-  - aggregate:
+  - in_parallel:
     - get: release-candidate-perf-results
       passed: [batman-perf-deploy-and-compare-rc-vs-master]
     - get: release-candidate-cpu-stats
@@ -417,7 +417,7 @@ jobs:
   serial_groups:
     - final-release-group
   plan:
-  - aggregate:
+  - in_parallel:
     - get: deployments-routing
     - get: routing-release-ci
     - get: cf-routing-release-develop
@@ -441,7 +441,7 @@ jobs:
   serial_groups: [batman-perf]
   build_logs_to_retain: 100
   plan:
-  - aggregate:
+  - in_parallel:
     - get: cf-deployment-concourse-tasks
     - get: deployments-routing
     - get: routing-release-ci
@@ -478,7 +478,7 @@ jobs:
   serial_groups: [batman-perf]
   build_logs_to_retain: 100
   plan:
-  - aggregate:
+  - in_parallel:
     - get: deployments-routing
     - get: cf-deployment-concourse-tasks
   - task: destroy-batman-perf
@@ -500,7 +500,7 @@ jobs:
 #   serial_groups: [batman-perf]
 #   build_logs_to_retain: 100
 #   plan:
-#   - aggregate:
+#   - in_parallel:
 #     - get: cf-deployment-concourse-tasks
 #     - get: deployments-routing
 #     - get: routing-release

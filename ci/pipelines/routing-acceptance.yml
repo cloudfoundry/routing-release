@@ -142,7 +142,7 @@ jobs:
 - name: acceptance-lite-bbl-up
   serial_groups: [ acceptance-lite ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: cf-deployment-concourse-tasks
     - get: deployments-routing
     - get: routing-release-ci
@@ -181,7 +181,7 @@ jobs:
   serial_groups: [acceptance-lite]
   build_logs_to_retain: 100
   plan:
-  - aggregate:
+  - in_parallel:
     - get: deployments-routing
     - get: cf-deployment-concourse-tasks
   - task: destroy-acceptance-lite
@@ -203,7 +203,7 @@ jobs:
   serial: true
   serial_groups: [ acceptance-lite ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: deployments-routing
     - get: cf-deployment-concourse-tasks
     - get: cf-deployment
@@ -245,7 +245,7 @@ jobs:
   serial_groups: [acceptance-lite]
   build_logs_to_retain: 100
   plan:
-  - aggregate:
+  - in_parallel:
     - get: cf-acceptance-tests
     - get: cf-deployment
       trigger: true
@@ -283,7 +283,7 @@ jobs:
   plan:
   - timeout: 4h
     do:
-    - aggregate:
+    - in_parallel:
       - get: routing-release-ci
       - get: deployments-routing
       - get: cf-deployment
@@ -324,7 +324,7 @@ jobs:
   - superman-cipher
   build_logs_to_retain: 100
   plan:
-  - aggregate:
+  - in_parallel:
     - get: cf-deployment-concourse-tasks
     - get: cf-deployment
     - get: superman-vars-store
@@ -376,7 +376,7 @@ jobs:
   - superman-cats
   build_logs_to_retain: 100
   plan:
-  - aggregate:
+  - in_parallel:
     - get: routing-release-ci
     - get: cf-acceptance-tests
     - get: cf-deployment
@@ -417,7 +417,7 @@ jobs:
   plan:
   - timeout: 4h
     do:
-    - aggregate:
+    - in_parallel:
       - get: deployments-routing
         trigger: true
         passed: [superman-deploy-cf]
@@ -456,7 +456,7 @@ jobs:
   serial_groups:
   - superman-cipher
   plan:
-  - aggregate:
+  - in_parallel:
     - get: deployments-routing
     - get: routing-release-ci
     - get: release-dir
@@ -510,7 +510,7 @@ jobs:
   - superman-cipher
   build_logs_to_retain: 100
   plan:
-  - aggregate:
+  - in_parallel:
     - get: cf-deployment-concourse-tasks
     - get: deployments-routing
     - get: routing-release-ci
@@ -573,7 +573,7 @@ jobs:
   - superman-cipher
   build_logs_to_retain: 100
   plan:
-  - aggregate:
+  - in_parallel:
     - get: deployments-routing
     - get: cf-deployment-concourse-tasks
   - task: destroy-superman
@@ -597,7 +597,7 @@ jobs:
   - superman-cipher
   build_logs_to_retain: 100
   plan:
-  - aggregate:
+  - in_parallel:
     - get: cf-deployment-concourse-tasks
     - get: deployments-routing
   - task: delete-cf-deployment
