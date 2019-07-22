@@ -99,9 +99,6 @@ resources:
     branch: develop
     uri: git@github.com:cloudfoundry/routing-release.git
     private_key: ((github_private_key.private_key))
-    ignore_paths:
-      - docs
-      - ci
 
 - name: cf-cli-release
   type: git
