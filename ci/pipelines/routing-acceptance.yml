@@ -36,6 +36,12 @@ resources:
       - docs
       - ci
 
+- name: routing-release-full
+  type: git
+  source:
+    branch: batman-passed
+    uri: https://github.com/cloudfoundry/routing-release.git
+
 - name: routing-release-rc
   type: git
   source:
@@ -492,9 +498,10 @@ jobs:
     - acceptance-lite-rats
     - superman-cats
     trigger: true
+  - get: routing-release-full
   - put: routing-release-rc
     params:
-      repository: routing-release
+      repository: routing-release-full
   - try:
       put: tracker-routing
       params:
