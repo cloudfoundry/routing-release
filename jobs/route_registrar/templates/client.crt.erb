@@ -7,7 +7,6 @@
         return link.p('routing_api.mtls_client_cert')
       end
     end
-    raise RuntimeError, 'Routing API client certificate not found in properties nor in routing_api Link. This value can be specified using the route_registrar.routing_api.client_cert property.'
   end
 
   client_cert

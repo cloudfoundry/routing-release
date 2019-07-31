@@ -81,13 +81,10 @@ describe 'route_registrar' do
     end
 
     context 'when no properties and no link is provided' do
-      it 'should error' do
+      it 'should not error' do
         expect do
           template.render(merged_manifest_properties)
-        end.to raise_error(
-          RuntimeError,
-          'Routing API client certificate not found in properties nor in routing_api Link. This value can be specified using the route_registrar.routing_api.client_cert property.'
-        )
+        end.not_to raise_error
       end
     end
   end
@@ -137,13 +134,10 @@ describe 'route_registrar' do
     end
 
     context 'when no properties and no link is provided' do
-      it 'should error' do
+      it 'should not error' do
         expect do
           template.render(merged_manifest_properties)
-        end.to raise_error(
-          RuntimeError,
-          'Routing API client private key not found in properties nor in routing_api Link. This value can be specified using the route_registrar.routing_api.client_private_key property.'
-        )
+        end.not_to raise_error
       end
     end
   end
@@ -193,13 +187,10 @@ describe 'route_registrar' do
     end
 
     context 'when no properties and no link is provided' do
-      it 'should error' do
+      it 'should not error' do
         expect do
           template.render(merged_manifest_properties)
-        end.to raise_error(
-          RuntimeError,
-          'Routing API server ca certificate not found in properties nor in routing_api Link. This value can be specified using the route_registrar.routing_api.server_ca_cert property.'
-        )
+        end.not_to raise_error
       end
     end
   end
