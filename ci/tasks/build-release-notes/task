@@ -7,7 +7,7 @@ tmp_dir=/tmp/notes
 mkdir -p $tmp_dir
 
 pushd $SOURCE_DIR > /dev/null
-  old_version=$(git tag --sort=version:refname | egrep "^\d+\.\d+\.\d+$" | tail -1)
+  old_version=$(git tag --sort=version:refname | egrep "^[0-9]+\.[0-9]+\.[0-9]+$" | tail -1)
   new_version=$(git rev-parse HEAD)
 
   diff_string="$old_version...$new_version"

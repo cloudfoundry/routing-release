@@ -1,6 +1,7 @@
 groups:
 - name: routing-final-pipeline
   jobs:
+  - ship-what
   - create-final-routing-release
   - merge-master-into-develop
   - batman-perf-deploy-and-compare-rc-vs-master
@@ -332,20 +333,29 @@ jobs:
       file: rc-version/version
 
 - name: ship-what
+  serial: true
+  serial_groups:
+    - final-release-group
   plan:
-  - do:
-    - in_parallel:
-      - get: routing-release-rc
-        params:
-          submodules: none
-        trigger: true
-      - get: routing-release-ci
-        params:
-          submodules: none
-    - task: build-release-notes
-      file: routing-release-ci/ci/tasks/build-release-notes.yml
-      input_mapping:
-        master-release: routing-release-rc
+  - in_parallel:
+    - get: routing-release-rc
+      params:
+        submodules: all
+      trigger: true
+      passed: [batman-perf-deploy-and-compare-rc-vs-master]
+    - get: routing-release-ci
+    - get: release-candidate-perf-results
+      passed: [batman-perf-deploy-and-compare-rc-vs-master]
+    - get: release-candidate-cpu-stats
+      passed: [batman-perf-deploy-and-compare-rc-vs-master]
+    - get: latest-comparison-report
+      passed: [batman-perf-deploy-and-compare-rc-vs-master]
+    - get: rc-version
+      passed: [batman-perf-deploy-and-compare-rc-vs-master]
+  - task: build-release-notes
+    file: routing-release-ci/ci/tasks/build-release-notes/task.yml
+    input_mapping:
+      master-release: routing-release-rc
 
 - name: create-final-routing-release
   serial: true
@@ -353,16 +363,14 @@ jobs:
     - final-release-group
   plan:
   - in_parallel:
-    - get: release-notes
-      passed: [ship-what]
     - get: release-candidate-perf-results
-      passed: [batman-perf-deploy-and-compare-rc-vs-master]
+      passed: [ship-what]
     - get: release-candidate-cpu-stats
-      passed: [batman-perf-deploy-and-compare-rc-vs-master]
+      passed: [ship-what]
     - get: cf-routing-release-tarball
     - get: routing-perf-release
     - get: latest-comparison-report
-      passed: [batman-perf-deploy-and-compare-rc-vs-master]
+      passed: [ship-what]
     - get: routing-release-master
       resource: routing-release-master
     - get: routing-release
@@ -370,7 +378,7 @@ jobs:
       params:
         submodules: all
     - get: rc-version
-      passed: [batman-perf-deploy-and-compare-rc-vs-master]
+      passed: [ship-what]
     - get: deployments-routing
     - get: routing-release-ci
   - task: check-remote-release
