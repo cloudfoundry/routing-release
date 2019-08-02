@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -e -u
+set -o pipefail
+
+tmp_dir=/tmp/notes
+mkdir -p $tmp_dir
+
+pushd $SOURCE_DIR > /dev/null
+  old_version=$(git tag --sort=version:refname | egrep "^\d+\.\d+\.\d+$" | tail -1)
+  new_version=$(git rev-parse HEAD)
+
+  diff_string="$old_version...$new_version"
+  echo "comparing $diff_string:"
+  git log $diff_string | { egrep -o '\[\#(\d+)' || true; } | cut -d# -f2 | sort | uniq > $tmp_dir/stories.raw
+  echo "found: "
+  cat $tmp_dir/stories.raw
+popd > /dev/null
+
+while read -r story_id
+do
+  curl -s https://www.pivotaltracker.com/services/v5/stories/$story_id
+done < $tmp_dir/stories.raw > $tmp_dir/stories.json
+
+cat $tmp_dir/stories.json | jq -r '"- "+.current_state+": ["+.name+"]("+.url+")"' > $OUTPUT_DIR/notes.md
+
+echo "built: "
+cat $OUTPUT_DIR/notes.md
+

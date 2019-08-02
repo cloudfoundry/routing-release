@@ -331,12 +331,30 @@ jobs:
     params:
       file: rc-version/version
 
+- name: ship-what
+  plan:
+  - do:
+    - in_parallel:
+      - get: routing-release-rc
+        params:
+          submodules: none
+        trigger: true
+      - get: routing-release-ci
+        params:
+          submodules: none
+    - task: build-release-notes
+      file: routing-release-ci/ci/tasks/build-release-notes.yml
+      input_mapping:
+        master-release: routing-release-rc
+
 - name: create-final-routing-release
   serial: true
   serial_groups:
     - final-release-group
   plan:
   - in_parallel:
+    - get: release-notes
+      passed: [ship-what]
     - get: release-candidate-perf-results
       passed: [batman-perf-deploy-and-compare-rc-vs-master]
     - get: release-candidate-cpu-stats
