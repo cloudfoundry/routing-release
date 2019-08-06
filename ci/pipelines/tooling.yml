@@ -1,5 +1,5 @@
 resources:
-- name: ci-tasks
+- name: routing-release-ci
   type: git
   source:
     branch: develop
@@ -33,16 +33,16 @@ resources:
 jobs:
 - name: build-base
   plan:
-  - get: ci-tasks
+  - get: routing-release-ci
     trigger: true
   - put: base
     params:
-      build: ci-tasks/ci/dockerfiles/base
+      build: routing-release-ci/ci/dockerfiles/base
       cache: true
 
 - name: build-webdriver
   plan:
-  - get: ci-tasks
+  - get: routing-release-ci
     passed: [build-base]
   - get: base
     passed: [build-base]
@@ -52,11 +52,11 @@ jobs:
   - put: webdriver
     params:
       load_base: base
-      build: ci-tasks/ci/dockerfiles/webdriver
+      build: routing-release-ci/ci/dockerfiles/webdriver
 
 - name: build-base-with-go1.10
   plan:
-  - get: ci-tasks
+  - get: routing-release-ci
     trigger: true
   - task: create-tag-file
     config:
@@ -74,6 +74,6 @@ jobs:
         - echo "go1.10" > tag-file/tag
   - put: base-with-go1.10
     params:
-      build: ci-tasks/ci/dockerfiles/go1-10
+      build: routing-release-ci/ci/dockerfiles/go1-10
       tag_file: tag-file/tag
       tag_as_latest: false
