@@ -6,9 +6,9 @@ delivers HTTP and TCP routing for Cloud Foundry.
 ## Status
 Job | Status
 --- | ---
-unit tests | [![routing.ci.cf-app.com](https://routing.ci.cf-app.com/api/v1/pipelines/routing/jobs/routing-release-unit/badge)](https://routing.ci.cf-app.com/teams/main/pipelines/routing/jobs/routing-release-unit)
-performance tests | [![routing.ci.cf-app.com](https://routing.ci.cf-app.com/api/v1/pipelines/routing/jobs/diana-tcp-perf-tests/badge)](https://routing.ci.cf-app.com/teams/main/pipelines/routing/jobs/diana-tcp-perf-tests)
-smoke tests | [![routing.ci.cf-app.com](https://routing.ci.cf-app.com/api/v1/pipelines/routing/jobs/batman-cf-smoke-tests/badge)](https://routing.ci.cf-app.com/teams/main/pipelines/routing/jobs/batman-cf-smoke-tests)
+unit tests | [![routing.ci.cf-app.com](https://routing.ci.cf-app.com/api/v1/teams/ga/pipelines/routing/jobs/routing-release-unit/badge)](https://routing.ci.cf-app.com/teams/ga/pipelines/routing/jobs/routing-release-unit)
+performance tests | [![routing.ci.cf-app.com](https://routing.ci.cf-app.com/api/v1/teams/ga/pipelines/routing/jobs/diana-tcp-perf-tests/badge)](https://routing.ci.cf-app.com/teams/ga/pipelines/routing/jobs/diana-tcp-perf-tests)
+smoke tests | [![routing.ci.cf-app.com](https://routing.ci.cf-app.com/api/v1/teams/ga/pipelines/routing/jobs/batman-cf-smoke-tests/badge)](https://routing.ci.cf-app.com/teams/ga/pipelines/routing/jobs/batman-cf-smoke-tests)
 
 ## Getting Help
 
