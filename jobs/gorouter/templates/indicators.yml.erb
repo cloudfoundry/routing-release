@@ -1,0 +1,342 @@
+---
+apiVersion: apps.pivotal.io/v1
+
+metadata:
+  labels:
+    deployment: <%= spec.deployment %>
+
+spec:
+  product:
+    name: gorouter
+    version: NA
+
+  indicators:
+    - name: throughput_by_router
+      promql: rate(total_requests{source_id="gorouter",deployment="$deployment"}[1m])*60
+      thresholds: # Dynamic
+        - level: critical
+          operator: gte
+          value: 125000
+        - level: warning
+          operator: gte
+          value: 100000
+      presentation:
+        labels: [deployment, index, ip, job]
+      documentation:
+        title: Throughput by Router
+        description: |
+          The lifetime number of requests completed by the Gorouter VM, emitted per Gorouter instance
+
+          **Use**: The aggregation of these values across all Gorouters provide insight into the overall traffic flow of
+          a deployment. Unusually high spikes, if not known to be associated with an expected increase in demand, could
+          indicate a DDoS risk. For performance and capacity management, consider this metric a measure of router
+          throughput per job, converting it to requests-per-second, by looking at the delta value of
+          `gorouter.total_requests` and deriving back to 1s, or `(gorouter.total_requests.delta)/5`, per Gorouter instance.
+           This helps you see trends in the throughput rate that indicate a need to scale the Gorouter instances. Use the
+           trends you observe to tune the threshold alerts for this metric.
+
+          **Origin**: Firehose
+          **Type**: Counter (Integer)
+          **Frequency**: 5s
+        recommendedMeasurement: |
+          Average over the last 5 minutes of the derived per second calculation
+        recommendedResponse: |
+          For optimizing the Gorouter, consider the requests-per-second derived metric in the context of router latency
+          and Gorouter VM CPU utilization. From performance and load testing of the Gorouter, it's observed that
+          at approximately 2500 requests per second, latency can begin to increase.
+
+          To increase throughput and maintain low latency, scale the Gorouters either horizontally or vertically and
+          watch that the system.cpu.user metric for the Gorouter stays in the suggested range of 60-70% CPU Utilization.
+
+    - name: latency_by_router
+      promql: quantile_over_time(0.95, latency{source_id="gorouter",deployment="$deployment"}[1m])
+      thresholds: # Dynamic
+        - level: critical
+          operator: gte
+          value: 150
+        - level: warning
+          operator: gte
+          value: 100
+      presentation:
+        labels: [deployment, index, ip, job]
+      documentation:
+        title: Latency by Router
+        description: |
+          The time in milliseconds that the Gorouter takes to handle requests to backend endpoints, which include both
+          applications routable platform system APIs like Cloud Controller and UAA. This is the average round trip
+          response time, which includes router handling.
+
+          **Use**: Indicates how Gorouter jobs in PAS are impacting overall responsiveness. Latencies above 100 ms can
+          indicate problems with the network, misbehaving backends, or the need to scale the Gorouter itself due to
+          ongoing traffic congestion. An alert value on this metric should be tuned to the specifics of the deployment
+          and its underlying network considerations; a suggested starting point is 100 ms.
+
+          **Origin**: Firehose
+          **Type**: Gauge (Float in ms)
+          **Frequency**: Emitted per Gorouter request, emission should be constant on a running deployment
+        recommendedMeasurement: |
+          Average over the last 30 minutes
+        recommendedResponse: |
+          Extended periods of high latency can point to several factors. The Gorouter latency measure includes network
+          and backend latency impacts as well.
+
+          1. First inspect logs for network issues and indications of misbehaving backends.
+          2. If it appears that the Gorouter needs to scale due to ongoing traffic congestion, do not scale on the
+             latency metric alone. You should also look at the CPU utilization of the Gorouter VMs and keep it within a
+             maximum 60-70% range.
+          3. Resolve high utilization by scaling the Gorouter.
+
+    - name: bad_gateways_by_router
+      promql: rate(bad_gateways{source_id="gorouter",deployment="$deployment"}[1m])*60
+      thresholds: # Dynamic
+        - level: critical
+          operator: gte
+          value: 40
+        - level: warning
+          operator: gte
+          value: 30
+      presentation:
+        labels: [deployment, index, ip, job]
+      documentation:
+        title: 502 Bad Gateways by Router
+        description: |
+          The lifetime number of bad gateways, or 502 responses, from the Gorouter itself, emitted per Gorouter instance.
+          The Gorouter emits a 502 bad gateway error when it has a route in the routing table and, in attempting to make
+          a connection to the backend, finds that the backend does not exist.
+
+          **Use**: Indicates that route tables might be stale. Stale routing tables suggest an issue in the route
+          register management plane, which indicates that something has likely changed with the locations of the
+          containers. Always investigate unexpected increases in this metric.
+
+          **Origin**: Firehose
+          **Type**: Count (Integer, Lifetime)
+          **Frequency**: 5 s
+        recommendedMeasurement: |
+          Maximum delta per minute over a 5-minute window
+        recommendedResponse: |
+          Extended periods of high latency can point to several factors. The Gorouter latency measure includes network
+          and backend latency impacts as well.
+
+          1. Check the Gorouter and Route Emitter logs to see if they are experiencing issues when connecting to NATS.
+          1. Check the BOSH logs to see if the NATS, Gorouter, or Route Emitter VMs are failing.
+          1. Look broadly at the health of all VMs, particularly Diego-related VMs.
+
+    - name: responses_5xx_by_router
+      promql: rate(responses_5xx{source_id="gorouter",deployment="$deployment"}[1m])*60
+      thresholds: # Dynamic
+        - level: critical
+          operator: gte
+          value: 40
+        - level: warning
+          operator: gte
+          value: 30
+      presentation:
+        labels: [deployment, index, ip, job]
+      documentation:
+        title: All 5XX Errors by Router
+        description: |
+          The lifetime number of requests completed by the Gorouter VM for HTTP status family 5xx, server errors, emitted
+          per Gorouter instance.
+
+          **Use**: A repeatedly crashing app is often the cause of a big increase in 5xx responses. However, response
+          issues from apps can also cause an increase in 5xx responses. Always investigate an unexpected increase in this
+          metric.
+
+          **Origin**: Firehose
+          **Type**: Counter (Integer)
+          **Frequency**: 5 s
+        recommendedMeasurement: |
+          Maximum delta per minute over a 5-minute window
+        recommendedResponse: |
+          Extended periods of high latency can point to several factors. The Gorouter latency measure includes network
+          and backend latency impacts as well.
+
+          1. Look for out-of-memory errors and other app-level errors.
+          1. As a temporary measure, ensure that the troublesome app is scaled to more than one instance.
+
+    - name: number_of_routes_registered_by_router
+      promql: total_routes{source_id="gorouter",deployment="$deployment"}
+      thresholds: # Dynamic
+        - level: critical
+          operator: gte
+          value: 200
+        - level: warning
+          operator: gte
+          value: 100
+      presentation:
+        labels: [deployment, index, ip, job]
+      documentation:
+        title: Number of Routes Registered by Router
+        description: |
+          The current total number of routes registered with the Gorouter, emitted per Gorouter instance
+
+          **Use**: The aggregation of these values across all Gorouters indicates uptake and gives a picture of the overall growth of the environment for capacity planning.
+
+          It's also recommended alerting on this metric if the number of routes falls outside of the normal range for your deployment. Dramatic decreases in this metric volume may indicate a problem with the route registration process, such as an app outage, or that something in the route register management plane has failed.
+
+          If visualizing these metrics on a dashboard, `gorouter.total_routes` can be helpful for visualizing dramatic drops. However, for alerting purposes, the `gorouter.ms_since_last_registry_update metric` is more valuable for quicker identification of Gorouter issues. Alerting thresholds for `gorouter.total_routes` should focus on dramatic increases or decreases out of expected range.
+
+          **Origin**: Firehose
+          **Type**: Gauge (Float)
+          **Frequency**: 30 s
+        recommendedMeasurement: |
+          5-minute average of the per second delta
+        recommendedResponse: |
+          1. For capacity needs, scale up or down the Gorouter VMs as necessary.
+          1. For significant drops in current total routes, see the [`gorouter.ms_since_last_registry_update`](https://docs.pivotal.io/pivotalcf/2-4/monitoring/kpi.html#mssincelastregistryupdate) metric value for additional context.
+          1. Check the Gorouter and Route Emitter logs to see if they are experiencing issues when connecting to NATS.
+          1. Check the BOSH logs to see if the NATS, Gorouter, or Route Emitter VMs are failing.
+          1. Look broadly at the health of all VMs, particularly Diego-related VMs.
+
+    - name: router_file_descriptors_by_router
+      promql: file_descriptors{source_id="gorouter",deployment="$deployment"}
+      thresholds:
+        - level: critical
+          operator: gte
+          value: 60000
+        - level: warning
+          operator: gte
+          value: 50000
+      presentation:
+        labels: [deployment, index, ip, job]
+      documentation:
+        title: Router File Descriptors By Router
+        description: |
+          The number of file descriptors currently used by the Gorouter job.
+
+          **Use**: Indicates an impending issue with the Gorouter. Without proper mitigation, it is possible for an unresponsive app to eventually exhaust available Gorouter file descriptors and cause route starvation for other apps running on PAS. Under heavy load, this unmitigated situation can also result in the Gorouter losing its connection to NATS and all routes being pruned.
+
+          While a drop in `gorouter.total_routes` or an increase in `gorouter.ms_since_last_registry_update` helps to surface that the issue may already be occurring, alerting on `gorouter.file_descriptors` indicates that such an issue is impending.
+
+          The Gorouter limits the number of file descriptors to 100,000 per job. Once the limit is met, the Gorouter is unable to establish any new connections.
+
+          To reduce the risk of DDoS attacks, we recommend doing one or both of the following:
+
+          * Within PAS, set **Max Connections Per Backend** to define how many requests can be routed to any particular app instance. This prevents a single app from using all Gorouter connections. The value specified should be determined by the operator based on the use cases for that foundation.
+          * Add rate limiting at the load balancer level.
+
+          **Origin**: Firehose
+          **Type**: Gauge
+          **Frequency**: 5 s
+        recommendedMeasurement: |
+          Maximum, per Gorouter job, over the last 5 minutes
+        recommendedResponse: |
+          1. Identify which app(s) are requesting excessive connections and resolve the impacting issues with these apps.
+          1. If the above recommended mitigation steps have not already been taken, do so.
+          1. Consider adding more Gorouter VM resources to increase the number of available file descriptors.
+
+    - name: router_exhausted_connections_by_router
+      promql: rate(backend_exhausted_conns{source_id="gorouter", deployment="$deployment"}[1m])*60
+      thresholds: # dynamic
+        - level: critical
+          operator: gte
+          value: 10
+        - level: warning
+          operator: gte
+          value: 5
+      presentation:
+        labels: [deployment, index, ip, job]
+      documentation:
+        title: Router Exhausted Connections By Router
+        description: |
+          The lifetime number of requests that have been rejected by the Gorouter VM due to the `Max Connections Per Backend` limit being reached across all tried backends. The limit controls the number of concurrent TCP connections to any particular app instance and is configured within PAS.
+
+          **Use**: Indicates that PAS is mitigating risk to other applications by self-protecting the platform against one or more unresponsive applications. Increases in this metric indicate the need to investigate and resolve issues with potentially unresponsive applications. A rapid rate of change upward is concerning and should be assessed further.
+
+          **Origin**: Firehose
+          **Type**: Counter (Integer)
+          **Frequency**: 5 s
+        recommendedMeasurement: |
+          Maximum delta per minute, per Gorouter job, over a 5-minute window
+        recommendedResponse: |
+          1. If `gorouter.backend_exhausted_conns` spikes, first look to the Router Throughput metric `gorouter.total_requests` to determine if this measure is high or low in relation to normal bounds for this deployment.
+          1. If Router Throughput appears within normal bounds, it is likely that `gorouter.backend_exhausted_conns` is spiking due to an unresponsive application, possibly due to application code issues or underlying application dependency issues. To help determine the problematic application, look in access logs for repeated calls to one application. Then proceed to troubleshoot this application accordingly.
+          1. If Router Throughput also shows unusual spikes, the cause of the increase in `gorouter.backend_exhausted_conns` spikes is likely external to the platform. Unusual increases in load may be due to expected business events driving additional traffic to applications. Unexpected increases in load may indicate a DDoS attack risk.
+
+    - name: time_since_last_route_registered_by_router
+      promql: max_over_time(ms_since_last_registry_update{source_id="gorouter",deployment="$deployment"}[1m])/1000
+      thresholds:
+        - level: critical
+          operator: gte
+          value: 30000
+      presentation:
+        labels: [deployment, index, ip, job]
+      documentation:
+        title: Time Since Last Route Registered by Router
+        description: |
+          Time in milliseconds since the last route register was received, emitted per Gorouter instance
+
+          **Use**: Indicates if routes are not being registered to apps correctly.
+
+          **Origin**: Firehose
+          **Type**: Gauge (Float in ms)
+          **Frequency**: 30 s
+        recommendedMeasurement: |
+          Maximum over the last 5 minutes
+        recommendedResponse: |
+          1. Search the Gorouter and Route Emitter logs for connection issues to NATS.
+          1. Check the BOSH logs to see if the NATS, Gorouter, or Route Emitter VMs are failing.
+          1. Look more broadly at the health of all VMs, particularly Diego-related VMs.
+    - name: number_of_route_registration_messages_sent_and_received
+      promql: scalar(sum(rate(HTTPRouteNATSMessagesEmitted{source_id="route_emitter", deployment="$deployment"}[2m] offset 1m)) * 60) - rate(registry_message_route_emitter{source_id="gorouter",deployment="$deployment"}[2m]) * 60
+      thresholds: # dynamic
+        - level: warning
+          operator: gte
+          value: 30
+        - level: critical
+          operator: gte
+          value: 50
+      presentation:
+        labels: [deployment, index, ip, job]
+        frequency: 300
+      alert:
+        step: 10m
+        for: 5m
+      documentation:
+        title: Number of Route Registration Messages Sent and Received
+        description: |
+          This KPI is based on the following metrics:
+
+          * `route_emitter.HTTPRouteNATSMessagesEmitted` reports the lifetime number of route registration messages sent by the Route Emitter component. The metric is emitted for each Route Emitter.
+          * `gorouter.registry_message.route-emitter` reports the lifetime number of route registration messages received by the Gorouter. The metric is emitted for each Gorouter instance.
+
+          Dynamic configuration that enables the Gorouter to route HTTP requests to apps is published by the Route Emitter component colocated on each Diego cell to the NATS clustered message bus. All router instances subscribed to this message bus receive the same configuration. (Router instances within an isolation segment receive configuration only for cells in the same isolation segment.)
+
+          As Gorouters prune app instances from the route when a TTL expires, each Route Emitter periodically publishes the routing configuration for the app instances on the same cell.
+
+          Therefore, the aggregate number of route registration messages published by all the Route Emitters should be equal to the number of messages received by each Gorouter instance.
+
+          **Use**: A difference in the rate of change of these metrics is an indication of an issue in the control plane responsible for updating the routers with changes to the routing table.
+
+          It's recommended alerting when the number of messages received per second for a given router instance falls below the sum of messages emitted per second across all Route Emitters.
+
+          If visualizing these metrics on a dashboard, look for increases in the difference between the rate of messages received and sent. If the number of messages received by a Gorouter instance drops below the sum of messages sent by the Route Emitters, this is an indication of a problem in the control plane.
+
+          **Origin**: Firehose
+          **Type**: Counter
+          **Frequency**: With each event
+        recommendedMeasurement: |
+          Difference of 5-minute average of the per second deltas for `gorouter.registry_message.route-emitter` and sum of `route_emitter.HTTPRouteNATSMessagesEmitted` for all Route Emitters
+        recommendedResponse: |
+          1. Check the Gorouter and Route Emitter logs to see if they are experiencing issues when connecting to NATS.
+          1. Check the BOSH logs to see if the NATS, Gorouter, or Route Emitter VMs are failing.
+          1. Look broadly at the health of all VMs, particularly Diego-related VMs.
+
+  layout:
+    title: Routing
+    sections:
+      - title: Requests (Isolated)
+        indicators:
+          - throughput_by_router
+          - latency_by_router
+      - title: Errors (Isolated)
+        indicators:
+          - bad_gateways_by_router
+          - responses_5xx_by_router
+      - title: Router Health (Isolated)
+        indicators:
+          - number_of_routes_registered_by_router
+          - router_file_descriptors_by_router
+          - router_exhausted_connections_by_router
+          - time_since_last_route_registered_by_router
+          - number_of_route_registration_messages_sent_and_received

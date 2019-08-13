@@ -25,6 +25,10 @@ ROUTE_SERVICES_CLIENT_TEST_KEY = 'route services
 multi line key'.freeze
 
 describe 'gorouter' do
+  let(:release_path) { File.join(File.dirname(__FILE__), '..') }
+  let(:release) { Bosh::Template::Test::ReleaseDir.new(release_path) }
+  let(:job) { release.job('gorouter') }
+
   describe 'gorouter.yml.erb' do
     let(:deployment_manifest_fragment) do
       {
@@ -131,9 +135,6 @@ describe 'gorouter' do
       }
     end
 
-    let(:release_path) { File.join(File.dirname(__FILE__), '..') }
-    let(:release) { Bosh::Template::Test::ReleaseDir.new(release_path) }
-    let(:job) { release.job('gorouter') }
     let(:template) { job.template('config/gorouter.yml') }
     let(:rendered_template) { template.render(deployment_manifest_fragment) }
     subject(:parsed_yaml) { YAML.safe_load(rendered_template) }
@@ -615,6 +616,20 @@ describe 'gorouter' do
           end
         end
       end
+    end
+  end
+
+  describe 'indicators.yml' do
+    let(:template) { job.template('config/indicators.yml') }
+    let(:rendered_template) { template.render({}) }
+    subject(:parsed_yaml) { YAML.safe_load(rendered_template) }
+
+    it 'populates metadata deployment name' do
+      expect(parsed_yaml['metadata']['labels']['deployment']).to eq('my-deployment')
+    end
+
+    it 'contains indicators' do
+      expect(parsed_yaml['spec']['indicators']).to_not be_empty
     end
   end
 end

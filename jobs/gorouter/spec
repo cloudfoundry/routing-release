@@ -14,6 +14,7 @@ templates:
   bpm.yml.erb: config/bpm.yml
   bpm-pre-start.erb: bin/bpm-pre-start
   retrieve-local-routes.erb: bin/retrieve-local-routes
+  indicators.yml.erb: config/indicators.yml
 
 packages:
   - routing_utils
