@@ -1,0 +1,29 @@
+#!/bin/bash
+set -eu -o pipefail
+
+source routing-release-ci/ci/scripts/script_helpers.sh
+
+ENVIRONMENT="${ENVIRONMENT:?"ENVIRONMENT not set"}"
+DEPLOYMENT="cf"
+bosh_login "${ENVIRONMENT}"
+
+CLIENT_NAME="indicator_protocol_test"
+CLIENT_SECRET="$(credhub get -n /bosh-${ENVIRONMENT}/cf/uaa_clients_indicator_protocol_test_secret -j | jq .value -r)"
+
+uaac target https://uaa.${ENVIRONMENT}.routing.cf-app.com --skip-ssl-validation
+uaac token client get ${CLIENT_NAME} -s ${CLIENT_SECRET}
+TOKEN=$(uaac context  | grep access_token | awk '{ print $2 }')
+
+bosh scp -d $DEPLOYMENT router/0:/var/vcap/jobs/gorouter/config/indicators.yml .
+
+# The binary releases for the indicator protocol verification binary include the version
+# which can change over time.
+# https://github.com/pivotal/monitoring-indicator-protocol/releases
+VERIFICATION_BIN=$(find indicator-protocol-release -type f -maxdepth 1 -name "indicator-verification-linux64*")
+
+$VERIFICATION_BIN \
+  -indicators indicators.yml \
+  -metadata deployment=$DEPLOYMENT \
+  -authorization "$TOKEN" \
+  -query-endpoint "https://log-cache.${ENVIRONMENT}.routing.cf-app.com" \
+  -k

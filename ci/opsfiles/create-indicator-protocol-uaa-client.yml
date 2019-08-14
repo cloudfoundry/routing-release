@@ -1,0 +1,12 @@
+- type: replace
+  path: /instance_groups/name=uaa/jobs/name=uaa/properties/uaa/clients/indicator_protocol_test?
+  value:
+    authorities: doppler.firehose,logs.admin
+    authorized-grant-types: client_credentials
+    secret: "((uaa_clients_indicator_protocol_test_secret))"
+
+- type: replace
+  path: /variables/name=uaa_clients_indicator_protocol_test_secret?
+  value:
+    name: uaa_clients_indicator_protocol_test_secret
+    type: password

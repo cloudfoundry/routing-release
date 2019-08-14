@@ -133,6 +133,13 @@ resources:
     repository: bosh-backup-and-restore
     access_token: ((github_access_token))
 
+- name: indicator-protocol-release
+  type: github-release
+  source:
+    user: pivotal
+    repository: monitoring-indicator-protocol
+    tag_filter: "v?(0.8\\..*)"
+
 #REPOS
 - name: deployments-routing
   type: git
@@ -530,6 +537,7 @@ jobs:
         disable_bbr_non_routing.yml
         disable-blobstore-backup.yml
         enable_locket_isolated_diego.yml
+        create-indicator-protocol-uaa-client.yml
         ca_certs.yml
       BBL_STATE_DIR: batman/bbl-state
   - task: create-isolation-segment
@@ -716,6 +724,26 @@ jobs:
     file: routing-release-ci/ci/tasks/syslog-test/task.yml
     params:
       ENVIRONMENT: batman
+
+- name: batman-indicator-protocol-test
+  serial_groups: [batman]
+  plan:
+    - get: routing-release
+      passed: [batman-deploy-cf]
+      trigger: true
+    - get: deployments-routing
+    - get: routing-release-ci
+    - get: cf-deployment
+      passed: [batman-deploy-cf]
+      trigger: true
+    - get: indicator-protocol-release
+      params:
+        globs:
+        - indicator-verification-linux64*
+    - task: indicator-protocol-test
+      file: routing-release-ci/ci/tasks/indicator-protocol-test/task.yml
+      params:
+        ENVIRONMENT: batman
 
 - name: batman-bosh-cleanup
   serial_groups: [batman]

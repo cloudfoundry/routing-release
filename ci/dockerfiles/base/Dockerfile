@@ -71,7 +71,8 @@ ENV PATH $PATH:/home/root/.gem/ruby/${DOCKER_RUBY_VERSION}/bin:/opt/rubies/ruby-
 RUN \
   /opt/rubies/ruby-${DOCKER_RUBY_VERSION}/bin/gem install --no-rdoc --no-ri \
     bundler \
-    debugger-ruby_core_source
+    debugger-ruby_core_source \
+    cf-uaac
 
 # Install go
 RUN curl https://storage.googleapis.com/golang/go${GO_VERSION}.linux-amd64.tar.gz | tar xvz -C /usr/local/
