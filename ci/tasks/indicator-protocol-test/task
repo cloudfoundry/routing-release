@@ -19,7 +19,8 @@ bosh scp -d $DEPLOYMENT router/0:/var/vcap/jobs/gorouter/config/indicators.yml .
 # The binary releases for the indicator protocol verification binary include the version
 # which can change over time.
 # https://github.com/pivotal/monitoring-indicator-protocol/releases
-VERIFICATION_BIN=$(find indicator-protocol-release -type f -maxdepth 1 -name "indicator-verification-linux64*")
+VERIFICATION_BIN=$(find indicator-protocol-release -maxdepth 1 -type f -name "indicator-verification-linux64*")
+chmod +x $VERIFICATION_BIN
 
 $VERIFICATION_BIN \
   -indicators indicators.yml \

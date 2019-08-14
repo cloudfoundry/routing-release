@@ -139,6 +139,7 @@ resources:
   source:
     user: pivotal
     repository: monitoring-indicator-protocol
+    access_token: ((github_access_token))
     tag_filter: "v?(0.8\\..*)"
 
 #REPOS
