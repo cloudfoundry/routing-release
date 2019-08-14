@@ -8,6 +8,7 @@ groups:
   - routing-release-unit
   - batman-deploy-cf
   - batman-syslog-test
+  - batman-indicator-protocol-test
   - batman-cf-smoke-tests
   - batman-rats
   - batman-cats
