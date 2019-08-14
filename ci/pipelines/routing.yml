@@ -1573,6 +1573,7 @@ jobs:
       - batman-rats
       - batman-drats
       - batman-syslog-test
+      - batman-indicator-protocol-test
       - ci-lite-rats
       - ci-lite-cats
       - diana-tcp-perf-tests
