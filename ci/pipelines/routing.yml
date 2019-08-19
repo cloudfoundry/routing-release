@@ -1305,10 +1305,10 @@ jobs:
     params: {acquire: true}
   - task: merge-bbl-config
     file: routing-release-ci/ci/tasks/merge-bbl-config/task.yml
+    params:
+      SOURCE1_DIR: ci/tasks/bbl-configs/add-parent-dns-full
     input_mapping:
       source1: routing-release-ci
-    params:
-      SOURCE1_DIR: bbl-configs/add-parent-dns-full
   - task: make-certs
     file: routing-release-ci/ci/tasks/make-certs/task.yml
     params:
