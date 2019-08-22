@@ -13,4 +13,8 @@ git clone https://github.com/cf-routing/routehealthparser.git
 pushd routehealthparser
 	echo "Now checking if there were any 500's or 404's during deploy"
 	go run main.go --address=${APP_URL}/health
+	if [[ $? -ne 0 ]]; then
+		echo 'The tests failed'
+		exit 1
+	fi
 popd
