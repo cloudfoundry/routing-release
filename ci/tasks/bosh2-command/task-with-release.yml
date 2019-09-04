@@ -19,3 +19,4 @@ params:
   ENVIRONMENT:
   DEPLOYMENT:
   COMMAND:
+  ENV_DIR:

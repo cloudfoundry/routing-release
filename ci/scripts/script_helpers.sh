@@ -3,7 +3,7 @@
 function bosh_login() {
   ENV=${1}
   DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-  DEPLOYMENT_DIR="${DIR}/../../../deployments-routing/${ENV}"
+  DEPLOYMENT_DIR="${DIR}/../../../deployments-routing/${ENV_DIR}/${ENV}"
   if [ "$ENV" = "lite" ]; then
     bosh_login_lite
     return
