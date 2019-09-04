@@ -5,10 +5,14 @@ set -e -x -u -o pipefail
 cp -R cf-deployment/operations/* merged-operations/
 cp -R routing-release-ci/ci/opsfiles/* merged-operations/
 
-OPS_DIR=deployments-routing/${ENVIRONMENT}/operations
+OPS_ENV_DIR=deployments-routing/${ENVIRONMENT}/operations
+OPS_DIR=deployments-routing/operations
+mkdir -p $OPS_ENV_DIR
 mkdir -p $OPS_DIR
 touch $OPS_DIR/empty.yml
+touch $OPS_ENV_DIR/empty.yml
 cp -R $OPS_DIR/* merged-operations/
+cp -R $OPS_ENV_DIR/* merged-operations/
 
 ls
 
