@@ -623,28 +623,13 @@ jobs:
       CATS_INTEGRATION_CONFIG_FILE: batman/cats_integration_config.json
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
   - task: run-cf-smoke-tests
+    file: cf-deployment-concourse-tasks/run-errand/task.yml
     input_mapping:
-      deployments-routing: updated-integration-configs
-    config:
-      platform: linux
-      image_resource:
-        type: docker-image
-        source:
-          repository: cloudfoundry/cf-routing-pipeline
-      inputs:
-      - name: deployments-routing
-      - name: cf-smoke-tests-release
-      run:
-        path: bash
-        args:
-          - -exc
-          - |
-            export CONFIG=${PWD}/deployments-routing/batman/cf_smoke_tests_config.json
-            mkdir -p "${GOPATH}/src/github.com/cloudfoundry"
-            cp -R "${PWD}"/cf-smoke-tests-release/src/smoke_tests "${GOPATH}"/src/github.com/cloudfoundry/cf-smoke-tests
-            pushd "${GOPATH}/src/github.com/cloudfoundry/cf-smoke-tests" > /dev/null
-              ./bin/test
-            popd > /dev/null
+      bbl-state: updated-integration-configs
+    params:
+      BBL_STATE_DIR: batman/bbl-state
+      DEPLOYMENT_NAME: cf
+      ERRAND_NAME: smoke-tests
 
 - name: batman-drats
   serial_groups: [batman]
@@ -1439,29 +1424,14 @@ jobs:
       CATS_INTEGRATION_CONFIG_FILE: jubilee/cats_integration_config.json
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
   - task: run-cf-smoke-tests
+    file: cf-deployment-concourse-tasks/run-errand/task.yml
     attempts: 3
     input_mapping:
-      deployments-routing: updated-integration-configs
-    config:
-      platform: linux
-      image_resource:
-        type: docker-image
-        source:
-          repository: cloudfoundry/cf-routing-pipeline
-      inputs:
-      - name: deployments-routing
-      - name: cf-smoke-tests-release
-      run:
-        path: bash
-        args:
-          - -exc
-          - |
-            export CONFIG=${PWD}/deployments-routing/jubilee/cf_smoke_tests_config.json
-            mkdir -p "${GOPATH}/src/github.com/cloudfoundry"
-            cp -R "${PWD}"/cf-smoke-tests-release/src/smoke_tests "${GOPATH}"/src/github.com/cloudfoundry/cf-smoke-tests
-            pushd "${GOPATH}/src/github.com/cloudfoundry/cf-smoke-tests" > /dev/null
-              ./bin/test
-            popd > /dev/null
+      bbl-state: updated-integration-configs
+    params:
+      BBL_STATE_DIR: jubilee/bbl-state
+      DEPLOYMENT_NAME: cf
+      ERRAND_NAME: smoke-tests
   - task: setup-jubilee-env
     file: routing-release-ci/ci/tasks/setup-cf-env/task.yml
     params:
