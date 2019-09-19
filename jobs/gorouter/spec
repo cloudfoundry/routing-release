@@ -167,7 +167,7 @@ properties:
     description: "Enables support for the popular PROXY protocol, allowing downstream load balancers that do not support HTTP to pass along client information."
     default: false
   router.max_idle_connections:
-    default: 0
+    default: 100
     description: "Maximum idle keepalive connections per backend. This value can only between 0 and 100. When 0, support for keepalive connections is disabled."
   router.force_forwarded_proto_https:
     description: "Enables setting X-Forwarded-Proto header if SSL termination happened upstream and incorrectly set the header value. When this property is set to true gorouter sets the header X-Forwarded-Proto to https. When this value set to false, gorouter set the header X-Forwarded-Proto to the protocol of the incoming request"
