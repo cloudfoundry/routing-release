@@ -8,8 +8,7 @@ groups:
   - routing-release-unit
   - batman-deploy-cf
   - batman-syslog-test
-  - batman-indicator-protocol-test
-  - batman-cf-smoke-tests
+  - batman-cf-smoke-and-indicator-protocol-tests
   - batman-rats
   - batman-cats
   - batman-drats
@@ -564,13 +563,13 @@ jobs:
     - get: routing-release-ci
     - get: cf-acceptance-tests
     - get: cf-deployment
-      passed: [batman-cf-smoke-tests]
+      passed: [batman-cf-smoke-and-indicator-protocol-tests]
       trigger: true
     - get: deployments-routing
-      passed: [batman-cf-smoke-tests]
+      passed: [batman-cf-smoke-and-indicator-protocol-tests]
     - get: cf-deployment-concourse-tasks
     - get: routing-release
-      passed: [batman-cf-smoke-tests]
+      passed: [batman-cf-smoke-and-indicator-protocol-tests]
       trigger: true
   - task: create-integration-config
     file: routing-release-ci/ci/tasks/create-integration-configs/task.yml
@@ -593,7 +592,7 @@ jobs:
     params:
       CONFIG_FILE_PATH: batman/cats_integration_config.json
 
-- name: batman-cf-smoke-tests
+- name: batman-cf-smoke-and-indicator-protocol-tests
   serial_groups: [batman]
   plan:
   - in_parallel:
@@ -608,6 +607,10 @@ jobs:
     - get: cf-deployment
       passed: [batman-deploy-cf]
       trigger: true
+    - get: indicator-protocol-release
+      params:
+        globs:
+        - indicator-verification-linux64*
   - task: create-integration-config
     file: routing-release-ci/ci/tasks/create-integration-configs/task.yml
     params:
@@ -645,12 +648,16 @@ jobs:
             pushd "${GOPATH}/src/github.com/cloudfoundry/cf-smoke-tests" > /dev/null
               ./bin/test
             popd > /dev/null
+  - task: indicator-protocol-test
+    file: routing-release-ci/ci/tasks/indicator-protocol-test/task.yml
+    params:
+      ENVIRONMENT: batman
 
 - name: batman-drats
   serial_groups: [batman]
   plan:
   - get: routing-release
-    passed: [batman-cf-smoke-tests]
+    passed: [batman-cf-smoke-and-indicator-protocol-tests]
     trigger: true
   - get: routing-release-ci
   - get: deployments-routing
@@ -658,7 +665,7 @@ jobs:
   - get: disaster-recovery-acceptance-tests
   - get: cf-deployment
     trigger: true
-    passed: [batman-cf-smoke-tests]
+    passed: [batman-cf-smoke-and-indicator-protocol-tests]
   - task: create-drats-config
     file: routing-release-ci/ci/tasks/create-drats-config/task.yml
     params:
@@ -681,12 +688,12 @@ jobs:
     - in_parallel:
       - get: routing-release-ci
       - get: deployments-routing
-        passed: [batman-cf-smoke-tests]
+        passed: [batman-cf-smoke-and-indicator-protocol-tests]
       - get: cf-deployment
         trigger: true
-        passed: [batman-cf-smoke-tests]
+        passed: [batman-cf-smoke-and-indicator-protocol-tests]
       - get: routing-release
-        passed: [batman-cf-smoke-tests]
+        passed: [batman-cf-smoke-and-indicator-protocol-tests]
         trigger: true
       - get: cf-deployment-concourse-tasks
     - task: create-integration-config
@@ -726,26 +733,6 @@ jobs:
     file: routing-release-ci/ci/tasks/syslog-test/task.yml
     params:
       ENVIRONMENT: batman
-
-- name: batman-indicator-protocol-test
-  serial_groups: [batman]
-  plan:
-    - get: routing-release
-      passed: [batman-deploy-cf]
-      trigger: true
-    - get: deployments-routing
-    - get: routing-release-ci
-    - get: cf-deployment
-      passed: [batman-deploy-cf]
-      trigger: true
-    - get: indicator-protocol-release
-      params:
-        globs:
-        - indicator-verification-linux64*
-    - task: indicator-protocol-test
-      file: routing-release-ci/ci/tasks/indicator-protocol-test/task.yml
-      params:
-        ENVIRONMENT: batman
 
 - name: batman-bosh-cleanup
   serial_groups: [batman]
@@ -1574,7 +1561,6 @@ jobs:
       - batman-rats
       - batman-drats
       - batman-syslog-test
-      - batman-indicator-protocol-test
       - ci-lite-rats
       - ci-lite-cats
       - diana-tcp-perf-tests
