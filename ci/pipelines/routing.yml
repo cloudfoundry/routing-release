@@ -1605,11 +1605,11 @@ jobs:
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
     input_mapping:
       bbl-state: deployments-routing
-    on_success:
-      put: jubilee-env
-      params: {release: jubilee-env}
     ensure:
-      put: deployments-routing
-      params:
-        repository: updated-bbl-state
-        rebase: true
+      do:
+      - put: jubilee-env
+        params: {release: jubilee-env}
+      - put: deployments-routing
+        params:
+          repository: updated-bbl-state
+          rebase: true
