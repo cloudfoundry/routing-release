@@ -23,7 +23,6 @@ files:
   - code.cloudfoundry.org/gorouter/common/secure/*.go # gosub
   - code.cloudfoundry.org/gorouter/common/secure/fakes/*.go # gosub
   - code.cloudfoundry.org/gorouter/common/spec/*.go # gosub
-  - code.cloudfoundry.org/gorouter/common/threading/*.go # gosub
   - code.cloudfoundry.org/gorouter/common/uuid/*.go # gosub
   - code.cloudfoundry.org/gorouter/config/*.go # gosub
   - code.cloudfoundry.org/gorouter/fakes/*.go # gosub
