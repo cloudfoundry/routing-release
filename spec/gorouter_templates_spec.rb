@@ -57,6 +57,7 @@ describe 'gorouter' do
             'enable_streaming' => false
           },
           'drain_wait' => 10,
+          'drain_timeout' => 300,
           'healthcheck_user_agent' => 'test-agent',
           'requested_route_registration_interval_in_seconds' => 10,
           'load_balancer_healthy_threshold' => 10,
@@ -209,6 +210,13 @@ describe 'gorouter' do
           it 'should error' do
             expect { raise parsed_yaml }.to raise_error(RuntimeError, 'must provide cert_chain and private_key with tls_pem')
           end
+        end
+      end
+
+      describe 'drain' do
+        it 'should configure properly' do
+          expect(parsed_yaml['drain_wait']).to eq('10s')
+          expect(parsed_yaml['drain_timeout']).to eq('300s')
         end
       end
 
