@@ -202,7 +202,7 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks.git
-    tag_filter: v8.*
+    tag_filter: v10.*
 
 - name: cf-acceptance-tests
   type: git
