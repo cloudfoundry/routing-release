@@ -63,6 +63,12 @@
     server_ca_cert_path: '/var/vcap/jobs/route_registrar/config/routing_api/certs/server_ca.crt'
   }
   if_p('route_registrar.routing_api.api_url') do |prop|
+    if_link('routing_api') do |link|
+      if link.p('routing_api.enabled_api_endpoints') == "mtls" and not prop.start_with?('https')
+          raise 'expected route_registrar.routing_api.api_url to be https when routing_api.enabled_api_endpoints is mtls only'
+      end
+    end
+
     routing_api['api_url'] = prop
   end
   if_p('route_registrar.routing_api.oauth_url') do |prop|

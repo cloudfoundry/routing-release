@@ -210,6 +210,50 @@ describe 'route_registrar' do
       ]
     end
 
+    describe 'routing_api' do
+      context 'when routing_api is mtls only' do
+        let(:links) do
+          [
+            Bosh::Template::Test::Link.new(
+              name: 'routing_api',
+              properties: {
+                'routing_api' => {
+                  'enabled_api_endpoints' => 'mtls'
+                }
+              }
+            ),
+            Bosh::Template::Test::Link.new(
+              name: 'nats',
+              properties: {
+                'nats' => {
+                  'host' => '', 'user' => '', 'password' => '', 'port' => 8080
+                }
+              }
+            )
+          ]
+        end
+        context 'when routing_api_url is not provided' do
+          it 'renders with the default' do
+            rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+            expect(rendered_hash['routing_api']['api_url']).to eq('https://routing-api.service.cf.internal:3001')
+          end
+        end
+        context 'when routing_api_url is provided' do
+          it 'rejects plaintext urls' do
+            merged_manifest_properties['route_registrar']['routing_api']['api_url'] = 'http://routing-api.service.cf.internal:3001'
+            expect { template.render(merged_manifest_properties, consumes: links) }.to raise_error(
+              RuntimeError, 'expected route_registrar.routing_api.api_url to be https when routing_api.enabled_api_endpoints is mtls only'
+            )
+          end
+          it 'uses configured url' do
+            merged_manifest_properties['route_registrar']['routing_api']['api_url'] = 'https://other-routing-api.service.cf.internal:3001'
+            rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+            expect(rendered_hash['routing_api']['api_url']).to eq('https://other-routing-api.service.cf.internal:3001')
+          end
+        end
+      end
+    end
+
     describe 'when given a valid set of properties' do
       it 'renders the template' do
         rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
