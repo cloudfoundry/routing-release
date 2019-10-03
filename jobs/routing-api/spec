@@ -41,6 +41,7 @@ provides:
   - routing_api.mtls_server_key
   - routing_api.mtls_client_cert
   - routing_api.mtls_client_key
+  - routing_api.enabled_api_endpoints
   - uaa.ca_cert
   - skip_ssl_validation
 - name: routing_api_db
