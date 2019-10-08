@@ -53,6 +53,7 @@ resources:
 #RELEASES
 - name: postgres-release
   type: git
+  icon: github-box
   source:
     branch: master
     tag_filter: v*
@@ -60,6 +61,7 @@ resources:
 
 - name: diego-release
   type: git
+  icon: github-box
   source:
     branch: master
     tag_filter: v*
@@ -67,6 +69,7 @@ resources:
 
 - name: bosh-dns-aliases-release
   type: git
+  icon: github-box
   source:
     branch: master
     tag_filter: v*
@@ -74,6 +77,7 @@ resources:
 
 - name: bosh-dns-release
   type: git
+  icon: github-box
   source:
     branch: master
     tag_filter: v*
@@ -81,6 +85,7 @@ resources:
 
 - name: bpm-release
   type: git
+  icon: github-box
   source:
     branch: master
     tag_filter: v*
@@ -88,6 +93,7 @@ resources:
 
 - name: golang-release-latest
   type: git
+  icon: github-box
   source:
     branch: master
     tag_filter: v*
@@ -95,6 +101,7 @@ resources:
 
 - name: routing-release
   type: git
+  icon: github-box
   source:
     branch: develop
     uri: git@github.com:cloudfoundry/routing-release.git
@@ -102,12 +109,14 @@ resources:
 
 - name: cf-cli-release
   type: git
+  icon: github-box
   source:
     branch: master
     uri: https://github.com/bosh-packages/cf-cli-release.git
 
 - name: routing-release-batman-passed
   type: git
+  icon: github-box
   source:
     branch: batman-passed
     uri: git@github.com:cloudfoundry/routing-release.git
@@ -115,6 +124,7 @@ resources:
 
 - name: routing-perf-release
   type: git
+  icon: github-box
   source:
     branch: master
     uri: git@github.com:cloudfoundry/routing-perf-release.git
@@ -122,12 +132,14 @@ resources:
 
 - name: disaster-recovery-acceptance-tests
   type: git
+  icon: github-box
   source:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/disaster-recovery-acceptance-tests.git
 
 - name: bbr-binary-release
   type: github-release
+  icon: github-face
   source:
     user: cloudfoundry-incubator
     repository: bosh-backup-and-restore
@@ -135,6 +147,7 @@ resources:
 
 - name: indicator-protocol-release
   type: github-release
+  icon: github-face
   source:
     user: pivotal
     repository: monitoring-indicator-protocol
@@ -144,6 +157,7 @@ resources:
 #REPOS
 - name: deployments-routing
   type: git
+  icon: github-box
   source:
     branch: master
     private_key: ((github_private_key.private_key))
@@ -151,6 +165,7 @@ resources:
 
 - name: routing-release-ci
   type: git
+  icon: github-box
   source:
     branch: develop
     uri: git@github.com:cloudfoundry/routing-release.git
@@ -160,12 +175,14 @@ resources:
 
 - name: bosh-bootloader
   type: git
+  icon: github-box
   source:
     branch: master
     uri: https://github.com/cloudfoundry/bosh-bootloader.git
 
 - name: zero-downtime-release
   type: git
+  icon: github-box
   source:
     branch: master
     uri: git@github.com:cf-routing/zero-downtime-release.git
@@ -174,17 +191,20 @@ resources:
 # BOSH Deployments
 - name: diana-tcp-perf-deployment
   type: bosh-deployment
+  icon: checkbox-blank
   source:
 
 # CF Deployment
 - name: cf-deployment
   type: git
+  icon: github-box
   source:
     branch: release-candidate
     uri: https://github.com/cloudfoundry/cf-deployment.git
 
 - name: cf-deployment-release-latest
   type: git
+  icon: github-box
   source:
     branch: master
     tag_filter: v*
@@ -192,6 +212,7 @@ resources:
 
 - name: cf-smoke-tests-release
   type: git
+  icon: github-box
   source:
     branch: master
     uri: https://github.com/cloudfoundry/cf-smoke-tests-release.git
@@ -199,6 +220,7 @@ resources:
 # Concourse Tasks
 - name: cf-deployment-concourse-tasks
   type: git
+  icon: github-box
   source:
     branch: master
     uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks.git
@@ -206,6 +228,7 @@ resources:
 
 - name: cf-acceptance-tests
   type: git
+  icon: github-box
   source:
     branch: master
     uri: https://github.com/cloudfoundry/cf-acceptance-tests
@@ -219,11 +242,13 @@ resources:
 #TIMERS
 - name: two-hours
   type: time
+  icon: clock
   source:
     interval: 120m
 
 - name: morning-trigger
   type: time
+  icon: clock
   source:
     location: America/Los_Angeles
     start: 6:00 AM
@@ -232,6 +257,7 @@ resources:
 
 - name: evening-trigger
   type: time
+  icon: clock
   source:
     location: America/Los_Angeles
     start: 8:00 PM
@@ -240,6 +266,7 @@ resources:
 
 - name: friday-trigger
   type: time
+  icon: clock
   source:
     location: America/Los_Angeles
     start: 6:00 AM
@@ -249,6 +276,7 @@ resources:
 #LOCKS
 - name: jubilee-env
   type: pool
+  icon: pool
   source:
     uri: git@github.com:cloudfoundry/deployments-routing.git
     branch: master
