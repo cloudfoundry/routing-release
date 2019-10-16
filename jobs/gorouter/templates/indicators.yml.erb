@@ -283,15 +283,18 @@ spec:
         - level: warning
           operator: gte
           value: 30
+          alert:
+            step: 10m
+            for: 5m
         - level: critical
           operator: gte
           value: 50
+          alert:
+            step: 10m
+            for: 5m
       presentation:
         labels: [deployment, index, ip, job]
         frequency: 300
-      alert:
-        step: 10m
-        for: 5m
       documentation:
         title: Number of Route Registration Messages Sent and Received
         description: |
