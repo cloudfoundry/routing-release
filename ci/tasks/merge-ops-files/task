@@ -7,14 +7,14 @@ cp -R routing-release-ci/ci/opsfiles/* merged-operations/
 
 OPS_ENV_DIR=deployments-routing/${ENVIRONMENT}/operations
 OPS_DIR=deployments-routing/operations
-mkdir -p $OPS_ENV_DIR
-mkdir -p $OPS_DIR
-touch $OPS_DIR/empty.yml
-touch $OPS_ENV_DIR/empty.yml
-cp -R $OPS_DIR/* merged-operations/
-cp -R $OPS_ENV_DIR/* merged-operations/
 
-ls
+if [ -d $OPS_DIR ]; then
+  cp -R $OPS_DIR/. merged-operations/
+fi
+
+if [ -d $OPS_ENV_DIR ]; then
+  cp -R $OPS_ENV_DIR/. merged-operations/
+fi
 
 if [ -d source1 ]; then
   cp -R source1/${SOURCE1_DIR:-""}/* merged-operations/
