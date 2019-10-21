@@ -37,11 +37,9 @@ groups:
 
 - name: upgrade-verification
   jobs:
-  - jubilee-setup
-  - jubilee-deploy-cf
+  - jubilee-bbl-up
   - jubilee-no-downtime
   - jubilee-destroy
-  - jubilee-manual-lock-release
 
 resource_types:
 - name: bosh-deployment
@@ -272,16 +270,6 @@ resources:
     start: 6:00 AM
     stop: 6:01 AM
     days: [Friday]
-
-#LOCKS
-- name: jubilee-env
-  type: pool
-  icon: pool
-  source:
-    uri: git@github.com:cloudfoundry/deployments-routing.git
-    branch: master
-    pool: jubilee
-    private_key: ((github_private_key.private_key))
 
 jobs:
 - name: upgrade-go1.x-in-routing-release
@@ -1286,7 +1274,7 @@ jobs:
         repository: updated-bbl-state
         rebase: true
 
-- name: jubilee-setup
+- name: jubilee-bbl-up
   serial_groups: [jubilee]
   build_logs_to_retain: 100
   plan:
@@ -1297,8 +1285,6 @@ jobs:
     - get: bosh-bootloader
     - get: morning-trigger
       trigger: true
-  - put: jubilee-env
-    params: {acquire: true}
   - task: merge-bbl-config
     file: routing-release-ci/ci/tasks/merge-bbl-config/task.yml
     params:
@@ -1327,32 +1313,26 @@ jobs:
       BBL_STATE_DIR: jubilee/bbl-state
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
       BBL_CONFIG_DIR: "."
-    on_success:
-      put: jubilee-env
-      params: {release: jubilee-env}
     ensure:
       put: deployments-routing
       params:
         repository: updated-bbl-state
         rebase: true
 
-- name: jubilee-manual-lock-release
-  plan:
-  - get: jubilee-env
-  - put: jubilee-env
-    params: {release: jubilee-env}
-
-- name: jubilee-deploy-cf
+- name: jubilee-no-downtime
   serial_groups: [jubilee]
   plan:
   - in_parallel:
     - get: cf-deployment-concourse-tasks
     - get: cf-deployment-release-latest
+      trigger: true
     - get: deployments-routing
     - get: routing-release-ci
-    - get: morning-trigger
-      passed: [jubilee-setup]
+    - get: cf-smoke-tests-release
+    - get: zero-downtime-release
+    - get: routing-release
       trigger: true
+      passed: [routing-release-unit]
   - task: upload-stemcell
     file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
     input_mapping:
@@ -1366,6 +1346,13 @@ jobs:
       cf-deployment: cf-deployment-release-latest
     params:
       ENVIRONMENT: jubilee
+  - task: delete-cf-deployment
+    file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+    params:
+      DEPLOYMENT_NAME: cf
+      BBL_STATE_DIR: jubilee/bbl-state
   - task: deploy-jubilee-with-base-cf
     file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
     input_mapping:
@@ -1378,37 +1365,18 @@ jobs:
       OPS_FILES: &jubilee-ops-files |
         use-compiled-releases.yml
       BBL_STATE_DIR: jubilee/bbl-state
-
-- name: jubilee-no-downtime
-  serial_groups: [jubilee]
-  plan:
-  - in_parallel:
-    - get: cf-deployment-release-latest
-      trigger: true
-    - get: cf-deployment-concourse-tasks
-    - get: routing-release-ci
-    - get: cf-smoke-tests-release
-    - get: zero-downtime-release
-    - get: routing-release
-      trigger: true
-      passed: [routing-release-unit]
-    - get: jubilee-env
-  - get: deployments-routing
-  - put: jubilee-env
-    params: {acquire: true}
-  - task: upload-stemcell
-    file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
+  - task: deploy-jubilee-with-base-cf
+    file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
     input_mapping:
       bbl-state: deployments-routing
+      ops-files: merged-operations
+      vars-files: deployments-routing
       cf-deployment: cf-deployment-release-latest
     params:
+      SYSTEM_DOMAIN: jubilee.routing.cf-app.com
+      OPS_FILES: &jubilee-ops-files |
+        use-compiled-releases.yml
       BBL_STATE_DIR: jubilee/bbl-state
-  - task: merge-ops-files
-    file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
-    input_mapping:
-      cf-deployment: cf-deployment-release-latest
-    params:
-      ENVIRONMENT: jubilee
   - task: deploy-jubilee-cf
     file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
     input_mapping:
@@ -1529,15 +1497,19 @@ jobs:
       params:
         CF_APP_DOMAIN: jubilee.routing.cf-app.com
         CF_APP_NAME: drtcproute
+  - task: delete-cf-deployment
+    file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+    params:
+      DEPLOYMENT_NAME: cf
+      BBL_STATE_DIR: jubilee/bbl-state
   - in_parallel:
     - task: check-zero-downtime-test-results
       file: routing-release-ci/ci/tasks/check-zero-downtime-test-results/task.yml
       params:
         CF_APP_DOMAIN: jubilee.routing.cf-app.com
         CF_APP_NAME: drroute
-      on_success:
-        put: jubilee-env
-        params: {release: jubilee-env}
     - try:
         task: check-zero-downtime-tcp-test-results
         file: routing-release-ci/ci/tasks/check-zero-downtime-test-results/task.yml
@@ -1574,9 +1546,6 @@ jobs:
     - get: routing-release
     - get: evening-trigger
       trigger: true
-    - get: jubilee-env
-  - put: jubilee-env
-    params: {acquire: true}
   - task: delete-cf-deployment
     file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
     input_mapping:
@@ -1601,8 +1570,6 @@ jobs:
       bbl-state: deployments-routing
     ensure:
       do:
-      - put: jubilee-env
-        params: {release: jubilee-env}
       - put: deployments-routing
         params:
           repository: updated-bbl-state
