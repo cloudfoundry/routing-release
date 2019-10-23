@@ -149,10 +149,10 @@ describe 'gorouter' do
         end
         context 'when multiple cookies are provided' do
           before do
-            deployment_manifest_fragment['router']['sticky_session_cookie_names'] = ['meow', 'bark']
+            deployment_manifest_fragment['router']['sticky_session_cookie_names'] = %w[meow bark]
           end
           it 'should use all of the cookies in the config' do
-            expect(parsed_yaml['sticky_session_cookie_names']).to match_array(['meow', 'bark'])
+            expect(parsed_yaml['sticky_session_cookie_names']).to match_array(%w[meow bark])
           end
         end
       end
