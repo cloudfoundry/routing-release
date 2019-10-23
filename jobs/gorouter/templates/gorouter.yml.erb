@@ -58,6 +58,7 @@ go_max_procs: <%= p("router.number_of_cpus") %>
 trace_key: <%= p("router.trace_key") %>
 debug_addr: <%= p("router.debug_address") %>
 secure_cookies: <%= p("router.secure_cookies") %>
+sticky_session_cookie_names: <%= p("router.sticky_session_cookie_names") %>
 
 access_log:
   file: <%= p("router.write_access_logs_locally") ? "/var/vcap/sys/log/gorouter/access.log" : "" %>

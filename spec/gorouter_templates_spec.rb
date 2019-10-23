@@ -141,6 +141,21 @@ describe 'gorouter' do
     subject(:parsed_yaml) { YAML.safe_load(rendered_template) }
 
     context 'given a generally valid manifest' do
+      describe 'sticky_session_cookies' do
+        context 'when no value is provided' do
+          it 'should use JSESSIONID' do
+            expect(parsed_yaml['sticky_session_cookie_names']).to match_array(['JSESSIONID'])
+          end
+        end
+        context 'when multiple cookies are provided' do
+          before do
+            deployment_manifest_fragment['router']['sticky_session_cookie_names'] = ['meow', 'bark']
+          end
+          it 'should use all of the cookies in the config' do
+            expect(parsed_yaml['sticky_session_cookie_names']).to match_array(['meow', 'bark'])
+          end
+        end
+      end
       describe 'client_cert_validation' do
         context 'when no override is provided' do
           it 'should default to none' do

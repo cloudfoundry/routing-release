@@ -65,6 +65,9 @@ properties:
   router.secure_cookies:
     description: "Set secure flag on http cookies"
     default: false
+  router.sticky_session_cookie_names:
+    description: "The name of the cookies to use for handling sticky sessions"
+    default: [ "JSESSIONID" ]
   router.drain_wait:
     description: |
       Delay in seconds after shut down is initiated before server stops listening.
