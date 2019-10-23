@@ -1365,18 +1365,6 @@ jobs:
       OPS_FILES: &jubilee-ops-files |
         use-compiled-releases.yml
       BBL_STATE_DIR: jubilee/bbl-state
-  - task: deploy-jubilee-with-base-cf
-    file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
-    input_mapping:
-      bbl-state: deployments-routing
-      ops-files: merged-operations
-      vars-files: deployments-routing
-      cf-deployment: cf-deployment-release-latest
-    params:
-      SYSTEM_DOMAIN: jubilee.routing.cf-app.com
-      OPS_FILES: &jubilee-ops-files |
-        use-compiled-releases.yml
-      BBL_STATE_DIR: jubilee/bbl-state
   - task: deploy-jubilee-cf
     file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
     input_mapping:
