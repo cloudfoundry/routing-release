@@ -1497,13 +1497,6 @@ jobs:
       params:
         CF_APP_DOMAIN: jubilee.routing.cf-app.com
         CF_APP_NAME: drtcproute
-  - task: delete-cf-deployment
-    file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
-    input_mapping:
-      bbl-state: deployments-routing
-    params:
-      DEPLOYMENT_NAME: cf
-      BBL_STATE_DIR: jubilee/bbl-state
   - in_parallel:
     - task: check-zero-downtime-test-results
       file: routing-release-ci/ci/tasks/check-zero-downtime-test-results/task.yml
@@ -1516,6 +1509,13 @@ jobs:
         params:
           CF_APP_DOMAIN: jubilee.routing.cf-app.com
           CF_APP_NAME: drtcproute
+  - task: delete-cf-deployment
+    file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+    params:
+      DEPLOYMENT_NAME: cf
+      BBL_STATE_DIR: jubilee/bbl-state
 
 - name: promote-to-batman-passed
   serial: true
