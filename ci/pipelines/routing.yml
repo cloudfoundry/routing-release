@@ -28,7 +28,7 @@ groups:
   - batman-delete-deployment
   - diana-setup
   - diana-destroy
-  - diana-bosh-cleanup
+  - diana-cleanup
   - orinoco-setup
   - orinoco-destroy
   - orinoco-delete-deployment
@@ -1075,7 +1075,7 @@ jobs:
         DEPLOYMENT: performance
         COMMAND: 'run-errand tcp_performance_tests --download-logs'
 
-- name: diana-bosh-cleanup
+- name: diana-cleanup
   serial_groups: [diana]
   plan:
   - get: deployments-routing
@@ -1088,6 +1088,13 @@ jobs:
       BBL_STATE_DIR: diana/bbl-state
     input_mapping:
       bbl-state: deployments-routing
+  - task: delete-deployment
+    file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+    params:
+      DEPLOYMENT_NAME: performance
+      BBL_STATE_DIR: diana/bbl-state
 
 # BOSH LITE DEPLOY AND TEST - ci-lite
 - name: ci-lite-deploy-cf
