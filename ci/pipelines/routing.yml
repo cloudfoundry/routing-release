@@ -19,6 +19,7 @@ groups:
   - ci-lite-rats
   - jubilee-no-downtime
   - promote-to-batman-passed
+  - deliver-stories
 
 - name: maintenance
   jobs:
@@ -270,6 +271,14 @@ resources:
     start: 6:00 AM
     stop: 6:01 AM
     days: [Friday]
+
+#Tracker Projects
+- name: cf-diego-networking-tracker
+  type: tracker
+  source:
+    token: ((tracker_api_token))
+    project_id: '2245594'
+    tracker_url: https://www.pivotaltracker.com
 
 jobs:
 - name: upgrade-go1.x-in-routing-release
@@ -1530,6 +1539,27 @@ jobs:
   - put: routing-release-batman-passed
     params:
       repository: routing-release
+
+- name: deliver-stories
+  serial: true
+  plan:
+  - get: routing-release
+    trigger: true
+    passed:
+      - batman-cats
+      - batman-rats
+      - batman-drats
+      - batman-syslog-test
+      - ci-lite-rats
+      - ci-lite-cats
+      - diana-tcp-perf-tests
+      - orinoco-http-perf-tests
+      - jubilee-no-downtime
+  - put: cf-diego-networking-tracker
+    params:
+      repos:
+      - routing-release
+
 
 - name: jubilee-destroy
   serial_groups: [jubilee]
