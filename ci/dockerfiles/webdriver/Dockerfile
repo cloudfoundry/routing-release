@@ -1,5 +1,5 @@
 FROM cloudfoundry/cf-routing-pipeline
-MAINTAINER https://github.com/cloudfoundry-incubator/cf-routing-release
+MAINTAINER https://github.com/cloudfoundry/routing-release
 
 ENV CHROME_DRIVER_VERSION 2.37
 

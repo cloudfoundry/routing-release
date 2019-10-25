@@ -423,7 +423,7 @@ DIRECTOR_UUID=DIRECTOR_UUID \
   -l stubs/routing/iaas-settings.yml \
   > routing.yml
 
-bosh -e PROJECT_NAME upload-release https://bosh.io/d/github.com/cloudfoundry-incubator/cf-routing-release
+bosh -e PROJECT_NAME upload-release https://bosh.io/d/github.com/cloudfoundry/routing-release
 
 bosh -e PROJECT_NAME -d cf-warden-routing deploy routing.yml
 ```
