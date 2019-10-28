@@ -75,6 +75,7 @@ route_latency_metric_muzzle_duration: 30s
 disable_keep_alives: false
 max_idle_conns: <%= p("router.max_idle_connections") %>
 max_idle_conns_per_host: 100
+endpoint_keep_alive_probe_interval: <%= p("router.keep_alive_probe_interval") %>
 <% else %>
 disable_keep_alives: true
 <% end%>

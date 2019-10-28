@@ -91,6 +91,7 @@ describe 'gorouter' do
           'sanitize_forwarded_proto' => false,
           'suspend_pruning_if_nats_unavailable' => false,
           'max_idle_connections' => 100,
+          'keep_alive_probe_interval' => '1s',
           'prune_all_stale_routes' => false,
           'backends' => {
             'max_conns' => 100,
@@ -141,6 +142,54 @@ describe 'gorouter' do
     subject(:parsed_yaml) { YAML.safe_load(rendered_template) }
 
     context 'given a generally valid manifest' do
+      describe 'keep alives' do
+        context 'max_idle_connections is set' do
+          context 'using default values' do
+            it 'should not disable keep alives' do
+              expect(parsed_yaml['disable_keep_alives']).to eq(false)
+            end
+            it 'should set endpoint_keep_alive_probe_interval' do
+              expect(parsed_yaml['endpoint_keep_alive_probe_interval']).to eq('1s')
+            end
+            it 'should set max_idle_conns' do
+              expect(parsed_yaml['max_idle_conns']).to eq(100)
+              expect(parsed_yaml['max_idle_conns_per_host']).to eq(100)
+            end
+          end
+          context 'using custom values' do
+            before do
+              deployment_manifest_fragment['router']['max_idle_connections'] = 2500
+              deployment_manifest_fragment['router']['keep_alive_probe_interval'] = '500ms'
+            end
+            it 'should not disable keep alives' do
+              expect(parsed_yaml['disable_keep_alives']).to eq(false)
+            end
+            it 'should set endpoint_keep_alive_probe_interval' do
+              expect(parsed_yaml['endpoint_keep_alive_probe_interval']).to eq('500ms')
+            end
+            it 'should set max_idle_conns' do
+              expect(parsed_yaml['max_idle_conns']).to eq(2500)
+              expect(parsed_yaml['max_idle_conns_per_host']).to eq(100)
+            end
+          end
+        end
+
+        context 'max_idle_connections is not set' do
+          before do
+            deployment_manifest_fragment['router']['max_idle_connections'] = 0
+          end
+          it 'should disable keep alives' do
+            expect(parsed_yaml['disable_keep_alives']).to eq(true)
+          end
+          it 'should not set endpoint_keep_alive_probe_interval' do
+            expect(parsed_yaml['endpoint_keep_alive_probe_interval']).to eq(nil)
+          end
+          it 'should not set max_idle_conns' do
+            expect(parsed_yaml['max_idle_conns']).to eq(nil)
+            expect(parsed_yaml['max_idle_conns_per_host']).to eq(nil)
+          end
+        end
+      end
       describe 'sticky_session_cookies' do
         context 'when no value is provided' do
           it 'should use JSESSIONID' do
