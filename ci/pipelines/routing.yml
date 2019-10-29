@@ -405,12 +405,12 @@ jobs:
     file: routing-release-ci/ci/tasks/merge-bbl-config/task.yml
     params:
       SOURCE1_DIR: plan-patches/bosh-lite-gcp
-      SOURCE2_DIR: bbl-configs/add-parent-dns-lite
-      SOURCE3_DIR: bbl-configs/use-larger-disk-lite-gcp
+      SOURCE2_DIR: ci/tasks/bbl-configs/add-parent-dns-lite
+      SOURCE3_DIR: ci/tasks/bbl-configs/use-larger-disk-lite-gcp
     input_mapping:
       source1: bosh-bootloader
-      source2: routing-release-ci/ci/tasks
-      source3: routing-release-ci/ci/tasks
+      source2: routing-release-ci
+      source3: routing-release-ci
   - task: bbl-up
     file: cf-deployment-concourse-tasks/bbl-up/task.yml
     params:
