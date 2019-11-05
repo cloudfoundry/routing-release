@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+mkdir -p gcp-key
+
+cat << EOF > "gcp-key/key.json"
+${GCP_SERVICE_ACCOUNT_KEY}
+EOF
+
