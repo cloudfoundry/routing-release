@@ -664,6 +664,7 @@ describe 'gorouter' do
               parsed_yaml_property: 'routing_api.cert_chain'
             )
           end
+        end
       end
     end
   end
