@@ -12,7 +12,7 @@ pushd $SOURCE_DIR > /dev/null
 
   diff_string="$old_version...$new_version"
   echo "comparing $diff_string:"
-  git log $diff_string | { egrep -o '\[\#([0-9]+)' || true; } | cut -d# -f2 | sort | uniq > $tmp_dir/stories.raw
+  git log $diff_string | { egrep -o '\[[^#\]]*\#([0-9]+)' || true; } | cut -d# -f2 | sort | uniq > $tmp_dir/stories.raw
   echo "found: "
   cat $tmp_dir/stories.raw
 popd > /dev/null
