@@ -92,7 +92,6 @@ describe 'gorouter' do
           'suspend_pruning_if_nats_unavailable' => false,
           'max_idle_connections' => 100,
           'keep_alive_probe_interval' => '1s',
-          'prune_all_stale_routes' => false,
           'backends' => {
             'max_conns' => 100,
             'cert_chain' => TEST_CERT,
@@ -665,28 +664,6 @@ describe 'gorouter' do
               parsed_yaml_property: 'routing_api.cert_chain'
             )
           end
-
-          describe 'prune_all_stale_routes'
-          context 'when set' do
-            before do
-              deployment_manifest_fragment['router']['prune_all_stale_routes'] = true
-            end
-
-            it 'successfully configures the property' do
-              expect(parsed_yaml['prune_stale_tls_routes']).to be(true)
-            end
-          end
-
-          context 'when not set' do
-            before do
-              deployment_manifest_fragment['router'].delete('prune_all_stale_routes')
-            end
-
-            it 'successfully configures the default property' do
-              expect(parsed_yaml['prune_stale_tls_routes']).to be(false)
-            end
-          end
-        end
       end
     end
   end

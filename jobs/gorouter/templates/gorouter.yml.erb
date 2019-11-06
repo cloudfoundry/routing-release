@@ -68,7 +68,6 @@ prune_stale_droplets_interval: 30s
 droplet_stale_threshold: 120s
 publish_active_apps_interval: 0s # 0 means disabled
 suspend_pruning_if_nats_unavailable: <%= p("router.suspend_pruning_if_nats_unavailable") %>
-prune_stale_tls_routes: <%= p("router.prune_all_stale_routes") %>
 route_latency_metric_muzzle_duration: 30s
 
 <% if p("router.max_idle_connections") && p("router.max_idle_connections") > 0 %>
