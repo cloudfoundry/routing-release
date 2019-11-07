@@ -35,10 +35,26 @@ jobs:
   plan:
   - get: routing-release-ci
     trigger: true
+  - task: create-tag-file
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: cloudfoundry/cf-routing-pipeline
+      outputs:
+      - name: tag-file
+      run:
+        path: bash
+        args:
+        - -exc
+        - echo "go1.13" > tag-file/tag
   - put: base
     params:
       build: routing-release-ci/ci/dockerfiles/base
       cache: true
+      tag_file: tag-file/tag
+      tag_as_latest: true
 
 - name: build-webdriver
   plan:
