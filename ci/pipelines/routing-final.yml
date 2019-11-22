@@ -90,7 +90,7 @@ resources:
     access_key_id: ((concourse_aws_access_key_id))
     secret_access_key: ((concourse_aws_secret_access_key))
     bucket: ci-routing-version
-    initial_version: 0.118.0
+    initial_version: 0.195.0
     key: final-version
     region_name: us-east-1
 
@@ -100,7 +100,7 @@ resources:
     access_key_id: ((concourse_aws_access_key_id))
     secret_access_key: ((concourse_aws_secret_access_key))
     bucket: ci-routing-version
-    initial_version: 0.121.0
+    initial_version: 0.195.0
     key: rc-version
     region_name: us-east-1
 
