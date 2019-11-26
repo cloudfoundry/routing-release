@@ -218,6 +218,19 @@ properties:
   router.tracing.enable_zipkin:
     description: "Enables the addition of the X-B3-Trace-Id header to incoming requests. If the header already exists on the incoming request, it will not be overwritten."
     default: false
+  router.tracing.enable_w3c:
+    description: |
+      Enables the addition of the W3C tracing headers to incoming requests.
+      If the traceparent and tracestate headers exist on the incoming request, they will be updated, if they do not exist they will be created.
+      The W3C tracing specification has more information: https://www.w3.org/TR/trace-context/
+    default: false
+  router.tracing.w3c_tenant_id:
+    description: |
+      Specifies the tenant ID to use in the W3C tracestate header, only used when W3C tracing headers are enabled.
+      If specified, the tracestate identifier will be "tenant-id@gorouter" where "tenant-id" is the value specified.
+      If not specified, the tracestate identifier will be "gorouter"
+      The W3C tracing specification has more information: https://www.w3.org/TR/trace-context/
+    default: ""
   router.isolation_segments:
     description: "Routes with these isolation segments will be registered. Used in combination with routing_table_sharding_mode."
     default: []
