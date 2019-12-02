@@ -51,6 +51,10 @@ logging:
 
 tracing:
   enable_zipkin: <%= p("router.tracing.enable_zipkin") %>
+  enable_w3c: <%= p("router.tracing.enable_w3c") %>
+  <% if p("router.tracing.enable_w3c") %>
+  w3c_tenant_id: <%= p("router.tracing.w3c_tenant_id") %>
+  <% end %>
 
 port: <%= p("router.port") %>
 index: <%= p("router.offset") + spec.index %>

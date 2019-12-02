@@ -43,7 +43,9 @@ describe 'gorouter' do
           'client_cert_validation' => 'none',
           'logging_level' => 'info',
           'tracing' => {
-            'enable_zipkin' => false
+            'enable_zipkin' => false,
+            'enable_w3c' => false,
+            'w3c_tenant_id' => nil
           },
           'ssl_skip_validation' => false,
           'port' => 80,
@@ -169,6 +171,12 @@ describe 'gorouter' do
             it 'should set max_idle_conns' do
               expect(parsed_yaml['max_idle_conns']).to eq(2500)
               expect(parsed_yaml['max_idle_conns_per_host']).to eq(100)
+            end
+            it 'should not enable zipkin' do
+              expect(parsed_yaml.dig('tracing', 'enable_zipkin')).to eq(false)
+            end
+            it 'should not enable w3c' do
+              expect(parsed_yaml.dig('tracing', 'enable_w3c')).to eq(false)
             end
           end
         end
@@ -663,6 +671,54 @@ describe 'gorouter' do
               link: 'routing_api.mtls_client_cert',
               parsed_yaml_property: 'routing_api.cert_chain'
             )
+          end
+        end
+      end
+
+      context 'tracing' do
+        context 'when zipkin is enabled' do
+          before do
+            deployment_manifest_fragment['router']['tracing']['enable_zipkin'] = true
+          end
+
+          it 'is happy' do
+            expect { parsed_yaml }.not_to raise_error
+          end
+
+          it 'should enable zipkin' do
+            expect(parsed_yaml['tracing']['enable_zipkin']).to eq(true)
+          end
+        end
+
+        context 'when w3c is enabled' do
+          before do
+            deployment_manifest_fragment['router']['tracing']['enable_w3c'] = true
+          end
+
+          it 'is happy' do
+            expect { parsed_yaml }.not_to raise_error
+          end
+
+          it 'should enable w3c tracing' do
+            expect(parsed_yaml['tracing']['enable_w3c']).to eq(true)
+          end
+
+          it 'should not set the w3c tenant ID' do
+            expect(parsed_yaml['tracing']['w3c_tenant_id']).to eq(nil)
+          end
+
+          context 'when w3c is enabled' do
+            before do
+              deployment_manifest_fragment['router']['tracing']['w3c_tenant_id'] = 'tid'
+            end
+
+            it 'is happy' do
+              expect { parsed_yaml }.not_to raise_error
+            end
+
+            it 'should set wc3_tenant_id' do
+              expect(parsed_yaml['tracing']['w3c_tenant_id']).to eq('tid')
+            end
           end
         end
       end
