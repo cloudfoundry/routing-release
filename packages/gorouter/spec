@@ -5,6 +5,7 @@ dependencies:
 - golang-1-linux
 
 files:
+  - jq/jq-1.6-linux64.tgz
   - code.cloudfoundry.org/gorouter/**/*.{go,golden,proto,c,h,}
   - code.cloudfoundry.org/gorouter/LICENSE
   - code.cloudfoundry.org/gorouter/NOTICE

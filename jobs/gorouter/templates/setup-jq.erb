@@ -1,0 +1,5 @@
+#!/bin/bash -e
+
+if ! echo $PATH | grep -q 'gorouter'; then
+  export PATH="/var/vcap/packages/gorouter/bin:$PATH"
+fi

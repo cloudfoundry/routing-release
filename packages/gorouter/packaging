@@ -16,4 +16,8 @@ pushd ${GOPATH}/src/code.cloudfoundry.org/gorouter
   go build -o "${BOSH_INSTALL_TARGET}/bin/gorouter" .
 popd
 
+# install jq
+tar -xzf jq/jq-*.tgz -C ${BOSH_INSTALL_TARGET}/bin jq
+chmod +x ${BOSH_INSTALL_TARGET}/bin/jq
+
 chmod +x "${BOSH_INSTALL_TARGET}/bin/gorouter"

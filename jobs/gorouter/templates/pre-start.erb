@@ -30,3 +30,7 @@ source /var/vcap/packages/routing_utils/pid_utils.sh
 
 # Allowed number of open file descriptors
 ulimit -n 100000
+
+# Add jq to path
+cp /var/vcap/jobs/gorouter/bin/setup-jq /etc/profile.d/jq.sh
+chown root:vcap /etc/profile.d/jq.sh
