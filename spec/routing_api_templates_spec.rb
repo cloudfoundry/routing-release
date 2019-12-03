@@ -28,7 +28,10 @@ describe 'routing_api' do
           'type' => 'mysql',
           'schema' => 'schema',
           'username' => 'username',
-          'password' => 'password'
+          'password' => 'password',
+          'max_open_connections' => 201,
+          'max_idle_connections' => 11,
+          'connections_max_lifetime_seconds' => 3601
         }
       },
       'uaa' => {
@@ -156,7 +159,10 @@ describe 'routing_api' do
                                       'schema' => 'schema',
                                       'username' => 'username',
                                       'password' => 'password',
-                                      'skip_hostname_validation' => false
+                                      'skip_hostname_validation' => false,
+                                      'max_open_connections' => 201,
+                                      'max_idle_connections' => 11,
+                                      'connections_max_lifetime_seconds' => 3601
                                     },
                                     'statsd_client_flush_interval' => '300ms',
                                     'statsd_endpoint' => 'localhost:8125',

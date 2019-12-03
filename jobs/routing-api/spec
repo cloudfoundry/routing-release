@@ -128,6 +128,27 @@ properties:
     description: "skip checking the hostname of the server cert when connecting via TLS"
     default: false
 
+  routing_api.sqldb.max_open_connections:
+    description: |
+      Maximum number of open connections to the SQL database.
+      The number of necessary connections will scale with the number of requests to the `/routing/...` cf api endpoints.
+    default: 200
+
+  routing_api.sqldb.max_idle_connections:
+    description: |
+      Maximum number of idle connections to the SQL database.
+      Idle connections will be retained until their `routing_api.sqldb.connections_max_lifetime_seconds` has been reached.
+    default: 10
+
+  routing_api.sqldb.connections_max_lifetime_seconds:
+    description: |
+      Sets the maximum amount of time a connection may be reused. Expired connections may be closed lazily before reuse.
+      If value <= 0, connections are reused forever.
+      If there is a spike in connection usage, all of these connections have the potential to stick around with a high lifetime.
+      Lowering the lifetime will result in connections getting reaped sooner, but the routing-api may have to renegotiate connections
+      more often, which could add some latency. We recommend using the default unless you have seen specific needs to change it.
+    default: 3600
+
   uaa.ca_cert:
     description : "Certificate authority for communication between clients and UAA."
     default: ""
