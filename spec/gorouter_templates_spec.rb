@@ -684,7 +684,7 @@ describe 'gorouter' do
 
         context 'when timestamp format is provided' do
           before do
-            deployment_manifest_fragment['router']['logging'] = { 'format' => {'timestamp' => 'unix-epoch'}}
+            deployment_manifest_fragment['router']['logging'] = { 'format' => { 'timestamp' => 'unix-epoch' } }
           end
 
           it 'it sets the value correctly' do
@@ -694,8 +694,7 @@ describe 'gorouter' do
 
         context 'when an invalid timestamp format is provided' do
           before do
-            deployment_manifest_fragment['router']['logging'] = { 'format' => {'timestamp' => 'meow'}}
-
+            deployment_manifest_fragment['router']['logging'] = { 'format' => { 'timestamp' => 'meow' } }
           end
 
           it 'raises error' do
