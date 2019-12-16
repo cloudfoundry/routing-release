@@ -675,6 +675,35 @@ describe 'gorouter' do
         end
       end
 
+      context 'logging' do
+        context 'when timestamp format is not provided' do
+          it 'it defaults to rfc3339' do
+            expect(parsed_yaml['logging']['format']['timestamp']).to eq('rfc3339')
+          end
+        end
+
+        context 'when timestamp format is provided' do
+          before do
+            deployment_manifest_fragment['router']['logging'] = { 'format' => {'timestamp' => 'unix-epoch'}}
+          end
+
+          it 'it sets the value correctly' do
+            expect(parsed_yaml['logging']['format']['timestamp']).to eq('unix-epoch')
+          end
+        end
+
+        context 'when an invalid timestamp format is provided' do
+          before do
+            deployment_manifest_fragment['router']['logging'] = { 'format' => {'timestamp' => 'meow'}}
+
+          end
+
+          it 'raises error' do
+            expect { parsed_yaml }.to raise_error(RuntimeError, "'meow' is not a valid timestamp format for the property 'router.logging.format.timestamp'. Valid options are: 'rfc339' and 'unix-epoch'.")
+          end
+        end
+      end
+
       context 'tracing' do
         context 'when zipkin is enabled' do
           before do

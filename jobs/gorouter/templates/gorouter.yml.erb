@@ -48,6 +48,13 @@ logging:
   metron_address: "localhost:<%=p("metron.port") %>"
   disable_log_forwarded_for: <%= p("router.disable_log_forwarded_for") %>
   disable_log_source_ip: <%= p("router.disable_log_source_ip") %>
+<%
+if !['rfc3339', 'unix-epoch'].include?(p('router.logging.format.timestamp'))
+  raise "'#{p('router.logging.format.timestamp')}' is not a valid timestamp format for the property 'router.logging.format.timestamp'. Valid options are: 'rfc339' and 'unix-epoch'."
+end
+%>
+  format:
+    timestamp: <%= p("router.logging.format.timestamp") %>
 
 tracing:
   enable_zipkin: <%= p("router.tracing.enable_zipkin") %>
