@@ -368,7 +368,7 @@ jobs:
           - -exc
           - |
             pushd "routing-release"
-              source .envrc; HONEYCOMB_KEY=b00668765362642ad3d8b150158bc531 scripts/run-unit-tests
+              source .envrc; HONEYCOMB_KEY=((honeycomb_api_key)) scripts/run-unit-tests
             popd
 
 - name: upgrade-cf-cli-in-routing-release
