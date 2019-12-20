@@ -270,3 +270,6 @@ http_rewrite: <%= r.to_json %>
 pid_file: /var/vcap/sys/run/gorouter/gorouter.pid
 
 ip_local_port_range: <%= p("router.ip_local_port_range") %>
+
+#backwards compatibility only section
+empty_pool_response_code_503: <%= p("for_backwards_compatibility_only.empty_pool_response_code_503") %>

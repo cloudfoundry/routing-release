@@ -134,6 +134,9 @@ describe 'gorouter' do
         },
         'metron' => {
           'port' => 3745
+        },
+        'for_backwards_compatibility_only' => {
+          'empty_pool_response_code_503' => true
         }
       }
     end
@@ -746,6 +749,35 @@ describe 'gorouter' do
 
             it 'should set wc3_tenant_id' do
               expect(parsed_yaml['tracing']['w3c_tenant_id']).to eq('tid')
+            end
+          end
+        end
+      end
+
+      context 'backwards compatible properties' do
+        context 'empty_pool_response_code_503' do
+          context 'when it is not set' do
+            it 'is happy' do
+              expect { parsed_yaml }.not_to raise_error
+              expect(parsed_yaml['empty_pool_response_code_503']).to eq(true)
+            end
+          end
+
+          context 'when it is true' do
+            before do
+              deployment_manifest_fragment['for_backwards_compatibility_only']['empty_pool_response_code_503'] = true
+            end
+            it 'is set to true' do
+              expect(parsed_yaml['empty_pool_response_code_503']).to eq(true)
+            end
+          end
+
+          context 'when it is false' do
+            before do
+              deployment_manifest_fragment['for_backwards_compatibility_only']['empty_pool_response_code_503'] = false
+            end
+            it 'is set to false' do
+              expect(parsed_yaml['empty_pool_response_code_503']).to eq(false)
             end
           end
         end

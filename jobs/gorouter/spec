@@ -320,7 +320,7 @@ properties:
       Suspend pruning of routes when NATs is unavailable and maintain the
       current routing table. WARNING: This strategy favors availability over
       consistency and there is a possibility of routing to an incorrect
-      endpoint in the case of port re-use. To be used with caution."
+      endpoint in the case of port re-use. To be used with caution.
     default: false
 
   uaa.ca_cert:
@@ -342,3 +342,9 @@ properties:
   router.ip_local_port_range:
     description: "Ephemeral port range. `router.set_kernel_parameters` must be enabled."
     default: "1024 65535"
+
+  for_backwards_compatibility_only.empty_pool_response_code_503:
+    description: |
+      This property is provided for backwards compatibility reasons. We recommend leaving it set to true.
+      When it set to true, the gorouter will return a 503 when a route is known but there is nothing in the pool available to handle the request. When false, the gorouter will return a 404.
+    default: true
