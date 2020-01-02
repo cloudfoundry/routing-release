@@ -49,6 +49,7 @@ RUN \
             zip \
             python-pip \
             zlib1g-dev \
+            vim \
       && \
       apt-get clean
 
