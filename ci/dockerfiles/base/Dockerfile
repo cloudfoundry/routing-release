@@ -10,7 +10,7 @@ ENV RUBY_INSTALLER_VERSION 0.5.0
 ENV ROUTING_API_CLI_VERSION 2.9.0
 ENV CF_CLI_VERSION 6.45.0
 ENV POSTGRES_VERSION 9.3
-ENV CREDHUB_CLI_VERSION 2.0.0
+ENV CREDHUB_CLI_VERSION 2.6.2
 
 RUN set -ex \
     && echo 'mysql-server mysql-server/root_password password password' | debconf-set-selections \
