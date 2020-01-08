@@ -701,7 +701,7 @@ describe 'gorouter' do
           end
 
           it 'raises error' do
-            expect { parsed_yaml }.to raise_error(RuntimeError, "'meow' is not a valid timestamp format for the property 'router.logging.format.timestamp'. Valid options are: 'rfc339' and 'unix-epoch'.")
+            expect { parsed_yaml }.to raise_error(RuntimeError, "'meow' is not a valid timestamp format for the property 'router.logging.format.timestamp'. Valid options are: 'rfc3339' and 'unix-epoch'.")
           end
         end
       end

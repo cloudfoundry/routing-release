@@ -50,7 +50,7 @@ logging:
   disable_log_source_ip: <%= p("router.disable_log_source_ip") %>
 <%
 if !['rfc3339', 'unix-epoch'].include?(p('router.logging.format.timestamp'))
-  raise "'#{p('router.logging.format.timestamp')}' is not a valid timestamp format for the property 'router.logging.format.timestamp'. Valid options are: 'rfc339' and 'unix-epoch'."
+  raise "'#{p('router.logging.format.timestamp')}' is not a valid timestamp format for the property 'router.logging.format.timestamp'. Valid options are: 'rfc3339' and 'unix-epoch'."
 end
 %>
   format:
