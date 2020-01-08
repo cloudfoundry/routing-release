@@ -254,15 +254,6 @@ resources:
     stop: 6:01 AM
     days: [Monday, Tuesday, Wednesday, Thursday, Friday]
 
-- name: evening-trigger
-  type: time
-  icon: clock
-  source:
-    location: America/Los_Angeles
-    start: 8:00 PM
-    stop: 8:01 PM
-    days: [Monday, Tuesday, Wednesday, Thursday, Friday]
-
 - name: friday-trigger
   type: time
   icon: clock
@@ -1573,8 +1564,6 @@ jobs:
     - get: deployments-routing
     - get: cf-deployment-concourse-tasks
     - get: routing-release
-    - get: evening-trigger
-      trigger: true
   - task: delete-cf-deployment
     file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
     input_mapping:
