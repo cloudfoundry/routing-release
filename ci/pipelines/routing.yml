@@ -245,15 +245,6 @@ resources:
   source:
     interval: 120m
 
-- name: morning-trigger
-  type: time
-  icon: clock
-  source:
-    location: America/Los_Angeles
-    start: 6:00 AM
-    stop: 6:01 AM
-    days: [Monday, Tuesday, Wednesday, Thursday, Friday]
-
 - name: friday-trigger
   type: time
   icon: clock
@@ -1294,8 +1285,6 @@ jobs:
     - get: deployments-routing
     - get: routing-release-ci
     - get: bosh-bootloader
-    - get: morning-trigger
-      trigger: true
   - task: merge-bbl-config
     file: routing-release-ci/ci/tasks/merge-bbl-config/task.yml
     params:
