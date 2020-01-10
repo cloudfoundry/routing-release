@@ -18,8 +18,8 @@ groups:
   - ci-lite-cats
   - ci-lite-rats
   - jubilee-no-downtime
-  - promote-to-batman-passed
   - deliver-stories
+  - bump-to-rc
 
 - name: maintenance
   jobs:
@@ -113,14 +113,6 @@ resources:
     branch: master
     uri: https://github.com/bosh-packages/cf-cli-release.git
 
-- name: routing-release-batman-passed
-  type: git
-  icon: github-box
-  source:
-    branch: batman-passed
-    uri: git@github.com:cloudfoundry/routing-release.git
-    private_key: ((github_private_key.private_key))
-
 - name: routing-perf-release
   type: git
   icon: github-box
@@ -185,6 +177,13 @@ resources:
   source:
     branch: master
     uri: git@github.com:cf-routing/zero-downtime-release.git
+    private_key: ((github_private_key.private_key))
+
+- name: routing-release-rc
+  type: git
+  source:
+    branch: release-candidate
+    uri: git@github.com:cloudfoundry/routing-release.git
     private_key: ((github_private_key.private_key))
 
 # BOSH Deployments
@@ -1505,25 +1504,6 @@ jobs:
       DEPLOYMENT_NAME: cf
       BBL_STATE_DIR: jubilee/bbl-state
 
-- name: promote-to-batman-passed
-  serial: true
-  plan:
-  - get: routing-release
-    trigger: true
-    passed:
-      - batman-cats
-      - batman-rats
-      - batman-drats
-      - batman-syslog-test
-      - ci-lite-rats
-      - ci-lite-cats
-      - diana-tcp-perf-tests
-      - orinoco-http-perf-tests
-      - jubilee-no-downtime
-  - put: routing-release-batman-passed
-    params:
-      repository: routing-release
-
 - name: deliver-stories
   serial: true
   plan:
@@ -1544,6 +1524,16 @@ jobs:
       repos:
       - routing-release
 
+- name: bump-to-rc
+  serial: true
+  plan:
+  - get: routing-release
+    passed:
+      - deliver-stories
+    trigger: true
+  - put: routing-release-rc
+    params:
+      repository: routing-release
 
 - name: jubilee-destroy
   serial_groups: [jubilee]

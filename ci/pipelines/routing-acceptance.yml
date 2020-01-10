@@ -4,7 +4,6 @@ groups:
   - superman-deploy-cf
   - superman-cats
   - superman-rats
-  - bump-to-rc
   - bosh-cleanup
   - deploy-and-run-cipher-suite-tests
 
@@ -14,35 +13,16 @@ groups:
   - destroy-superman
   - delete-cf-deployment
 
-resource_types:
-- name: tracker-resource
-  type: docker-image
-  source:
-    repository: concourse/tracker-resource
-
 resources:
 # RELEASES
 - name: routing-release
   type: git
   source:
-    branch: batman-passed
+    branch: release-candidate
     uri: https://github.com/cloudfoundry/routing-release.git
     ignore_paths:
       - docs
       - ci
-
-- name: routing-release-full
-  type: git
-  source:
-    branch: batman-passed
-    uri: https://github.com/cloudfoundry/routing-release.git
-
-- name: routing-release-rc
-  type: git
-  source:
-    branch: release-candidate
-    uri: git@github.com:cloudfoundry/routing-release.git
-    private_key: ((github_private_key.private_key))
 
 # REPOS
 - name: deployments-routing
@@ -129,14 +109,6 @@ resources:
     start: 6:00 AM
     stop: 6:01 AM
     days: [Friday]
-
-# APP INTEGRATIONS
-- name: tracker-routing
-  type: tracker-resource
-  source:
-    tracker_url: https://www.pivotaltracker.com
-    project_id: "1358110"
-    token: ((tracker_api_token))
 
 jobs:
 # FULL DEPLOY AND TEST - SUPERMAN
@@ -305,24 +277,6 @@ jobs:
       MANIFEST: cipher-manifest/cipher.yml
       RELEASES_DIR: "release-tarball/*.tgz"
       STEMCELL_REGEX: gcp-stemcell/*.tgz
-
-- name: bump-to-rc
-  serial: true
-  plan:
-  - get: routing-release
-    passed:
-    - superman-rats
-    - superman-cats
-    trigger: true
-  - get: routing-release-full
-  - put: routing-release-rc
-    params:
-      repository: routing-release-full
-  - try:
-      put: tracker-routing
-      params:
-        repos:
-        - routing-release
 
 # INFRASTRUCTURE - superman
 - name: setup-superman
