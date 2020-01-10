@@ -2,8 +2,6 @@ groups:
 - name: routing-acceptance-ci
   jobs:
   - superman-deploy-cf
-  - superman-cats
-  - superman-rats
   - bosh-cleanup
   - deploy-and-run-cipher-suite-tests
 
@@ -68,12 +66,6 @@ resources:
     uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks
     tag_filter: v*
 
-- name: cf-acceptance-tests
-  type: git
-  source:
-    branch: release-candidate
-    uri: https://github.com/cloudfoundry/cf-acceptance-tests
-
 - name: cipher-test-release
   type: git
   source:
@@ -115,8 +107,6 @@ jobs:
 - name: superman-deploy-cf
   serial_groups:
   - superman
-  - superman-cats
-  - superman-rats
   - superman-cipher
   build_logs_to_retain: 100
   plan:
@@ -167,87 +157,6 @@ jobs:
         use-internal-lookup-for-route-services.yml
       BBL_STATE_DIR: superman/bbl-state
 
-- name: superman-cats
-  serial_groups:
-  - superman-cats
-  build_logs_to_retain: 100
-  plan:
-  - in_parallel:
-    - get: routing-release-ci
-    - get: cf-acceptance-tests
-    - get: cf-deployment
-      passed: [superman-deploy-cf]
-    - get: deployments-routing
-      trigger: true
-      passed: [superman-deploy-cf]
-    - get: superman-vars-store
-      passed: [superman-deploy-cf]
-    - get: superman-integration-configs
-    - get: cf-deployment-concourse-tasks
-    - get: routing-release
-      passed: [superman-deploy-cf]
-      trigger: true
-  - task: create-integration-config
-    file: routing-release-ci/ci/tasks/create-integration-configs/task.yml
-    params:
-      ENVIRONMENT: superman
-  - task: update-integration-configs
-    file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
-    input_mapping:
-      bbl-state: created-integration-configs
-      integration-configs: created-integration-configs
-    params:
-      BBL_STATE_DIR: superman/bbl-state
-      CATS_INTEGRATION_CONFIG_FILE: superman/cats_integration_config.json
-  - task: run-cats
-    input_mapping:
-      integration-config: updated-integration-configs
-    file: cf-deployment-concourse-tasks/run-cats/task.yml
-    params:
-      CONFIG_FILE_PATH: superman/cats_integration_config.json
-
-- name: superman-rats
-  serial_groups:
-  - superman-rats
-  build_logs_to_retain: 100
-  plan:
-  - timeout: 4h
-    do:
-    - in_parallel:
-      - get: deployments-routing
-        trigger: true
-        passed: [superman-deploy-cf]
-      - get: routing-release-ci
-      - get: superman-vars-store
-        passed: [superman-deploy-cf]
-      - get: superman-integration-configs
-      - get: cf-deployment
-        passed: [superman-deploy-cf]
-      - get: routing-release
-        passed: [superman-deploy-cf]
-        trigger: true
-      - get: cf-deployment-concourse-tasks
-        passed: [superman-deploy-cf]
-    - task: create-integration-config
-      file: routing-release-ci/ci/tasks/create-integration-configs/task.yml
-      params:
-        ENVIRONMENT: superman
-    - task: update-integration-configs
-      file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
-      input_mapping:
-        bbl-state: created-integration-configs
-        integration-configs: created-integration-configs
-      params:
-        BBL_STATE_DIR: superman/bbl-state
-        RATS_INTEGRATION_CONFIG_FILE: superman/rats_integration_config.json
-    - task: run-rats
-      input_mapping:
-        integration-config: updated-integration-configs
-      file: routing-release-ci/ci/tasks/run-rats/task.yml
-      params:
-        CONFIG_FILE_PATH: superman/rats_integration_config.json
-        GINKGO_ARGS: "-v"
-
 - name: deploy-and-run-cipher-suite-tests
   serial_groups:
   - superman-cipher
@@ -282,8 +191,6 @@ jobs:
 - name: setup-superman
   serial_groups:
   - superman
-  - superman-cats
-  - superman-rats
   - superman-cipher
   build_logs_to_retain: 100
   plan:
@@ -345,8 +252,6 @@ jobs:
 - name: destroy-superman
   serial_groups:
   - superman
-  - superman-cats
-  - superman-rats
   - superman-cipher
   build_logs_to_retain: 100
   plan:
@@ -369,8 +274,6 @@ jobs:
 - name: delete-cf-deployment
   serial_groups:
   - superman
-  - superman-cats
-  - superman-rats
   - superman-cipher
   build_logs_to_retain: 100
   plan:
