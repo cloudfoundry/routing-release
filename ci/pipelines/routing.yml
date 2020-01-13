@@ -12,6 +12,7 @@ groups:
   - batman-rats
   - batman-cats
   - batman-drats
+  - batman-deploy-and-run-cipher-suite-tests
   - orinoco-http-perf-tests
   - diana-tcp-perf-tests
   - ci-lite-deploy-cf
@@ -89,6 +90,12 @@ resources:
     branch: master
     tag_filter: v*
     uri: https://github.com/cloudfoundry-incubator/bpm-release.git
+
+- name: cipher-test-release
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cf-routing/cipher-test-release
 
 - name: golang-release-latest
   type: git
@@ -564,6 +571,49 @@ jobs:
       PRIORITY: normal
       AWS_ENV: batman
       DATADOG_API_KEY: ((datadog_api_key))
+
+- name: batman-deploy-and-run-cipher-suite-tests
+  serial_groups:
+  - batman
+  plan:
+  - in_parallel:
+    - get: cf-deployment-concourse-tasks
+    - get: deployments-routing
+    - get: routing-release-ci
+    - get: release-dir
+      resource: cipher-test-release
+      trigger: true
+    - get: routing-release
+      passed: [batman-deploy-cf]
+      trigger: true
+    - get: gcp-stemcell-xenial
+  - task: generate-cipher-manifest
+    file: routing-release-ci/ci/tasks/generate-cipher-manifest/task.yml
+    params:
+      CIPHERS: "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384"
+      ENVIRONMENT: batman
+  - task: create-release-tarball
+    file: routing-release-ci/ci/tasks/create-release-tarball/task.yml
+  - task: deploy-run-errand
+    file: routing-release-ci/ci/tasks/run-cipher-suite/task.yml
+    input_mapping:
+      gcp-stemcell: gcp-stemcell-xenial
+    params:
+      ENVIRONMENT: batman
+      DEPLOYMENT: cipher
+      MANIFEST: cipher-manifest/cipher.yml
+      RELEASES_DIR: "release-tarball/*.tgz"
+      STEMCELL_REGEX: gcp-stemcell/*.tgz
+    ensure:
+      task: delete-cipher-deployment
+      file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+      input_mapping:
+        bbl-state: deployments-routing
+      params:
+        DEPLOYMENT_NAME: cipher
+        BBL_STATE_DIR: batman/bbl-state
+
+
 
 - name: batman-cats
   serial_groups: [batman]

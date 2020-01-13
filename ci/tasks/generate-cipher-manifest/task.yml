@@ -20,4 +20,4 @@ run:
 params:
   CIPHERS:
   OUTPUT_DIR: cipher-manifest
-  ENVIRONMENT: superman
+  ENVIRONMENT:
