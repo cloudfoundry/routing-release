@@ -693,6 +693,10 @@ jobs:
       BBL_STATE_DIR: batman/bbl-state
       DEPLOYMENT_NAME: cf
       ERRAND_NAME: smoke-tests
+  - task: indicator-protocol-test
+    file: routing-release-ci/ci/tasks/indicator-protocol-test/task.yml
+    params:
+      ENVIRONMENT: batman
 
 - name: batman-drats
   serial_groups: [batman]
