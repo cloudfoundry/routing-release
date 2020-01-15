@@ -10,7 +10,6 @@ inputs:
 - name: deployments-routing
 - name: routing-release
 - name: routing-release-ci
-- name: networking-oss-deployments
 
 outputs:
   - name: perf-manifest
