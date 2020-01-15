@@ -845,29 +845,38 @@ jobs:
       trigger: true
     - get: routing-perf-release
       trigger: true
+  - task: upload-latest-perf
+    file: routing-release-ci/ci/tasks/upload-local-release/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+      local-release: routing-perf-release
+    params:
+      BBL_STATE_DIR: orinoco/bbl-state
+  - task: upload-latest-routing
+    file: routing-release-ci/ci/tasks/upload-local-release/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+      local-release: routing-release
+    params:
+      BBL_STATE_DIR: orinoco/bbl-state
   - task: deploy-gorouter-and-perf
-    config:
-      platform: linux
-      image_resource:
-        type: docker-image
-        source:
-          repository: cloudfoundry/cf-routing-pipeline
-      inputs:
-      - name: routing-release-ci
-      - name: deployments-routing
-      - name: cf-deployment
-      - name: routing-release
-      - name: routing-perf-release
-      run:
-        path: bash
-        args:
-          - -exc
-          - |
-            source routing-release-ci/ci/scripts/script_helpers.sh
-            bosh_login orinoco
-            deployments-routing/orinoco/deploy-gorouter 1 -n
+    file: routing-release-ci/ci/tasks/bosh2-command/task.yml
+    params:
+      NUMBER_OF_RUNS: 1
+      ENVIRONMENT: orinoco
+      DEPLOYMENT: gorouter-standalone-orinoco
+      COMMAND: 'deploy routing-release-ci/ci/manifests/gorouter-standalone-orinoco.yml \
+      --vars-store /tmp/temp-deployment-vars.yml \
+      -v system_domain="orinoco.cf-app.com" \
+      --no-redact --non-interactive'
+    ensure:
+      task: cleanup
+      file: routing-release-ci/ci/tasks/bosh2-command/task.yml
       params:
-        ROUTING_RELEASE_PATH: "../../routing-release"
+        NUMBER_OF_RUNS: 1
+        ENVIRONMENT: orinoco
+        DEPLOYMENT: gorouter-standalone-orinoco
+        COMMAND: 'clean-up --non-interactive'
   - task: sleep-until-route-populates
     config:
       platform: linux
@@ -884,7 +893,7 @@ jobs:
     params:
       ENVIRONMENT: orinoco
       NUMBER_OF_RUNS: 9
-      DEPLOYMENT: gorouter-standalone-1
+      DEPLOYMENT: gorouter-standalone-orinoco
       COMMAND: 'run-errand http_performance_tests --keep-alive --download-logs'
     ensure:
       task: final-run-and-cleanup-errand-vm
@@ -892,7 +901,7 @@ jobs:
       params:
         ENVIRONMENT: orinoco
         NUMBER_OF_RUNS: 1
-        DEPLOYMENT: gorouter-standalone-1
+        DEPLOYMENT: gorouter-standalone-orinoco
         COMMAND: 'run-errand http_performance_tests --download-logs'
 
 # INFRASTRUCTURE - orinoco

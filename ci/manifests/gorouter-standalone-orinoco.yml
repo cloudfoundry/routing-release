@@ -1,0 +1,159 @@
+---
+name: gorouter-standalone-orinoco
+
+update:
+  canaries: 1
+  canary_watch_time: 1000-180000
+  max_in_flight: 50
+  serial: false
+  update_watch_time: 1000-180000
+addons:
+- name: bpm
+  include:
+    stemcell:
+    - os: ubuntu-xenial
+  jobs:
+  - name: bpm
+    release: bpm
+
+releases:
+- name: nats
+  url: https://bosh.io/d/github.com/cloudfoundry/nats-release?v=22
+  version: "22"
+  sha1: 1300071c7cf43f5d299a6eaec6f6bb6cca7eac3b
+- name: routing
+  version: latest
+- name: routing-perf
+  version: latest
+- name: bpm
+  url: https://bosh.io/d/github.com/cloudfoundry-incubator/bpm-release?v=0.9.0
+  version: 0.9.0
+  sha1: 0cb3242063c95271c95b62de3a6d07072aff0b29
+
+stemcells:
+- alias: xenial
+  os: ubuntu-xenial
+  version: latest
+
+instance_groups:
+- name: nats
+  instances: 1
+  vm_type: default
+  stemcell: xenial
+  azs: [z1]
+  networks:
+  - name: default
+  jobs:
+  - name: nats
+    release: nats
+    provides:
+      nats: {as: nats, shared: true}
+    properties:
+      nats:
+        debug: false
+        monitor_port: 4221
+        prof_port: 0
+        trace: false
+        user: nats
+        password: ((nats_password))
+
+- name: router
+  instances: 1
+  vm_type: c4.large
+  stemcell: xenial
+  azs: [z1]
+  networks:
+  - name: default
+  jobs:
+  - name: gorouter
+    release: routing
+    properties:
+      router:
+        ca_certs: |
+          ((application_ca.certificate))
+        debug_address: 0.0.0.0:17002
+        route_services_recommend_https: false
+        route_services_secret: ((router_route_services_secret))
+        ssl_skip_validation: true
+        status:
+          password: ((router_status_password))
+          user: router
+      uaa: # Dummy values to make template evaluation happy
+        clients:
+          gorouter:
+            secret: ""
+        ssl:
+          port: 0
+
+- name: gostatic
+  instances: 1
+  vm_type: c4.large
+  stemcell: xenial
+  azs: [z1]
+  jobs:
+  - name: gostatic
+    release: routing-perf
+    provides:
+      static: {as: gostatic}
+    properties:
+      gostatic:
+        response_size: 1
+  networks:
+  - name: default
+
+- name: http_route_populator
+  instances: 1
+  vm_type: default
+  stemcell: xenial
+  azs: [z1]
+  jobs:
+  - name: http_route_populator
+    release: routing-perf
+    consumes:
+      static: {from: gostatic}
+    properties:
+      http_route_populator:
+        app_domain: foo.com
+        app_name: gostatic
+        num_routes: 100000
+  networks:
+  - name: default
+
+- name: http_performance_tests
+  instances: 1
+  vm_type: c4.large
+  stemcell: xenial
+  azs:
+  - z1
+  jobs:
+  - name: performance_tests
+    release: routing-perf
+    properties:
+      performance_tests:
+        tag: gorouter
+        host: gostatic-0.foo.com
+        port: 80
+        protocol: http
+        num_requests: 150000
+        concurrent_requests: 2
+        throughput_lower_limit: 1175
+        latency_upper_limit_90: 1.85
+        latency_upper_limit_95: 1.95
+        latency_upper_limit_99: 3.15
+        datadog_api_key: ((datadog_api_key))
+  lifecycle: errand
+  networks:
+  - name: default
+
+variables:
+- name: router_status_password
+  type: password
+- name: router_route_services_secret
+  type: password
+- name: nats_password
+  type: password
+- name: application_ca
+  type: certificate
+  options:
+    common_name: appRootCA
+    is_ca: true
