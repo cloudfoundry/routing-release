@@ -540,8 +540,8 @@ jobs:
         use-compiled-releases.yml
         update_watch.yml
         syslog.yml
-        routing_acceptance_tests.yml
-        routing_smoke_tests.yml
+        routing-acceptance-tests.yml
+        routing-smoke-tests.yml
         add-datadog-firehose-nozzle.yml
         test/add-persistent-isolation-segment-diego-cell.yml
         test/add-persistent-isolation-segment-router.yml
@@ -1184,8 +1184,8 @@ jobs:
         use-compiled-releases.yml
         bosh-lite.yml
         use-postgres.yml
-        routing_acceptance_tests.yml
-        routing_smoke_tests.yml
+        routing-acceptance-tests.yml
+        routing-smoke-tests.yml
         ca_certs.yml
       BBL_STATE_DIR: ci-lite/bbl-state
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io

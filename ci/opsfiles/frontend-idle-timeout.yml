@@ -1,0 +1,6 @@
+# Long timeout for frontend connections
+# see https://github.com/cloudfoundry/gorouter/issues/189
+# and https://www.pivotaltracker.com/story/show/150561986
+- type: replace
+  path: /instance_groups/name=router/jobs/name=gorouter/properties/router?/frontend_idle_timeout
+  value: 700
