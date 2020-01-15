@@ -1,0 +1,32 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: relintdockerhubpushbot/cf-deployment-concourse-tasks #TODO: Update me
+    tag: latest
+
+inputs:
+- name: routing-release-ci
+- name: bbl-state  # - The repo containing the Director's bbl state dir
+- name: cert-directory  # - Directory containing the value file
+
+run:
+  path: routing-release-ci/ci/tasks/set-cert-in-credhub/task.sh
+
+params:
+
+  BBL_STATE_DIR: bbl-state
+  # - Optional
+  # - Path to the directory containing the `bbl-state.json` file
+  # - The path is relative to the `bbl-state` input
+  # - If blank or '.', uses `bbl-state` input as the location for bbl state
+  # - If the specified path does not exist, it will be created
+
+  CERTIFICATE_FILE:
+  # - Path to the file that will be the value stored in credhub
+  # - The path is relative to the `cert-directory` input
+
+  CREDHUB_KEY: /lb_cert
+

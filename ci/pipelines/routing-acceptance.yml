@@ -103,6 +103,15 @@ jobs:
       bbl-state: deployments-routing
     params:
       BBL_STATE_DIR: superman/bbl-state
+  - task: upload-lb-cert-to-credhub
+    file: routing-release-ci/ci/tasks/set-cert-in-credhub/task.yml
+    params:
+      BBL_STATE_DIR: superman/bbl-state
+      CERTIFICATE_FILE: superman/lb_certs/cert.pem
+      CREDHUB_KEY: /bosh-superman/cf/lb_cert
+    input_mapping:
+      bbl-state: deployments-routing
+      cert-directory: deployments-routing
   - task: merge-ops-files
     file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
     params:
@@ -128,7 +137,7 @@ jobs:
         isolation-in-z3.yml
         validate-ssl.yml
         enable-locket-isolated-diego.yml
-        ca_certs.yml
+        add-lb-ca-cert.yml
         use-internal-lookup-for-route-services.yml
       BBL_STATE_DIR: superman/bbl-state
 
