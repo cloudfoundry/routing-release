@@ -1,0 +1,332 @@
+---
+name: "performance"
+update:
+  canaries: 1
+  canary_watch_time: 5000-120000
+  max_in_flight: 1
+  serial: false
+  update_watch_time: 5000-120000
+releases:
+- name: routing-perf
+  version: latest
+- name: postgres
+  version: latest
+- name: bosh-dns-aliases
+  version: latest
+- name: bpm
+  version: latest
+- name: routing
+  version: latest
+- name: diego
+  version: latest
+
+stemcells:
+- alias: xenial
+  os: ubuntu-xenial
+  version: latest
+
+addons:
+- name: bpm
+  include:
+    stemcell:
+    - os: ubuntu-xenial
+  jobs:
+  - name: bpm
+    release: bpm
+- name: bosh-dns-aliases
+  include:
+    stemcell:
+    - os: ubuntu-xenial
+  jobs:
+  - name: bosh-dns-aliases
+    release: bosh-dns-aliases
+    properties:
+      aliases:
+      - domain: locket.service.cf.internal
+        targets:
+        - query: '*'
+          instance_group: locket
+          deployment: performance
+          network: private
+          domain: bosh
+      - domain: sql-db.service.cf.internal
+        targets:
+        - query: '*'
+          instance_group: postgres
+          deployment: performance
+          network: private
+          domain: bosh
+      - domain: routing-api.service.cf.internal
+        targets:
+        - query: '*'
+          instance_group: routing_api
+          deployment: performance
+          network: private
+          domain: bosh
+
+instance_groups:
+- name: postgres
+  instances: 1
+  vm_type: extra-large
+  stemcell: xenial
+  azs: [z1]
+  networks:
+  - name: private
+    static_ips:
+    - 10.0.255.191
+  persistent_disk_type: 1GB
+  update:
+    max_in_flight: 1
+    serial: true
+  jobs:
+  - name: postgres
+    release: postgres
+    provides:
+      postgres: {as: db, shared: true}
+    properties:
+      databases:
+        databases:
+        - name: routing-api
+        - name: locket
+        roles:
+        - name: routing-api
+          password: ((postgres_password))
+        - name: locket
+          password: ((locket_database_password))
+
+- name: locket
+  instances: 1
+  vm_type: extra-large
+  stemcell: xenial
+  azs: [z1]
+  networks:
+  - name: private
+  update:
+    max_in_flight: 1
+    serial: true
+  jobs:
+   - name: locket
+     release: diego
+     properties:
+       bpm:
+         enabled: true
+       tls:
+         ca_cert: ((service_cf_internal_ca.certificate))
+         cert: ((diego_locket_server.certificate))
+         key: ((diego_locket_server.private_key))
+       diego:
+         locket:
+           sql:
+             db_host: sql-db.service.cf.internal
+             db_port: 5432
+             db_schema: locket
+             db_username: locket
+             db_password: ((locket_database_password))
+             db_driver: postgres
+       loggregator:
+         use_v2_api: false
+         ca_cert: ((loggregator_ca.certificate))
+         cert: ((loggregator_tls_agent.certificate))
+         key: ((loggregator_tls_agent.private_key))
+
+- name: gostatic
+  instances: 1
+  vm_type: extra-large
+  stemcell: xenial
+  azs: [z2]
+  jobs:
+  - name: gostatic
+    release: routing-perf
+    provides:
+      static: {as: gostatic}
+    properties:
+      gostatic:
+        response_size: 1
+  networks:
+  - name: private
+
+- name: tcp_route_populator
+  instances: 1
+  vm_type: extra-large
+  stemcell: xenial
+  azs: [z2]
+  jobs:
+  - name: tcp_route_populator
+    release: routing-perf
+    consumes:
+      static: {from: gostatic}
+    properties:
+      tcp_route_populator:
+        routing_api_url: routing-api.service.cf.internal:3000
+        external_port_start: 30000
+        external_port_end: 30999
+        sleep_interval: 10
+  networks:
+  - name: private
+
+- name: tcp_performance_tests
+  instances: 1
+  vm_type: extra-large
+  stemcell: xenial
+  azs:
+  - z2
+  jobs:
+  - name: performance_tests
+    release: routing-perf
+    properties:
+      performance_tests:
+        tag: tcp-router
+        host: tcp.diana.com
+        port: 30001
+        protocol: http
+        num_requests: 1500160
+        concurrent_requests: 64
+        throughput_lower_limit: 40000
+        latency_upper_limit_90: 2.5
+        latency_upper_limit_95: 2.9
+        latency_upper_limit_99: 3.6
+        routing_release_version: ROUTING_RELEASE_VERSION
+        datadog_api_key: 91aa059eceed809a364eed746beba0cd
+  lifecycle: errand
+  networks:
+  - name: private
+
+- name: tcp_router
+  instances: 1
+  vm_type: extra-large
+  stemcell: xenial
+  azs: [z2]
+  networks:
+  - name: private
+  persistent_disk_type: 1GB
+  update:
+    max_in_flight: 1
+    serial: true
+  jobs:
+  - name: tcp_router
+    release: routing
+    provides:
+      tcp_router: {as: tcp_router, shared: true}
+    properties:
+      routing_api:
+        auth_disabled: true
+        client_cert: ((routing_api_tls_client.certificate))
+        client_private_key: ((routing_api_tls_client.private_key))
+        ca_cert: ((routing_api_ca.ca))
+      tcp_router:
+        oauth_secret: ((tcp_router_secret))
+      dns_health_check_host: sql-db.service.cf.internal
+      skip_ssl_validation: true
+      uaa:
+        tls_port: 0
+
+- name: routing_api
+  instances: 1
+  vm_type: extra-large
+  stemcell: xenial
+  azs: [z2]
+  networks:
+  - name: private
+    static_ips:
+    - 10.0.255.193
+  persistent_disk_type: 1GB
+  update:
+    max_in_flight: 1
+    serial: true
+  jobs:
+  - name: routing-api
+    release: routing
+    properties:
+      dns_health_check_host: sql-db.service.cf.internal
+      routing_api:
+        enabled_api_endpoints: both
+        mtls_ca: ((routing_api_tls_client.ca))
+        mtls_server_cert: ((routing_api_tls.certificate))
+        mtls_server_key: ((routing_api_tls.private_key))
+        mtls_client_cert: ((routing_api_tls_client.certificate))
+        mtls_client_key: ((routing_api_tls_client.private_key))
+        skip_consul_lock: true
+        auth_disabled: true
+        sqldb:
+          host: 10.0.255.191
+          port: 5432
+          schema: routing-api
+          type: postgres
+          username: routing-api
+          password: ((postgres_password))
+        router_groups:
+        - name: default-tcp
+          reservable_ports: 30000-30099
+          type: tcp
+        system_domain: diana.routing.cf-app.com
+        locket:
+          api_location: locket.service.cf.internal:8891
+          ca_cert: ((service_cf_internal_ca.certificate))
+          client_cert: ((diego_locket_client.certificate))
+          client_key: ((diego_locket_client.private_key))
+      uaa:
+        tls_port: 0
+
+variables:
+- name: tcp_router_secret
+  type: password
+- name: postgres_password
+  type: password
+- name: consul_encrypt_key
+  type: password
+- name: service_cf_internal_ca
+  type: certificate
+  options:
+    is_ca: true
+    common_name: internalCA
+- name: diego_locket_server
+  type: certificate
+  options:
+    ca: service_cf_internal_ca
+    common_name: locket.service.cf.internal
+    extended_key_usage:
+    - server_auth
+    alternative_names:
+    - "*.locket.service.cf.internal"
+    - locket.service.cf.internal
+- name: diego_locket_client
+  type: certificate
+  options:
+    ca: service_cf_internal_ca
+    common_name: locket client
+    extended_key_usage:
+    - client_auth
+- name: locket_database_password
+  type: password
+- name: loggregator_ca
+  type: certificate
+  options:
+    is_ca: true
+    common_name: loggregatorCA
+- name: loggregator_tls_agent
+  type: certificate
+  options:
+    ca: loggregator_ca
+    common_name: metron
+    extended_key_usage:
+    - client_auth
+    - server_auth
+- name: routing_api_ca
+  options:
+    common_name: routing_api
+    is_ca: true
+  type: certificate
+- name: routing_api_tls
+  options:
+    ca: routing_api_ca
+    common_name: routing-api.service.cf.internal
+    extended_key_usage:
+    - server_auth
+  type: certificate
+- name: routing_api_tls_client
+  options:
+    ca: routing_api_ca
+    common_name: routing-api-client
+    extended_key_usage:
+    - client_auth
+  type: certificate

@@ -19,7 +19,7 @@ run:
   path: routing-release-ci/ci/tasks/generate-perf-manifest/task
 
 params:
+  MANIFEST_PATH:
   ENV_DIR: deployments-routing/YOUR-ENVIRONMENT
-  MANIFEST_DIR: networking-oss-deployments/concourse/bosh/deployments
   ROUTING_RELEASE_DIR: routing-release
   OUTPUT_DIR: perf-manifest

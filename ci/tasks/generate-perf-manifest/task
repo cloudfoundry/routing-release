@@ -19,13 +19,12 @@ main() {
     sha=$(git rev-parse HEAD)
   popd
 
-  manifest=$MANIFEST_DIR/perf.yml
-  sed -i'' "s/ROUTING_RELEASE_VERSION/$sha/g" $manifest
+  sed -i'' "s/ROUTING_RELEASE_VERSION/$sha/g" $MANIFEST_PATH
 
   echo "=============  MANIFEST  ====================="
-  cat $manifest
+  cat $MANIFEST_PATH
 
-  cp $manifest $OUTPUT_DIR/.
+  cp $MANIFEST_PATH $OUTPUT_DIR/.
 }
 
 main

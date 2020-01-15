@@ -161,14 +161,6 @@ resources:
     private_key: ((github_private_key.private_key))
     uri: git@github.com:cloudfoundry/deployments-routing.git
 
-- name: networking-oss-deployments
-  type: git
-  icon: github-box
-  source:
-    branch: master
-    private_key: ((github_private_key.private_key))
-    uri: git@github.com:cloudfoundry/networking-oss-deployments.git
-
 - name: routing-release-ci
   type: git
   icon: github-box
@@ -992,7 +984,6 @@ jobs:
   plan:
   - in_parallel:
     - get: deployments-routing
-    - get: networking-oss-deployments
     - get: routing-release-ci
     - get: gcp-stemcell-xenial
       trigger: true
@@ -1048,7 +1039,7 @@ jobs:
     file: routing-release-ci/ci/tasks/generate-perf-manifest/task.yml
     params:
       ENV_DIR: deployments-routing/diana
-      MANIFEST_DIR: networking-oss-deployments/concourse/bosh/deployments
+      MANIFEST_PATH: routing-release-ci/ci/manifests/diana-perf.yml
   - task: create-perf-release-tarball
     file: routing-release-ci/ci/tasks/create-release-tarball/task.yml
     input_mapping:
