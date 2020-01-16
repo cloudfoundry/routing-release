@@ -516,12 +516,6 @@ jobs:
       passed:
       - routing-release-unit
     - get: routing-release-ci
-  - task: upload-stemcell
-    file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
-    input_mapping:
-      bbl-state: deployments-routing
-    params:
-      BBL_STATE_DIR: batman/bbl-state
   - task: merge-ops-files
     file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
     params:
@@ -1170,13 +1164,6 @@ jobs:
       trigger: true
       passed:
       - routing-release-unit
-  - task: upload-stemcell
-    file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
-    input_mapping:
-      bbl-state: deployments-routing
-    params:
-      BBL_STATE_DIR: ci-lite/bbl-state
-      INFRASTRUCTURE: bosh-lite
   - task: upload-lb-cert-to-credhub
     file: routing-release-ci/ci/tasks/set-cert-in-credhub/task.yml
     params:
@@ -1406,13 +1393,6 @@ jobs:
     - get: routing-release
       trigger: true
       passed: [routing-release-unit]
-  - task: upload-stemcell
-    file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
-    input_mapping:
-      bbl-state: deployments-routing
-      cf-deployment: cf-deployment-release-latest
-    params:
-      BBL_STATE_DIR: jubilee/bbl-state
   - task: merge-ops-files
     file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
     input_mapping:
