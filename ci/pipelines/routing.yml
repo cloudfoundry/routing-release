@@ -835,6 +835,7 @@ jobs:
   plan:
   - in_parallel:
     - get: routing-release-ci
+    - get: cf-deployment-concourse-tasks
     - get: two-hours
       trigger: true
     - get: deployments-routing
@@ -865,9 +866,9 @@ jobs:
       NUMBER_OF_RUNS: 1
       ENVIRONMENT: orinoco
       DEPLOYMENT: gorouter-standalone-orinoco
-      COMMAND: 'deploy routing-release-ci/ci/manifests/gorouter-standalone-orinoco.yml \
-      --vars-store /tmp/temp-deployment-vars.yml \
-      -v system_domain="orinoco.cf-app.com" \
+      COMMAND: 'deploy routing-release-ci/ci/manifests/gorouter-standalone-orinoco.yml 
+      --vars-store /tmp/temp-deployment-vars.yml 
+      -v system_domain="orinoco.cf-app.com" 
       --no-redact --non-interactive'
     ensure:
       task: cleanup
@@ -947,7 +948,7 @@ jobs:
     file: routing-release-ci/ci/tasks/add-credhub-value/task.yml
     params:
       ENVIRONMENT: orinoco
-      NAME: /bosh-orinoco/gorouter-standalone-1/datadog_api_key
+      NAME: /bosh-orinoco/gorouter-standalone-orinoco/datadog_api_key
       VALUE: ((datadog_api_key))
 
 - name: orinoco-destroy
@@ -1100,7 +1101,7 @@ jobs:
   - put: diana-tcp-perf-deployment
     params:
       source_file: bosh-director/source.json
-      manifest: perf-manifest/perf.yml
+      manifest: perf-manifest/diana-perf.yml
       releases:
       - routing-release-tarball/*.tgz
       - perf-release-tarball/*.tgz
