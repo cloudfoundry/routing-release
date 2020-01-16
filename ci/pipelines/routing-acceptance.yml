@@ -97,12 +97,6 @@ jobs:
       trigger: true
     - get: deployments-routing
     - get: routing-release-ci
-  - task: upload-stemcell
-    file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
-    input_mapping:
-      bbl-state: deployments-routing
-    params:
-      BBL_STATE_DIR: superman/bbl-state
   - task: upload-lb-cert-to-credhub
     file: routing-release-ci/ci/tasks/set-cert-in-credhub/task.yml
     params:
