@@ -22,6 +22,5 @@ params:
   ISO_SEG_DOMAIN_PREFIX: iso-seg
   ENABLE_ISOLATION_SEGMENT_TESTS: true
   ENVIRONMENT:
-  VARS_STORE_FILE: deployment-vars.yml
   GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
   GIT_COMMIT_USERNAME: "CI Bot"

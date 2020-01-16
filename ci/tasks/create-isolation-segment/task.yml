@@ -19,4 +19,3 @@ params:
   CF_SKIP_SSL_VALIDATION:
   ENVIRONMENT:
   ISO_SEG_NAME:
-  VARS_FILE: deployment-vars.yml
