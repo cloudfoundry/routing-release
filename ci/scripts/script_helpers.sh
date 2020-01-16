@@ -152,12 +152,7 @@ function cf_login()
 {
   env=${1}
   local cf_admin_passsword
-  if [ "${env}" = "lite" ]; then
-    local env_dir=${HOME}/workspace/deployments-routing/lite
-    cf_admin_password="$(bosh int ${env_dir}/deployment-vars.yml --path /cf_admin_password)"
-  else
-    cf_admin_password="$(extract_var "${env}" cf_admin_password)"
-  fi
+  cf_admin_password="$(extract_var "${env}" cf_admin_password)"
   cf api "api.$(get_system_domain "${env}")" --skip-ssl-validation
   cf auth admin "${cf_admin_password}"
 }
