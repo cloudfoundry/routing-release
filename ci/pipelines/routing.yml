@@ -516,6 +516,15 @@ jobs:
       passed:
       - routing-release-unit
     - get: routing-release-ci
+  - task: upload-lb-cert-to-credhub
+    file: routing-release-ci/ci/tasks/set-cert-in-credhub/task.yml
+    params:
+      BBL_STATE_DIR: batman/bbl-state
+      CERTIFICATE_FILE: batman/lb_certs/cert.pem
+      CREDHUB_KEY: /bosh-batman/cf/lb_cert
+    input_mapping:
+      bbl-state: deployments-routing
+      cert-directory: deployments-routing
   - task: merge-ops-files
     file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
     params:
@@ -532,39 +541,29 @@ jobs:
       SYSTEM_DOMAIN: batman.routing.cf-app.com
       OPS_FILES: |
         use-compiled-releases.yml
-        update_watch.yml
+        update-watch.yml
         syslog.yml
         routing-acceptance-tests.yml
         routing-smoke-tests.yml
-        add-datadog-firehose-nozzle.yml
         test/add-persistent-isolation-segment-diego-cell.yml
         test/add-persistent-isolation-segment-router.yml
         add-persistent-isolation-segment-router-ca-certs.yml
-        tls_pem.yml
-        smoke_tests.yml
+        tls-pem.yml
+        add-cipher-suites.yml
+        smoke-tests.yml
         xfcc.yml
-        backends_max_conns.yml
-        isolation_in_z3.yml
+        isolation-in-z3.yml
         backup-and-restore/enable-backup-restore.yml
-        disable_bbr_non_routing.yml
-        disable-blobstore-backup.yml
-        enable_locket_isolated_diego.yml
+        disable-bbr-non-routing.yml
+        enable-locket-isolated-diego.yml
         create-indicator-protocol-uaa-client.yml
-        ca_certs.yml
+        add-lb-ca-cert.yml
       BBL_STATE_DIR: batman/bbl-state
   - task: create-isolation-segment
     file: routing-release-ci/ci/tasks/create-isolation-segment/task.yml
     params:
       ENVIRONMENT: batman
       ISO_SEG_NAME: "persistent_isolation_segment"
-  - task: emit-datadog-deploy-end
-    file: routing-release-ci/ci/tasks/emit-datadog-event/task.yml
-    params:
-      TITLE: end_deploy
-      TEXT: end_deploy
-      PRIORITY: normal
-      AWS_ENV: batman
-      DATADOG_API_KEY: ((datadog_api_key))
 
 - name: batman-deploy-and-run-cipher-suite-tests
   serial_groups:

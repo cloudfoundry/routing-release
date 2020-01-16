@@ -1,0 +1,14 @@
+---
+# disabling non-routing and capi-related scripts
+- type: replace
+  path: /instance_groups/name=backup-restore/jobs/name=bbr-cfnetworkingdb/properties?/release_level_backup?
+  value: false
+- type: replace
+  path: /instance_groups/name=singleton-blobstore/jobs/name=blobstore/properties?/blobstore/release_level_backup?
+  value: false
+- type: replace
+  path: /instance_groups/name=singleton-blobstore/jobs/name=blobstore/properties?/release_level_backup
+  value: false
+- type: replace
+  path: /instance_groups/name=backup-restore/jobs/name=bbr-uaadb/properties/release_level_backup?
+  value: false
