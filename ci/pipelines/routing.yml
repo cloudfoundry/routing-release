@@ -1003,6 +1003,12 @@ jobs:
     - get: routing-perf-release
       trigger: true
     - get: cf-deployment-concourse-tasks
+  - task: add-credhub-value
+    file: routing-release-ci/ci/tasks/add-credhub-value/task.yml
+    params:
+      ENVIRONMENT: diana
+      NAME: /bosh-diana/performance/datadog_api_key
+      VALUE: ((datadog_api_key))
   - task: upload-latest-diego
     file: routing-release-ci/ci/tasks/upload-local-release/task.yml
     input_mapping:
