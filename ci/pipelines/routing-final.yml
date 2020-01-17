@@ -208,12 +208,24 @@ jobs:
       resource: final-version
       params: {bump: minor}
   - in_parallel:
-    - task: add-credhub-value
+    - task: add-datadog-credhub-value
       file: routing-release-ci/ci/tasks/add-credhub-value/task.yml
       params:
         ENVIRONMENT: batman-perf
         NAME: /bosh-batman-perf/cf/datadog_api_key
         VALUE: ((datadog_api_key))
+    - task: add-aws-access-key-id-credhub-value
+      file: routing-release-ci/ci/tasks/add-credhub-value/task.yml
+      params:
+        ENVIRONMENT: batman-perf
+        NAME: /bosh-batman-perf/cf/aws_access_key_id
+        VALUE: ((batman_perf_aws_access_key_id))
+    - task: add-aws-secret-access-key-credhub-value
+      file: routing-release-ci/ci/tasks/add-credhub-value/task.yml
+      params:
+        ENVIRONMENT: batman-perf
+        NAME: /bosh-batman-perf/cf/aws_secret_access_key
+        VALUE: ((batman_perf_aws_secret_access_key))
     - task: create-perf-release-tarball
       file: routing-release-ci/ci/tasks/create-release-tarball/task.yml
       input_mapping: {release-dir: routing-perf-release}
@@ -266,7 +278,7 @@ jobs:
   - put: batman-perf-deployment
     params:
       source_file: bosh-director/source.json
-      manifest: deployments-routing/batman-perf/gorouter.yml
+      manifest: routing-release-ci/ci/manifests/batman-perf-gorouter.yml
       ops_files: [ops-file/release-version.yml]
       releases:
       - routing-release-rc-tarball/*.tgz
@@ -295,7 +307,7 @@ jobs:
   - put: batman-gorouter-standalone-deployment
     params:
       source_file: bosh-director/source.json
-      manifest: deployments-routing/batman-perf/gorouter.yml
+      manifest: routing-release-ci/ci/manifests/batman-perf-gorouter.yml
       ops_files: [ops-file/release-version.yml]
       releases:
       - routing-release-master-tarball/*.tgz
