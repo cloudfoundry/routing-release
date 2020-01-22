@@ -276,6 +276,8 @@ jobs:
     - get: golang-release-latest
       trigger: true
     - get: routing-release-ci
+      params:
+        submodules: none
   - task: upgrade-go1.x-in-routing-release
     file: routing-release-ci/ci/tasks/upgrade-package-in-release/task.yml
     params:
@@ -302,6 +304,8 @@ jobs:
     - get: golang-release-latest
       trigger: true
     - get: routing-release-ci
+      params:
+        submodules: none
   - task: upgrade-go1.x-in-zero-downtime-release
     file: routing-release-ci/ci/tasks/upgrade-package-in-release/task.yml
     params:
@@ -321,6 +325,8 @@ jobs:
   - in_parallel:
     - get: routing-perf-release
     - get: routing-release-ci
+      params:
+        submodules: none
   - task: upgrade-dep-dependencies-in-routing-perf-release
     file: routing-release-ci/ci/tasks/upgrade-dep-dependencies-in-release/task.yml
     params:
@@ -370,6 +376,8 @@ jobs:
     - get: cf-cli-release
       trigger: true
     - get: routing-release-ci
+      params:
+        submodules: none
     - get: deployments-routing
   - task: upgrade-cf-cli-in-routing-release
     file: routing-release-ci/ci/tasks/upgrade-package-in-release/task.yml
@@ -392,6 +400,8 @@ jobs:
     - get: cf-deployment-concourse-tasks
     - get: deployments-routing
     - get: routing-release-ci
+      params:
+        submodules: none
     - get: bosh-bootloader # needed to get latest plan-patches
   - task: merge-bbl-config
     file: routing-release-ci/ci/tasks/merge-bbl-config/task.yml
@@ -453,6 +463,8 @@ jobs:
     - get: cf-deployment-concourse-tasks
     - get: deployments-routing
     - get: routing-release-ci
+      params:
+        submodules: none
     - get: bosh-bootloader
     - get: friday-trigger
       trigger: true
@@ -516,6 +528,8 @@ jobs:
       passed:
       - routing-release-unit
     - get: routing-release-ci
+      params:
+        submodules: none
   - task: upload-lb-cert-to-credhub
     file: routing-release-ci/ci/tasks/set-cert-in-credhub/task.yml
     params:
@@ -573,6 +587,8 @@ jobs:
     - get: cf-deployment-concourse-tasks
     - get: deployments-routing
     - get: routing-release-ci
+      params:
+        submodules: none
     - get: release-dir
       resource: cipher-test-release
       trigger: true
@@ -614,6 +630,8 @@ jobs:
   plan:
   - in_parallel:
     - get: routing-release-ci
+      params:
+        submodules: none
     - get: cf-acceptance-tests
     - get: cf-deployment
       passed: [batman-cf-smoke-and-indicator-protocol-tests]
@@ -653,6 +671,8 @@ jobs:
       passed: [batman-deploy-cf]
       trigger: true
     - get: routing-release-ci
+      params:
+        submodules: none
     - get: cf-deployment-concourse-tasks
     - get: deployments-routing
       passed: [batman-deploy-cf]
@@ -698,6 +718,8 @@ jobs:
     passed: [batman-cf-smoke-and-indicator-protocol-tests]
     trigger: true
   - get: routing-release-ci
+    params:
+      submodules: none
   - get: deployments-routing
   - get: bbr-binary-release
   - get: disaster-recovery-acceptance-tests
@@ -725,6 +747,8 @@ jobs:
     do:
     - in_parallel:
       - get: routing-release-ci
+        params:
+          submodules: none
       - get: deployments-routing
         passed: [batman-cf-smoke-and-indicator-protocol-tests]
       - get: cf-deployment
@@ -764,6 +788,8 @@ jobs:
     trigger: true
   - get: deployments-routing
   - get: routing-release-ci
+    params:
+      submodules: none
   - get: cf-deployment
     passed: [batman-deploy-cf]
     trigger: true
@@ -828,6 +854,8 @@ jobs:
   plan:
   - in_parallel:
     - get: routing-release-ci
+      params:
+        submodules: none
     - get: cf-deployment-concourse-tasks
     - get: two-hours
       trigger: true
@@ -907,6 +935,8 @@ jobs:
     - get: cf-deployment-concourse-tasks
     - get: deployments-routing
     - get: routing-release-ci
+      params:
+        submodules: none
     - get: bosh-bootloader
     - get: friday-trigger
       trigger: true
@@ -988,6 +1018,8 @@ jobs:
   - in_parallel:
     - get: deployments-routing
     - get: routing-release-ci
+      params:
+        submodules: none
     - get: gcp-stemcell-xenial
       trigger: true
     - get: bpm-release
@@ -1165,6 +1197,8 @@ jobs:
     - get: cf-deployment
       trigger: true
     - get: routing-release-ci
+      params:
+        submodules: none
     - get: routing-release
       trigger: true
       passed:
@@ -1215,6 +1249,8 @@ jobs:
   plan:
   - in_parallel:
     - get: routing-release-ci
+      params:
+        submodules: none
     - get: cf-acceptance-tests
     - get: cf-deployment
       trigger: true
@@ -1253,6 +1289,8 @@ jobs:
     do:
     - in_parallel:
       - get: routing-release-ci
+        params:
+          submodules: none
       - get: deployments-routing
       - get: cf-deployment
         trigger: true
@@ -1291,6 +1329,8 @@ jobs:
     - get: cf-deployment-concourse-tasks
     - get: deployments-routing
     - get: routing-release-ci
+      params:
+        submodules: none
     - get: bosh-bootloader
     - get: friday-trigger
       trigger: true
@@ -1350,6 +1390,8 @@ jobs:
     - get: cf-deployment-concourse-tasks
     - get: deployments-routing
     - get: routing-release-ci
+      params:
+        submodules: none
     - get: bosh-bootloader
   - task: merge-bbl-config
     file: routing-release-ci/ci/tasks/merge-bbl-config/task.yml
@@ -1394,6 +1436,8 @@ jobs:
       trigger: true
     - get: deployments-routing
     - get: routing-release-ci
+      params:
+        submodules: none
     - get: cf-smoke-tests-release
     - get: zero-downtime-release
     - get: routing-release
