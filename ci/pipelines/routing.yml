@@ -1201,6 +1201,7 @@ jobs:
         add-lb-ca-cert.yml
       BBL_STATE_DIR: ci-lite/bbl-state
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+      BOSH_LITE: true
   - task: bosh-cleanup
     file: routing-release-ci/ci/tasks/bosh2-command/task.yml
     params:
