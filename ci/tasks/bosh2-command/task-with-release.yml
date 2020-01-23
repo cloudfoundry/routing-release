@@ -10,6 +10,10 @@ inputs:
   - name: deployments-routing
   - name: routing-release-ci
   - name: release
+  - name: networking-oss-tools
+    optional: true
+  - name: networking-oss-deployments
+    optional: true
 
 run:
   path: routing-release-ci/ci/tasks/bosh2-command/task

@@ -9,6 +9,10 @@ image_resource:
 inputs:
   - name: deployments-routing
   - name: routing-release-ci
+  - name: networking-oss-tools
+    optional: true
+  - name: networking-oss-deployments
+    optional: true
 
 run:
   path: routing-release-ci/ci/tasks/bosh2-command/task
