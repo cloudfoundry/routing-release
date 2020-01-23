@@ -161,6 +161,22 @@ resources:
     private_key: ((github_private_key.private_key))
     uri: git@github.com:cloudfoundry/deployments-routing.git
 
+- name: networking-oss-deployments
+  type: git
+  icon: github-box
+  source:
+    branch: master
+    private_key: ((github_private_key.private_key))
+    uri: git@github.com:cloudfoundry/networking-oss-deployments.git
+
+- name: networking-oss-tools
+  type: git
+  icon: github-box
+  source:
+    branch: master
+    private_key: ((github_private_key.private_key))
+    uri: git@github.com:cloudfoundry/networking-oss-tools.git
+
 - name: routing-release-ci
   type: git
   icon: github-box
@@ -859,7 +875,8 @@ jobs:
     - get: cf-deployment-concourse-tasks
     - get: two-hours
       trigger: true
-    - get: deployments-routing
+    - get: networking-oss-deployments
+    - get: networking-oss-tools
     - get: cf-deployment
     - get: routing-release
       passed:
@@ -870,17 +887,17 @@ jobs:
   - task: upload-latest-perf
     file: routing-release-ci/ci/tasks/upload-local-release/task.yml
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
       local-release: routing-perf-release
     params:
-      BBL_STATE_DIR: orinoco/bbl-state
+      BBL_STATE_DIR: environments/orinoco/bbl-state
   - task: upload-latest-routing
     file: routing-release-ci/ci/tasks/upload-local-release/task.yml
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
       local-release: routing-release
     params:
-      BBL_STATE_DIR: orinoco/bbl-state
+      BBL_STATE_DIR: environments/orinoco/bbl-state
   - task: deploy-gorouter-and-perf
     file: routing-release-ci/ci/tasks/bosh2-command/task.yml
     params:
@@ -933,7 +950,7 @@ jobs:
   plan:
   - in_parallel:
     - get: cf-deployment-concourse-tasks
-    - get: deployments-routing
+    - get: networking-oss-deployments
     - get: routing-release-ci
       params:
         submodules: none
@@ -943,9 +960,9 @@ jobs:
   - task: make-certs
     file: routing-release-ci/ci/tasks/make-certs/task.yml
     params:
-      ENVIRONMENT: orinoco
+      ENVIRONMENT: environments/orinoco
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
   - task: setup-orinoco
     file: cf-deployment-concourse-tasks/bbl-up/task.yml
     params:
@@ -957,13 +974,13 @@ jobs:
       BBL_LB_KEY: ../lb_certs/key.pem
       LB_DOMAIN: orinoco.routing.cf-app.com
       BBL_ENV_NAME: orinoco
-      BBL_STATE_DIR: orinoco/bbl-state
+      BBL_STATE_DIR: environments/orinoco/bbl-state
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
     input_mapping:
       bbl-config: updated-bbl-state
       bbl-state: updated-bbl-state
     ensure:
-      put: deployments-routing
+      put: networking-oss-deployments
       params:
         repository: updated-bbl-state
         rebase: true
@@ -979,19 +996,19 @@ jobs:
   build_logs_to_retain: 100
   plan:
   - in_parallel:
-    - get: deployments-routing
+    - get: networking-oss-deployments
     - get: cf-deployment-concourse-tasks
   - task: destroy-orinoco
     file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
     params:
-      BBL_STATE_DIR: orinoco/bbl-state
+      BBL_STATE_DIR: environments/orinoco/bbl-state
       BBL_AWS_ACCESS_KEY_ID: ((orinoco_aws_access_key_id))
       BBL_AWS_SECRET_ACCESS_KEY: ((orinoco_aws_secret_access_key))
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
     ensure:
-      put: deployments-routing
+      put: networking-oss-deployments
       params:
         repository: updated-bbl-state
         rebase: true
@@ -1002,15 +1019,15 @@ jobs:
   plan:
   - in_parallel:
     - get: cf-deployment-concourse-tasks
-    - get: deployments-routing
+    - get: networking-oss-deployments
     - get: routing-release
   - task: delete-cf-deployment
     file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
     params:
       DEPLOYMENT_NAME: gorouter-standalone-1
-      BBL_STATE_DIR: orinoco/bbl-state
+      BBL_STATE_DIR: environments/orinoco/bbl-state
 
 - name: diana-tcp-perf-tests
   serial_groups: [diana]
