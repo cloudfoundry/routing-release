@@ -8,7 +8,6 @@ image_resource:
 
 inputs:
   - name: release-dir
-  - name: deployments-routing
   - name: routing-release-ci
 
 outputs:
