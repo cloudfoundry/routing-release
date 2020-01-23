@@ -10,7 +10,6 @@ set -u
 root_dir="${PWD}"
 
 # Inputs
-ENV_DIR="${root_dir}/${ENV_DIR:?"\$ENV_DIR not set"}"
 ROUTING_RELEASE_DIR="${root_dir}/${ROUTING_RELEASE_DIR:?"ROUTING_RELEASE_DIR must be provided"}"
 OUTPUT_DIR="${root_dir}/${OUTPUT_DIR:?"OUTPUT_DIR must be provided"}"
 
