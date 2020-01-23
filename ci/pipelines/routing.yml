@@ -1033,7 +1033,8 @@ jobs:
   serial_groups: [diana]
   plan:
   - in_parallel:
-    - get: deployments-routing
+    - get: networking-oss-deployments
+    - get: networking-oss-tools
     - get: routing-release-ci
       params:
         submodules: none
@@ -1061,42 +1062,41 @@ jobs:
   - task: upload-latest-diego
     file: routing-release-ci/ci/tasks/upload-local-release/task.yml
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
       local-release: diego-release
     params:
-      BBL_STATE_DIR: diana/bbl-state
+      BBL_STATE_DIR: environments/diana/bbl-state
   - task: upload-latest-postgres
     file: routing-release-ci/ci/tasks/upload-local-release/task.yml
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
       local-release: postgres-release
     params:
-      BBL_STATE_DIR: diana/bbl-state
+      BBL_STATE_DIR: environments/diana/bbl-state
   - task: upload-latest-bosh-dns-aliases
     file: routing-release-ci/ci/tasks/upload-local-release/task.yml
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
       local-release: bosh-dns-aliases-release
     params:
-      BBL_STATE_DIR: diana/bbl-state
+      BBL_STATE_DIR: environments/diana/bbl-state
   - task: upload-latest-bpm
     file: routing-release-ci/ci/tasks/upload-local-release/task.yml
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
       local-release: bpm-release
     params:
-      BBL_STATE_DIR: diana/bbl-state
+      BBL_STATE_DIR: environments/diana/bbl-state
   - task: upload-latest-bosh-dns
     file: routing-release-ci/ci/tasks/upload-local-release/task.yml
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
       local-release: bosh-dns-release
     params:
-      BBL_STATE_DIR: diana/bbl-state
+      BBL_STATE_DIR: environments/diana/bbl-state
   - task: generate-perf-manifest
     file: routing-release-ci/ci/tasks/generate-perf-manifest/task.yml
     params:
-      ENV_DIR: deployments-routing/diana
       MANIFEST_PATH: routing-release-ci/ci/manifests/diana-perf.yml
   - task: create-perf-release-tarball
     file: routing-release-ci/ci/tasks/create-release-tarball/task.yml
@@ -1118,7 +1118,7 @@ jobs:
         source:
           repository: cloudfoundry/cf-routing-pipeline
       inputs:
-      - name: deployments-routing
+      - name: networking-oss-deployments
       outputs:
       - name: bosh-director
       run:
@@ -1127,7 +1127,7 @@ jobs:
         - -c
         - |
             set -e -o pipefail
-            pushd $(pwd)/deployments-routing/diana/bbl-state
+            pushd $(pwd)/networking-oss-deployments/environments/diana/bbl-state
             echo '{}' | jq --arg target "$(bbl director-address)" \
               --arg caCert "$(bbl director-ca-cert)" \
               --arg client "$(bbl director-username)" \
@@ -1144,7 +1144,7 @@ jobs:
               "jumpbox_ssh_key": $jumpboxSSHKey
             }' > source.json
             popd
-            cp $(pwd)/deployments-routing/diana/bbl-state/source.json $(pwd)/bosh-director/
+            cp $(pwd)/networking-oss-deployments/environments/diana/bbl-state/source.json $(pwd)/bosh-director/
   # deploy
   - put: diana-tcp-perf-deployment
     params:
@@ -1185,23 +1185,23 @@ jobs:
 - name: diana-cleanup
   serial_groups: [diana]
   plan:
-  - get: deployments-routing
+  - get: networking-oss-deployments
     trigger: true
     passed: [diana-tcp-perf-tests]
   - get: cf-deployment-concourse-tasks
   - task: cleanup-artifacts
     file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
     params:
-      BBL_STATE_DIR: diana/bbl-state
+      BBL_STATE_DIR: environments/diana/bbl-state
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
   - task: delete-deployment
     file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
     params:
       DEPLOYMENT_NAME: performance
-      BBL_STATE_DIR: diana/bbl-state
+      BBL_STATE_DIR: environments/diana/bbl-state
 
 # BOSH LITE DEPLOY AND TEST - ci-lite
 - name: ci-lite-deploy-cf
