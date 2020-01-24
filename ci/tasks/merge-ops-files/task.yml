@@ -8,7 +8,6 @@ image_resource:
 
 inputs:
   - name: cf-deployment
-  - name: deployments-routing
   - name: routing-release-ci
   - name: source1
     optional: true
