@@ -9,6 +9,11 @@ image_resource:
 inputs:
   - name: routing-release-ci
   - name: deployments-routing
+    optional: true
+  - name: networking-oss-deployments
+    optional: true
+  - name: networking-oss-tools
+    optional: true
   - name: cf-deployment-concourse-tasks
 
 outputs:

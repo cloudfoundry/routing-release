@@ -4,7 +4,13 @@ set -e -o pipefail
 
 # shellcheck disable=SC1091
 source cf-deployment-concourse-tasks/shared-functions
-source routing-release-ci/ci/scripts/script_helpers.sh
+
+if [[ -f networking-oss-tools/scripts/script_helpers.sh ]]; then
+  source networking-oss-tools/scripts/script_helpers.sh
+else
+  source routing-release-ci/ci/scripts/script_helpers.sh
+fi
+
 
 SYSTEM_DOMAIN="${ENVIRONMENT}.routing.cf-app.com"
 CF_SMOKE_TESTS_CONFIG="${ENVIRONMENT}/cf_smoke_tests_config.json"
@@ -12,8 +18,10 @@ CATS_INTEGRATION_CONFIG="${ENVIRONMENT}/cats_integration_config.json"
 RATS_INTEGRATION_CONFIG="${ENVIRONMENT}/rats_integration_config.json"
 ADMIN_PASS=$(extract_var "${ENVIRONMENT}" cf_admin_password)
 
-pushd deployments-routing
-  set_git_config
+mkdir -p created-integration-configs
+
+pushd created-integration-configs
+  git init
 
   echo "Creating ${CATS_INTEGRATION_CONFIG}"
   cat > "${CATS_INTEGRATION_CONFIG}" <<EOF
@@ -105,14 +113,13 @@ EOF
 EOF
 
 
- tmpfile=$(mktemp /tmp/replace-result.json.XXXXXX)
+  tmpfile=$(mktemp /tmp/replace-result.json.XXXXXX)
 
- jq --arg admin_pass "${ADMIN_PASS}" '.password=$admin_pass' "${CF_SMOKE_TESTS_CONFIG}" > "${tmpfile}" \
-   && mv "${tmpfile}" "${CF_SMOKE_TESTS_CONFIG}"
+  jq \
+    --arg admin_pass "${ADMIN_PASS}" \
+    '.password=$admin_pass' \
+    "${CF_SMOKE_TESTS_CONFIG}" > "${tmpfile}"
 
-  git add "${CF_SMOKE_TESTS_CONFIG}"
+  mv "${tmpfile}" "${CF_SMOKE_TESTS_CONFIG}"
 
-  git commit -m"creating integration configs for ${ENVIRONMENT}"
 popd
-
-git clone deployments-routing created-integration-configs/
