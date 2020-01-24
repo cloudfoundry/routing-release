@@ -29,6 +29,14 @@ resources:
     uri: git@github.com:cloudfoundry/networking-oss-deployments.git
     private_key: ((github_private_key.private_key))
 
+- name: networking-oss-tools
+  type: git
+  icon: github-box
+  source:
+    branch: master
+    private_key: ((github_private_key.private_key))
+    uri: git@github.com:cloudfoundry/networking-oss-tools.git
+
 - name: routing-release-ci
   type: git
   source:
@@ -148,6 +156,7 @@ jobs:
   - in_parallel:
     - get: cf-deployment-concourse-tasks
     - get: networking-oss-deployments
+    - get: networking-oss-tools
     - get: routing-release-ci
     - get: bosh-bootloader
     - get: bosh-deployment
