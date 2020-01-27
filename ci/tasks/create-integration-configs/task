@@ -11,20 +11,20 @@ else
   source routing-release-ci/ci/scripts/script_helpers.sh
 fi
 
-
-SYSTEM_DOMAIN="${ENVIRONMENT}.routing.cf-app.com"
-CF_SMOKE_TESTS_CONFIG="${ENVIRONMENT}/cf_smoke_tests_config.json"
-CATS_INTEGRATION_CONFIG="${ENVIRONMENT}/cats_integration_config.json"
-RATS_INTEGRATION_CONFIG="${ENVIRONMENT}/rats_integration_config.json"
-ADMIN_PASS=$(extract_var "${ENVIRONMENT}" cf_admin_password)
-
 mkdir -p created-integration-configs
-
 pushd created-integration-configs
   git init
+popd
 
-  echo "Creating ${CATS_INTEGRATION_CONFIG}"
-  cat > "${CATS_INTEGRATION_CONFIG}" <<EOF
+SYSTEM_DOMAIN="${ENVIRONMENT}.routing.cf-app.com"
+CF_SMOKE_TESTS_CONFIG="created-integration-configs/cf_smoke_tests_config.json"
+CATS_INTEGRATION_CONFIG="created-integration-configs/cats_integration_config.json"
+RATS_INTEGRATION_CONFIG="created-integration-configs/rats_integration_config.json"
+ADMIN_PASS=$(extract_var "${ENVIRONMENT}" cf_admin_password)
+
+
+echo "Creating ${CATS_INTEGRATION_CONFIG}"
+cat > "${CATS_INTEGRATION_CONFIG}" <<EOF
 {
   "api": "api.${SYSTEM_DOMAIN}",
   "admin_user": "admin",
@@ -54,10 +54,8 @@ pushd created-integration-configs
 }
 EOF
 
-  git add "${CATS_INTEGRATION_CONFIG}"
-
-  echo "Creating ${RATS_INTEGRATION_CONFIG}"
-  cat > "${RATS_INTEGRATION_CONFIG}" <<EOF
+echo "Creating ${RATS_INTEGRATION_CONFIG}"
+cat > "${RATS_INTEGRATION_CONFIG}" <<EOF
 {
   "addresses": [
     "tcp.${SYSTEM_DOMAIN}"
@@ -82,10 +80,8 @@ EOF
 }
 EOF
 
-  git add "${RATS_INTEGRATION_CONFIG}"
-
-  echo "Creating ${CF_SMOKE_TESTS_CONFIG}"
-  cat > "${CF_SMOKE_TESTS_CONFIG}" <<EOF
+echo "Creating ${CF_SMOKE_TESTS_CONFIG}"
+cat > "${CF_SMOKE_TESTS_CONFIG}" <<EOF
 {
   "suite_name": "CF_SMOKE_TESTS",
   "api": "api.${SYSTEM_DOMAIN}",
@@ -113,13 +109,12 @@ EOF
 EOF
 
 
-  tmpfile=$(mktemp /tmp/replace-result.json.XXXXXX)
+tmpfile=$(mktemp /tmp/replace-result.json.XXXXXX)
 
-  jq \
-    --arg admin_pass "${ADMIN_PASS}" \
-    '.password=$admin_pass' \
-    "${CF_SMOKE_TESTS_CONFIG}" > "${tmpfile}"
+jq \
+  --arg admin_pass "${ADMIN_PASS}" \
+  '.password=$admin_pass' \
+  "${CF_SMOKE_TESTS_CONFIG}" > "${tmpfile}"
 
-  mv "${tmpfile}" "${CF_SMOKE_TESTS_CONFIG}"
+mv "${tmpfile}" "${CF_SMOKE_TESTS_CONFIG}"
 
-popd
