@@ -177,6 +177,15 @@ resources:
     private_key: ((github_private_key.private_key))
     uri: git@github.com:cloudfoundry/networking-oss-tools.git
 
+# deploy-cf-with-created-release requires a vars-files input. However we don't use vars files when we deploy
+# This is just a empty dummy resource
+- name: we-dont-use-vars-files
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cloudfoundry/networking-oss-deployments.git
+    private_key: ((github_private_key.private_key))
+
 - name: routing-release-ci
   type: git
   icon: github-box
@@ -414,7 +423,7 @@ jobs:
   plan:
   - in_parallel:
     - get: cf-deployment-concourse-tasks
-    - get: deployments-routing
+    - get: networking-oss-deployments
     - get: routing-release-ci
       params:
         submodules: none
@@ -437,14 +446,14 @@ jobs:
       BBL_GCP_SERVICE_ACCOUNT_KEY: ((shared_gcp_account_creds))
       BBL_GCP_REGION: us-west1
       BBL_ENV_NAME: ci-lite
-      BBL_STATE_DIR: ci-lite/bbl-state
+      BBL_STATE_DIR: environments/ci-lite/bbl-state
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
       SKIP_LB_CREATION: true
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
       bbl-config: merged-bbl-config
     ensure:
-      put: deployments-routing
+      put: networking-oss-deployments
       params:
         repository: updated-bbl-state
         rebase: true
@@ -454,18 +463,18 @@ jobs:
   build_logs_to_retain: 100
   plan:
   - in_parallel:
-    - get: deployments-routing
+    - get: networking-oss-deployments
     - get: cf-deployment-concourse-tasks
   - task: destroy-ci-lite
     file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
     params:
       BBL_GCP_SERVICE_ACCOUNT_KEY: ((shared_gcp_account_creds))
-      BBL_STATE_DIR: ci-lite/bbl-state
+      BBL_STATE_DIR: environments/ci-lite/bbl-state
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
     ensure:
-      put: deployments-routing
+      put: networking-oss-deployments
       params:
         repository: updated-bbl-state
         rebase: true
@@ -951,6 +960,7 @@ jobs:
   - in_parallel:
     - get: cf-deployment-concourse-tasks
     - get: networking-oss-deployments
+    - get: networking-oss-tools
     - get: routing-release-ci
       params:
         submodules: none
@@ -1209,7 +1219,10 @@ jobs:
   serial_groups: [ci-lite]
   plan:
   - in_parallel:
-    - get: deployments-routing
+    - get: we-dont-use-vars-files
+      submodules: none
+    - get: networking-oss-deployments
+    - get: networking-oss-tools
     - get: cf-deployment-concourse-tasks
     - get: cf-deployment
       trigger: true
@@ -1223,12 +1236,12 @@ jobs:
   - task: upload-lb-cert-to-credhub
     file: routing-release-ci/ci/tasks/set-cert-in-credhub/task.yml
     params:
-      BBL_STATE_DIR: ci-lite/bbl-state
-      CERTIFICATE_FILE: ci-lite/lb_certs/cert.pem
+      BBL_STATE_DIR: environments/ci-lite/bbl-state
+      CERTIFICATE_FILE: environments/ci-lite/lb_certs/cert.pem
       CREDHUB_KEY: /bosh-ci-lite/cf/lb_cert
     input_mapping:
-      bbl-state: deployments-routing
-      cert-directory: deployments-routing
+      bbl-state: networking-oss-deployments
+      cert-directory: networking-oss-deployments
   - task: merge-ops-files
     file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
     params:
@@ -1236,11 +1249,10 @@ jobs:
   - task: deploy-ci-lite-with-created-routing
     file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
       release: routing-release
       ops-files: merged-operations
-      vars-store: deployments-routing
-      vars-files: deployments-routing
+      vars-files: we-dont-use-vars-files
     params:
       SYSTEM_DOMAIN: ci-lite.routing.cf-app.com
       OPS_FILES: |
@@ -1250,7 +1262,7 @@ jobs:
         routing-acceptance-tests.yml
         routing-smoke-tests.yml
         add-lb-ca-cert.yml
-      BBL_STATE_DIR: ci-lite/bbl-state
+      BBL_STATE_DIR: environments/ci-lite/bbl-state
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
       BOSH_LITE: true
   - task: bosh-cleanup
@@ -1272,7 +1284,8 @@ jobs:
     - get: cf-deployment
       trigger: true
       passed: [ci-lite-deploy-cf]
-    - get: deployments-routing
+    - get: networking-oss-deployments
+    - get: networking-oss-tools
     - get: cf-deployment-concourse-tasks
     - get: routing-release
       passed: [ci-lite-deploy-cf]
@@ -1287,15 +1300,15 @@ jobs:
       bbl-state: created-integration-configs
       integration-configs: created-integration-configs
     params:
-      BBL_STATE_DIR: ci-lite/bbl-state
-      CATS_INTEGRATION_CONFIG_FILE: ci-lite/cats_integration_config.json
+      BBL_STATE_DIR: environments/ci-lite/bbl-state
+      CATS_INTEGRATION_CONFIG_FILE: environments/ci-lite/cats_integration_config.json
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
   - task: run-cats
     input_mapping:
       integration-config: updated-integration-configs
     file: cf-deployment-concourse-tasks/run-cats/task.yml
     params:
-      CONFIG_FILE_PATH: ci-lite/cats_integration_config.json
+      CONFIG_FILE_PATH: environments/ci-lite/cats_integration_config.json
       NODES: 4
 
 - name: ci-lite-rats
@@ -1308,7 +1321,8 @@ jobs:
       - get: routing-release-ci
         params:
           submodules: none
-      - get: deployments-routing
+      - get: networking-oss-tools
+      - get: networking-oss-deployments
       - get: cf-deployment
         trigger: true
         passed: [ci-lite-deploy-cf]
@@ -1327,14 +1341,14 @@ jobs:
         bbl-state: created-integration-configs
         integration-configs: created-integration-configs
       params:
-        BBL_STATE_DIR: ci-lite/bbl-state
-        RATS_INTEGRATION_CONFIG_FILE: ci-lite/rats_integration_config.json
+        BBL_STATE_DIR: environments/ci-lite/bbl-state
+        RATS_INTEGRATION_CONFIG_FILE: environments/ci-lite/rats_integration_config.json
         GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
     - task: run-rats
       input_mapping:
         integration-config: updated-integration-configs
       params:
-        CONFIG_FILE_PATH: ci-lite/rats_integration_config.json
+        CONFIG_FILE_PATH: environments/ci-lite/rats_integration_config.json
         GINKGO_ARGS: "-v"
       file: routing-release-ci/ci/tasks/run-rats/task.yml
 
