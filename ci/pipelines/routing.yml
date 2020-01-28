@@ -1321,8 +1321,8 @@ jobs:
       - get: routing-release-ci
         params:
           submodules: none
-      - get: networking-oss-tools
       - get: networking-oss-deployments
+      - get: networking-oss-tools
       - get: cf-deployment
         trigger: true
         passed: [ci-lite-deploy-cf]
@@ -1358,7 +1358,8 @@ jobs:
   plan:
   - in_parallel:
     - get: cf-deployment-concourse-tasks
-    - get: deployments-routing
+    - get: networking-oss-deployments
+    - get: networking-oss-tools
     - get: routing-release-ci
       params:
         submodules: none
@@ -1370,7 +1371,7 @@ jobs:
     params:
       ENVIRONMENT: diana
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
   - task: setup-diana
     file: cf-deployment-concourse-tasks/bbl-up/task.yml
     params:
@@ -1381,7 +1382,7 @@ jobs:
       BBL_LB_KEY: ../lb_certs/key.pem
       LB_DOMAIN: diana.routing.cf-app.com
       BBL_ENV_NAME: diana
-      BBL_STATE_DIR: diana/bbl-state
+      BBL_STATE_DIR: environments/diana/bbl-state
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
     input_mapping:
       bbl-state: updated-bbl-state
@@ -1397,18 +1398,19 @@ jobs:
   build_logs_to_retain: 100
   plan:
   - in_parallel:
-    - get: deployments-routing
+    - get: networking-oss-deployments
+    - get: networking-oss-tools
     - get: cf-deployment-concourse-tasks
   - task: destroy-diana
     file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
     params:
-      BBL_STATE_DIR: diana/bbl-state
+      BBL_STATE_DIR: environments/diana/bbl-state
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
       BBL_GCP_SERVICE_ACCOUNT_KEY: ((shared_gcp_account_creds))
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
     ensure:
-      put: deployments-routing
+      put: networking-oss-deployments
       params:
         repository: updated-bbl-state
         rebase: true
