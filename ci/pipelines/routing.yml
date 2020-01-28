@@ -675,18 +675,18 @@ jobs:
   - task: update-integration-configs
     file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
     input_mapping:
-      bbl-state: created-integration-configs
+      bbl-state: deployments-routing
       integration-configs: created-integration-configs
     params:
       BBL_STATE_DIR: batman/bbl-state
-      CATS_INTEGRATION_CONFIG_FILE: batman/cats_integration_config.json
+      CATS_INTEGRATION_CONFIG_FILE: cats_integration_config.json
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
   - task: run-cats
     input_mapping:
       integration-config: updated-integration-configs
     file: cf-deployment-concourse-tasks/run-cats/task.yml
     params:
-      CONFIG_FILE_PATH: batman/cats_integration_config.json
+      CONFIG_FILE_PATH: cats_integration_config.json
 
 - name: batman-cf-smoke-and-indicator-protocol-tests
   serial_groups: [batman]
@@ -717,16 +717,16 @@ jobs:
   - task: update-integration-configs
     file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
     input_mapping:
-      bbl-state: created-integration-configs
+      bbl-state: deployments-routing
       integration-configs: created-integration-configs
     params:
       BBL_STATE_DIR: batman/bbl-state
-      CATS_INTEGRATION_CONFIG_FILE: batman/cats_integration_config.json
+      CATS_INTEGRATION_CONFIG_FILE: cats_integration_config.json
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
   - task: run-cf-smoke-tests
     file: cf-deployment-concourse-tasks/run-errand/task.yml
     input_mapping:
-      bbl-state: updated-integration-configs
+      bbl-state: deployments-routing
     params:
       BBL_STATE_DIR: batman/bbl-state
       DEPLOYMENT_NAME: cf
@@ -791,17 +791,17 @@ jobs:
     - task: update-integration-configs
       file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
       input_mapping:
-        bbl-state: created-integration-configs
+        bbl-state: deployments-routing
         integration-configs: created-integration-configs
       params:
         BBL_STATE_DIR: batman/bbl-state
-        RATS_INTEGRATION_CONFIG_FILE: batman/rats_integration_config.json
+        RATS_INTEGRATION_CONFIG_FILE: rats_integration_config.json
         GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
     - task: run-rats
       input_mapping:
         integration-config: updated-integration-configs
       params:
-        CONFIG_FILE_PATH: batman/rats_integration_config.json
+        CONFIG_FILE_PATH: rats_integration_config.json
         GINKGO_ARGS: "-v"
       file: routing-release-ci/ci/tasks/run-rats/task.yml
 
@@ -1297,18 +1297,18 @@ jobs:
   - task: update-integration-configs
     file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
     input_mapping:
-      bbl-state: created-integration-configs
+      bbl-state: networking-oss-deployments
       integration-configs: created-integration-configs
     params:
       BBL_STATE_DIR: environments/ci-lite/bbl-state
-      CATS_INTEGRATION_CONFIG_FILE: environments/ci-lite/cats_integration_config.json
+      CATS_INTEGRATION_CONFIG_FILE: cats_integration_config.json
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
   - task: run-cats
     input_mapping:
       integration-config: updated-integration-configs
     file: cf-deployment-concourse-tasks/run-cats/task.yml
     params:
-      CONFIG_FILE_PATH: environments/ci-lite/cats_integration_config.json
+      CONFIG_FILE_PATH: cats_integration_config.json
       NODES: 4
 
 - name: ci-lite-rats
@@ -1338,17 +1338,17 @@ jobs:
     - task: update-integration-configs
       file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
       input_mapping:
-        bbl-state: created-integration-configs
+        bbl-state: networking-oss-deployments
         integration-configs: created-integration-configs
       params:
         BBL_STATE_DIR: environments/ci-lite/bbl-state
-        RATS_INTEGRATION_CONFIG_FILE: environments/ci-lite/rats_integration_config.json
+        RATS_INTEGRATION_CONFIG_FILE: rats_integration_config.json
         GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
     - task: run-rats
       input_mapping:
         integration-config: updated-integration-configs
       params:
-        CONFIG_FILE_PATH: environments/ci-lite/rats_integration_config.json
+        CONFIG_FILE_PATH: rats_integration_config.json
         GINKGO_ARGS: "-v"
       file: routing-release-ci/ci/tasks/run-rats/task.yml
 
@@ -1518,17 +1518,17 @@ jobs:
   - task: update-integration-configs
     file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
     input_mapping:
-      bbl-state: created-integration-configs
+      bbl-state: deployments-routing
       integration-configs: created-integration-configs
     params:
       BBL_STATE_DIR: jubilee/bbl-state
-      CATS_INTEGRATION_CONFIG_FILE: jubilee/cats_integration_config.json
+      CATS_INTEGRATION_CONFIG_FILE: cats_integration_config.json
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
   - task: run-cf-smoke-tests
     file: cf-deployment-concourse-tasks/run-errand/task.yml
     attempts: 3
     input_mapping:
-      bbl-state: updated-integration-configs
+      bbl-state: deployments-routing
     params:
       BBL_STATE_DIR: jubilee/bbl-state
       DEPLOYMENT_NAME: cf
