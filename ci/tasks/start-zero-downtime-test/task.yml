@@ -8,6 +8,11 @@ image_resource:
 
 inputs:
   - name: deployments-routing
+    optional: true
+  - name: networking-oss-deployments
+    optional: true
+  - name: networking-oss-tools
+    optional: true
   - name: routing-release-ci
 
 run:
