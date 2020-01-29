@@ -7,8 +7,6 @@ image_resource:
     repository: cloudfoundry/cf-routing-pipeline
 
 inputs:
-  - name: deployments-routing
-  - name: routing-release-ci
 
 run:
   path: routing-release-ci/ci/tasks/stop-zero-downtime-test/task
