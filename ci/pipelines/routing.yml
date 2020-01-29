@@ -1421,7 +1421,8 @@ jobs:
   plan:
   - in_parallel:
     - get: cf-deployment-concourse-tasks
-    - get: deployments-routing
+    - get: networking-oss-deployments
+    - get: networking-oss-tools
     - get: routing-release-ci
       params:
         submodules: none
@@ -1435,9 +1436,9 @@ jobs:
   - task: make-certs
     file: routing-release-ci/ci/tasks/make-certs/task.yml
     params:
-      ENVIRONMENT: jubilee
+      ENVIRONMENT: environments/jubilee
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
   - task: setup-jubilee
     file: cf-deployment-concourse-tasks/bbl-up/task.yml
     input_mapping:
@@ -1451,11 +1452,11 @@ jobs:
       BBL_LB_KEY: ../lb_certs/key.pem
       LB_DOMAIN: jubilee.routing.cf-app.com
       BBL_ENV_NAME: jubilee
-      BBL_STATE_DIR: jubilee/bbl-state
+      BBL_STATE_DIR: environments/jubilee/bbl-state
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
       BBL_CONFIG_DIR: "."
     ensure:
-      put: deployments-routing
+      put: networking-oss-deployments
       params:
         repository: updated-bbl-state
         rebase: true
@@ -1467,7 +1468,8 @@ jobs:
     - get: cf-deployment-concourse-tasks
     - get: cf-deployment-release-latest
       trigger: true
-    - get: deployments-routing
+    - get: networking-oss-deployments
+    - get: networking-oss-tools
     - get: routing-release-ci
       params:
         submodules: none
@@ -1485,33 +1487,33 @@ jobs:
   - task: delete-cf-deployment
     file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
     params:
       DEPLOYMENT_NAME: cf
-      BBL_STATE_DIR: jubilee/bbl-state
+      BBL_STATE_DIR: environments/jubilee/bbl-state
   - task: deploy-jubilee-with-base-cf
     file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
       ops-files: merged-operations
-      vars-files: deployments-routing
+      vars-files: we-dont-use-vars-files
       cf-deployment: cf-deployment-release-latest
     params:
       SYSTEM_DOMAIN: jubilee.routing.cf-app.com
       OPS_FILES: &jubilee-ops-files |
         use-compiled-releases.yml
-      BBL_STATE_DIR: jubilee/bbl-state
+      BBL_STATE_DIR: environments/jubilee/bbl-state
   - task: deploy-jubilee-cf
     file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
     input_mapping:
       cf-deployment: cf-deployment-release-latest
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
       ops-files: merged-operations
-      vars-files: deployments-routing
+      vars-files: we-dont-use-vars-files
     params:
       SYSTEM_DOMAIN: jubilee.routing.cf-app.com
       OPS_FILES: *jubilee-ops-files
-      BBL_STATE_DIR: jubilee/bbl-state
+      BBL_STATE_DIR: environments/jubilee/bbl-state
   - task: create-integration-config
     file: routing-release-ci/ci/tasks/create-integration-configs/task.yml
     params:
@@ -1520,19 +1522,19 @@ jobs:
   - task: update-integration-configs
     file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
       integration-configs: created-integration-configs
     params:
-      BBL_STATE_DIR: jubilee/bbl-state
+      BBL_STATE_DIR: environments/jubilee/bbl-state
       CATS_INTEGRATION_CONFIG_FILE: cats_integration_config.json
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
   - task: run-cf-smoke-tests
     file: cf-deployment-concourse-tasks/run-errand/task.yml
     attempts: 3
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
     params:
-      BBL_STATE_DIR: jubilee/bbl-state
+      BBL_STATE_DIR: environments/jubilee/bbl-state
       DEPLOYMENT_NAME: cf
       ERRAND_NAME: smoke-tests
   - task: setup-jubilee-env
@@ -1596,21 +1598,21 @@ jobs:
     file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
     input_mapping:
       cf-deployment: cf-deployment-release-latest
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
       release: routing-release
       ops-files: merged-upgrade-operations
-      vars-files: deployments-routing
+      vars-files: we-dont-use-vars-files
     params:
       SYSTEM_DOMAIN: jubilee.routing.cf-app.com
       OPS_FILES: *jubilee-ops-files
-      BBL_STATE_DIR: jubilee/bbl-state
+      BBL_STATE_DIR: environments/jubilee/bbl-state
   - in_parallel:
     - task: cleanup-artifacts
       file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
       params:
-        BBL_STATE_DIR: jubilee/bbl-state
+        BBL_STATE_DIR: environments/jubilee/bbl-state
       input_mapping:
-        bbl-state: deployments-routing
+        bbl-state: networking-oss-deployments
     - task: stop-zero-downtime-http-test
       file: routing-release-ci/ci/tasks/stop-zero-downtime-test/task.yml
       params:
@@ -1636,10 +1638,10 @@ jobs:
   - task: delete-cf-deployment
     file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
     params:
       DEPLOYMENT_NAME: cf
-      BBL_STATE_DIR: jubilee/bbl-state
+      BBL_STATE_DIR: environments/jubilee/bbl-state
 
 - name: deliver-stories
   serial: true
@@ -1677,34 +1679,35 @@ jobs:
   build_logs_to_retain: 100
   plan:
   - in_parallel:
-    - get: deployments-routing
+    - get: networking-oss-deployments
+    - get: networking-oss-tools
     - get: cf-deployment-concourse-tasks
     - get: routing-release
   - task: delete-cf-deployment
     file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
     params:
       DEPLOYMENT_NAME: cf
-      BBL_STATE_DIR: jubilee/bbl-state
+      BBL_STATE_DIR: environments/jubilee/bbl-state
   - task: delete-zero-downtime-deployment
     file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
     params:
       DEPLOYMENT_NAME: zero-downtime
-      BBL_STATE_DIR: jubilee/bbl-state
+      BBL_STATE_DIR: environments/jubilee/bbl-state
   - task: destroy-jubilee
     file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
     params:
-      BBL_STATE_DIR: jubilee/bbl-state
+      BBL_STATE_DIR: environments/jubilee/bbl-state
       BBL_GCP_SERVICE_ACCOUNT_KEY: ((shared_gcp_account_creds))
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
     ensure:
       do:
-      - put: deployments-routing
+      - put: networking-oss-deployments
         params:
           repository: updated-bbl-state
           rebase: true
