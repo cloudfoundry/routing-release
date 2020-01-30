@@ -1,7 +1,11 @@
 #!/bin/bash
 set -eu -o pipefail
 
-source routing-release-ci/ci/scripts/script_helpers.sh
+if [[ -f networking-oss-tools/scripts/script_helpers.sh ]]; then
+  source networking-oss-tools/scripts/script_helpers.sh
+else
+  source routing-release-ci/ci/scripts/script_helpers.sh
+fi
 
 ENVIRONMENT="${ENVIRONMENT:?"ENVIRONMENT not set"}"
 bosh_login "${ENVIRONMENT}"
@@ -11,17 +15,15 @@ function cleanup() {
 }
 trap 'cleanup' EXIT
 
-pushd "${PWD}/deployments-routing"
-  set +x
-  cmd='sudo chmod a+w /var/vcap/store/syslog_storer/syslog.log; tail -n 100 /var/vcap/store/syslog_storer/syslog.log > /var/vcap/store/syslog_storer/syslog.log'
-  bosh ssh -c "$cmd" syslog_storer
-  sleep 60
-  bosh scp syslog_storer:/var/vcap/store/syslog_storer/syslog.log .
-  set -x
-  grep "$(date --utc --date '-1hour' +%Y-%m-%dT%H)\|$(date --utc +%Y-%m-%dT%H)" syslog.log | grep "routing-api" | tee routing-api.log
-  [ -s routing-api.log ] || (echo "Routing API logs are empty" && exit 1)
-  grep "$(date --utc --date '-1hour' +%Y-%m-%dT%H)\|$(date --utc +%Y-%m-%dT%H)" syslog.log | grep "gorouter" | tee gorouter.log
-  [ -s gorouter.log ] || (echo "Gorouter logs are empty" && exit 1)
-  grep "$(date --utc --date '-1hour' +%Y-%m-%dT%H)\|$(date --utc +%Y-%m-%dT%H)" syslog.log | grep "tcp_router" | tee tcp_router.log
-  [ -s tcp_router.log ] || (echo "TCP Router logs are empty" && exit 1)
-popd
+set +x
+cmd='sudo chmod a+w /var/vcap/store/syslog_storer/syslog.log; tail -n 100 /var/vcap/store/syslog_storer/syslog.log > /var/vcap/store/syslog_storer/syslog.log'
+bosh ssh -c "$cmd" syslog_storer
+sleep 60
+bosh scp syslog_storer:/var/vcap/store/syslog_storer/syslog.log .
+set -x
+grep "$(date --utc --date '-1hour' +%Y-%m-%dT%H)\|$(date --utc +%Y-%m-%dT%H)" syslog.log | grep "routing-api" | tee routing-api.log
+[ -s routing-api.log ] || (echo "Routing API logs are empty" && exit 1)
+grep "$(date --utc --date '-1hour' +%Y-%m-%dT%H)\|$(date --utc +%Y-%m-%dT%H)" syslog.log | grep "gorouter" | tee gorouter.log
+[ -s gorouter.log ] || (echo "Gorouter logs are empty" && exit 1)
+grep "$(date --utc --date '-1hour' +%Y-%m-%dT%H)\|$(date --utc +%Y-%m-%dT%H)" syslog.log | grep "tcp_router" | tee tcp_router.log
+[ -s tcp_router.log ] || (echo "TCP Router logs are empty" && exit 1)
