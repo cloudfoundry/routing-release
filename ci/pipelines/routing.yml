@@ -486,7 +486,8 @@ jobs:
   plan:
   - in_parallel:
     - get: cf-deployment-concourse-tasks
-    - get: deployments-routing
+    - get: networking-oss-deployments
+    - get: networking-oss-tools
     - get: routing-release-ci
       params:
         submodules: none
@@ -496,13 +497,13 @@ jobs:
   - task: add-parent-dns
     file: routing-release-ci/ci/tasks/add-parent-dns/task.yml
     params:
-      ENVIRONMENT: batman
+      ENVIRONMENT: environments/batman
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
   - task: inject-plan-patches
     file: routing-release-ci/ci/tasks/inject-plan-patches/task.yml
     params:
-      BBL_STATE_DIR: batman/bbl-state
+      BBL_STATE_DIR: environments/batman/bbl-state
       PLAN_PATCH_DIR: plan-patches/iso-segs-gcp
     input_mapping:
       bbl-state: updated-bbl-state
@@ -511,7 +512,7 @@ jobs:
     file: routing-release-ci/ci/tasks/make-certs/task.yml
     params:
       ENVIRONMENT: batman
-      ENV_PATH: batman
+      ENV_PATH: environments/batman
     input_mapping:
       bbl-state: updated-bbl-state
   - task: setup-batman
@@ -524,13 +525,13 @@ jobs:
       BBL_LB_KEY: ../lb_certs/key.pem
       LB_DOMAIN: batman.routing.cf-app.com
       BBL_ENV_NAME: batman
-      BBL_STATE_DIR: batman/bbl-state
+      BBL_STATE_DIR: environments/batman/bbl-state
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
     input_mapping:
       bbl-config: updated-bbl-state
       bbl-state: updated-bbl-state
     ensure:
-      put: deployments-routing
+      put: networking-oss-deployments
       params:
         repository: updated-bbl-state
         rebase: true
@@ -548,7 +549,8 @@ jobs:
     - get: cf-deployment-concourse-tasks
     - get: cf-deployment
       trigger: true
-    - get: deployments-routing
+    - get: networking-oss-deployments
+    - get: networking-oss-tools
     - get: routing-release
       trigger: true
       passed:
@@ -559,12 +561,12 @@ jobs:
   - task: upload-lb-cert-to-credhub
     file: routing-release-ci/ci/tasks/set-cert-in-credhub/task.yml
     params:
-      BBL_STATE_DIR: batman/bbl-state
-      CERTIFICATE_FILE: batman/lb_certs/cert.pem
+      BBL_STATE_DIR: environments/batman/bbl-state
+      CERTIFICATE_FILE: environments/batman/lb_certs/cert.pem
       CREDHUB_KEY: /bosh-batman/cf/lb_cert
     input_mapping:
-      bbl-state: deployments-routing
-      cert-directory: deployments-routing
+      bbl-state: networking-oss-tools
+      cert-directory: networking-oss-deployments
   - task: merge-ops-files
     file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
     params:
@@ -572,11 +574,10 @@ jobs:
   - task: deploy-batman-with-created-routing
     file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
       release: routing-release
       ops-files: merged-operations
-      vars-store: deployments-routing
-      vars-files: deployments-routing
+      vars-files: we-dont-use-vars-files
     params:
       SYSTEM_DOMAIN: batman.routing.cf-app.com
       OPS_FILES: |
@@ -598,7 +599,7 @@ jobs:
         enable-locket-isolated-diego.yml
         create-indicator-protocol-uaa-client.yml
         add-lb-ca-cert.yml
-      BBL_STATE_DIR: batman/bbl-state
+      BBL_STATE_DIR: environments/batman/bbl-state
   - task: create-isolation-segment
     file: routing-release-ci/ci/tasks/create-isolation-segment/task.yml
     params:
@@ -611,7 +612,8 @@ jobs:
   plan:
   - in_parallel:
     - get: cf-deployment-concourse-tasks
-    - get: deployments-routing
+    - get: networking-oss-deployments
+    - get: networking-oss-tools
     - get: routing-release-ci
       params:
         submodules: none
@@ -643,10 +645,10 @@ jobs:
       task: delete-cipher-deployment
       file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
       input_mapping:
-        bbl-state: deployments-routing
+        bbl-state: networking-oss-deployments
       params:
         DEPLOYMENT_NAME: cipher
-        BBL_STATE_DIR: batman/bbl-state
+        BBL_STATE_DIR: environments/batman/bbl-state
 
 
 
@@ -662,7 +664,9 @@ jobs:
     - get: cf-deployment
       passed: [batman-cf-smoke-and-indicator-protocol-tests]
       trigger: true
-    - get: deployments-routing
+    - get: networking-oss-tools
+      passed: [batman-cf-smoke-and-indicator-protocol-tests]
+    - get: networking-oss-deployments
       passed: [batman-cf-smoke-and-indicator-protocol-tests]
     - get: cf-deployment-concourse-tasks
     - get: routing-release
@@ -676,10 +680,10 @@ jobs:
   - task: update-integration-configs
     file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
       integration-configs: created-integration-configs
     params:
-      BBL_STATE_DIR: batman/bbl-state
+      BBL_STATE_DIR: environments/batman/bbl-state
       CATS_INTEGRATION_CONFIG_FILE: cats_integration_config.json
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
   - task: run-cats
@@ -700,7 +704,9 @@ jobs:
       params:
         submodules: none
     - get: cf-deployment-concourse-tasks
-    - get: deployments-routing
+    - get: networking-oss-tools
+      passed: [batman-deploy-cf]
+    - get: networking-oss-deployments
       passed: [batman-deploy-cf]
     - get: cf-smoke-tests-release
     - get: cf-deployment
@@ -718,18 +724,18 @@ jobs:
   - task: update-integration-configs
     file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
       integration-configs: created-integration-configs
     params:
-      BBL_STATE_DIR: batman/bbl-state
+      BBL_STATE_DIR: environments/batman/bbl-state
       CATS_INTEGRATION_CONFIG_FILE: cats_integration_config.json
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
   - task: run-cf-smoke-tests
     file: cf-deployment-concourse-tasks/run-errand/task.yml
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
     params:
-      BBL_STATE_DIR: batman/bbl-state
+      BBL_STATE_DIR: environments/batman/bbl-state
       DEPLOYMENT_NAME: cf
       ERRAND_NAME: smoke-tests
   - task: indicator-protocol-test
@@ -746,7 +752,8 @@ jobs:
   - get: routing-release-ci
     params:
       submodules: none
-  - get: deployments-routing
+  - get: networking-oss-deployments
+  - get: networking-oss-tools
   - get: bbr-binary-release
   - get: disaster-recovery-acceptance-tests
   - get: cf-deployment
@@ -756,13 +763,14 @@ jobs:
     file: routing-release-ci/ci/tasks/create-drats-config/task.yml
     params:
       ENVIRONMENT: batman
+      ENV_PATH: networking-oss-deployments/environments/batman
   - task: run-disaster-recovery-acceptance-tests
     file: disaster-recovery-acceptance-tests/ci/drats-with-integration-config/task.yml
     input_mapping:
       drats-integration-config: created-drats-config
     privileged: true
     params:
-      CONFIG_FILE_PATH: batman/drats_integration_config.json
+      CONFIG_FILE_PATH: drats_integration_config.json
       DEFAULT_TIMEOUT_MINS: 90
 
 - name: batman-rats
@@ -775,7 +783,9 @@ jobs:
       - get: routing-release-ci
         params:
           submodules: none
-      - get: deployments-routing
+      - get: networking-oss-deployments
+        passed: [batman-cf-smoke-and-indicator-protocol-tests]
+      - get: networking-oss-tools
         passed: [batman-cf-smoke-and-indicator-protocol-tests]
       - get: cf-deployment
         trigger: true
@@ -792,10 +802,10 @@ jobs:
     - task: update-integration-configs
       file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
       input_mapping:
-        bbl-state: deployments-routing
+        bbl-state: networking-oss-deployments
         integration-configs: created-integration-configs
       params:
-        BBL_STATE_DIR: batman/bbl-state
+        BBL_STATE_DIR: environments/batman/bbl-state
         RATS_INTEGRATION_CONFIG_FILE: rats_integration_config.json
         GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
     - task: run-rats
@@ -812,7 +822,8 @@ jobs:
   - get: routing-release
     passed: [batman-deploy-cf]
     trigger: true
-  - get: deployments-routing
+  - get: networking-oss-deployments
+  - get: networking-oss-tools
   - get: routing-release-ci
     params:
       submodules: none
@@ -827,34 +838,37 @@ jobs:
 - name: batman-bosh-cleanup
   serial_groups: [batman]
   plan:
-  - get: deployments-routing
+  - get: networking-oss-deployments
     passed: [batman-cats]
     trigger: true
+  - get: networking-oss-tools
+    passed: [batman-cats]
   - get: cf-deployment-concourse-tasks
   - task: cleanup-artifacts
     file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
     params:
-      BBL_STATE_DIR: batman/bbl-state
+      BBL_STATE_DIR: environments/batman/bbl-state
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
 
 - name: batman-destroy
   serial_groups: [batman]
   build_logs_to_retain: 100
   plan:
   - in_parallel:
-    - get: deployments-routing
+    - get: networking-oss-deployments
+    - get: networking-oss-tools
     - get: cf-deployment-concourse-tasks
   - task: destroy-batman
     file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
     params:
-      BBL_STATE_DIR: batman/bbl-state
+      BBL_STATE_DIR: environments/batman/bbl-state
       BBL_GCP_SERVICE_ACCOUNT_KEY: ((shared_gcp_account_creds))
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
     ensure:
-      put: deployments-routing
+      put: networking-oss-deployments
       params:
         repository: updated-bbl-state
         rebase: true
@@ -865,15 +879,16 @@ jobs:
   plan:
   - in_parallel:
     - get: cf-deployment-concourse-tasks
-    - get: deployments-routing
+    - get: networking-oss-tools
+    - get: networking-oss-deployments
     - get: routing-release
   - task: delete-cf-deployment
     file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
     input_mapping:
-      bbl-state: deployments-routing
+      bbl-state: networking-oss-deployments
     params:
       DEPLOYMENT_NAME: cf
-      BBL_STATE_DIR: batman/bbl-state
+      BBL_STATE_DIR: environments/batman/bbl-state
 
 - name: orinoco-http-perf-tests
   serial: true
