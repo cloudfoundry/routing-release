@@ -5,7 +5,11 @@ set -e -o pipefail
 : "${SSH_DESTINATION_CIDR:=10.0.0.0/8}"
 
 # shellcheck disable=SC1091
-source routing-release-ci/ci/scripts/script_helpers.sh
+if [[ -f networking-oss-tools/scripts/script_helpers.sh ]]; then
+  source networking-oss-tools/scripts/script_helpers.sh
+else
+  source routing-release-ci/ci/scripts/script_helpers.sh
+fi
 
 function set_git_config() {
   git config user.name "${GIT_COMMIT_USERNAME}"
@@ -24,9 +28,8 @@ bosh_ca_cert="${BOSH_CA_CERT}"
 ssh_proxy_cidr="${SSH_DESTINATION_CIDR}"
 ssh_proxy_user="${BOSH_GW_USER}"
 
-drats_integration_config="${ENVIRONMENT}/drats_integration_config.json"
 
-pushd "deployments-routing/${ENVIRONMENT}/bbl-state"
+pushd "${ENV_PATH}/bbl-state"
   bbl version
   cf_api_url="https://api.$(jq .lb.domain bbl-state.json -r)"
   ssh_proxy_host="$(bbl jumpbox-address)"
@@ -42,12 +45,11 @@ done
 
 integration_config=$(echo ${integration_config} | jq '.["include_cf-routing"]=true')
 
-pushd "deployments-routing"
-  echo "$integration_config" > "${drats_integration_config}"
+mkdir -p created-drats-config
+pushd "created-drats-config"
+  echo "$integration_config" > "drats_integration_config.json"
 
   set_git_config
-  git add "${drats_integration_config}"
+  git add "drats_integration_config.json"
   git commit -m "creating drats config for ${ENVIRONMENT}"
 popd
-
-git clone deployments-routing created-drats-config/
