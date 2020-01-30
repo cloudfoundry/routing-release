@@ -565,7 +565,7 @@ jobs:
       CERTIFICATE_FILE: environments/batman/lb_certs/cert.pem
       CREDHUB_KEY: /bosh-batman/cf/lb_cert
     input_mapping:
-      bbl-state: networking-oss-tools
+      bbl-state: networking-oss-deployments
       cert-directory: networking-oss-deployments
   - task: merge-ops-files
     file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
