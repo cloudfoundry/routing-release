@@ -1,7 +1,11 @@
 #!/bin/bash
 set -ex -o pipefail
 
-source routing-release-ci/ci/scripts/script_helpers.sh
+if [[ -f networking-oss-tools/scripts/script_helpers.sh ]]; then
+  source networking-oss-tools/scripts/script_helpers.sh
+else
+  source routing-release-ci/ci/scripts/script_helpers.sh
+fi
 
 ENVIRONMENT="${ENVIRONMENT:?"ENVIRONMENT not set"}"
 bosh_login "${ENVIRONMENT}"
