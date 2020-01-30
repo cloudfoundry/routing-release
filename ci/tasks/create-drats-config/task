@@ -11,10 +11,6 @@ else
   source routing-release-ci/ci/scripts/script_helpers.sh
 fi
 
-function set_git_config() {
-  git config user.name "${GIT_COMMIT_USERNAME}"
-  git config user.email "${GIT_COMMIT_EMAIL}"
-}
 
 bosh_login "${ENVIRONMENT}"
 
@@ -46,10 +42,4 @@ done
 integration_config=$(echo ${integration_config} | jq '.["include_cf-routing"]=true')
 
 mkdir -p created-drats-config
-pushd "created-drats-config"
-  echo "$integration_config" > "drats_integration_config.json"
-
-  set_git_config
-  git add "drats_integration_config.json"
-  git commit -m "creating drats config for ${ENVIRONMENT}"
-popd
+echo "$integration_config" > "created-drats-config/drats_integration_config.json"
