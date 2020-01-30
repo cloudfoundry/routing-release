@@ -511,6 +511,7 @@ jobs:
     file: routing-release-ci/ci/tasks/make-certs/task.yml
     params:
       ENVIRONMENT: batman
+      ENV_PATH: batman
     input_mapping:
       bbl-state: updated-bbl-state
   - task: setup-batman
@@ -970,7 +971,8 @@ jobs:
   - task: make-certs
     file: routing-release-ci/ci/tasks/make-certs/task.yml
     params:
-      ENVIRONMENT: environments/orinoco
+      ENVIRONMENT: orinoco
+      ENV_PATH: environments/orinoco
     input_mapping:
       bbl-state: networking-oss-deployments
   - task: setup-orinoco
@@ -1436,7 +1438,8 @@ jobs:
   - task: make-certs
     file: routing-release-ci/ci/tasks/make-certs/task.yml
     params:
-      ENVIRONMENT: environments/jubilee
+      ENVIRONMENT: jubilee
+      ENV_PATH: environments/jubilee
     input_mapping:
       bbl-state: networking-oss-deployments
   - task: setup-jubilee

@@ -15,6 +15,7 @@ outputs:
 
 params:
   ENVIRONMENT: ~  # name of the CI environment
+  ENV_PATH: # path to environment from the root of bbl-state input
   GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
   GIT_COMMIT_USERNAME: CI Bot
   GIT_COMMIT_MSG: Adding new certs

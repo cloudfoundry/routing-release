@@ -36,7 +36,8 @@ gimme_certs() {
     certstrap --depot-path "${depot_path}" sign --CA "${ca_common_name}" --passphrase "" "${common_name}"
 }
 
-lb_certs="${outdir}/${ENVIRONMENT}/lb_certs"
+
+lb_certs="${outdir}/${ENV_PATH}/lb_certs"
 
 if ! [[ -a "${lb_certs}/key.pem" ]]; then
   gimme_certs "${ENVIRONMENT}" fakeCA /tmp
