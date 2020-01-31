@@ -7,7 +7,6 @@ image_resource:
 
 inputs:
   - name: cf-routing-release-develop
-  - name: deployments-routing
   - name: cf-routing-release-master
   - name: routing-release-ci
 

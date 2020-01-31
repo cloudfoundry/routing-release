@@ -4,7 +4,7 @@ set -e -x
 source ~/.bashrc
 
 echo $TERM
-version_tag=$(cat $VERSION_DIR/version)
+version_tag=$(cat version/version)
 export TERM=xterm-256color
 echo $TERM
 

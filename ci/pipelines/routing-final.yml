@@ -4,12 +4,6 @@ groups:
   - ship-what
   - create-final-routing-release
   - merge-master-into-develop
-  - batman-perf-deploy-and-compare-rc-vs-master
-- name: maintenance
-  jobs:
-  - batman-perf-setup
-  - batman-perf-destroy
-  # - batman-perf-delete-deployment
 
 resource_types:
 - name: neo-bosh-deployment
@@ -18,20 +12,6 @@ resource_types:
     repository: cloudfoundry/bosh-deployment-resource
 
 resources:
-- name: bosh-bootloader
-  type: git
-  source:
-    branch: master
-    uri: https://github.com/cloudfoundry/bosh-bootloader.git
-    private_key: ((github_private_key.private_key))
-
-- name: cf-deployment-concourse-tasks
-  type: git
-  source:
-    branch: master
-    uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks.git
-    tag_filter: v*
-
 - name: routing-release-rc
   type: git
   source:
@@ -77,13 +57,6 @@ resources:
     paths:
       - ci
 
-- name: deployments-routing
-  type: git
-  source:
-    branch: master
-    uri: git@github.com:cloudfoundry/deployments-routing.git
-    private_key: ((github_private_key.private_key))
-
 - name: final-version
   type: semver
   source:
@@ -92,16 +65,6 @@ resources:
     bucket: ci-routing-version
     initial_version: 0.195.0
     key: final-version
-    region_name: us-east-1
-
-- name: rc-version
-  type: semver
-  source:
-    access_key_id: ((concourse_aws_access_key_id))
-    secret_access_key: ((concourse_aws_secret_access_key))
-    bucket: ci-routing-version
-    initial_version: 0.195.0
-    key: rc-version
     region_name: us-east-1
 
 - name: cf-routing-release-tarball
@@ -120,230 +83,7 @@ resources:
     access_key_id: ((batman_aws_access_key_id))
     secret_access_key: ((batman_aws_secret_access_key))
 
-- name: batman-gorouter-standalone-deployment
-  type: neo-bosh-deployment
-
-- name: batman-perf-deployment
-  type: neo-bosh-deployment
-  source:
-
-- name: aws-stemcell-standalone
-  type: bosh-io-stemcell
-  source:
-    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
-
-# S3 BUCKETS
-- name: latest-released-cpu-stats
-  type: s3
-  source:
-    bucket: routing-perf-ci-final
-    access_key_id: ((batman_aws_access_key_id))
-    secret_access_key: ((batman_aws_secret_access_key))
-    versioned_file: cpuStats.csv
-
-- name: latest-released-perf-results
-  type: s3
-  source:
-    bucket: routing-perf-ci-final
-    access_key_id: ((batman_aws_access_key_id))
-    secret_access_key: ((batman_aws_secret_access_key))
-    versioned_file: perfResults.csv
-
-- name: latest-comparison-report
-  type: s3
-  source:
-    bucket: routing-perf-ci-final
-    access_key_id: ((batman_aws_access_key_id))
-    secret_access_key: ((batman_aws_secret_access_key))
-    versioned_file: report.html
-
-- name: release-candidate-cpu-stats
-  type: s3
-  source:
-    bucket: routing-perf-rc
-    access_key_id: ((batman_aws_access_key_id))
-    secret_access_key: ((batman_aws_secret_access_key))
-    versioned_file: cpuStats.csv
-
-- name: release-candidate-perf-results
-  type: s3
-  source:
-    bucket: routing-perf-rc
-    access_key_id: ((batman_aws_access_key_id))
-    secret_access_key: ((batman_aws_secret_access_key))
-    versioned_file: perfResults.csv
-
-- name: release-candidate-comparison-report
-  type: s3
-  source:
-    bucket: routing-perf-ci-final
-    access_key_id: ((batman_aws_access_key_id))
-    secret_access_key: ((batman_aws_secret_access_key))
-    versioned_file: rc-report.html
-
 jobs:
-- name: batman-perf-deploy-and-compare-rc-vs-master
-  serial: true
-  serial_groups:
-    - final-release-group
-  plan:
-  - in_parallel:
-    - get: routing-perf-release
-      trigger: true
-    - get: routing-release-rc
-      trigger: true
-      resource: routing-release-rc
-      params:
-        submodules: all
-    - get: routing-release-master
-      resource: routing-release-master
-      params:
-        submodules: all
-    - get: aws-stemcell-standalone
-      trigger: true
-    - get: deployments-routing
-    - get: routing-release-ci
-    - get: final-version
-    - get: rc-version
-      resource: final-version
-      params: {bump: minor}
-  - in_parallel:
-    - task: add-datadog-credhub-value
-      file: routing-release-ci/ci/tasks/add-credhub-value/task.yml
-      params:
-        ENVIRONMENT: batman-perf
-        NAME: /bosh-batman-perf/cf/datadog_api_key
-        VALUE: ((datadog_api_key))
-    - task: add-aws-access-key-id-credhub-value
-      file: routing-release-ci/ci/tasks/add-credhub-value/task.yml
-      params:
-        ENVIRONMENT: batman-perf
-        NAME: /bosh-batman-perf/cf/aws_access_key_id
-        VALUE: ((batman_perf_aws_access_key_id))
-    - task: add-aws-secret-access-key-credhub-value
-      file: routing-release-ci/ci/tasks/add-credhub-value/task.yml
-      params:
-        ENVIRONMENT: batman-perf
-        NAME: /bosh-batman-perf/cf/aws_secret_access_key
-        VALUE: ((batman_perf_aws_secret_access_key))
-    - task: create-perf-release-tarball
-      file: routing-release-ci/ci/tasks/create-release-tarball/task.yml
-      input_mapping: {release-dir: routing-perf-release}
-      output_mapping: {release-tarball: routing-perf-release-tarball}
-    - task: set-routing-release-version-for-rc
-      file: routing-release-ci/ci/tasks/set-routing-release-version/task.yml
-      input_mapping: {release-version: rc-version}
-    - task: create-routing-release-rc-tarball
-      file: routing-release-ci/ci/tasks/create-release-tarball/task.yml
-      input_mapping: {release-dir: routing-release-rc}
-      output_mapping: {release-tarball: routing-release-rc-tarball}
-  - task: generate-bosh-deployment-source-json
-    config:
-      platform: linux
-      image_resource:
-        type: docker-image
-        source:
-          repository: cloudfoundry/cf-routing-pipeline
-      inputs:
-      - name: deployments-routing
-      outputs:
-      - name: bosh-director
-      run:
-        path: bash
-        args:
-        - -c
-        - |
-            set -o pipefail
-            pushd $(pwd)/deployments-routing/batman-perf/bbl-state
-            echo '{}' | jq --arg target "$(bbl director-address)" \
-              --arg caCert "$(bbl director-ca-cert)" \
-              --arg client "$(bbl director-username)" \
-              --arg clientSecret "$(bbl director-password)" \
-              --arg jumpboxURL "$(bbl jumpbox-address):22" \
-              --arg jumpboxSSHKey "$(bbl ssh-key)" \
-              '{
-              "target": $target,
-              "ca_cert": $caCert,
-              "client": $client,
-              "client_secret": $clientSecret,
-              "deployment": "gorouter-standalone",
-              "jumpbox_url": $jumpboxURL,
-              "jumpbox_ssh_key": $jumpboxSSHKey
-            }' > source.json
-            popd
-            cp $(pwd)/deployments-routing/batman-perf/bbl-state/source.json $(pwd)/bosh-director/
-  - task: construct-routing-release-version
-    file: routing-release-ci/ci/tasks/write-repo-sha-var-file/task.yml
-    input_mapping: {release: routing-release-rc}
-  - put: batman-perf-deployment
-    params:
-      source_file: bosh-director/source.json
-      manifest: routing-release-ci/ci/manifests/batman-perf-gorouter.yml
-      ops_files: [ops-file/release-version.yml]
-      releases:
-      - routing-release-rc-tarball/*.tgz
-      - routing-perf-release-tarball/*.tgz
-      stemcells: [aws-stemcell-standalone/*.tgz]
-      vars_files:
-      - vars-files/release-vars.yml
-      cleanup: true
-  - task: run-throughputramp-for-rc
-    file: routing-release-ci/ci/tasks/run-throughputramp/task.yml
-    output_mapping: {csv-dir: rc-csv-dir}
-    params:
-      ENVIRONMENT: batman-perf
-      DEPLOYMENT: gorouter-standalone
-      RELEASE_DIR: routing-perf-release
-  - task: set-routing-release-version-for-master
-    file: routing-release-ci/ci/tasks/set-routing-release-version/task.yml
-    input_mapping: {release-version: rc-version}
-  - task: create-routing-release-rc-tarball
-    file: routing-release-ci/ci/tasks/create-release-tarball/task.yml
-    input_mapping: {release-dir: routing-release-master}
-    output_mapping: {release-tarball: routing-release-master-tarball}
-  - task: construct-routing-release-version
-    file: routing-release-ci/ci/tasks/write-repo-sha-var-file/task.yml
-    input_mapping: {release: routing-release-master}
-  - put: batman-gorouter-standalone-deployment
-    params:
-      source_file: bosh-director/source.json
-      manifest: routing-release-ci/ci/manifests/batman-perf-gorouter.yml
-      ops_files: [ops-file/release-version.yml]
-      releases:
-      - routing-release-master-tarball/*.tgz
-      - routing-perf-release-tarball/*.tgz
-      stemcells: [aws-stemcell-standalone/*.tgz]
-      vars_files:
-      - vars-files/release-vars.yml
-      cleanup: true
-  - task: run-throughputramp-for-master
-    file: routing-release-ci/ci/tasks/run-throughputramp/task.yml
-    output_mapping: {csv-dir: master-csv-dir}
-    params:
-      ENVIRONMENT: batman-perf
-      DEPLOYMENT: gorouter-standalone
-      RELEASE_DIR: routing-perf-release
-  - task: create-performance-report
-    file: routing-release-ci/ci/tasks/create-performance-comparison-report/task.yml
-    input_mapping:
-      rc-csv-dir: rc-csv-dir
-      master-csv-dir: master-csv-dir
-  - put: release-candidate-cpu-stats
-    params:
-      file: rc-csv-dir/cpuStats.csv
-  - put: release-candidate-perf-results
-    params:
-      file: rc-csv-dir/perfResults.csv
-  - put: release-candidate-comparison-report
-    params:
-      file: rc-comparison-report/rc-report.html
-  - put: latest-comparison-report
-    params:
-      file: final-comparison-report/report.html
-  - put: rc-version
-    params:
-      file: rc-version/version
-
 - name: ship-what
   serial: true
   serial_groups:
@@ -354,16 +94,8 @@ jobs:
       params:
         submodules: all
       trigger: true
-      passed: [batman-perf-deploy-and-compare-rc-vs-master]
     - get: routing-release-ci
-    - get: release-candidate-perf-results
-      passed: [batman-perf-deploy-and-compare-rc-vs-master]
-    - get: release-candidate-cpu-stats
-      passed: [batman-perf-deploy-and-compare-rc-vs-master]
-    - get: latest-comparison-report
-      passed: [batman-perf-deploy-and-compare-rc-vs-master]
-    - get: rc-version
-      passed: [batman-perf-deploy-and-compare-rc-vs-master]
+    - get: final-version
   - task: build-release-notes
     file: routing-release-ci/ci/tasks/build-release-notes/task.yml
     input_mapping:
@@ -375,79 +107,48 @@ jobs:
     - final-release-group
   plan:
   - in_parallel:
-    - get: release-candidate-perf-results
-      passed: [ship-what]
-    - get: release-candidate-cpu-stats
-      passed: [ship-what]
     - get: cf-routing-release-tarball
     - get: routing-perf-release
-    - get: latest-comparison-report
-      passed: [ship-what]
     - get: routing-release-master
       resource: routing-release-master
     - get: routing-release
       resource: routing-release-rc
       params:
         submodules: all
-    - get: rc-version
+    - get: final-version
       passed: [ship-what]
-    - get: deployments-routing
     - get: routing-release-ci
   - task: check-remote-release
-    params:
-      VERSION: final-version
     file: routing-release-ci/ci/tasks/check-release/task.yml
+    input_mapping:
+      version: final-version
   - task: create-final-release
     params:
       CF_ROUTING_RELEASE_RC_DIR: routing-release
       GCP_BLOBSTORE_SERVICE_ACCOUNT_KEY: ((gcp_routing_blobstore_service_account_key))
     file: routing-release-ci/ci/tasks/create-final-routing-release/task.yml
+    input_mapping:
+      version: final-version
   - task: create-release-checksum
     file: routing-release-ci/ci/tasks/create-release-checksum/task.yml
-  - task: rename-report
-    config:
-      platform: linux
-      image_resource:
-        type: docker-image
-        source:
-          repository: cloudfoundry/cf-routing-pipeline
-      inputs:
-        - name: latest-comparison-report
-        - name: rc-version
-      outputs:
-        - name: renamed-comparison-report
-      run:
-        path: bash
-        args:
-          - "-c"
-          - |
-            set -ex
-            version=$(cat ${PWD}/rc-version/version)
-            cp latest-comparison-report/report.html renamed-comparison-report/${version}-report.html
-            ls -la renamed-comparison-report
-  - put: latest-released-cpu-stats
-    params:
-      file: release-candidate-cpu-stats/cpuStats.csv
-  - put: latest-released-perf-results
-    params:
-      file: release-candidate-perf-results/perfResults.csv
+    input_mapping:
+      version: final-version
   - put: router-final-release
     params:
       file: cf-routing-bosh-release/routing-*.tgz
   - put: routing-release-master
     params:
       repository: routing-release-final
-      tag: rc-version/version
+      tag: final-version/version
   - put: final-version
     params:
-      file: rc-version/version
+      file: final-version/version
   - put: routing-github-release
     params:
-      name: rc-version/version
-      tag: rc-version/version
+      name: final-version/version
+      tag: final-version/version
       globs:
       - cf-routing-bosh-release/routing-*.tgz
-      - renamed-comparison-report/*.html
       - release-checksum/*.sha256
 
 - name: merge-master-into-develop
@@ -456,7 +157,6 @@ jobs:
     - final-release-group
   plan:
   - in_parallel:
-    - get: deployments-routing
     - get: routing-release-ci
     - get: cf-routing-release-develop
       resource: routing-release-develop
@@ -474,79 +174,4 @@ jobs:
   - put: routing-release-develop
     params:
       repository: cf-routing-release-mergedmaster
-
-- name: batman-perf-setup
-  serial_groups: [batman-perf]
-  build_logs_to_retain: 100
-  plan:
-  - in_parallel:
-    - get: cf-deployment-concourse-tasks
-    - get: deployments-routing
-    - get: routing-release-ci
-    - get: bosh-bootloader
-  - task: make-certs
-    file: routing-release-ci/ci/tasks/make-certs/task.yml
-    params:
-      ENVIRONMENT: batman-perf
-    input_mapping:
-      bbl-state: deployments-routing
-  - task: setup-batman-perf
-    file: cf-deployment-concourse-tasks/bbl-up/task.yml
-    params:
-      BBL_IAAS: aws
-      BBL_AWS_ACCESS_KEY_ID: ((batman_perf_aws_access_key_id))
-      BBL_AWS_SECRET_ACCESS_KEY: ((batman_perf_aws_secret_access_key))
-      BBL_AWS_REGION: us-east-1
-      BBL_LB_CERT: ../lb_certs/cert.pem
-      BBL_LB_KEY: ../lb_certs/key.pem
-      LB_DOMAIN: batman-perf.routing.cf-app.com
-      BBL_ENV_NAME: batman-perf
-      BBL_STATE_DIR: batman-perf/bbl-state
-      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
-    input_mapping:
-      bbl-config: updated-bbl-state
-      bbl-state: updated-bbl-state
-    ensure:
-      put: deployments-routing
-      params:
-        repository: updated-bbl-state
-        rebase: true
-
-- name: batman-perf-destroy
-  serial_groups: [batman-perf]
-  build_logs_to_retain: 100
-  plan:
-  - in_parallel:
-    - get: deployments-routing
-    - get: cf-deployment-concourse-tasks
-  - task: destroy-batman-perf
-    file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
-    params:
-      BBL_STATE_DIR: batman-perf/bbl-state
-      BBL_AWS_ACCESS_KEY_ID: ((batman_perf_aws_access_key_id))
-      BBL_AWS_SECRET_ACCESS_KEY: ((batman_perf_aws_secret_access_key))
-      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
-    input_mapping:
-      bbl-state: deployments-routing
-    ensure:
-      put: deployments-routing
-      params:
-        repository: updated-bbl-state
-        rebase: true
-
-# - name: batman-perf-delete-deployment
-#   serial_groups: [batman-perf]
-#   build_logs_to_retain: 100
-#   plan:
-#   - in_parallel:
-#     - get: cf-deployment-concourse-tasks
-#     - get: deployments-routing
-#     - get: routing-release
-#   - task: delete-cf-deployment
-#     file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
-#     input_mapping:
-#       bbl-state: deployments-routing
-#     params:
-#       DEPLOYMENT_NAME: gorouter-standalone
-#       BBL_STATE_DIR: orinoco/bbl-state
 

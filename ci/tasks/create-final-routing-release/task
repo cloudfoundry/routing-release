@@ -2,7 +2,7 @@
 
 set -exuo pipefail
 
-FINAL_VERSION=`cat rc-version/version`
+FINAL_VERSION=`cat version/version`
 
 root_dir=${PWD}
 OUTPUT_DIR=${root_dir}/cf-routing-bosh-release

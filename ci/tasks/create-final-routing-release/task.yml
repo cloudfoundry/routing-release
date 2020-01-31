@@ -9,8 +9,7 @@ image_resource:
 inputs:
   - name: routing-release
   - name: routing-release-master
-  - name: rc-version
-  - name: deployments-routing
+  - name: version
   - name: routing-release-ci
 
 outputs:

@@ -4,7 +4,7 @@ set -e -x
 
 source ~/.bashrc
 
-FINAL_VERSION=`cat rc-version/version`
+FINAL_VERSION=`cat version/version`
 FINAL_RELEASE_TGZ="routing-${FINAL_VERSION}.tgz"
 
 root_dir=${PWD}
