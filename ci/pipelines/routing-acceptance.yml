@@ -179,7 +179,8 @@ jobs:
   - task: make-certs
     file: routing-release-ci/ci/tasks/make-certs/task.yml
     params:
-      ENVIRONMENT: environments/superman
+      ENVIRONMENT: superman
+      ENV_PATH: environments/superman
     input_mapping:
       bbl-state: updated-bbl-state
   - task: setup-superman
