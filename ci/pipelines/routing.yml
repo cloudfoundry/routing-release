@@ -551,6 +551,7 @@ jobs:
       trigger: true
     - get: networking-oss-deployments
     - get: networking-oss-tools
+    - get: we-dont-use-vars-files
     - get: routing-release
       trigger: true
       passed:
@@ -1488,6 +1489,7 @@ jobs:
       trigger: true
     - get: networking-oss-deployments
     - get: networking-oss-tools
+    - get: we-dont-use-vars-files
     - get: routing-release-ci
       params:
         submodules: none
