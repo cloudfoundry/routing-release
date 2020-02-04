@@ -22,14 +22,6 @@ resources:
     username: ((dockerhub_public.username))
     password: ((dockerhub_public.password))
 
-- name: base-with-go1.10
-  type: docker-image
-  source:
-    repository: cloudfoundry/cf-routing-pipeline
-    username: ((dockerhub_public.username))
-    password: ((dockerhub_public.password))
-    tag: go1.10
-
 jobs:
 - name: build-base
   plan:
@@ -70,26 +62,3 @@ jobs:
       load_base: base
       build: routing-release-ci/ci/dockerfiles/webdriver
 
-- name: build-base-with-go1.10
-  plan:
-  - get: routing-release-ci
-    trigger: true
-  - task: create-tag-file
-    config:
-      platform: linux
-      image_resource:
-        type: docker-image
-        source:
-          repository: cloudfoundry/cf-routing-pipeline
-      outputs:
-      - name: tag-file
-      run:
-        path: bash
-        args:
-        - -exc
-        - echo "go1.10" > tag-file/tag
-  - put: base-with-go1.10
-    params:
-      build: routing-release-ci/ci/dockerfiles/go1-10
-      tag_file: tag-file/tag
-      tag_as_latest: false
