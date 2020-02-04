@@ -142,7 +142,7 @@ jobs:
       tag: final-version/version
   - put: final-version
     params:
-      file: final-version/version
+      bump: minor
   - put: routing-github-release
     params:
       name: final-version/version
