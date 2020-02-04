@@ -140,9 +140,6 @@ jobs:
     params:
       repository: routing-release-final
       tag: final-version/version
-  - put: final-version
-    params:
-      bump: minor
   - put: routing-github-release
     params:
       name: final-version/version
@@ -150,6 +147,9 @@ jobs:
       globs:
       - cf-routing-bosh-release/routing-*.tgz
       - release-checksum/*.sha256
+  - put: final-version
+    params:
+      bump: minor
 
 - name: merge-master-into-develop
   serial: true
