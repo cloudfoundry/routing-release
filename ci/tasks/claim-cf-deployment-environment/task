@@ -12,4 +12,6 @@ else
     curl -v ${URL} > cf-environment/metadata
 fi
 
-jq -r .name cf-environment/metadata | tee cf-environment/name
+jq -r .name cf-environment/metadata | tee cf-environment/name || \
+    { echo 'no environments available, retrying in 30 seconds...'; sleep 30; $0 $@; }
+
