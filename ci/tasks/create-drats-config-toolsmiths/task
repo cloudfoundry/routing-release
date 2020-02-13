@@ -1,0 +1,38 @@
+#!/bin/bash
+set -euo pipefail
+
+source networking-oss-tools/scripts/script_helpers.sh
+bosh_login_toolsmiths toolsmiths-metadata-dir
+
+mkdir -p drats-config
+
+ssh_proxy_host=$(python2 -c "from urlparse import urlparse; print(urlparse('$BOSH_ALL_PROXY').hostname)")
+
+jq -n \
+  --arg cf_api_url "https://$(jq -r '.cf.api_url' < toolsmiths-metadata-dir/metadata)" \
+  --arg cf_deployment_name "cf" \
+  --arg cf_admin_username "admin" \
+  --arg cf_admin_password "$(credhub get -j -n /bosh-${ENV_NAME}/cf/cf_admin_password | jq -r .value)" \
+  --arg bosh_environment "$BOSH_ENVIRONMENT" \
+  --arg bosh_client "$BOSH_CLIENT" \
+  --arg bosh_client_secret "$BOSH_CLIENT_SECRET" \
+  --arg bosh_ca_cert "$BOSH_CA_CERT" \
+  --arg ssh_proxy_cidr "10.0.0.0/8" \
+  --arg ssh_proxy_user "jumpbox" \
+  --arg ssh_proxy_host "$ssh_proxy_host" \
+  --arg ssh_proxy_private_key "$JUMPBOX_PRIVATE_KEY" \
+      '{
+	"cf_api_url": $cf_api_url,
+	"cf_deployment_name": $cf_deployment_name,
+	"cf_admin_username": $cf_admin_username,
+	"cf_admin_password": $cf_admin_password,
+	"bosh_environment": $bosh_environment,
+	"bosh_client": $bosh_client,
+	"bosh_client_secret": $bosh_client_secret,
+	"bosh_ca_cert": $bosh_ca_cert,
+	"ssh_proxy_cidr": $ssh_proxy_cidr,
+	"ssh_proxy_user": $ssh_proxy_user,
+	"ssh_proxy_host": $ssh_proxy_host,
+	"ssh_proxy_private_key": $ssh_proxy_private_key,
+	"include_cf-routing": true
+      }' > drats-integration-config/drats_integration_config.json

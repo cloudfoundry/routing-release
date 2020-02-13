@@ -1,0 +1,17 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+
+inputs:
+  - name: env-name
+  - name: routing-release-ci
+
+outputs:
+  - name: smoke-tests-ops-file
+
+run:
+  path: routing-release-ci/ci/tasks/update-smoke-tests-ops-file-for-toolsmiths/task
