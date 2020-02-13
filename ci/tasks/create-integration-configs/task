@@ -5,11 +5,7 @@ set -e -o pipefail
 # shellcheck disable=SC1091
 source cf-deployment-concourse-tasks/shared-functions
 
-if [[ -f networking-oss-tools/scripts/script_helpers.sh ]]; then
-  source networking-oss-tools/scripts/script_helpers.sh
-else
-  source routing-release-ci/ci/scripts/script_helpers.sh
-fi
+source networking-oss-tools/scripts/script_helpers.sh
 
 mkdir -p created-integration-configs
 pushd created-integration-configs

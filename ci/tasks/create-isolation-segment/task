@@ -2,11 +2,7 @@
 
 set -ex
 
-if [[ -f networking-oss-tools/scripts/script_helpers.sh ]]; then
-  source networking-oss-tools/scripts/script_helpers.sh
-else
-  source routing-release-ci/ci/scripts/script_helpers.sh
-fi
+source networking-oss-tools/scripts/script_helpers.sh
 
 set +x
   cf_login "${ENVIRONMENT}"

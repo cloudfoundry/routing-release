@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-if [[ -f networking-oss-tools/scripts/script_helpers.sh ]]; then
-  source networking-oss-tools/scripts/script_helpers.sh
-else
-  source routing-release-ci/ci/scripts/script_helpers.sh
-fi
+source networking-oss-tools/scripts/script_helpers.sh
 
 cf_login "${ENVIRONMENT}"
 cf target -o "${CF_ORG}" -s "${CF_SPACE}"

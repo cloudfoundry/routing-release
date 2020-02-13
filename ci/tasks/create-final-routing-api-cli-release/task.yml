@@ -9,7 +9,6 @@ image_resource:
 inputs:
   - name: routing-api-cli-src
   - name: routing-release-develop
-  - name: deployments-routing
   - name: version
   - name: routing-release-ci
 

@@ -1,15 +1,9 @@
 #!/usr/bin/env bash
 set -ex
 
-if [[ -f networking-oss-tools/scripts/script_helpers.sh ]]; then
-  source networking-oss-tools/scripts/script_helpers.sh
-  ENVIRONMENT="${ENVIRONMENT:?"ENVIRONMENT not set"}"
-  ENV_ROOT="${PWD}/networking-oss-deployments/environments/${ENVIRONMENT}"
-else
-  source routing-release-ci/ci/scripts/script_helpers.sh
-  ENVIRONMENT="${ENVIRONMENT:?"ENVIRONMENT not set"}"
-  ENV_ROOT="${PWD}/deployments-routing/${ENVIRONMENT}"
-fi
+source networking-oss-tools/scripts/script_helpers.sh
+ENVIRONMENT="${ENVIRONMENT:?"ENVIRONMENT not set"}"
+ENV_ROOT="${PWD}/networking-oss-deployments/environments/${ENVIRONMENT}"
 
 set_username_password() {
   set +x
