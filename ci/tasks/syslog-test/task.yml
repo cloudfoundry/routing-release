@@ -9,6 +9,9 @@ image_resource:
 inputs:
 - name: networking-oss-tools
 - name: networking-oss-deployments
+  optional: true
+- name: toolsmiths-metadata-dir
+  optional: true
 - name: routing-release-ci
 
 run:

@@ -3,8 +3,15 @@ set -eu -o pipefail
 
 source networking-oss-tools/scripts/script_helpers.sh
 
-ENVIRONMENT="${ENVIRONMENT:?"ENVIRONMENT not set"}"
-bosh_login "${ENVIRONMENT}"
+if [[ -d toolsmiths-metadata-dir ]]; then
+  bosh_login_toolsmiths toolsmiths-metadata-dir
+elif [[ -d networking-oss-deployments ]]; then
+  ENVIRONMENT="${ENVIRONMENT:?"ENVIRONMENT not set"}"
+  bosh_login "${ENVIRONMENT}"
+else
+  echo "Failed to provide either \"toolsmiths-metadata-dir\" or \"networking-oss-deployments\""
+  exit 1
+fi
 
 function cleanup() {
   pkill ssh || true
