@@ -7,16 +7,34 @@ source cf-deployment-concourse-tasks/shared-functions
 
 source networking-oss-tools/scripts/script_helpers.sh
 
+if [[ -d toolsmiths-metadata-dir ]]; then
+  ENVIRONMENT="$(cat toolsmiths-metadata-dir/name)"
+  API_URL="$(jq -r .cf.api_url toolsmiths-metadata-dir/metadata)"
+  SYSTEM_DOMAIN="${API_URL#api.}"
+  unset API_URL
+  ADMIN_PASS="$(get_cf_admin_password_toolsmiths "${ENVIRONMENT}")"
+
+elif [[ -d networking-oss-deployments ]]; then
+  if [[ ! -n "${ENVIRONMENT}" ]]; then
+    echo 'Failed to specify "ENVIRONMENT" when using "deployments-routing"'
+    exit 1
+  fi
+  SYSTEM_DOMAIN="${ENVIRONMENT}.routing.cf-app.com}"
+  ADMIN_PASS="$(extract_var "${ENVIRONMENT}" cf_admin_password)"
+
+else
+  echo 'Failed to provide either "toolsmiths-metadata-dir" or "deployments-routing"'
+  exit 2
+fi
+
 mkdir -p created-integration-configs
 pushd created-integration-configs
   git init
 popd
 
-SYSTEM_DOMAIN="${ENVIRONMENT}.routing.cf-app.com"
-CF_SMOKE_TESTS_CONFIG="created-integration-configs/cf_smoke_tests_config.json"
-CATS_INTEGRATION_CONFIG="created-integration-configs/cats_integration_config.json"
-RATS_INTEGRATION_CONFIG="created-integration-configs/rats_integration_config.json"
-ADMIN_PASS=$(extract_var "${ENVIRONMENT}" cf_admin_password)
+CF_SMOKE_TESTS_CONFIG='created-integration-configs/cf_smoke_tests_config.json'
+CATS_INTEGRATION_CONFIG='created-integration-configs/cats_integration_config.json'
+RATS_INTEGRATION_CONFIG='created-integration-configs/rats_integration_config.json'
 
 
 echo "Creating ${CATS_INTEGRATION_CONFIG}"

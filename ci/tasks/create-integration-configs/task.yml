@@ -9,6 +9,9 @@ image_resource:
 inputs:
   - name: routing-release-ci
   - name: networking-oss-deployments
+    optional: true
+  - name: toolsmiths-metadata-dir
+    optional: true
   - name: networking-oss-tools
   - name: cf-deployment-concourse-tasks
 
