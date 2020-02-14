@@ -19,6 +19,6 @@ jq -r .name cf-environment/metadata | tee cf-environment/name || \
       cat cf-environment/metadata
       echo 'no environments available, retrying in 30 seconds...'
       sleep 30
-      $0 $@
+      exec $0 $@
     }
 
