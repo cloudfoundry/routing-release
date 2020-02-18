@@ -169,14 +169,6 @@ resources:
     private_key: ((github_private_key.private_key))
     uri: git@github.com:cloudfoundry/networking-oss-deployments.git
 
-- name: networking-oss-tools
-  type: git
-  icon: github-box
-  source:
-    branch: master
-    private_key: ((github_private_key.private_key))
-    uri: git@github.com:cloudfoundry/networking-oss-tools.git
-
 # deploy-cf-with-created-release requires a vars-files input. However we don't use vars files when we deploy
 # This is just a empty dummy resource
 - name: we-dont-use-vars-files
@@ -487,7 +479,6 @@ jobs:
   - in_parallel:
     - get: cf-deployment-concourse-tasks
     - get: networking-oss-deployments
-    - get: networking-oss-tools
     - get: routing-release-ci
       params:
         submodules: none
@@ -550,7 +541,6 @@ jobs:
     - get: cf-deployment
       trigger: true
     - get: networking-oss-deployments
-    - get: networking-oss-tools
     - get: we-dont-use-vars-files
     - get: routing-release
       trigger: true
@@ -614,7 +604,6 @@ jobs:
   - in_parallel:
     - get: cf-deployment-concourse-tasks
     - get: networking-oss-deployments
-    - get: networking-oss-tools
     - get: routing-release-ci
       params:
         submodules: none
@@ -665,7 +654,6 @@ jobs:
     - get: cf-deployment
       passed: [batman-cf-smoke-and-indicator-protocol-tests]
       trigger: true
-    - get: networking-oss-tools
       passed: [batman-cf-smoke-and-indicator-protocol-tests]
     - get: networking-oss-deployments
       passed: [batman-cf-smoke-and-indicator-protocol-tests]
@@ -705,7 +693,6 @@ jobs:
       params:
         submodules: none
     - get: cf-deployment-concourse-tasks
-    - get: networking-oss-tools
       passed: [batman-deploy-cf]
     - get: networking-oss-deployments
       passed: [batman-deploy-cf]
@@ -754,7 +741,6 @@ jobs:
     params:
       submodules: none
   - get: networking-oss-deployments
-  - get: networking-oss-tools
   - get: bbr-binary-release
   - get: disaster-recovery-acceptance-tests
   - get: cf-deployment
@@ -786,7 +772,6 @@ jobs:
           submodules: none
       - get: networking-oss-deployments
         passed: [batman-cf-smoke-and-indicator-protocol-tests]
-      - get: networking-oss-tools
         passed: [batman-cf-smoke-and-indicator-protocol-tests]
       - get: cf-deployment
         trigger: true
@@ -824,7 +809,6 @@ jobs:
     passed: [batman-deploy-cf]
     trigger: true
   - get: networking-oss-deployments
-  - get: networking-oss-tools
   - get: routing-release-ci
     params:
       submodules: none
@@ -842,7 +826,6 @@ jobs:
   - get: networking-oss-deployments
     passed: [batman-cats]
     trigger: true
-  - get: networking-oss-tools
     passed: [batman-cats]
   - get: cf-deployment-concourse-tasks
   - task: cleanup-artifacts
@@ -858,7 +841,6 @@ jobs:
   plan:
   - in_parallel:
     - get: networking-oss-deployments
-    - get: networking-oss-tools
     - get: cf-deployment-concourse-tasks
   - task: destroy-batman
     file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
@@ -880,7 +862,6 @@ jobs:
   plan:
   - in_parallel:
     - get: cf-deployment-concourse-tasks
-    - get: networking-oss-tools
     - get: networking-oss-deployments
     - get: routing-release
   - task: delete-cf-deployment
@@ -902,7 +883,6 @@ jobs:
     - get: two-hours
       trigger: true
     - get: networking-oss-deployments
-    - get: networking-oss-tools
     - get: cf-deployment
     - get: routing-release
       passed:
@@ -977,7 +957,6 @@ jobs:
   - in_parallel:
     - get: cf-deployment-concourse-tasks
     - get: networking-oss-deployments
-    - get: networking-oss-tools
     - get: routing-release-ci
       params:
         submodules: none
@@ -1062,7 +1041,6 @@ jobs:
   plan:
   - in_parallel:
     - get: networking-oss-deployments
-    - get: networking-oss-tools
     - get: routing-release-ci
       params:
         submodules: none
@@ -1240,7 +1218,6 @@ jobs:
     - get: we-dont-use-vars-files
       submodules: none
     - get: networking-oss-deployments
-    - get: networking-oss-tools
     - get: cf-deployment-concourse-tasks
     - get: cf-deployment
       trigger: true
@@ -1303,7 +1280,6 @@ jobs:
       trigger: true
       passed: [ci-lite-deploy-cf]
     - get: networking-oss-deployments
-    - get: networking-oss-tools
     - get: cf-deployment-concourse-tasks
     - get: routing-release
       passed: [ci-lite-deploy-cf]
@@ -1340,7 +1316,6 @@ jobs:
         params:
           submodules: none
       - get: networking-oss-deployments
-      - get: networking-oss-tools
       - get: cf-deployment
         trigger: true
         passed: [ci-lite-deploy-cf]
@@ -1377,7 +1352,6 @@ jobs:
   - in_parallel:
     - get: cf-deployment-concourse-tasks
     - get: networking-oss-deployments
-    - get: networking-oss-tools
     - get: routing-release-ci
       params:
         submodules: none
@@ -1417,7 +1391,6 @@ jobs:
   plan:
   - in_parallel:
     - get: networking-oss-deployments
-    - get: networking-oss-tools
     - get: cf-deployment-concourse-tasks
   - task: destroy-diana
     file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
@@ -1440,7 +1413,6 @@ jobs:
   - in_parallel:
     - get: cf-deployment-concourse-tasks
     - get: networking-oss-deployments
-    - get: networking-oss-tools
     - get: routing-release-ci
       params:
         submodules: none
@@ -1488,7 +1460,6 @@ jobs:
     - get: cf-deployment-release-latest
       trigger: true
     - get: networking-oss-deployments
-    - get: networking-oss-tools
     - get: we-dont-use-vars-files
     - get: routing-release-ci
       params:
@@ -1700,7 +1671,6 @@ jobs:
   plan:
   - in_parallel:
     - get: networking-oss-deployments
-    - get: networking-oss-tools
     - get: cf-deployment-concourse-tasks
     - get: routing-release
   - task: delete-cf-deployment

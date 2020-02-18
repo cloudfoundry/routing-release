@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -ex
 
-source networking-oss-tools/scripts/script_helpers.sh
+source networking-oss-deployments/scripts/script_helpers.sh
 ENVIRONMENT="${ENVIRONMENT:?"ENVIRONMENT not set"}"
 ENV_ROOT="${PWD}/networking-oss-deployments/environments/${ENVIRONMENT}"
 

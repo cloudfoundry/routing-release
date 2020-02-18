@@ -7,7 +7,6 @@ image_resource:
     repository: cloudfoundry/cf-routing-pipeline
 
 inputs:
-- name: networking-oss-tools
 - name: networking-oss-deployments
   optional: true
 - name: toolsmiths-metadata-dir

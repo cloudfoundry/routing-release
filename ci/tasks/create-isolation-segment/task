@@ -2,7 +2,7 @@
 
 set -ex
 
-source networking-oss-tools/scripts/script_helpers.sh
+source networking-oss-deployments/scripts/script_helpers.sh
 
 set +x
   cf_login "${ENVIRONMENT}"

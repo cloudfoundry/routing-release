@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-source networking-oss-tools/scripts/script_helpers.sh
+source networking-oss-deployments/scripts/script_helpers.sh
 
 cf_login "${ENVIRONMENT}"
 cf target -o "${CF_ORG}" -s "${CF_SPACE}"

@@ -8,7 +8,6 @@ image_resource:
 
 inputs:
   - name: routing-release-ci
-  - name: networking-oss-tools
   - name: toolsmiths-metadata-dir
 
 outputs:

@@ -5,7 +5,7 @@ set -e -o pipefail
 # shellcheck disable=SC1091
 source cf-deployment-concourse-tasks/shared-functions
 
-source networking-oss-tools/scripts/script_helpers.sh
+source networking-oss-deployments/scripts/script_helpers.sh
 
 if [[ -d toolsmiths-metadata-dir ]]; then
   ENVIRONMENT="$(cat toolsmiths-metadata-dir/name)"

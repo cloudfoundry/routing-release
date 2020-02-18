@@ -2,7 +2,7 @@
 
 set -eux
 
-source networking-oss-tools/scripts/script_helpers.sh
+source networking-oss-deployments/scripts/script_helpers.sh
 
 bosh_login_toolsmiths
 

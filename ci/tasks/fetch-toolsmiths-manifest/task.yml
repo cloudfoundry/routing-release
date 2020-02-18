@@ -9,7 +9,6 @@ image_resource:
 inputs:
 - name: toolsmiths-metadata-dir
 - name: routing-release-ci
-- name: networking-oss-tools
 
 outputs:
 - name: our-envs-manifest

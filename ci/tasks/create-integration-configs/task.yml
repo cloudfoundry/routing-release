@@ -12,7 +12,6 @@ inputs:
     optional: true
   - name: toolsmiths-metadata-dir
     optional: true
-  - name: networking-oss-tools
   - name: cf-deployment-concourse-tasks
 
 outputs:
