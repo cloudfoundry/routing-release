@@ -1,5 +1,5 @@
 ## Routing Release CI
-This folder contains all release specific pipeline materials for running our CI
+This folder contains all release specific pipeline materials for running our CI.
 You can find the dashboard [here](https://networking.ci.cf-app.com/teams/ga/pipelines/routing)
 
 ### Summary
