@@ -7,6 +7,7 @@ image_resource:
     repository: cloudfoundry/cf-routing-pipeline
 
 inputs:
+- name: networking-oss-deployments
 - name: routing-release-ci
 - name: toolsmiths-metadata-dir
 

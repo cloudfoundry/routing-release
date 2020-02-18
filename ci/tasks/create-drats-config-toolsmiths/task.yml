@@ -9,6 +9,7 @@ image_resource:
 inputs:
   - name: routing-release-ci
   - name: toolsmiths-metadata-dir
+  - name: networking-oss-deployments
 
 outputs:
   - name: drats-integration-config
