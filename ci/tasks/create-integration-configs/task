@@ -19,7 +19,7 @@ elif [[ -d networking-oss-deployments ]]; then
     echo 'Failed to specify "ENVIRONMENT" when using "deployments-routing"'
     exit 1
   fi
-  SYSTEM_DOMAIN="${ENVIRONMENT}.routing.cf-app.com}"
+  SYSTEM_DOMAIN="${ENVIRONMENT}.routing.cf-app.com"
   ADMIN_PASS="$(extract_var "${ENVIRONMENT}" cf_admin_password)"
 
 else
