@@ -1,11 +1,11 @@
 <%=
   require 'json'
 
-  nats_ips = nil
+  nats_machines = nil
   if_p('nats.machines') do |ips|
-    nats_ips = ips.compact
+    nats_machines = ips.compact
   end.else do
-    nats_ips = link('nats').instances.map { |instance| instance.address }
+    nats_machines = link('nats').instances.map { |instance| instance.address }
   end
 
   nats_port = nil
@@ -29,7 +29,19 @@
     nats_password = link('nats').p("nats.password")
   end
 
-  message_bus_servers = nats_ips.map do |ip|
+  if_link('nats-tls') do |nats_link|
+    if p('nats.tls.enabled')
+      nats_machines = nats_link.instances.map { |instance| instance.address }
+      if_p("nats.tls.hostname") do | prop |
+        nats_machines = [prop]
+      end
+      nats_port = nats_link.p("nats.port")
+      nats_user = nats_link.p("nats.user")
+      nats_password = nats_link.p("nats.password")
+    end
+  end
+
+  message_bus_servers = nats_machines.map do |ip|
     {
       host: "#{ip}:#{nats_port}",
       user: "#{nats_user}",
@@ -83,8 +95,16 @@
 
   routing_api['skip_ssl_validation'] = p('route_registrar.routing_api.skip_ssl_validation')
 
+  nats_mtls_config = {
+     enabled: p('nats.tls.enabled'),
+     cert_path: '/var/vcap/jobs/route_registrar/config/nats/certs/client.crt',
+     key_path: '/var/vcap/jobs/route_registrar/config/nats/certs/client_private.key',
+     ca_path: '/var/vcap/jobs/route_registrar/config/nats/certs/server_ca.crt'
+  }
+
   config = {
     message_bus_servers: message_bus_servers,
+    nats_mtls_config: nats_mtls_config,
     host: host,
     routes: routes,
     routing_api: routing_api,

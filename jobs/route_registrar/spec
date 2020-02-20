@@ -11,6 +11,9 @@ consumes:
 - name: nats
   type: nats
   optional: true
+- name: nats-tls
+  type: nats-tls
+  optional: true
 - name: routing_api
   type: routing_api
   optional: true
@@ -23,6 +26,10 @@ templates:
   client.crt.erb: config/routing_api/certs/client.crt
   client_private.key.erb: config/routing_api/keys/client_private.key
   server_ca.crt.erb: config/routing_api/certs/server_ca.crt
+
+  nats_client.crt.erb: config/nats/certs/client.crt
+  nats_client_private.key.erb: config/nats/certs/client_private.key
+  nats_server_ca.crt.erb: config/nats/certs/server_ca.crt
 
 properties:
   nats.machines:
@@ -39,6 +46,15 @@ properties:
   nats.password:
     description: Password for NATS authentication
     example: natSpa55w0rd
+  nats.tls.enabled:
+    description: Enable connecting to NATS server via TLS.
+    default: false
+  nats.tls.client_cert:
+    description: "PEM-encoded certificate for the route-emitter to present to NATS for verification when connecting via TLS."
+  nats.tls.client_key:
+    description: "PEM-encoded private key for the route-emitter to present to NATS for verification when connecting via TLS."
+  nats.tls.hostname:
+    description: "Hostname of the NATS cluster."
 
   host:
     description: (string, optional) By default, route_registrar will detect the IP of the VM and use it, in combination with port as the backend destination for each uri being registered. This property enables overriding the destination hostname or IP.

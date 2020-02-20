@@ -203,11 +203,71 @@ describe 'route_registrar' do
           name: 'nats',
           properties: {
             'nats' => {
-              'host' => '', 'user' => '', 'password' => '', 'port' => 8080
+              'host' => 'nats-host', 'user' => 'nats-user', 'password' => 'nats-password', 'port' => 8080
             }
-          }
+          },
+          instances: [Bosh::Template::Test::LinkInstance.new(address: 'my-nats-address')]
         )
       ]
+    end
+
+    describe 'nats properties' do
+      it 'renders with the default' do
+        rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+        expect(rendered_hash['message_bus_servers'][0]['host']).to eq('my-nats-address:8080')
+        expect(rendered_hash['message_bus_servers'][0]['user']).to eq('nats-user')
+        expect(rendered_hash['message_bus_servers'][0]['password']).to eq('nats-password')
+      end
+    end
+
+    context 'when nats-tls link is present' do
+      let(:links) do
+        [
+          Bosh::Template::Test::Link.new(
+            name: 'nats',
+            properties: {
+              'nats' => {
+                'host' => 'nats-host', 'user' => 'nats-user', 'password' => 'nats-password', 'port' => 8080
+              }
+            },
+            instances: [Bosh::Template::Test::LinkInstance.new(address: 'my-nats-ip')]
+          ),
+          Bosh::Template::Test::Link.new(
+            name: 'nats-tls',
+            properties: {
+              'nats' => {
+                'host' => 'nats-tls-host', 'user' => 'nats-tls-user', 'password' => 'nats-tls-password', 'port' => 9090
+              }
+            },
+            instances: [Bosh::Template::Test::LinkInstance.new(address: 'my-nats-tls-ip')]
+          )
+        ]
+      end
+
+      context 'when mTLS is enabled for NATS' do
+        it 'renders with the nats-tls properties' do
+          merged_manifest_properties['nats'] = { 'tls' => { 'enabled' => true } }
+          merged_manifest_properties['nats']['tls']['hostname'] = 'my-nats-tls-hostname'
+
+          rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+          expect(rendered_hash['nats_mtls_config']['enabled']).to be true
+          expect(rendered_hash['message_bus_servers'].length).to eq(1)
+          expect(rendered_hash['message_bus_servers'][0]['host']).to eq('my-nats-tls-hostname:9090')
+          expect(rendered_hash['message_bus_servers'][0]['user']).to eq('nats-tls-user')
+          expect(rendered_hash['message_bus_servers'][0]['password']).to eq('nats-tls-password')
+        end
+      end
+
+      context 'when mTLS is not enabled for NATS' do
+        it 'renders with the default nat properties' do
+          rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+          expect(rendered_hash['nats_mtls_config']['enabled']).to be false
+          expect(rendered_hash['message_bus_servers'].length).to eq(1)
+          expect(rendered_hash['message_bus_servers'][0]['host']).to eq('my-nats-ip:8080')
+          expect(rendered_hash['message_bus_servers'][0]['user']).to eq('nats-user')
+          expect(rendered_hash['message_bus_servers'][0]['password']).to eq('nats-password')
+        end
+      end
     end
 
     describe 'routing_api' do
@@ -259,7 +319,7 @@ describe 'route_registrar' do
         rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
         expect(rendered_hash).to eq(
           'host' => '192.168.0.0',
-          'message_bus_servers' => [],
+          'message_bus_servers' => [{ 'host' => 'my-nats-address:8080', 'password' => 'nats-password', 'user' => 'nats-user' }],
           'routes' => [
             {
               'health_check' => { 'name' => 'uaa-healthcheck', 'script_path' => '/var/vcap/jobs/uaa/bin/health_check' },
@@ -280,6 +340,12 @@ describe 'route_registrar' do
             'client_cert_path' => '/var/vcap/jobs/route_registrar/config/routing_api/certs/client.crt',
             'client_private_key_path' => '/var/vcap/jobs/route_registrar/config/routing_api/keys/client_private.key',
             'server_ca_cert_path' => '/var/vcap/jobs/route_registrar/config/routing_api/certs/server_ca.crt'
+          },
+          'nats_mtls_config' => {
+            'enabled' => false,
+            'cert_path' => '/var/vcap/jobs/route_registrar/config/nats/certs/client.crt',
+            'key_path' => '/var/vcap/jobs/route_registrar/config/nats/certs/client_private.key',
+            'ca_path' => '/var/vcap/jobs/route_registrar/config/nats/certs/server_ca.crt'
           }
         )
       end

@@ -7,6 +7,7 @@ mkdir -p "${GOPATH}/src"
 
 mv code.cloudfoundry.org "${GOPATH}/src"
 mv github.com "${GOPATH}/src"
+mv golang.org "${GOPATH}/src"
 
 pushd ${GOPATH}/src/code.cloudfoundry.org/route-registrar
   go build -o "${BOSH_INSTALL_TARGET}/bin/route-registrar" .
