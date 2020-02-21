@@ -5,7 +5,11 @@
   if_p('nats.machines') do |ips|
     nats_machines = ips.compact
   end.else do
-    nats_machines = link('nats').instances.map { |instance| instance.address }
+    link('nats').if_p("nats.hostname") do |hostname|
+      nats_machines = [hostname]
+    end.else do
+      nats_machines = link('nats').instances.map { |instance| instance.address }
+    end
   end
 
   nats_port = nil
@@ -32,6 +36,9 @@
   if_link('nats-tls') do |nats_link|
     if p('nats.tls.enabled')
       nats_machines = nats_link.instances.map { |instance| instance.address }
+      nats_link.if_p("nats.hostname") do |hostname|
+        nats_machines = [hostname]
+      end
       if_p("nats.tls.hostname") do | prop |
         nats_machines = [prop]
       end
@@ -41,9 +48,9 @@
     end
   end
 
-  message_bus_servers = nats_machines.map do |ip|
+  message_bus_servers = nats_machines.map do |host|
     {
-      host: "#{ip}:#{nats_port}",
+      host: "#{host}:#{nats_port}",
       user: "#{nats_user}",
       password: "#{nats_password}"
     }
