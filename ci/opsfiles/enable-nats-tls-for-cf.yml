@@ -1,5 +1,5 @@
 - type: replace
-  path: /addons?/name=bosh-dns-aliases?/jobs/name=bosh-dns-aliases?/properties?/aliases/-
+  path: /addons?/name=bosh-dns-aliases/jobs/name=bosh-dns-aliases/properties/aliases/domain=nats.service.cf.internal
   value:
     domain: nats.service.cf.internal
     targets:
