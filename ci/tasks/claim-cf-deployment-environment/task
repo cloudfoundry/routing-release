@@ -2,7 +2,7 @@
 set -ex -o pipefail
 
 if [[ -z "${ENVIRONMENT_NAME}" ]]; then
-    echo 'Feching new environment'
+    echo 'Fetching new environment'
     URL="https://environments.toolsmiths.cf-app.com/pooled_gcp_engineering_environments/claim?api_token=${TOOLSMITHS_API_TOKEN}&pool_name=${ENVIRONMENT_TYPE}&notes=${ENVIRONMENT_NOTES}"
 
     curl -v -X POST "${URL}" > cf-environment/metadata
