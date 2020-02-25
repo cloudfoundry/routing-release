@@ -7,9 +7,11 @@ image_resource:
     repository: cloudfoundry/cf-routing-pipeline
 
 inputs:
-- name: networking-oss-deployments
-- name: routing-release
-- name: routing-release-ci
+  - name: networking-oss-deployments
+  - name: toolsmiths-metadata-dir
+    optional: true
+  - name: routing-release
+  - name: routing-release-ci
 
 outputs:
   - name: cipher-manifest

@@ -3,8 +3,13 @@ set -ex -o pipefail
 
 source networking-oss-deployments/scripts/script_helpers.sh
 
-ENVIRONMENT="${ENVIRONMENT:?"ENVIRONMENT not set"}"
-bosh_login "${ENVIRONMENT}"
+if [[ -d toolsmiths-metadata-dir ]]; then
+  ENVIRONMENT="$(cat toolsmiths-metadata-dir/name)"
+  bosh_login_toolsmiths
+else
+  ENVIRONMENT="${ENVIRONMENT:?"ENVIRONMENT not set"}"
+  bosh_login "${ENVIRONMENT}"
+fi
 
 function cleanup() {
   pkill ssh || true

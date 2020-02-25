@@ -8,6 +8,8 @@ image_resource:
 
 inputs:
   - name: networking-oss-deployments
+  - name: toolsmiths-metadata-dir
+    optional: true
   - name: gcp-stemcell
   - name: release-tarball
   - name: cipher-manifest
