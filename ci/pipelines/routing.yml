@@ -6,13 +6,6 @@ groups:
   - upgrade-cf-cli-in-routing-release
   - upgrade-dep-dependencies-in-routing-perf-release
   - routing-release-unit
-  - batman-deploy-cf
-  - batman-syslog-test
-  - batman-cf-smoke-and-indicator-protocol-tests
-  - batman-rats
-  - batman-cats
-  - batman-drats
-  - batman-deploy-and-run-cipher-suite-tests
   - orinoco-http-perf-tests
   - diana-tcp-perf-tests
   - ci-lite-deploy-cf
@@ -21,13 +14,21 @@ groups:
   - jubilee-no-downtime
   - deliver-stories
   - bump-to-rc
+  - cf-deployment-cats
+  - cf-deployment-drats
+  - cf-deployment-rats
+  - cf-deployment-syslog-test
+  - cf-deployment-smoke-and-indicator-protocol-tests
+  - cf-deployment-deploy-and-run-cipher-suite-tests
+
+- name: pooled-envs
+  jobs:
+  - claim-cf-deployment
+  - manual-unclaim-cf-deployment
+  - create-acceptance-environment
 
 - name: maintenance
   jobs:
-  - batman-setup
-  - batman-destroy
-  - batman-bosh-cleanup
-  - batman-delete-deployment
   - diana-setup
   - diana-destroy
   - diana-cleanup
@@ -48,6 +49,10 @@ resource_types:
   type: docker-image
   source:
     repository: cloudfoundry/bosh-deployment-resource
+- name: toolsmiths-envs
+  type: docker-image
+  source:
+    repository: cftoolsmiths/toolsmiths-envs-resource
 
 resources:
 #RELEASES
@@ -285,6 +290,17 @@ resources:
     project_id: '2245594'
     tracker_url: https://www.pivotaltracker.com
 
+#Toolsmith pool
+- name: cf-deployment-env
+  type: toolsmiths-envs
+  source:
+    api_token: ((toolsmiths_api_key))
+    sa_gcp_key: ((shared_gcp_account_creds))
+    pool_name: cf-deployment
+    hostname: environments.toolsmiths.cf-app.com
+  tags:
+  - vsphere-cf-networking
+
 jobs:
 - name: upgrade-go1.x-in-routing-release
   plan:
@@ -470,407 +486,6 @@ jobs:
       params:
         repository: updated-bbl-state
         rebase: true
-
-# INFRASTRUCTURE - batman
-- name: batman-setup
-  serial_groups: [batman]
-  build_logs_to_retain: 100
-  plan:
-  - in_parallel:
-    - get: cf-deployment-concourse-tasks
-    - get: networking-oss-deployments
-    - get: routing-release-ci
-      params:
-        submodules: none
-    - get: bosh-bootloader
-    - get: friday-trigger
-      trigger: true
-  - task: add-parent-dns
-    file: routing-release-ci/ci/tasks/add-parent-dns/task.yml
-    params:
-      ENVIRONMENT: environments/batman
-    input_mapping:
-      bbl-state: networking-oss-deployments
-  - task: inject-plan-patches
-    file: routing-release-ci/ci/tasks/inject-plan-patches/task.yml
-    params:
-      BBL_STATE_DIR: environments/batman/bbl-state
-      PLAN_PATCH_DIR: plan-patches/iso-segs-gcp
-    input_mapping:
-      bbl-state: updated-bbl-state
-      plan-patches: bosh-bootloader
-  - task: make-certs
-    file: routing-release-ci/ci/tasks/make-certs/task.yml
-    params:
-      ENVIRONMENT: batman
-      ENV_PATH: environments/batman
-    input_mapping:
-      bbl-state: updated-bbl-state
-  - task: setup-batman
-    file: cf-deployment-concourse-tasks/bbl-up/task.yml
-    params:
-      BBL_IAAS: gcp
-      BBL_GCP_SERVICE_ACCOUNT_KEY: ((shared_gcp_account_creds))
-      BBL_GCP_REGION: us-west1
-      BBL_LB_CERT: ../lb_certs/cert.pem
-      BBL_LB_KEY: ../lb_certs/key.pem
-      LB_DOMAIN: batman.routing.cf-app.com
-      BBL_ENV_NAME: batman
-      BBL_STATE_DIR: environments/batman/bbl-state
-      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
-    input_mapping:
-      bbl-config: updated-bbl-state
-      bbl-state: updated-bbl-state
-    ensure:
-      put: networking-oss-deployments
-      params:
-        repository: updated-bbl-state
-        rebase: true
-  - task: add-credhub-value
-    file: routing-release-ci/ci/tasks/add-credhub-value/task.yml
-    params:
-      ENVIRONMENT: batman
-      NAME: /bosh-batman/cf/datadog_api_key
-      VALUE: ((datadog_api_key))
-
-- name: batman-deploy-cf
-  serial_groups: [batman]
-  plan:
-  - in_parallel:
-    - get: cf-deployment-concourse-tasks
-    - get: cf-deployment
-      trigger: true
-    - get: networking-oss-deployments
-    - get: we-dont-use-vars-files
-    - get: routing-release
-      trigger: true
-      passed:
-      - routing-release-unit
-    - get: routing-release-ci
-      params:
-        submodules: none
-  - task: upload-lb-cert-to-credhub
-    file: routing-release-ci/ci/tasks/set-cert-in-credhub/task.yml
-    params:
-      BBL_STATE_DIR: environments/batman/bbl-state
-      CERTIFICATE_FILE: environments/batman/lb_certs/cert.pem
-      CREDHUB_KEY: /bosh-batman/cf/lb_cert
-    input_mapping:
-      bbl-state: networking-oss-deployments
-      cert-directory: networking-oss-deployments
-  - task: merge-ops-files
-    file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
-    params:
-      ENVIRONMENT: batman
-  - task: deploy-batman-with-created-routing
-    file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
-    input_mapping:
-      bbl-state: networking-oss-deployments
-      release: routing-release
-      ops-files: merged-operations
-      vars-files: we-dont-use-vars-files
-    params:
-      SYSTEM_DOMAIN: batman.routing.cf-app.com
-      OPS_FILES: |
-        use-compiled-releases.yml
-        update-watch.yml
-        syslog.yml
-        routing-acceptance-tests.yml
-        routing-smoke-tests.yml
-        test/add-persistent-isolation-segment-diego-cell.yml
-        test/add-persistent-isolation-segment-router.yml
-        add-persistent-isolation-segment-router-ca-certs.yml
-        tls-pem.yml
-        add-cipher-suites.yml
-        smoke-tests.yml
-        xfcc.yml
-        isolation-in-z3.yml
-        backup-and-restore/enable-backup-restore.yml
-        disable-bbr-non-routing.yml
-        enable-locket-isolated-diego.yml
-        create-indicator-protocol-uaa-client.yml
-        add-lb-ca-cert.yml
-      BBL_STATE_DIR: environments/batman/bbl-state
-  - task: create-isolation-segment
-    file: routing-release-ci/ci/tasks/create-isolation-segment/task.yml
-    params:
-      ENVIRONMENT: batman
-      ISO_SEG_NAME: "persistent_isolation_segment"
-
-- name: batman-deploy-and-run-cipher-suite-tests
-  serial_groups:
-  - batman
-  plan:
-  - in_parallel:
-    - get: cf-deployment-concourse-tasks
-    - get: networking-oss-deployments
-    - get: routing-release-ci
-      params:
-        submodules: none
-    - get: release-dir
-      resource: cipher-test-release
-      trigger: true
-    - get: routing-release
-      passed: [batman-deploy-cf]
-      trigger: true
-    - get: gcp-stemcell-xenial
-  - task: generate-cipher-manifest
-    file: routing-release-ci/ci/tasks/generate-cipher-manifest/task.yml
-    params:
-      CIPHERS: "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384"
-      ENVIRONMENT: batman
-  - task: create-release-tarball
-    file: routing-release-ci/ci/tasks/create-release-tarball/task.yml
-  - task: deploy-run-errand
-    file: routing-release-ci/ci/tasks/run-cipher-suite/task.yml
-    input_mapping:
-      gcp-stemcell: gcp-stemcell-xenial
-    params:
-      ENVIRONMENT: batman
-      DEPLOYMENT: cipher
-      MANIFEST: cipher-manifest/cipher.yml
-      RELEASES_DIR: "release-tarball/*.tgz"
-      STEMCELL_REGEX: gcp-stemcell/*.tgz
-    ensure:
-      task: delete-cipher-deployment
-      file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
-      input_mapping:
-        bbl-state: networking-oss-deployments
-      params:
-        DEPLOYMENT_NAME: cipher
-        BBL_STATE_DIR: environments/batman/bbl-state
-
-
-
-- name: batman-cats
-  serial_groups: [batman]
-  build_logs_to_retain: 100
-  plan:
-  - in_parallel:
-    - get: routing-release-ci
-      params:
-        submodules: none
-    - get: cf-acceptance-tests
-    - get: cf-deployment
-      passed: [batman-cf-smoke-and-indicator-protocol-tests]
-      trigger: true
-      passed: [batman-cf-smoke-and-indicator-protocol-tests]
-    - get: networking-oss-deployments
-      passed: [batman-cf-smoke-and-indicator-protocol-tests]
-    - get: cf-deployment-concourse-tasks
-    - get: routing-release
-      passed: [batman-cf-smoke-and-indicator-protocol-tests]
-      trigger: true
-  - task: create-integration-config
-    file: routing-release-ci/ci/tasks/create-integration-configs/task.yml
-    params:
-      ENVIRONMENT: batman
-      ISO_SEG_NAME: "persistent_isolation_segment"
-  - task: update-integration-configs
-    file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
-    input_mapping:
-      bbl-state: networking-oss-deployments
-      integration-configs: created-integration-configs
-    params:
-      BBL_STATE_DIR: environments/batman/bbl-state
-      CATS_INTEGRATION_CONFIG_FILE: cats_integration_config.json
-      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
-  - task: run-cats
-    input_mapping:
-      integration-config: updated-integration-configs
-    file: cf-deployment-concourse-tasks/run-cats/task.yml
-    params:
-      CONFIG_FILE_PATH: cats_integration_config.json
-
-- name: batman-cf-smoke-and-indicator-protocol-tests
-  serial_groups: [batman]
-  plan:
-  - in_parallel:
-    - get: routing-release
-      passed: [batman-deploy-cf]
-      trigger: true
-    - get: routing-release-ci
-      params:
-        submodules: none
-    - get: cf-deployment-concourse-tasks
-      passed: [batman-deploy-cf]
-    - get: networking-oss-deployments
-      passed: [batman-deploy-cf]
-    - get: cf-smoke-tests-release
-    - get: cf-deployment
-      passed: [batman-deploy-cf]
-      trigger: true
-    - get: indicator-protocol-release
-      params:
-        globs:
-        - indicator-verification-linux64*
-  - task: create-integration-config
-    file: routing-release-ci/ci/tasks/create-integration-configs/task.yml
-    params:
-      ENVIRONMENT: batman
-      ISO_SEG_NAME: "persistent_isolation_segment"
-  - task: update-integration-configs
-    file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
-    input_mapping:
-      bbl-state: networking-oss-deployments
-      integration-configs: created-integration-configs
-    params:
-      BBL_STATE_DIR: environments/batman/bbl-state
-      CATS_INTEGRATION_CONFIG_FILE: cats_integration_config.json
-      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
-  - task: run-cf-smoke-tests
-    file: cf-deployment-concourse-tasks/run-errand/task.yml
-    input_mapping:
-      bbl-state: networking-oss-deployments
-    params:
-      BBL_STATE_DIR: environments/batman/bbl-state
-      DEPLOYMENT_NAME: cf
-      ERRAND_NAME: smoke-tests
-  - task: indicator-protocol-test
-    file: routing-release-ci/ci/tasks/indicator-protocol-test/task.yml
-    params:
-      ENVIRONMENT: batman
-
-- name: batman-drats
-  serial_groups: [batman]
-  plan:
-  - get: routing-release
-    passed: [batman-cf-smoke-and-indicator-protocol-tests]
-    trigger: true
-  - get: routing-release-ci
-    params:
-      submodules: none
-  - get: networking-oss-deployments
-  - get: bbr-binary-release
-  - get: disaster-recovery-acceptance-tests
-  - get: cf-deployment
-    trigger: true
-    passed: [batman-cf-smoke-and-indicator-protocol-tests]
-  - task: create-drats-config
-    file: routing-release-ci/ci/tasks/create-drats-config/task.yml
-    params:
-      ENVIRONMENT: batman
-      ENV_PATH: networking-oss-deployments/environments/batman
-  - task: run-disaster-recovery-acceptance-tests
-    file: disaster-recovery-acceptance-tests/ci/drats-with-integration-config/task.yml
-    input_mapping:
-      drats-integration-config: created-drats-config
-    privileged: true
-    params:
-      CONFIG_FILE_PATH: drats_integration_config.json
-      DEFAULT_TIMEOUT_MINS: 90
-
-- name: batman-rats
-  serial_groups: [batman]
-  build_logs_to_retain: 100
-  plan:
-  - timeout: 4h
-    do:
-    - in_parallel:
-      - get: routing-release-ci
-        params:
-          submodules: none
-      - get: networking-oss-deployments
-        passed: [batman-cf-smoke-and-indicator-protocol-tests]
-        passed: [batman-cf-smoke-and-indicator-protocol-tests]
-      - get: cf-deployment
-        trigger: true
-        passed: [batman-cf-smoke-and-indicator-protocol-tests]
-      - get: routing-release
-        passed: [batman-cf-smoke-and-indicator-protocol-tests]
-        trigger: true
-      - get: cf-deployment-concourse-tasks
-    - task: create-integration-config
-      file: routing-release-ci/ci/tasks/create-integration-configs/task.yml
-      params:
-        ENVIRONMENT: batman
-        ISO_SEG_NAME: "persistent_isolation_segment"
-    - task: update-integration-configs
-      file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
-      input_mapping:
-        bbl-state: networking-oss-deployments
-        integration-configs: created-integration-configs
-      params:
-        BBL_STATE_DIR: environments/batman/bbl-state
-        RATS_INTEGRATION_CONFIG_FILE: rats_integration_config.json
-        GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
-    - task: run-rats
-      input_mapping:
-        integration-config: updated-integration-configs
-      params:
-        CONFIG_FILE_PATH: rats_integration_config.json
-        GINKGO_ARGS: "-v"
-      file: routing-release-ci/ci/tasks/run-rats/task.yml
-
-- name: batman-syslog-test
-  serial_groups: [batman]
-  plan:
-  - get: routing-release
-    passed: [batman-deploy-cf]
-    trigger: true
-  - get: networking-oss-deployments
-  - get: routing-release-ci
-    params:
-      submodules: none
-  - get: cf-deployment
-    passed: [batman-deploy-cf]
-    trigger: true
-  - task: syslog-test
-    file: routing-release-ci/ci/tasks/syslog-test/task.yml
-    params:
-      ENVIRONMENT: batman
-
-- name: batman-bosh-cleanup
-  serial_groups: [batman]
-  plan:
-  - get: networking-oss-deployments
-    passed: [batman-cats]
-    trigger: true
-    passed: [batman-cats]
-  - get: cf-deployment-concourse-tasks
-  - task: cleanup-artifacts
-    file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
-    params:
-      BBL_STATE_DIR: environments/batman/bbl-state
-    input_mapping:
-      bbl-state: networking-oss-deployments
-
-- name: batman-destroy
-  serial_groups: [batman]
-  build_logs_to_retain: 100
-  plan:
-  - in_parallel:
-    - get: networking-oss-deployments
-    - get: cf-deployment-concourse-tasks
-  - task: destroy-batman
-    file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
-    params:
-      BBL_STATE_DIR: environments/batman/bbl-state
-      BBL_GCP_SERVICE_ACCOUNT_KEY: ((shared_gcp_account_creds))
-      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
-    input_mapping:
-      bbl-state: networking-oss-deployments
-    ensure:
-      put: networking-oss-deployments
-      params:
-        repository: updated-bbl-state
-        rebase: true
-
-- name: batman-delete-deployment
-  serial_groups: [batman]
-  build_logs_to_retain: 100
-  plan:
-  - in_parallel:
-    - get: cf-deployment-concourse-tasks
-    - get: networking-oss-deployments
-    - get: routing-release
-  - task: delete-cf-deployment
-    file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
-    input_mapping:
-      bbl-state: networking-oss-deployments
-    params:
-      DEPLOYMENT_NAME: cf
-      BBL_STATE_DIR: environments/batman/bbl-state
 
 - name: orinoco-http-perf-tests
   serial: true
@@ -1640,10 +1255,12 @@ jobs:
   - get: routing-release
     trigger: true
     passed:
-      - batman-cats
-      - batman-rats
-      - batman-drats
-      - batman-syslog-test
+      - cf-deployment-cats
+      - cf-deployment-rats
+      - cf-deployment-drats
+      - cf-deployment-syslog-test
+      - cf-deployment-smoke-and-indicator-protocol-tests
+      - cf-deployment-deploy-and-run-cipher-suite-tests
       - ci-lite-rats
       - ci-lite-cats
       - diana-tcp-perf-tests
@@ -1701,3 +1318,469 @@ jobs:
         params:
           repository: updated-bbl-state
           rebase: true
+
+- name: claim-cf-deployment
+  plan:
+  - put: cf-deployment-env
+    params:
+      action: claim
+    tags:
+    - vsphere-cf-networking
+
+- name: manual-unclaim-cf-deployment
+  plan:
+    - get: cf-deployment-env
+      passed:
+        - claim-cf-deployment
+      tags:
+        - vsphere-cf-networking
+    - put: cf-deployment-env
+      params:
+        action: unclaim
+        env_file: cf-deployment-env/metadata
+      tags:
+        - vsphere-cf-networking
+
+- name: create-acceptance-environment
+  plan:
+  - in_parallel:
+    - do:
+      - get: routing-release-ci
+        params: {submodules: none}
+      - task: claim-cf-deployment-environment
+        file: routing-release-ci/ci/tasks/claim-cf-deployment-environment/task.yml
+        tags:
+        - vsphere-cf-networking
+        params:
+          ENVIRONMENT_TYPE: cf-deployment
+          ENVIRONMENT_NOTES: acceptance-environment
+          TOOLSMITHS_API_TOKEN: ((toolsmiths_api_key))
+    - get: networking-oss-deployments
+    - get: cf-deployment
+    - get: cf-deployment-concourse-tasks
+    - get: routing-release
+  - task: write-lb-cert-to-credhub
+    input_mapping:
+      toolsmiths-metadata-dir: cf-environment
+    file: routing-release-ci/ci/tasks/write-lb-cert-to-credhub/task.yml
+  - task: merge-ops-files
+    file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
+    input_mapping:
+      source1: smoke-tests-ops-file
+    params:
+      ENVIRONMENT: this-doesnt-do-anything
+      SOURCE1_DIR: ''
+  - task: fetch-our-envs-manifest
+    file: routing-release-ci/ci/tasks/fetch-toolsmiths-manifest/task.yml
+    input_mapping:
+      toolsmiths-metadata-dir: cf-environment
+  - task: redeploy-routing-release
+    file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
+    input_mapping:
+      toolsmiths-env: cf-environment
+      release: routing-release
+      ops-files: merged-operations
+      vars-files: routing-release
+      cf-deployment: our-envs-manifest
+    params:
+      MANIFEST_FILE: manifest.yml
+      OPS_FILES: |
+        add-lb-ca-cert.yml
+        use-compiled-releases.yml
+
+- name: cf-deployment-cats
+  plan:
+  - in_parallel:
+    - do:
+      - get: routing-release-ci
+        params: {submodules: none}
+      - task: claim-cf-deployment-environment
+        file: routing-release-ci/ci/tasks/claim-cf-deployment-environment/task.yml
+        tags:
+        - vsphere-cf-networking
+        params:
+          ENVIRONMENT_TYPE: cf-deployment
+          ENVIRONMENT_NOTES: cf-deployment-cats
+          TOOLSMITHS_API_TOKEN: ((toolsmiths_api_key))
+    - get: cf-acceptance-tests
+    - get: networking-oss-deployments
+    - get: cf-deployment
+    - get: cf-deployment-concourse-tasks
+    - get: routing-release
+      passed:
+      - routing-release-unit
+      trigger: true
+  - task: write-lb-cert-to-credhub
+    input_mapping:
+      toolsmiths-metadata-dir: cf-environment
+    file: routing-release-ci/ci/tasks/write-lb-cert-to-credhub/task.yml
+  - task: merge-ops-files
+    file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
+    input_mapping:
+      source1: smoke-tests-ops-file
+  - task: fetch-our-envs-manifest
+    file: routing-release-ci/ci/tasks/fetch-toolsmiths-manifest/task.yml
+    input_mapping:
+      toolsmiths-metadata-dir: cf-environment
+  - task: redeploy-routing-release
+    file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
+    input_mapping:
+      toolsmiths-env: cf-environment
+      release: routing-release
+      ops-files: merged-operations
+      vars-files: routing-release
+      cf-deployment: our-envs-manifest
+    params:
+      MANIFEST_FILE: manifest.yml
+      OPS_FILES: |
+        add-lb-ca-cert.yml
+        use-compiled-releases.yml
+        scale-for-cats.yml
+  - task: create-integration-config
+    file: routing-release-ci/ci/tasks/create-integration-configs/task.yml
+    input_mapping:
+      toolsmiths-metadata-dir: cf-environment
+    params:
+      ISO_SEG_NAME: "persistent_isolation_segment"
+  - task: update-integration-configs
+    file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
+    input_mapping:
+      toolsmiths-env: cf-environment
+      integration-configs: created-integration-configs
+    params:
+      CATS_INTEGRATION_CONFIG_FILE: cats_integration_config.json
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+  - task: run-cats
+    input_mapping:
+      integration-config: updated-integration-configs
+    file: cf-deployment-concourse-tasks/run-cats/task.yml
+    params:
+      CONFIG_FILE_PATH: cats_integration_config.json
+  - task: release-pooled-environment
+    file: routing-release-ci/ci/tasks/unclaim-cf-deployment-environment/task.yml
+    tags:
+    - vsphere-cf-networking
+    params:
+      TOOLSMITHS_API_TOKEN: ((toolsmiths_api_key))
+
+- name: cf-deployment-drats
+  plan:
+  - in_parallel:
+    - get: routing-release
+      trigger: true
+      passed:
+      - routing-release-unit
+    - get: routing-release-ci
+      params: {submodules: none}
+    - get: bbr-binary-release
+    - get: disaster-recovery-acceptance-tests
+    - get: cf-deployment
+    - get: cf-deployment-concourse-tasks
+    - get: networking-oss-deployments
+  - task: claim-cf-deployment-environment
+    file: routing-release-ci/ci/tasks/claim-cf-deployment-environment/task.yml
+    tags:
+    - vsphere-cf-networking
+    params:
+      ENVIRONMENT_TYPE: cf-deployment
+      ENVIRONMENT_NOTES: cf-deployment-drats
+      TOOLSMITHS_API_TOKEN: ((toolsmiths_api_key))
+  - task: merge-ops-files
+    file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
+    input_mapping:
+      source1: smoke-tests-ops-file
+  - task: fetch-our-envs-manifest
+    file: routing-release-ci/ci/tasks/fetch-toolsmiths-manifest/task.yml
+    input_mapping:
+      toolsmiths-metadata-dir: cf-environment
+  - task: redeploy-routing-release
+    file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
+    input_mapping:
+      toolsmiths-env: cf-environment
+      release: routing-release
+      ops-files: merged-operations
+      vars-files: routing-release
+      cf-deployment: our-envs-manifest
+    params:
+      MANIFEST_FILE: manifest.yml
+      OPS_FILES: |
+        use-compiled-releases.yml
+        backup-and-restore/enable-backup-restore.yml
+  - task: create-drats-config
+    file: routing-release-ci/ci/tasks/create-drats-config-toolsmiths/task.yml
+    input_mapping:
+      toolsmiths-metadata-dir: cf-environment
+  - task: run-disaster-recovery-acceptance-tests
+    file: disaster-recovery-acceptance-tests/ci/drats-with-integration-config/task.yml
+    privileged: true
+    params:
+      CONFIG_FILE_PATH: drats_integration_config.json
+      DEFAULT_TIMEOUT_MINS: 90
+  - task: release-pooled-environment
+    file: routing-release-ci/ci/tasks/unclaim-cf-deployment-environment/task.yml
+    tags:
+    - vsphere-cf-networking
+    params:
+      TOOLSMITHS_API_TOKEN: ((toolsmiths_api_key))
+
+- name: cf-deployment-rats
+  plan:
+  - timeout: 4h
+    do:
+    - in_parallel:
+      - get: networking-oss-deployments
+      - get: routing-release-ci
+        params: {submodules: none}
+      - get: cf-deployment
+      - get: routing-release
+        trigger: true
+        passed:
+        - routing-release-unit
+      - get: cf-deployment-concourse-tasks
+  - task: claim-cf-deployment-environment
+    file: routing-release-ci/ci/tasks/claim-cf-deployment-environment/task.yml
+    tags:
+    - vsphere-cf-networking
+    params:
+      ENVIRONMENT_TYPE: cf-deployment
+      ENVIRONMENT_NOTES: cf-deployment-rats
+      TOOLSMITHS_API_TOKEN: ((toolsmiths_api_key))
+  - task: merge-ops-files
+    file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
+    input_mapping:
+      source1: smoke-tests-ops-file
+  - task: fetch-our-envs-manifest
+    file: routing-release-ci/ci/tasks/fetch-toolsmiths-manifest/task.yml
+    input_mapping:
+      toolsmiths-metadata-dir: cf-environment
+
+  - task: redeploy-routing-release
+    file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
+    input_mapping:
+      toolsmiths-env: cf-environment
+      release: routing-release
+      ops-files: merged-operations
+      vars-files: routing-release
+      cf-deployment: our-envs-manifest
+    params:
+      MANIFEST_FILE: manifest.yml
+      OPS_FILES: |
+        use-compiled-releases.yml
+        test/add-persistent-isolation-segment-diego-cell.yml
+        test/add-persistent-isolation-segment-router.yml
+        add-persistent-isolation-segment-router-ca-certs.yml
+
+  - task: create-integration-config
+    file: routing-release-ci/ci/tasks/create-integration-configs/task.yml
+    input_mapping:
+        toolsmiths-metadata-dir: cf-environment
+    params:
+        ISO_SEG_NAME: "persistent_isolation_segment"
+  - task: update-integration-configs
+    file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
+    input_mapping:
+        toolsmiths-env: cf-environment
+        integration-configs: created-integration-configs
+    params:
+        RATS_INTEGRATION_CONFIG_FILE: rats_integration_config.json
+        GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+  - task: run-rats
+    input_mapping:
+        integration-config: updated-integration-configs
+    params:
+        CONFIG_FILE_PATH: rats_integration_config.json
+        GINKGO_ARGS: "-v"
+    file: routing-release-ci/ci/tasks/run-rats/task.yml
+  - task: release-pooled-environment
+    file: routing-release-ci/ci/tasks/unclaim-cf-deployment-environment/task.yml
+    tags:
+    - vsphere-cf-networking
+    params:
+      TOOLSMITHS_API_TOKEN: ((toolsmiths_api_key))
+
+
+- name: cf-deployment-syslog-test
+  plan:
+  - in_parallel:
+    - get: networking-oss-deployments
+    - get: routing-release
+      trigger: true
+      passed:
+      - routing-release-unit
+    - get: routing-release-ci
+      params: {submodules: none}
+    - get: cf-deployment
+    - get: cf-deployment-concourse-tasks
+  - task: claim-cf-deployment-environment
+    file: routing-release-ci/ci/tasks/claim-cf-deployment-environment/task.yml
+    tags:
+    - vsphere-cf-networking
+    params:
+      ENVIRONMENT_TYPE: cf-deployment
+      ENVIRONMENT_NOTES: cf-deployment-syslog-test
+      TOOLSMITHS_API_TOKEN: ((toolsmiths_api_key))
+  - task: merge-ops-files
+    file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
+    input_mapping:
+      source1: smoke-tests-ops-file
+  - task: fetch-our-envs-manifest
+    file: routing-release-ci/ci/tasks/fetch-toolsmiths-manifest/task.yml
+    input_mapping:
+      toolsmiths-metadata-dir: cf-environment
+  - task: redeploy-routing-release
+    file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
+    input_mapping:
+      toolsmiths-env: cf-environment
+      release: routing-release
+      ops-files: merged-operations
+      vars-files: routing-release
+      cf-deployment: our-envs-manifest
+    params:
+      MANIFEST_FILE: manifest.yml
+      OPS_FILES: |
+        use-compiled-releases.yml
+        syslog.yml
+  - task: syslog-test
+    file: routing-release-ci/ci/tasks/syslog-test/task.yml
+    input_mapping:
+      toolsmiths-metadata-dir: cf-environment
+  - task: release-pooled-environment
+    file: routing-release-ci/ci/tasks/unclaim-cf-deployment-environment/task.yml
+    tags:
+    - vsphere-cf-networking
+    params:
+      TOOLSMITHS_API_TOKEN: ((toolsmiths_api_key))
+
+- name: cf-deployment-smoke-and-indicator-protocol-tests
+  plan:
+  - in_parallel:
+    - get: networking-oss-deployments
+    - get: routing-release
+      trigger: true
+      passed:
+      - routing-release-unit
+    - get: routing-release-ci
+      params: {submodules: none}
+    - get: cf-deployment-concourse-tasks
+    - get: cf-smoke-tests-release
+    - get: cf-deployment
+    - get: indicator-protocol-release
+      params:
+        globs:
+        - indicator-verification-linux64*
+  - task: claim-cf-deployment-environment
+    file: routing-release-ci/ci/tasks/claim-cf-deployment-environment/task.yml
+    tags:
+    - vsphere-cf-networking
+    params:
+      ENVIRONMENT_TYPE: cf-deployment
+      ENVIRONMENT_NOTES: cf-deployment-smoke-and-indicator-protocol-tests
+      TOOLSMITHS_API_TOKEN: ((toolsmiths_api_key))
+  - task: fetch-our-envs-manifest
+    file: routing-release-ci/ci/tasks/fetch-toolsmiths-manifest/task.yml
+    input_mapping:
+      toolsmiths-metadata-dir: cf-environment
+  - task: update-smoke-test-ops-file
+    file: routing-release-ci/ci/tasks/update-smoke-tests-ops-file-for-toolsmiths/task.yml
+    input_mapping:
+      env-name: cf-environment
+  - task: merge-ops-files
+    file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
+    input_mapping:
+      source1: smoke-tests-ops-file
+  - task: redeploy-routing-release
+    file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
+    input_mapping:
+      toolsmiths-env: cf-environment
+      release: routing-release
+      ops-files: merged-operations
+      vars-files: routing-release
+      cf-deployment: our-envs-manifest
+    params:
+      MANIFEST_FILE: manifest.yml
+      OPS_FILES: |
+        smoke-tests.yml
+        use-compiled-releases.yml
+        test/add-persistent-isolation-segment-diego-cell.yml
+        test/add-persistent-isolation-segment-router.yml
+        add-persistent-isolation-segment-router-ca-certs.yml
+
+  - task: create-integration-config
+    file: routing-release-ci/ci/tasks/create-integration-configs/task.yml
+    input_mapping:
+      toolsmiths-metadata-dir: cf-environment
+    params:
+      ISO_SEG_NAME: "persistent_isolation_segment"
+  - task: update-integration-configs
+    file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
+    input_mapping:
+      toolsmiths-env: cf-environment
+      integration-configs: created-integration-configs
+    params:
+      CATS_INTEGRATION_CONFIG_FILE: cats_integration_config.json
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+  - task: run-cf-smoke-tests
+    file: cf-deployment-concourse-tasks/run-errand/task.yml
+    input_mapping:
+      toolsmiths-env: cf-environment
+    params:
+      DEPLOYMENT_NAME: cf
+      ERRAND_NAME: smoke-tests
+  - task: release-pooled-environment
+    file: routing-release-ci/ci/tasks/unclaim-cf-deployment-environment/task.yml
+    tags:
+    - vsphere-cf-networking
+    params:
+      TOOLSMITHS_API_TOKEN: ((toolsmiths_api_key))
+
+- name: cf-deployment-deploy-and-run-cipher-suite-tests
+  plan:
+  - in_parallel:
+    - get: cf-deployment-concourse-tasks
+    - get: networking-oss-deployments
+    - get: routing-release-ci
+      params:
+        submodules: none
+    - get: release-dir
+      resource: cipher-test-release
+      trigger: true
+    - get: routing-release
+      passed: [routing-release-unit]
+      trigger: true
+    - get: gcp-stemcell-xenial
+  - task: claim-cf-deployment-environment
+    file: routing-release-ci/ci/tasks/claim-cf-deployment-environment/task.yml
+    tags:
+    - vsphere-cf-networking
+    params:
+      ENVIRONMENT_TYPE: cf-deployment
+      ENVIRONMENT_NOTES: cf-deployment-deploy-and-run-cipher-suite-tests
+      TOOLSMITHS_API_TOKEN: ((toolsmiths_api_key))
+  - task: fetch-our-envs-manifest
+    file: routing-release-ci/ci/tasks/fetch-toolsmiths-manifest/task.yml
+    input_mapping:
+      toolsmiths-metadata-dir: cf-environment
+  - task: generate-cipher-manifest
+    file: routing-release-ci/ci/tasks/generate-cipher-manifest/task.yml
+    params:
+      CIPHERS: "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384"
+    input_mapping:
+      toolsmiths-metadata-dir: cf-environment
+  - task: create-release-tarball
+    file: routing-release-ci/ci/tasks/create-release-tarball/task.yml
+  - task: deploy-run-errand
+    file: routing-release-ci/ci/tasks/run-cipher-suite/task.yml
+    input_mapping:
+      gcp-stemcell: gcp-stemcell-xenial
+      toolsmiths-metadata-dir: cf-environment
+    params:
+      DEPLOYMENT: cipher
+      MANIFEST: cipher-manifest/cipher.yml
+      RELEASES_DIR: "release-tarball/*.tgz"
+      STEMCELL_REGEX: gcp-stemcell/*.tgz
+  - task: release-pooled-environment
+    file: routing-release-ci/ci/tasks/unclaim-cf-deployment-environment/task.yml
+    tags:
+    - vsphere-cf-networking
+    params:
+      TOOLSMITHS_API_TOKEN: ((toolsmiths_api_key))
