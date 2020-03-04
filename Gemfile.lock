@@ -11,7 +11,7 @@ GEM
     powerpack (0.1.1)
     rainbow (2.2.2)
       rake
-    rake (12.3.2)
+    rake (13.0.1)
     rspec (3.6.0)
       rspec-core (~> 3.6.0)
       rspec-expectations (~> 3.6.0)
@@ -41,6 +41,7 @@ PLATFORMS
 
 DEPENDENCIES
   bosh-template
+  rake (>= 12.3.3)
   rspec (~> 3.0)
   rubocop (~> 0.49.0)
   semi_semantic (~> 1.2)
