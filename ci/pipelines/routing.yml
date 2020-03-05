@@ -372,7 +372,6 @@ jobs:
       repository: modified-release
 
 - name: routing-release-unit
-  serial: true
   plan:
   - in_parallel:
     - get: routing-release
