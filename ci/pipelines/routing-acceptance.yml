@@ -133,7 +133,6 @@ jobs:
         frontend-idle-timeout.yml
         isolation-in-z3.yml
         validate-ssl.yml
-        enable-locket-isolated-diego.yml
         add-lb-ca-cert.yml
         use-internal-lookup-for-route-services.yml
       BBL_STATE_DIR: environments/superman/bbl-state
