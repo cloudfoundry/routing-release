@@ -524,9 +524,9 @@ jobs:
       NUMBER_OF_RUNS: 1
       ENVIRONMENT: orinoco
       DEPLOYMENT: gorouter-standalone-orinoco
-      COMMAND: 'deploy routing-release-ci/ci/manifests/gorouter-standalone-orinoco.yml 
-      --vars-store /tmp/temp-deployment-vars.yml 
-      -v system_domain="orinoco.cf-app.com" 
+      COMMAND: 'deploy routing-release-ci/ci/manifests/gorouter-standalone-orinoco.yml
+      --vars-store /tmp/temp-deployment-vars.yml
+      -v system_domain="orinoco.cf-app.com"
       --no-redact --non-interactive'
     ensure:
       task: cleanup
