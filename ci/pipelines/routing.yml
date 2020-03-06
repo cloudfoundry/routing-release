@@ -1567,7 +1567,6 @@ jobs:
         use-compiled-releases.yml
         test/add-persistent-isolation-segment-diego-cell.yml
         test/add-persistent-isolation-segment-router.yml
-        add-persistent-isolation-segment-router-ca-certs.yml
 
   - task: create-integration-config
     file: routing-release-ci/ci/tasks/create-integration-configs/task.yml
@@ -1702,7 +1701,6 @@ jobs:
         use-compiled-releases.yml
         test/add-persistent-isolation-segment-diego-cell.yml
         test/add-persistent-isolation-segment-router.yml
-        add-persistent-isolation-segment-router-ca-certs.yml
 
   - task: create-integration-config
     file: routing-release-ci/ci/tasks/create-integration-configs/task.yml

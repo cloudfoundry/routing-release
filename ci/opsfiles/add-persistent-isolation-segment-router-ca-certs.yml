@@ -1,7 +1,0 @@
----
-- type: replace
-  path: /instance_groups/name=iso-seg-router/jobs/name=gorouter/properties/router/ca_certs?
-  error: "Please apply 'add-persistent-isolation-segment-router.yml' before applying 'add-persistent-isolation-segment-router-ca-certs.yml'."
-  value: |
-    ((application_ca.certificate))
-    ((service_cf_internal_ca.certificate))

@@ -130,7 +130,6 @@ jobs:
         tls-pem.yml
         test/add-persistent-isolation-segment-router.yml
         test/add-persistent-isolation-segment-diego-cell.yml
-        add-persistent-isolation-segment-router-ca-certs.yml
         frontend-idle-timeout.yml
         isolation-in-z3.yml
         validate-ssl.yml
