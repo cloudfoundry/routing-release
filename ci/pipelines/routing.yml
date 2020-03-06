@@ -372,6 +372,7 @@ jobs:
       repository: modified-release
 
 - name: routing-release-unit
+  max_in_flight: 3
   plan:
   - in_parallel:
     - get: routing-release
