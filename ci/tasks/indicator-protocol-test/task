@@ -3,9 +3,27 @@ set -eu -o pipefail
 
 source networking-oss-deployments/scripts/script_helpers.sh
 
-ENVIRONMENT="${ENVIRONMENT:?"ENVIRONMENT not set"}"
 DEPLOYMENT="cf"
-bosh_login "${ENVIRONMENT}"
+
+if [[ -d toolsmiths-metadata-dir ]]; then
+  ENVIRONMENT="$(cat toolsmiths-metadata-dir/name)"
+  QUERY_ENDPOINT="https://log-cache.${ENVIRONMENT}.cf-app.com"
+  bosh_login_toolsmiths
+
+elif [[ -d networking-oss-deployments ]]; then
+  if [[ ! -n "${ENVIRONMENT}" ]]; then
+    echo 'Failed to specify "ENVIRONMENT" when using "networking-oss-deployments"'
+    exit 1
+  fi
+
+    QUERY_ENDPOINT="https://log-cache.${ENVIRONMENT}.routing.cf-app.com"
+
+  bosh_login "${ENVIRONMENT}"
+
+else
+  echo 'Failed to provide either "toolsmiths-metadata-dir" or "networking-oss-deployments"'
+  exit 2
+fi
 
 CLIENT_NAME="indicator_protocol_test"
 CLIENT_SECRET="$(credhub get -n /bosh-${ENVIRONMENT}/cf/uaa_clients_indicator_protocol_test_secret -j | jq .value -r)"
@@ -26,5 +44,5 @@ $VERIFICATION_BIN \
   -indicators indicators.yml \
   -metadata deployment=$DEPLOYMENT \
   -authorization "$TOKEN" \
-  -query-endpoint "https://log-cache.${ENVIRONMENT}.routing.cf-app.com" \
+  -query-endpoint "${QUERY_ENDPOINT}" \
   -k
