@@ -1702,6 +1702,7 @@ jobs:
         use-compiled-releases.yml
         test/add-persistent-isolation-segment-diego-cell.yml
         test/add-persistent-isolation-segment-router.yml
+        create-indicator-protocol-uaa-client.yml
 
   - task: create-integration-config
     file: routing-release-ci/ci/tasks/create-integration-configs/task.yml
@@ -1724,6 +1725,10 @@ jobs:
     params:
       DEPLOYMENT_NAME: cf
       ERRAND_NAME: smoke-tests
+  - task: indicator-protocol-test
+    file: routing-release-ci/ci/tasks/indicator-protocol-test/task.yml
+    input_mapping:
+      toolsmiths-metadata-dir: cf-environment
   - task: release-pooled-environment
     file: routing-release-ci/ci/tasks/unclaim-cf-deployment-environment/task.yml
     tags:
