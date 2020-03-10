@@ -1,7 +1,0 @@
-- type: replace
-  path: /instance_groups/name=iso-seg-router/azs
-  value: [z3]
-  
-- type: replace
-  path: /instance_groups/name=isolated-diego-cell/azs
-  value: [z3]
