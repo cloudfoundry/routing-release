@@ -1,9 +1,0 @@
----
-- type: replace
-  path: /update
-  value:
-    canaries: 1
-    canary_watch_time: 10000-600000
-    max_in_flight: 5
-    serial: false
-    update_watch_time: 5000-600000

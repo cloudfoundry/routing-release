@@ -126,7 +126,6 @@ jobs:
       SYSTEM_DOMAIN: superman.routing.cf-app.com
       OPS_FILES: |
         use-compiled-releases.yml
-        update-watch.yml
         test/add-persistent-isolation-segment-router.yml
         test/add-persistent-isolation-segment-diego-cell.yml
         validate-ssl.yml
