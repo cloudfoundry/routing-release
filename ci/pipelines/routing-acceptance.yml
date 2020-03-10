@@ -127,7 +127,6 @@ jobs:
       OPS_FILES: |
         use-compiled-releases.yml
         update-watch.yml
-        tls-pem.yml
         test/add-persistent-isolation-segment-router.yml
         test/add-persistent-isolation-segment-diego-cell.yml
         validate-ssl.yml
