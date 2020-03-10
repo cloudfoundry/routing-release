@@ -128,7 +128,6 @@ jobs:
         use-compiled-releases.yml
         test/add-persistent-isolation-segment-router.yml
         test/add-persistent-isolation-segment-diego-cell.yml
-        validate-ssl.yml
         add-lb-ca-cert.yml
         use-internal-lookup-for-route-services.yml
       BBL_STATE_DIR: environments/superman/bbl-state
