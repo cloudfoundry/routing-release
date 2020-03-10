@@ -1,5 +1,0 @@
-- type: replace
-  path: /releases/name=capi
-  value:
-    name: capi
-    version: latest

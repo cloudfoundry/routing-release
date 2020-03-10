@@ -1,5 +1,0 @@
-- type: replace
-  path: /releases/name=routing
-  value:
-    name: routing
-    version: latest
