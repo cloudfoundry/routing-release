@@ -7,7 +7,7 @@ DEPLOYMENT="cf"
 
 if [[ -d toolsmiths-metadata-dir ]]; then
   ENVIRONMENT="$(cat toolsmiths-metadata-dir/name)"
-  QUERY_ENDPOINT="https://log-cache.${ENVIRONMENT}.cf-app.com"
+  ENV_DOMAIN_NAME="${ENVIRONMENT}.cf-app.com"
   bosh_login_toolsmiths
 
 elif [[ -d networking-oss-deployments ]]; then
@@ -16,7 +16,7 @@ elif [[ -d networking-oss-deployments ]]; then
     exit 1
   fi
 
-    QUERY_ENDPOINT="https://log-cache.${ENVIRONMENT}.routing.cf-app.com"
+  ENV_DOMAIN_NAME="${ENVIRONMENT}.routing.cf-app.com"
 
   bosh_login "${ENVIRONMENT}"
 
@@ -25,10 +25,11 @@ else
   exit 2
 fi
 
+QUERY_ENDPOINT="https://log-cache.${ENV_DOMAIN_NAME}"
 CLIENT_NAME="indicator_protocol_test"
 CLIENT_SECRET="$(credhub get -n /bosh-${ENVIRONMENT}/cf/uaa_clients_indicator_protocol_test_secret -j | jq .value -r)"
 
-uaac target https://uaa.${ENVIRONMENT}.routing.cf-app.com --skip-ssl-validation
+uaac target https://uaa.${ENV_DOMAIN_NAME} --skip-ssl-validation
 uaac token client get ${CLIENT_NAME} -s ${CLIENT_SECRET}
 TOKEN=$(uaac context  | grep access_token | awk '{ print $2 }')
 
