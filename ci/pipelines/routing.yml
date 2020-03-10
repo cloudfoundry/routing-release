@@ -1506,6 +1506,7 @@ jobs:
       OPS_FILES: |
         use-compiled-releases.yml
         backup-and-restore/enable-backup-restore.yml
+        disable-bbr-non-routing.yml
   - task: create-drats-config
     file: routing-release-ci/ci/tasks/create-drats-config-toolsmiths/task.yml
     input_mapping:
