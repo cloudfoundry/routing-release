@@ -174,7 +174,11 @@ properties:
     description: "Log level for router"
     default: "info"
   router.logging.format.timestamp:
-    description: "Format for timestamp in component logs. Valid values are 'unix-epoch' and 'rfc3339'."
+    description: |
+      Format for timestamp in component logs. Valid values are 'rfc3339', 'deprecated', and 'unix-epoch'."
+      'rfc3339' is the recommended format. It will result in all timestamps controlled by gorouter to be in RFC3339 format, which is human readable. This includes stdout, pre-start, and post-start logs. This does not include stderr logs from golang libraries.
+      'deprecated' will result in all timestamps being in the format they were before the rfc3339 flag was introduced. This format is different for different logs. We do not recommend using this flag unless you have scripts that expect a particular timestamp format.
+      'unix-epoch' is an old flag that we do not recommend using, but we are keeping for backwards compatibility. It will result in the gorouter logs to be in unix-epoch format. This does not effect pre-start or post-start logs. This does not effect stderr logs from golang libaries.
     default: "rfc3339"
   router.enable_proxy:
     description: "Enables support for the popular PROXY protocol, allowing downstream load balancers that do not support HTTP to pass along client information."
