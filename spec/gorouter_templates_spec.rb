@@ -695,13 +695,23 @@ describe 'gorouter' do
           end
         end
 
+        fcontext 'when the timestamp format is set to deprecated' do
+          before do
+            deployment_manifest_fragment['router']['logging'] = { 'format' => { 'timestamp' => 'deprecated' } }
+          end
+
+          it 'sets the value to be unix-epoch' do
+            expect(parsed_yaml['logging']['format']['timestamp']).to eq('unix-epoch')
+          end
+        end
+
         context 'when an invalid timestamp format is provided' do
           before do
             deployment_manifest_fragment['router']['logging'] = { 'format' => { 'timestamp' => 'meow' } }
           end
 
           it 'raises error' do
-            expect { parsed_yaml }.to raise_error(RuntimeError, "'meow' is not a valid timestamp format for the property 'router.logging.format.timestamp'. Valid options are: 'rfc3339' and 'unix-epoch'.")
+            expect { parsed_yaml }.to raise_error(RuntimeError, "'meow' is not a valid timestamp format for the property 'router.logging.format.timestamp'. Valid options are: 'rfc3339', 'deprecated', and 'unix-epoch'.")
           end
         end
       end

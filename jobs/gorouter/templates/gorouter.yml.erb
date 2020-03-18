@@ -49,12 +49,16 @@ logging:
   disable_log_forwarded_for: <%= p("router.disable_log_forwarded_for") %>
   disable_log_source_ip: <%= p("router.disable_log_source_ip") %>
 <%
-if !['rfc3339', 'unix-epoch'].include?(p('router.logging.format.timestamp'))
-  raise "'#{p('router.logging.format.timestamp')}' is not a valid timestamp format for the property 'router.logging.format.timestamp'. Valid options are: 'rfc3339' and 'unix-epoch'."
+if !['rfc3339', 'deprecated', 'unix-epoch'].include?(p('router.logging.format.timestamp'))
+  raise "'#{p('router.logging.format.timestamp')}' is not a valid timestamp format for the property 'router.logging.format.timestamp'. Valid options are: 'rfc3339', 'deprecated', and 'unix-epoch'."
+end
+timestamp_format=p('router.logging.format.timestamp')
+if timestamp_format == 'deprecated'
+  timestamp_format = 'unix-epoch'
 end
 %>
   format:
-    timestamp: <%= p("router.logging.format.timestamp") %>
+    timestamp: <%= timestamp_format %>
 
 tracing:
   enable_zipkin: <%= p("router.tracing.enable_zipkin") %>
