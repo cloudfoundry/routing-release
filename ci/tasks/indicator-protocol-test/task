@@ -1,6 +1,25 @@
 #!/bin/bash
 set -eu -o pipefail
 
+push_an_app() {
+  export CF_USERNAME='admin'
+  CF_PASSWORD="$(credhub get -n "/bosh-${ENVIRONMENT}/cf/cf_admin_password" -j | jq .value -r)"
+  export CF_PASSWORD
+  cf api "api.${ENV_DOMAIN_NAME}" --skip-ssl-validation
+  cf auth
+  cf create-org o;
+  cf create-space -o o s;
+  cf target -o o -s s
+  (
+    cd `mktemp -d`
+    touch Staticfile
+    cf push staticfile
+  )
+
+  sleep 10 # it appears that the metric isn't present for
+           # the test _right_ after you push the app
+}
+
 source networking-oss-deployments/scripts/script_helpers.sh
 
 DEPLOYMENT="cf"
@@ -24,6 +43,8 @@ else
   echo 'Failed to provide either "toolsmiths-metadata-dir" or "networking-oss-deployments"'
   exit 2
 fi
+
+push_an_app
 
 QUERY_ENDPOINT="https://log-cache.${ENV_DOMAIN_NAME}"
 CLIENT_NAME="indicator_protocol_test"
