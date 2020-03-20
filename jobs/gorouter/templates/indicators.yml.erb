@@ -27,13 +27,19 @@ spec:
         description: |
           The lifetime number of requests completed by the Gorouter VM, emitted per Gorouter instance
 
-          **Use**: The aggregation of these values across all Gorouters provide insight into the overall traffic flow of
-          a deployment. Unusually high spikes, if not known to be associated with an expected increase in demand, could
-          indicate a DDoS risk. For performance and capacity management, consider this metric a measure of router
-          throughput per job, converting it to requests-per-second, by looking at the delta value of
-          `gorouter.total_requests` and deriving back to 1s, or `(gorouter.total_requests.delta)/5`, per Gorouter instance.
-           This helps you see trends in the throughput rate that indicate a need to scale the Gorouter instances. Use the
-           trends you observe to tune the threshold alerts for this metric.
+          **Use**: The aggregation of these values across all
+          Gorouters provide insight into the overall traffic flow of a
+          deployment. Unusually high spikes, if not known to be
+          associated with an expected increase in demand, could
+          indicate a DDoS risk. For performance and capacity
+          management, consider this metric a measure of router
+          throughput per job, converting it to requests-per-second, by
+          looking at the delta value of `gorouter.total_requests` and
+          deriving back to 1s, or `(gorouter.total_requests.delta)/5`,
+          per Gorouter instance.  This helps you see trends in the
+          throughput rate that indicate a need to scale the Gorouter
+          instances. Use the trends you observe to tune the threshold
+          alerts for this metric.
 
           **Origin**: Firehose
           **Type**: Counter (Integer)
@@ -41,12 +47,17 @@ spec:
         recommendedMeasurement: |
           Average over the last 5 minutes of the derived per second calculation
         recommendedResponse: |
-          For optimizing the Gorouter, consider the requests-per-second derived metric in the context of router latency
-          and Gorouter VM CPU utilization. From performance and load testing of the Gorouter, it's observed that
-          at approximately 2500 requests per second, latency can begin to increase.
+          For optimizing the Gorouter, consider the
+          requests-per-second derived metric in the context of router
+          latency and Gorouter VM CPU utilization. From performance
+          and load testing of the Gorouter, it's observed that at
+          approximately 2500 requests per second, latency can begin to
+          increase.
 
-          To increase throughput and maintain low latency, scale the Gorouters either horizontally or vertically and
-          watch that the system.cpu.user metric for the Gorouter stays in the suggested range of 60-70% CPU Utilization.
+          To increase throughput and maintain low latency, scale the
+          Gorouters either horizontally or vertically and watch that
+          the system.cpu.user metric for the Gorouter stays in the
+          suggested range of 60-70% CPU Utilization.
 
     - name: latency_by_router
       promql: quantile_over_time(0.95, latency{source_id="gorouter",deployment="$deployment"}[1m])
@@ -62,14 +73,19 @@ spec:
       documentation:
         title: Latency by Router
         description: |
-          The time in milliseconds that the Gorouter takes to handle requests to backend endpoints, which include both
-          applications routable platform system APIs like Cloud Controller and UAA. This is the average round trip
-          response time, which includes router handling.
+          The time in milliseconds that the Gorouter takes to handle
+          requests to backend endpoints, which include both
+          applications routable platform system APIs like Cloud
+          Controller and UAA. This is the average round trip response
+          time, which includes router handling.
 
-          **Use**: Indicates how Gorouter jobs in PAS are impacting overall responsiveness. Latencies above 100 ms can
-          indicate problems with the network, misbehaving backends, or the need to scale the Gorouter itself due to
-          ongoing traffic congestion. An alert value on this metric should be tuned to the specifics of the deployment
-          and its underlying network considerations; a suggested starting point is 100 ms.
+          **Use**: Indicates how Gorouter jobs in PAS are impacting
+          overall responsiveness. Latencies above 100 ms can indicate
+          problems with the network, misbehaving backends, or the need
+          to scale the Gorouter itself due to ongoing traffic
+          congestion. An alert value on this metric should be tuned to
+          the specifics of the deployment and its underlying network
+          considerations; a suggested starting point is 100 ms.
 
           **Origin**: Firehose
           **Type**: Gauge (Float in ms)
@@ -100,13 +116,17 @@ spec:
       documentation:
         title: 502 Bad Gateways by Router
         description: |
-          The lifetime number of bad gateways, or 502 responses, from the Gorouter itself, emitted per Gorouter instance.
-          The Gorouter emits a 502 bad gateway error when it has a route in the routing table and, in attempting to make
-          a connection to the backend, finds that the backend does not exist.
+          The lifetime number of bad gateways, or 502 responses, from the
+          Gorouter itself, emitted per Gorouter instance.  The
+          Gorouter emits a 502 bad gateway error when it has a route
+          in the routing table and, in attempting to make a connection
+          to the backend, finds that the backend does not exist.
 
-          **Use**: Indicates that route tables might be stale. Stale routing tables suggest an issue in the route
-          register management plane, which indicates that something has likely changed with the locations of the
-          containers. Always investigate unexpected increases in this metric.
+          **Use**: Indicates that route tables might be stale. Stale
+          routing tables suggest an issue in the route register
+          management plane, which indicates that something has likely
+          changed with the locations of the containers. Always
+          investigate unexpected increases in this metric.
 
           **Origin**: Firehose
           **Type**: Count (Integer, Lifetime)
@@ -138,9 +158,10 @@ spec:
           The lifetime number of requests completed by the Gorouter VM for HTTP status family 5xx, server errors, emitted
           per Gorouter instance.
 
-          **Use**: A repeatedly crashing app is often the cause of a big increase in 5xx responses. However, response
-          issues from apps can also cause an increase in 5xx responses. Always investigate an unexpected increase in this
-          metric.
+          **Use**: A repeatedly crashing app is often the cause of a
+          big increase in 5xx responses. However, response issues from
+          apps can also cause an increase in 5xx responses. Always
+          investigate an unexpected increase in this metric.
 
           **Origin**: Firehose
           **Type**: Counter (Integer)
@@ -170,11 +191,25 @@ spec:
         description: |
           The current total number of routes registered with the Gorouter, emitted per Gorouter instance
 
-          **Use**: The aggregation of these values across all Gorouters indicates uptake and gives a picture of the overall growth of the environment for capacity planning.
+          **Use**: The aggregation of these values across all
+            Gorouters indicates uptake and gives a picture of the
+            overall growth of the environment for capacity planning.
 
-          It's also recommended alerting on this metric if the number of routes falls outside of the normal range for your deployment. Dramatic decreases in this metric volume may indicate a problem with the route registration process, such as an app outage, or that something in the route register management plane has failed.
+          It's also recommended alerting on this metric if the number
+          of routes falls outside of the normal range for your
+          deployment. Dramatic decreases in this metric volume may
+          indicate a problem with the route registration process, such
+          as an app outage, or that something in the route register
+          management plane has failed.
 
-          If visualizing these metrics on a dashboard, `gorouter.total_routes` can be helpful for visualizing dramatic drops. However, for alerting purposes, the `gorouter.ms_since_last_registry_update metric` is more valuable for quicker identification of Gorouter issues. Alerting thresholds for `gorouter.total_routes` should focus on dramatic increases or decreases out of expected range.
+          If visualizing these metrics on a dashboard,
+          `gorouter.total_routes` can be helpful for visualizing
+          dramatic drops. However, for alerting purposes, the
+          `gorouter.ms_since_last_registry_update metric` is more
+          valuable for quicker identification of Gorouter
+          issues. Alerting thresholds for `gorouter.total_routes`
+          should focus on dramatic increases or decreases out of
+          expected range.
 
           **Origin**: Firehose
           **Type**: Gauge (Float)
@@ -204,15 +239,33 @@ spec:
         description: |
           The number of file descriptors currently used by the Gorouter job.
 
-          **Use**: Indicates an impending issue with the Gorouter. Without proper mitigation, it is possible for an unresponsive app to eventually exhaust available Gorouter file descriptors and cause route starvation for other apps running on PAS. Under heavy load, this unmitigated situation can also result in the Gorouter losing its connection to NATS and all routes being pruned.
+          **Use**: Indicates an impending issue with the
+            Gorouter. Without proper mitigation, it is possible for an
+            unresponsive app to eventually exhaust available Gorouter
+            file descriptors and cause route starvation for other apps
+            running on PAS. Under heavy load, this unmitigated
+            situation can also result in the Gorouter losing its
+            connection to NATS and all routes being pruned.
 
-          While a drop in `gorouter.total_routes` or an increase in `gorouter.ms_since_last_registry_update` helps to surface that the issue may already be occurring, alerting on `gorouter.file_descriptors` indicates that such an issue is impending.
+          While a drop in `gorouter.total_routes` or an increase in
+          `gorouter.ms_since_last_registry_update` helps to surface
+          that the issue may already be occurring, alerting on
+          `gorouter.file_descriptors` indicates that such an issue is
+          impending.
 
-          The Gorouter limits the number of file descriptors to 100,000 per job. Once the limit is met, the Gorouter is unable to establish any new connections.
+          The Gorouter limits the number of file descriptors to
+          100,000 per job. Once the limit is met, the Gorouter is
+          unable to establish any new connections.
 
-          To reduce the risk of DDoS attacks, we recommend doing one or both of the following:
+          To reduce the risk of DDoS attacks, we recommend doing one
+          or both of the following:
 
-          * Within PAS, set **Max Connections Per Backend** to define how many requests can be routed to any particular app instance. This prevents a single app from using all Gorouter connections. The value specified should be determined by the operator based on the use cases for that foundation.
+          * Within PAS, set **Max Connections Per Backend** to define
+          how many requests can be routed to any particular app
+          instance. This prevents a single app from using all Gorouter
+          connections. The value specified should be determined by the
+          operator based on the use cases for that foundation.
+
           * Add rate limiting at the load balancer level.
 
           **Origin**: Firehose
@@ -239,9 +292,19 @@ spec:
       documentation:
         title: Router Exhausted Connections By Router
         description: |
-          The lifetime number of requests that have been rejected by the Gorouter VM due to the `Max Connections Per Backend` limit being reached across all tried backends. The limit controls the number of concurrent TCP connections to any particular app instance and is configured within PAS.
+          The lifetime number of requests that have been rejected by
+          the Gorouter VM due to the `Max Connections Per Backend`
+          limit being reached across all tried backends. The limit
+          controls the number of concurrent TCP connections to any
+          particular app instance and is configured within PAS.
 
-          **Use**: Indicates that PAS is mitigating risk to other applications by self-protecting the platform against one or more unresponsive applications. Increases in this metric indicate the need to investigate and resolve issues with potentially unresponsive applications. A rapid rate of change upward is concerning and should be assessed further.
+          **Use**: Indicates that PAS is mitigating risk to other
+            applications by self-protecting the platform against one
+            or more unresponsive applications. Increases in this
+            metric indicate the need to investigate and resolve issues
+            with potentially unresponsive applications. A rapid rate
+            of change upward is concerning and should be assessed
+            further.
 
           **Origin**: Firehose
           **Type**: Counter (Integer)
@@ -303,17 +366,40 @@ spec:
           * `route_emitter.HTTPRouteNATSMessagesEmitted` reports the lifetime number of route registration messages sent by the Route Emitter component. The metric is emitted for each Route Emitter.
           * `gorouter.registry_message.route-emitter` reports the lifetime number of route registration messages received by the Gorouter. The metric is emitted for each Gorouter instance.
 
-          Dynamic configuration that enables the Gorouter to route HTTP requests to apps is published by the Route Emitter component colocated on each Diego cell to the NATS clustered message bus. All router instances subscribed to this message bus receive the same configuration. (Router instances within an isolation segment receive configuration only for cells in the same isolation segment.)
+          Dynamic configuration that enables the Gorouter to route
+          HTTP requests to apps is published by the Route Emitter
+          component colocated on each Diego cell to the NATS clustered
+          message bus. All router instances subscribed to this message
+          bus receive the same configuration. (Router instances within
+          an isolation segment receive configuration only for cells in
+          the same isolation segment.)
 
-          As Gorouters prune app instances from the route when a TTL expires, each Route Emitter periodically publishes the routing configuration for the app instances on the same cell.
+          As Gorouters prune app instances from the route when a TTL
+          expires, each Route Emitter periodically publishes the
+          routing configuration for the app instances on the same
+          cell.
 
-          Therefore, the aggregate number of route registration messages published by all the Route Emitters should be equal to the number of messages received by each Gorouter instance.
+          Therefore, the aggregate number of route registration
+          messages published by all the Route Emitters should be equal
+          to the number of messages received by each Gorouter
+          instance.
 
-          **Use**: A difference in the rate of change of these metrics is an indication of an issue in the control plane responsible for updating the routers with changes to the routing table.
+          **Use**: A difference in the rate of change of these metrics
+            is an indication of an issue in the control plane
+            responsible for updating the routers with changes to the
+            routing table.
 
-          It's recommended alerting when the number of messages received per second for a given router instance falls below the sum of messages emitted per second across all Route Emitters.
+          It's recommended alerting when the number of messages
+          received per second for a given router instance falls below
+          the sum of messages emitted per second across all Route
+          Emitters.
 
-          If visualizing these metrics on a dashboard, look for increases in the difference between the rate of messages received and sent. If the number of messages received by a Gorouter instance drops below the sum of messages sent by the Route Emitters, this is an indication of a problem in the control plane.
+          If visualizing these metrics on a dashboard, look for
+          increases in the difference between the rate of messages
+          received and sent. If the number of messages received by a
+          Gorouter instance drops below the sum of messages sent by
+          the Route Emitters, this is an indication of a problem in
+          the control plane.
 
           **Origin**: Firehose
           **Type**: Counter
