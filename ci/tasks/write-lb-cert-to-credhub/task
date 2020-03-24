@@ -10,15 +10,15 @@ bosh_login_toolsmiths
 ENV_NAME="$(cat toolsmiths-metadata-dir/name)"
 CERT_FILE="$(mktemp)"
 
-openssl s_client \
+cert="$(openssl s_client \
 	-showcerts \
 	-connect "any.${ENV_NAME}.cf-app.com:443" \
-	</dev/null 2>/dev/null \
-	| openssl x509 \
+		</dev/null 2>/dev/null)"
+
+echo "${cert}" | openssl x509 \
 	> "${CERT_FILE}"
 
 credhub set \
-	--name /bosh-${ENV_NAME}/cf/lb_cert \
+	--name "/bosh-${ENV_NAME}/cf/lb_cert" \
 	--type certificate \
 	--certificate "${CERT_FILE}"
-
