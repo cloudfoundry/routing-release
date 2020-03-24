@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -eux
+set -o pipefail
 
 source networking-oss-deployments/scripts/script_helpers.sh
 
