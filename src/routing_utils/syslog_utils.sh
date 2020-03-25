@@ -1,4 +1,4 @@
-#!bin/bash
+#! /bin/bash
 
 # tee_output_to_sys_log
 #
