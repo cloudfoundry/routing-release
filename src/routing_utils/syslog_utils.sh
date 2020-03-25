@@ -4,9 +4,9 @@
 #
 # When syslog_utils.sh is loaded, this sends stdout and stderr to /var/vcap/sys/log.
 function tee_output_to_sys_log() {
-  declare log_dir="$1"
-  declare log_name="$2"
-  declare log_format="$3"
+  declare -r log_dir="$1"
+  declare -r log_name="$2"
+  declare -r log_format="$3"
 
   if [ "$3" == "deprecated" ]; then
     exec > >(tee -a >(logger -p user.info -t "vcap.${log_name}.stdout") | prepend_datetime >>"${log_dir}/${log_name}.log")
