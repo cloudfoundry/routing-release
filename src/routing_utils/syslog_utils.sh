@@ -10,7 +10,7 @@ function tee_output_to_sys_log() {
 
   if [ "$log_format" == "deprecated" ]; then
     exec > >(tee -a >(logger -p user.info -t "vcap.${log_name}.stdout") | prepend_datetime >>"${log_dir}/${log_name}.log")
--   exec 2> >(tee -a >(logger -p user.error -t "vcap.${log_name}.stderr") | prepend_datetime >>"${log_dir}/${log_name}.err.log")
+    exec 2> >(tee -a >(logger -p user.error -t "vcap.${log_name}.stderr") | prepend_datetime >>"${log_dir}/${log_name}.err.log")
   else
     exec > >(tee -a >(logger -p user.info -t "vcap.${log_name}.stdout") | prepend_rfc3339_datetime >>"${log_dir}/${log_name}.log")
     exec 2> >(tee -a >(logger -p user.error -t "vcap.${log_name}.stderr") | prepend_rfc3339_datetime >>"${log_dir}/${log_name}.err.log")
