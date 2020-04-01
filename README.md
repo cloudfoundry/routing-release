@@ -1,32 +1,36 @@
 # Cloud Foundry Routing [BOSH release]
 
-This repo is a [BOSH release](https://github.com/cloudfoundry/bosh) that
+This repository is a [BOSH release](https://github.com/cloudfoundry/bosh) that
 delivers HTTP and TCP routing for Cloud Foundry.
 
 ## Status
 Job | Status
 --- | ---
-unit tests | [![routing.ci.cf-app.com](https://routing.ci.cf-app.com/api/v1/teams/ga/pipelines/routing/jobs/routing-release-unit/badge)](https://routing.ci.cf-app.com/teams/ga/pipelines/routing/jobs/routing-release-unit)
-performance tests | [![routing.ci.cf-app.com](https://routing.ci.cf-app.com/api/v1/teams/ga/pipelines/routing/jobs/diana-tcp-perf-tests/badge)](https://routing.ci.cf-app.com/teams/ga/pipelines/routing/jobs/diana-tcp-perf-tests)
-smoke tests | [![routing.ci.cf-app.com](https://routing.ci.cf-app.com/api/v1/teams/ga/pipelines/routing/jobs/batman-cf-smoke-tests/badge)](https://routing.ci.cf-app.com/teams/ga/pipelines/routing/jobs/batman-cf-smoke-tests)
+unit tests | [![networking.ci.cf-app.com](https://networking.ci.cf-app.com/api/v1/teams/ga/pipelines/routing/jobs/routing-release-unit/badge)](https://networking.ci.cf-app.com/teams/ga/pipelines/routing/jobs/routing-release-unit)
+performance tests | [![networking.ci.cf-app.com](https://networking.ci.cf-app.com/api/v1/teams/ga/pipelines/routing/jobs/diana-tcp-perf-tests/badge)](https://networking.ci.cf-app.com/teams/ga/pipelines/routing/jobs/diana-tcp-perf-tests)
+smoke tests | [![networking.ci.cf-app.com](https://networking.ci.cf-app.com/api/v1/teams/ga/pipelines/routing/jobs/cf-deployment-smoke-and-indicator-protocol-tests/badge)](https://networking.ci.cf-app.com/teams/ga/pipelines/routing/jobs/cf-deployment-smoke-and-indicator-protocol-tests)
 
 ## Getting Help
 
-For help or questions with this release or any of its submodules, you can reach the maintainers on Slack at [cloudfoundry.slack.com](https://cloudfoundry.slack.com) in the `#networking` channel.
+For help or questions with this release or any of its submodules, you can reach
+the maintainers on Slack at
+[cloudfoundry.slack.com](https://cloudfoundry.slack.com) in the `#networking`
+channel.
 
 ## Developer Workflow
 
-When working on individual components of the Routing Release, work out of the submodules
-under `src/`.
+When working on individual components of the Routing Release, work out of the
+submodules under `src/`.
 
-Run the appropriate unit tests (see Testing).
+Run the appropriate unit tests (see
+[Testing](#running-unit-and-integration-tests)).
 
-Commits to this repo (including Pull Requests) should be made on the Develop
-branch.
+The `master` branch contains code that has been released. All development work
+happens on the `develop` branch.
 
 ### Get the code
 
-1. Fetch release repo.
+1. Clone the repository
 
   ```
   mkdir -p ~/workspace
@@ -37,16 +41,16 @@ branch.
 
 1. Automate `$GOPATH` and `$PATH` setup.
 
-  This BOSH release doubles as a `$GOPATH`. It will automatically be set up
-  for you if you have [direnv](http://direnv.net) installed.
+  This BOSH release doubles as a `$GOPATH`. It will automatically be set up for
+  you if you have [direnv](http://direnv.net) installed.
 
   ```
   direnv allow
   ```
 
-  If you do not wish to use direnv, you can simply `source` the `.envrc` file
-  in the root of the release repo.  You may manually need to update your
-  `$GOPATH` and `$PATH` variables as you switch in and out of the directory.
+  If you do not wish to use `direnv`, you can simply `source` the `.envrc` file
+  at the root of the repository.  You may manually need to update your `$GOPATH`
+  and `$PATH` variables as you switch in and out of the directory.
 
 1. Initialize and sync submodules.
 
@@ -54,19 +58,22 @@ branch.
   ./scripts/update
   ```
 
-### Running Unit Tests
+### Running Unit and Integration Tests
 
 #### In a Docker container
 
-* Run unit tests using the script provided. This script pulls a docker image
-   and runs the unit tests in there, as some tests in Gorouter check things like
-   file descriptors and need to be run on a Linux machine.
+* Run tests using the script provided. This script pulls a docker image and runs
+  the tests within a container because integration tests require Linux specific
+  features.
+
+  Notice/warning: the script is called `run-unit-tests-in-docker` but it really
+  runs unit *and* integration tests, that's why they need to run in a container.
 
   ```
   ./scripts/run-unit-tests-in-docker
   ```
 
-* If you'd like to run a specific component's unit tests in a Docker container,
+* If you'd like to run a specific component's tests in a Docker container,
   the `run-unit-tests` script also takes a package name as an argument:
 
   ```
@@ -75,37 +82,52 @@ branch.
 
 #### Locally
 
-* If you'd like to run the unit tests for an individual component locally, we recommend
-  you run `bin/test` in that component's directory. Please make sure it's a
-  component that doesn't require a Linux operating system.
+* If you'd like to run the unit and integration tests for an individual
+  component locally, we recommend you run `bin/test` in that component's
+  directory. Please make sure it's a component that doesn't require a Linux
+  operating system.
 
 ## Deploying Routing for Cloud Foundry
 
-1. For high availability, configure a load balancer in front of the routers; for more information see [High Availability](#high-availability). If high-availability is not required allocate a public IP to a single instance of each router. See [Port Requirements for TCP Routing](#port-requirements-for-tcp-routing). 
+1. For [high availability](#high-availability), configure a load balancer in
+   front of the routers. If high-availability is not required allocate a public
+   IP to a single instance of each router. See [Port Requirements for TCP
+   Routing](#port-requirements-for-tcp-routing).
 
-1. If you are using a load balancer see [Configuring Load Balancer Healthcheck](https://docs.cloudfoundry.org/adminguide/configure-lb-healthcheck.html).
+1. If you are using a load balancer see [Configuring Load Balancer
+   Healthcheck](https://docs.cloudfoundry.org/adminguide/configure-lb-healthcheck.html).
 
-1. Choose domain names from which developers will configure HTTP and TCP routes for their applications. Separate domain names will be required for HTTP and TCP routing. Configure DNS to resolve these domain names to the load balancer in front of the routers. You may use the same or separate load balancers for the HTTP and TCP domains. If high-availability is not required configure DNS to resolve the domains directly to a single instance of the routers.
+1. Choose domain names from which developers will configure HTTP and TCP routes
+   for their applications. Separate domain names will be required for HTTP and
+   TCP routing. Configure DNS to resolve these domain names to the load balancer
+   in front of the routers. You may use the same or separate load balancers for
+   the HTTP and TCP domains. If high-availability is not required configure DNS
+   to resolve the domains directly to a single instance of the routers.
 
-1. If your manifest is configured with self-signed certificates for UAA, configure routing components to skip validation of the TLS certificate; see [Validation of TLS Certificates from Route Services and UAA](#validation-of-tls-certificates-from-route-services-and-uaa).
+1. If your manifest is configured with self-signed certificates for UAA,
+   configure routing components to skip validation of the TLS certificate; see
+   [Validation of TLS Certificates from Route Services and
+   UAA](#validation-of-tls-certificates-from-route-services-and-uaa).
 
-1. Deploy Cloud Foundry using the instructions for [cf-deployment](https://github.com/cloudfoundry/cf-deployment/blob/master/deployment-guide.md).
+1. Deploy Cloud Foundry using the instructions for
+   [cf-deployment](https://github.com/cloudfoundry/cf-deployment/blob/master/deployment-guide.md).
 
 ### Port Requirements for TCP Routing
 
 Choose how many TCP routes you'd like to offer. For each TCP route, a port must
 be opened on your load balancer. Configure your load balancer to forward the
-range of ports you choose to the IPs of the TCP Router instances. 
+range of ports you choose to the IP addresses of the TCP Router instances.
 
-Routing API must be configured with the same range of ports. By default cf-deployment will enable 100 ports in the range 1024-1123. If you choose a range other than 1024-1123, you must configure this using the deployment manifest property
-`routing-api.router_groups.reservable_ports`. This is a seeded value only;
-after deploy, changes to this property will be ignored. To modify the
-reservable port range after deployment, use the [Routing
-API](https://github.com/cloudfoundry/routing-api#using-the-api-manually);
-(see "To update a Router Group's reservable_ports field with a new port
-range").
+Routing API must be configured with the same range of ports. By default
+`cf-deployment` will enable 100 ports in the range 1024-1123. If you choose a
+range other than 1024-1123, you must configure this using the deployment
+manifest property `routing-api.router_groups.reservable_ports`. This is a seeded
+value only; after deploy, changes to this property will be ignored. To modify
+the reservable port range after deployment, use the [Routing
+API](https://github.com/cloudfoundry/routing-api#using-the-api-manually); (see
+"To update a Router Group's reservable_ports field with a new port range").
 
-```
+```yaml
 - name: routing_api
   properties:
     routing_api:
@@ -114,7 +136,7 @@ range").
       reservable_ports: 1024-1123
       type: tcp
     - name: test1
-      reservable_ports: 
+      reservable_ports:
         - 1066
         - 1266
       type: tcp
@@ -124,22 +146,24 @@ range").
 
 ```
 
-
-
-
 ### Validation of TLS Certificates from Route Services and UAA
 
 The following components communicate with UAA via TLS:
 - Routing API
-- Gorouter
+- GoRouter
 - TCP Router
 
-Additionally, gorouter communicates with [Route Services](http://docs.cloudfoundry.org/services/route-services.html) via TLS.
+Additionally, GoRouter communicates with [Route
+Services](http://docs.cloudfoundry.org/services/route-services.html) via TLS.
 
-In all cases, these components will validate that certs are signed by a known CA and that the cert is for the requested domain. To disable this validation, as when deploying the routing subsystem to an environment with self-signed certs, configure the following property for Gorouter, routing-api and tcp-router.
+In all cases, these components will validate that certificates are signed by a
+known CA and that they match the requested domains. To disable this validation,
+as when deploying the routing subsystem to an environment with self-signed
+certificates, configure the `skip_ssl_validation` property for GoRouter,
+Routing API and TCP Router.
 
 
-```
+```yaml
 - name: routing-api
   properties:
     skip_ssl_validation: true
@@ -157,11 +181,11 @@ In all cases, these components will validate that certs are signed by a known CA
 ### Create a Shared Domain in CF
 
   After deploying this release you must add the domain you chose (see [Domain
-  Names](#domain-names)) to CF as a Shared Domain (admin only), associating it
+  Names](#domain-names)) to CF as a Shared Domain, associating it
   with the Router Group.
 
-  The CLI commands below require version 6.17+ of the [cf
-  CLI](https://github.com/cloudfoundry/cli), and must be run as admin.
+  The CLI commands below require version 6.17+ of the [`cf`
+  CLI](https://github.com/cloudfoundry/cli), and must be run as `admin`.
 
   List available router-groups
 
@@ -176,7 +200,7 @@ In all cases, these components will validate that certs are signed by a known CA
   **Note**: If you receive this error: `FAILED This command requires the
   Routing API. Your targeted endpoint reports it is not enabled`. This is due
   to the CF CLI's `~/.cf/config.json` having an old cached `RoutingEndpoint`
-  value. To fix this, just do a cf login again and this error should go away.
+  value. To fix this, just do a `cf login` again and this error should go away.
 
   Create a shared-domain for the TCP router group
 
@@ -192,12 +216,12 @@ In all cases, these components will validate that certs are signed by a known CA
 
   As ports can be a limited resource in some environments, the default quotas
   in Cloud Foundry for IaaS other than BOSH Lite do not allow reservation of
-  route ports; required for creation of TCP routes. The final step to enabling
+  route ports. Route ports are required for the creation of TCP routes. The final step to enabling
   TCP routing is to modify quotas to set the maximum number of TCP routes that
   may be created by each organization or space.
-  
+
   Determine whether your default org quota allows TCP Routes:
-  
+
   ```
   $ cf quota default
   Getting quota default info as admin...
@@ -212,16 +236,19 @@ In all cases, these components will validate that certs are signed by a known CA
   Reserved Route Ports   0
   ```
 
-  If `Reserved Route Ports` is greater than zero, you can skip the following step, as this attribute determines how many TCP routes can be created within each organization assigned this quota.
-  
-  If `Reserved Route Ports` is zero, you can update the quota with the following command:
+  If `Reserved Route Ports` is greater than zero, you can skip the following
+  step, as this attribute determines how many TCP routes can be created within
+  each organization assigned to this quota.
+
+  If `Reserved Route Ports` is zero, you can update the quota with the following
+  command:
 
   ```
   $ cf update-quota default --reserved-route-ports 2
   Updating quota default as admin...
   OK
 
-    $ cf quota default
+  $ cf quota default
   Getting quota default info as admin...
   OK
 
@@ -233,8 +260,11 @@ In all cases, these components will validate that certs are signed by a known CA
   App instance limit     unlimited
   Reserved Route Ports   2
   ```
-  
-  Configuring `Reserved Route Ports` to `-1` sets the quota attribute to unlimited. For more information on configuring quotas for TCP Routing, see [Enabling TCP Routing](https://docs.cloudfoundry.org/adminguide/enabling-tcp-routing.html#configure-quota).
+
+  Configuring `Reserved Route Ports` to `-1` sets the quota attribute to
+  unlimited. For more information on configuring quotas for TCP Routing, see
+  [Enabling TCP
+  Routing](https://docs.cloudfoundry.org/adminguide/enabling-tcp-routing.html#configure-quota).
 
 ## Running Acceptance tests
 
@@ -243,7 +273,7 @@ In all cases, these components will validate that certs are signed by a known CA
 Before running the acceptance tests errand, make sure to have the following
 setup.
 
-1. bosh is targeted to your local bosh-lite
+1. `bosh` is targeted to your local bosh-lite
 1. routing-release
    [deployed](#deploying-tcp-router-to-a-local-bosh-lite-instance) on bosh-lite
 1. Endpoints for http routes are not tested by the errand by default. To enable
