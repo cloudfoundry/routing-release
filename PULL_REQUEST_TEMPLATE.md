@@ -1,4 +1,4 @@
-Thanks for contributing to 'routing-release'. To speed up the process of reviewing your pull request please provide us with:
+<!-- Thanks for contributing to 'routing-release'. To speed up the process of reviewing your pull request please provide us with: -->
 
 * A short explanation of the proposed change:
 
@@ -16,8 +16,8 @@ Thanks for contributing to 'routing-release'. To speed up the process of reviewi
 
 * [ ] I have made this pull request to the `develop` branch
 
-* [ ] I have run all the unit tests using `scripts/run-unit-tests`
+* [ ] I have run all the unit tests using `scripts/run-unit-tests-in-docker`
 
-* [ ] I have run Routing Acceptance Tests and Routing Smoke Tests on bosh lite
+* [ ] (Optional) I have run Routing Acceptance Tests and Routing Smoke Tests on bosh lite
 
-* [ ] I have run CF Acceptance Tests on bosh lite
+* [ ] (Optional) I have run CF Acceptance Tests on bosh lite
