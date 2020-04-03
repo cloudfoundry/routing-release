@@ -380,7 +380,7 @@ jobs:
       params:
         submodules: all
   - task: unit
-    timeout: 20m
+    timeout: 30m
     config:
       platform: linux
       image_resource:
