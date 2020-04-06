@@ -106,9 +106,6 @@
 [submodule "src/golang.org/x/crypto"]
 	path = src/golang.org/x/crypto
 	url = https://github.com/golang/crypto
-[submodule "src/github.com/nats-io/gnatsd"]
-	path = src/github.com/nats-io/gnatsd
-	url = https://github.com/nats-io/gnatsd
 [submodule "src/github.com/nats-io/nuid"]
 	path = src/github.com/nats-io/nuid
 	url = https://github.com/nats-io/nuid
@@ -217,3 +214,9 @@
 [submodule "src/github.com/nats-io/nkeys"]
 	path = src/github.com/nats-io/nkeys
 	url = https://github.com/nats-io/nkeys.git
+[submodule "src/github.com/nats-io/nats-server"]
+	path = src/github.com/nats-io/nats-server
+	url = https://github.com/nats-io/nats-server
+[submodule "src/golang.org/x/xerrors"]
+	path = src/golang.org/x/xerrors
+	url = https://go.googlesource.com/xerrors

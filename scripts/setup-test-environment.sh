@@ -23,7 +23,7 @@ echo "Running template tests"
 echo "Finished running template tests"
 
 export PATH=$PATH:$PWD/bin
-go get github.com/nats-io/gnatsd
+go get github.com/nats-io/nats-server
 go get github.com/onsi/ginkgo/ginkgo
 go get github.com/onsi/gomega
 
