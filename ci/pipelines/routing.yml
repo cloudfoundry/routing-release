@@ -286,10 +286,7 @@ resources:
   type: time
   icon: clock
   source:
-    location: America/Los_Angeles
-    start: 6:00 AM
-    stop: 6:01 AM
-    days: [Monday]
+    interval: '168h'  # 1 week
 
 #Tracker Projects
 - name: cf-diego-networking-tracker
