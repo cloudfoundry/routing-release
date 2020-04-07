@@ -282,6 +282,15 @@ resources:
     stop: 6:01 AM
     days: [Friday]
 
+- name: weekly
+  type: time
+  icon: clock
+  source:
+    location: America/Los_Angeles
+    start: 6:00 AM
+    stop: 6:01 AM
+    days: [Monday]
+
 #Tracker Projects
 - name: cf-diego-networking-tracker
   type: tracker
@@ -379,6 +388,8 @@ jobs:
       trigger: true
       params:
         submodules: all
+    - get: weekly
+      trigger: true
   - task: unit
     timeout: 30m
     config:
@@ -1410,6 +1421,8 @@ jobs:
       passed:
       - routing-release-unit
       trigger: true
+    - get: weekly
+      trigger: true
   - task: write-lb-cert-to-credhub
     input_mapping:
       toolsmiths-metadata-dir: cf-environment
@@ -1477,6 +1490,8 @@ jobs:
     - get: cf-deployment
     - get: cf-deployment-concourse-tasks
     - get: networking-oss-deployments
+    - get: weekly
+      trigger: true
   - task: claim-cf-deployment-environment
     file: routing-release-ci/ci/tasks/claim-cf-deployment-environment/task.yml
     tags:
@@ -1538,6 +1553,8 @@ jobs:
         passed:
         - routing-release-unit
       - get: cf-deployment-concourse-tasks
+    - get: weekly
+      trigger: true
   - task: claim-cf-deployment-environment
     file: routing-release-ci/ci/tasks/claim-cf-deployment-environment/task.yml
     tags:
@@ -1611,6 +1628,8 @@ jobs:
       params: {submodules: none}
     - get: cf-deployment
     - get: cf-deployment-concourse-tasks
+    - get: weekly
+      trigger: true
   - task: claim-cf-deployment-environment
     file: routing-release-ci/ci/tasks/claim-cf-deployment-environment/task.yml
     tags:
@@ -1668,6 +1687,8 @@ jobs:
       params:
         globs:
         - indicator-verification-linux64*
+    - get: weekly
+      trigger: true
   - task: claim-cf-deployment-environment
     file: routing-release-ci/ci/tasks/claim-cf-deployment-environment/task.yml
     tags:
@@ -1752,6 +1773,8 @@ jobs:
       passed: [routing-release-unit]
       trigger: true
     - get: gcp-stemcell-xenial
+    - get: weekly
+      trigger: true
   - task: claim-cf-deployment-environment
     file: routing-release-ci/ci/tasks/claim-cf-deployment-environment/task.yml
     tags:
