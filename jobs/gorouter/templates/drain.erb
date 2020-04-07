@@ -13,7 +13,7 @@ if [[ ! -f ${pidfile} ]]; then
   if [ "$log_format" == "deprecated" ]; then
     echo "$(date): pidfile does not exist" >> ${logfile}
   else
-    echo "$(date +%Y-%m-%dT%H:%M:%S.%sZ): pidfile does not exist" >> ${logfile}
+    echo "$(date +%Y-%m-%dT%H:%M:%S.%NZ): pidfile does not exist" >> ${logfile}
   fi
   echo 0
   exit 0
@@ -25,14 +25,14 @@ if kill -USR1 "${pid}"; then
   if [ "$log_format" == "deprecated" ]; then
     echo "$(date): triggering drain" >> ${logfile}
   else
-    echo "$(date +%Y-%m-%dT%H:%M:%S.%sZ): triggering drain" >> ${logfile}
+    echo "$(date +%Y-%m-%dT%H:%M:%S.%NZ): triggering drain" >> ${logfile}
   fi
   echo -5
 else
   if [ "$log_format" == "deprecated" ]; then
     echo "$(date): gorouter exited" >> ${logfile}
   else
-    echo "$(date +%Y-%m-%dT%H:%M:%S.%sZ): gorouter exited" >> ${logfile}
+    echo "$(date +%Y-%m-%dT%H:%M:%S.%NZ): gorouter exited" >> ${logfile}
   fi
   rm ${pidfile}
   echo 0
