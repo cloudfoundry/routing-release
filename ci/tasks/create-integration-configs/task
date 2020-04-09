@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e -o pipefail
+set -eu -o pipefail
 
 # shellcheck disable=SC1091
 source cf-deployment-concourse-tasks/shared-functions
