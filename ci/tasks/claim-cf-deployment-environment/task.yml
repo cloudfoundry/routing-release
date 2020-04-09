@@ -15,6 +15,6 @@ params:
   ENVIRONMENT_TYPE: cf-deployment
   TOOLSMITHS_API_TOKEN:
   ENVIRONMENT_NOTES:
-  ENRIRONMENT_NAME:
+  ENVIRONMENT_NAME:
 run:
   path: routing-release-ci/ci/tasks/claim-cf-deployment-environment/task
