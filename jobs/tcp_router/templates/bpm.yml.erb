@@ -1,8 +1,6 @@
 ---
 processes:
 - name: tcp_router
-  env:
-    GODEBUG: tls13=0
   hooks:
     pre_start: /var/vcap/jobs/tcp_router/bin/bpm-pre-start
   additional_volumes:
