@@ -232,7 +232,24 @@ enable_ssl: <%= p("router.enable_ssl") %>
   end
 %>
 client_cert_validation: <%= client_cert_validation %>
+<%
+  allowed_min_tls_versions = ["TLSv1.0", "TLSv1.1", "TLSv1.2"]
+  min_tls_version = p("router.min_tls_version")
+
+  if !allowed_min_tls_versions.include?(min_tls_version)
+    raise 'router.min_tls_version must be "TLSv1.0", "TLSv1.1", or "TLSv1.2"'
+  end
+%>
 min_tls_version: <%= p("router.min_tls_version") %>
+<%
+  allowed_max_tls_versions = ["TLSv1.2", "TLSv1.3"]
+  max_tls_version = p("router.max_tls_version")
+
+  if !allowed_max_tls_versions.include?(max_tls_version)
+    raise 'router.max_tls_version must be "TLSv1.2" or "TLSv1.3"'
+  end
+%>
+max_tls_version: <%= p("router.max_tls_version") %>
 ssl_port: <%= p("router.tls_port") %>
 <% end %>
 

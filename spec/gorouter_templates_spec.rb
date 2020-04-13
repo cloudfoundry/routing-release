@@ -76,7 +76,8 @@ describe 'gorouter' do
               'private_key' => 'test-key2'
             }
           ],
-          'min_tls_version' => 1.2,
+          'min_tls_version' => 'TLSv1.2',
+          'max_tls_version' => 'TLSv1.2',
           'disable_http' => false,
           'ca_certs' => 'test-certs',
           'cipher_suites' => 'test-suites',
@@ -180,6 +181,30 @@ describe 'gorouter' do
             end
             it 'should not enable w3c' do
               expect(parsed_yaml.dig('tracing', 'enable_w3c')).to eq(false)
+            end
+          end
+        end
+
+        context 'min_tls_version' do
+          context 'when it is set to an invalid version' do
+            before do
+              deployment_manifest_fragment['router']['min_tls_version'] = 'TLSv2.7'
+            end
+
+            it 'fails' do
+              expect { raise parsed_yaml }.to raise_error(RuntimeError, 'router.min_tls_version must be "TLSv1.0", "TLSv1.1", or "TLSv1.2"')
+            end
+          end
+        end
+
+        context 'max_tls_version' do
+          context 'when it is set to an invalid version' do
+            before do
+              deployment_manifest_fragment['router']['max_tls_version'] = 'TLSv2.7'
+            end
+
+            it 'fails' do
+              expect { raise parsed_yaml }.to raise_error(RuntimeError, 'router.max_tls_version must be "TLSv1.2" or "TLSv1.3"')
             end
           end
         end
