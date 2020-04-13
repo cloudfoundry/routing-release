@@ -101,7 +101,10 @@ properties:
     description: Disables the http listener on port specified by router.port. This cannot be set to true if enable_ssl is false.
     default: false
   router.min_tls_version:
-    description: Minimum accepted version of TLS protocol. All versions above this will also be accepted. Valid values are TLSv1.0, TLSv1.1, and TLSv1.2.
+    description: Minimum accepted version of TLS protocol. All versions above this, up to the max_tls_version, will also be accepted. Valid values are TLSv1.0, TLSv1.1, and TLSv1.2.
+    default: TLSv1.2
+  router.max_tls_version:
+    description: Maximum accepted version of TLS protocol. Versions below this will, down to the min_tls_version, will also be accepted. Valid values are TLSv1.2, and TLSv1.3.
     default: TLSv1.2
   router.dns_health_check_host:
       description: "Host to ping for confirmation of DNS resolution, only used when Routing API is enabled"
