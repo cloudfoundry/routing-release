@@ -12,9 +12,9 @@ smoke tests | [![networking.ci.cf-app.com](https://networking.ci.cf-app.com/api/
 
 ## Getting Help
 
-For help or questions with this release or any of its submodules, you can reach
-the maintainers on Slack at
-[cloudfoundry.slack.com](https://cloudfoundry.slack.com) in the `#networking`
+If you a concrete issue to report or change to request, please create a Github issue.  Issues with any related submodules ([Gorouter](https://github.com/cloudfoundry/gorouter), [Routing API](https://github.com/cloudfoundry/routing-api), [Route Registrar](https://github.com/cloudfoundry/route-registrar), [CF TCP Router](https://github.com/cloudfoundry/cf-tcp-router)) should be created here instead.
+
+You can also reach us on Slack at [cloudfoundry.slack.com](https://cloudfoundry.slack.com) in the `#networking`
 channel.
 
 ## Developer Workflow
