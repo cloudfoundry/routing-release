@@ -21,6 +21,26 @@ addons:
   - name: bpm
     release: bpm
   name: bpm
+- name: bosh-dns-aliases
+  jobs:
+  - name: bosh-dns-aliases
+    release: bosh-dns-aliases
+    properties:
+      aliases:
+      - domain: nats.service.cf.internal
+        targets:
+        - query: '*'
+          instance_group: nats
+          deployment: cf
+          network: default
+          domain: bosh
+      - domain: _.nats.service.cf.internal
+        targets:
+        - query: '_'
+          instance_group: nats
+          deployment: cf
+          network: default
+          domain: bosh
 update:
   canaries: 1
   canary_watch_time: 10000-300000
