@@ -117,6 +117,8 @@ instance_groups:
 releases:
 - name: bpm
   version: latest
+- name: bosh-dns-aliases
+  version: latest
 - name: routing
   version: latest
 - name: zero-downtime
