@@ -1378,10 +1378,6 @@ jobs:
     params:
       ENVIRONMENT: this-doesnt-do-anything
       SOURCE1_DIR: ''
-  - task: fetch-our-envs-manifest
-    file: routing-release-ci/ci/tasks/fetch-toolsmiths-manifest/task.yml
-    input_mapping:
-      toolsmiths-metadata-dir: cf-environment
   - task: redeploy-routing-release
     file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
     input_mapping:
@@ -1389,9 +1385,7 @@ jobs:
       release: routing-release
       ops-files: merged-operations
       vars-files: routing-release
-      cf-deployment: our-envs-manifest
     params:
-      MANIFEST_FILE: manifest.yml
       OPS_FILES: |
         add-lb-ca-cert.yml
         use-compiled-releases.yml
@@ -1428,10 +1422,6 @@ jobs:
     file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
     input_mapping:
       source1: smoke-tests-ops-file
-  - task: fetch-our-envs-manifest
-    file: routing-release-ci/ci/tasks/fetch-toolsmiths-manifest/task.yml
-    input_mapping:
-      toolsmiths-metadata-dir: cf-environment
   - task: redeploy-routing-release
     file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
     input_mapping:
@@ -1439,9 +1429,7 @@ jobs:
       release: routing-release
       ops-files: merged-operations
       vars-files: routing-release
-      cf-deployment: our-envs-manifest
     params:
-      MANIFEST_FILE: manifest.yml
       OPS_FILES: |
         add-lb-ca-cert.yml
         use-compiled-releases.yml
@@ -1501,10 +1489,6 @@ jobs:
     file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
     input_mapping:
       source1: smoke-tests-ops-file
-  - task: fetch-our-envs-manifest
-    file: routing-release-ci/ci/tasks/fetch-toolsmiths-manifest/task.yml
-    input_mapping:
-      toolsmiths-metadata-dir: cf-environment
   - task: redeploy-routing-release
     file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
     input_mapping:
@@ -1512,9 +1496,7 @@ jobs:
       release: routing-release
       ops-files: merged-operations
       vars-files: routing-release
-      cf-deployment: our-envs-manifest
     params:
-      MANIFEST_FILE: manifest.yml
       OPS_FILES: |
         use-compiled-releases.yml
         backup-and-restore/enable-backup-restore.yml
@@ -1564,11 +1546,6 @@ jobs:
     file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
     input_mapping:
       source1: smoke-tests-ops-file
-  - task: fetch-our-envs-manifest
-    file: routing-release-ci/ci/tasks/fetch-toolsmiths-manifest/task.yml
-    input_mapping:
-      toolsmiths-metadata-dir: cf-environment
-
   - task: redeploy-routing-release
     file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
     input_mapping:
@@ -1576,9 +1553,7 @@ jobs:
       release: routing-release
       ops-files: merged-operations
       vars-files: routing-release
-      cf-deployment: our-envs-manifest
     params:
-      MANIFEST_FILE: manifest.yml
       OPS_FILES: |
         use-compiled-releases.yml
         test/add-persistent-isolation-segment-diego-cell.yml
@@ -1639,10 +1614,6 @@ jobs:
     file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
     input_mapping:
       source1: smoke-tests-ops-file
-  - task: fetch-our-envs-manifest
-    file: routing-release-ci/ci/tasks/fetch-toolsmiths-manifest/task.yml
-    input_mapping:
-      toolsmiths-metadata-dir: cf-environment
   - task: redeploy-routing-release
     file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
     input_mapping:
@@ -1650,9 +1621,7 @@ jobs:
       release: routing-release
       ops-files: merged-operations
       vars-files: routing-release
-      cf-deployment: our-envs-manifest
     params:
-      MANIFEST_FILE: manifest.yml
       OPS_FILES: |
         use-compiled-releases.yml
         syslog.yml
@@ -1694,10 +1663,6 @@ jobs:
       ENVIRONMENT_TYPE: cf-deployment
       ENVIRONMENT_NOTES: cf-deployment-smoke-and-indicator-protocol-tests
       TOOLSMITHS_API_TOKEN: ((toolsmiths_api_key))
-  - task: fetch-our-envs-manifest
-    file: routing-release-ci/ci/tasks/fetch-toolsmiths-manifest/task.yml
-    input_mapping:
-      toolsmiths-metadata-dir: cf-environment
   - task: update-smoke-test-ops-file
     file: routing-release-ci/ci/tasks/update-smoke-tests-ops-file-for-toolsmiths/task.yml
     input_mapping:
@@ -1713,9 +1678,7 @@ jobs:
       release: routing-release
       ops-files: merged-operations
       vars-files: routing-release
-      cf-deployment: our-envs-manifest
     params:
-      MANIFEST_FILE: manifest.yml
       OPS_FILES: |
         smoke-tests.yml
         use-compiled-releases.yml
@@ -1780,10 +1743,6 @@ jobs:
       ENVIRONMENT_TYPE: cf-deployment
       ENVIRONMENT_NOTES: cf-deployment-deploy-and-run-cipher-suite-tests
       TOOLSMITHS_API_TOKEN: ((toolsmiths_api_key))
-  - task: fetch-our-envs-manifest
-    file: routing-release-ci/ci/tasks/fetch-toolsmiths-manifest/task.yml
-    input_mapping:
-      toolsmiths-metadata-dir: cf-environment
   - task: generate-cipher-manifest
     file: routing-release-ci/ci/tasks/generate-cipher-manifest/task.yml
     params:

@@ -1,9 +1,0 @@
-#!/bin/bash
-set -e
-
-source networking-oss-deployments/scripts/script_helpers.sh
-
-bosh_login_toolsmiths
-
-bosh -d cf manifest > our-envs-manifest/manifest.yml
-
