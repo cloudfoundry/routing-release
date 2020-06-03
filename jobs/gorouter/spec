@@ -291,7 +291,12 @@ properties:
       trace headers are added to the response.
     default: 22
   request_timeout_in_seconds:
-    description: "Time that Router -> Endpoint connections are allowed to remain idle before being closed."
+    description: |
+      This configures a "request timeout" and a "backend idle timeout".
+      Requests from router to backend endpoints that are longer than this duration will be canceled and logged as
+      `backend-request-timeout` errors. In addition, TCP connections between router and backend endpoints that
+      are idle for longer than this duration will be closed. Related properties: `router.max_idle_connections`
+      and `router.keep_alive_probe_interval`.
     default: 900
 
   metron.port:
