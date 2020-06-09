@@ -173,7 +173,7 @@ properties:
     description: "Expiry time of a route service signature in seconds"
     default: 60
   router.extra_headers_to_log:
-    description: "An array of headers that access log events will be annotated with"
+    description: "An array of headers that access log events will be annotated with. This only applies to headers on requests."
     default: []
   router.logging_level:
     description: "Log level for router"
