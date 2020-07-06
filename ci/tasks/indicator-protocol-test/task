@@ -16,8 +16,9 @@ push_an_app() {
     cf push staticfile
   )
 
-  sleep 10 # it appears that the metric isn't present for
-           # the test _right_ after you push the app
+  # it appears that the metric isn't present for
+  # the test _right_ after you push the app
+  sleep ${SLEEP_TIME_AFTER_PUSH}
 }
 
 source networking-oss-deployments/scripts/script_helpers.sh

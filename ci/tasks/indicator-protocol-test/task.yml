@@ -19,3 +19,4 @@ run:
 
 params:
   ENVIRONMENT:
+  SLEEP_TIME_AFTER_PUSH: 60 #seconds
