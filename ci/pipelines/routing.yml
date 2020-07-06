@@ -1711,6 +1711,7 @@ jobs:
     file: routing-release-ci/ci/tasks/indicator-protocol-test/task.yml
     input_mapping:
       toolsmiths-metadata-dir: cf-environment
+    attempts: 3
   - task: release-pooled-environment
     file: routing-release-ci/ci/tasks/unclaim-cf-deployment-environment/task.yml
     tags:

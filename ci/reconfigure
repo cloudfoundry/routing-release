@@ -4,8 +4,8 @@ set -euo pipefail
 
 PIPELINE_DIR="$(dirname $0)/pipelines"
 
-: "${1?"Usage: update <pipeline-name>"}"
-PIPELINE_NAME=$1
+PIPELINE_NAME=${1:-routing}
+echo "Setting default pipline 'routing' as none was provided."
 
 fly -t ga sync
 
