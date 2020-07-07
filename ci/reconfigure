@@ -5,7 +5,6 @@ set -euo pipefail
 PIPELINE_DIR="$(dirname $0)/pipelines"
 
 PIPELINE_NAME=${1:-routing}
-echo "Setting default pipline 'routing' as none was provided."
 
 fly -t ga sync
 

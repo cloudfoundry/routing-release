@@ -100,6 +100,8 @@ jobs:
     file: routing-release-ci/ci/tasks/build-release-notes/task.yml
     input_mapping:
       master-release: routing-release-rc
+    params:
+      TRACKER_API_TOKEN: ((tracker_api_token))
 
 - name: create-final-routing-release
   serial: true

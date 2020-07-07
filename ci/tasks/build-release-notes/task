@@ -19,7 +19,9 @@ popd > /dev/null
 
 while read -r story_id
 do
-  curl -s https://www.pivotaltracker.com/services/v5/stories/$story_id
+  curl -s \
+    -H "X-TrackerToken: ${TRACKER_API_TOKEN}" \
+    "https://www.pivotaltracker.com/services/v5/stories/$story_id"
 done < $tmp_dir/stories.raw > $tmp_dir/stories.json
 
 cat $tmp_dir/stories.json | jq -r '"- "+.current_state+": ["+.name+"]("+.url+")"' > $OUTPUT_DIR/notes.md

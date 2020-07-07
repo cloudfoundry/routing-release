@@ -19,3 +19,4 @@ run:
 params:
   SOURCE_DIR: master-release
   OUTPUT_DIR: release-notes
+  TRACKER_API_TOKEN:
