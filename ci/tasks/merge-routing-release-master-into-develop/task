@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e -x -u
+DEFAULT_BRANCH="release"
 
 root_dir=${PWD}
 pushd cf-routing-release-develop
@@ -9,7 +10,7 @@ pushd cf-routing-release-develop
   git config user.name "Routing CI (Automated)"
 
   git remote add -f master-repo ../cf-routing-release-master
-  git merge --no-edit "master-repo/master"
+  git merge --no-edit "master-repo/${DEFAULT_BRANCH}"
 
   git status
   git show --color | cat

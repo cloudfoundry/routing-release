@@ -22,7 +22,7 @@ resources:
 - name: routing-release-master
   type: git
   source:
-    branch: master
+    branch: release
     uri: git@github.com:cloudfoundry/routing-release.git
     rebase: true
     private_key: ((github_private_key.private_key))

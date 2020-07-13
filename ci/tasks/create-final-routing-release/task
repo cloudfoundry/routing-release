@@ -3,6 +3,7 @@
 set -exuo pipefail
 
 FINAL_VERSION=`cat version/version`
+RELEASE_BRANCH="release"
 
 root_dir=${PWD}
 OUTPUT_DIR=${root_dir}/cf-routing-bosh-release
@@ -38,7 +39,7 @@ pushd "${CF_ROUTING_RELEASE_RC_DIR}"
   git config user.name "Routing CI (Automated)"
 
   git remote add -f master-repo ../routing-release-master
-  git merge "master-repo/master" -m 'Merge with master'
+  git merge "master-repo/${RELEASE_BRANCH}" -m "Merge with ${RELEASE_BRANCH}"
 
   git status
   git diff-index --quiet HEAD -- || ( echo "There are uncommitted changes! Investigate immediately." && exit 1 )
@@ -47,7 +48,7 @@ pushd "${CF_ROUTING_RELEASE_RC_DIR}"
   bosh -v
   bosh -n create-release --sha2 --final --version=${FINAL_VERSION} --tarball=${OUTPUT_DIR}/routing-${FINAL_VERSION}.tgz
 
-  echo "----- Update master and develop branches on origin"
+  echo "----- Update ${RELEASE_BRANCH} and develop branches on origin"
 
   git add .final_builds releases
   git commit -m "Create final release ${FINAL_VERSION}"
