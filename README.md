@@ -25,7 +25,7 @@ submodules under `src/`.
 Run the appropriate unit tests (see
 [Testing](#running-unit-and-integration-tests)).
 
-The `master` branch contains code that has been released. All development work
+The `release` branch contains code that has been released. All development work
 happens on the `develop` branch.
 
 ### Get the code
