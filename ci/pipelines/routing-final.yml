@@ -45,7 +45,7 @@ resources:
 - name: routing-perf-release
   type: git
   source:
-    branch: master
+    branch: main
     uri: https://github.com/cloudfoundry/routing-perf-release.git
 
 - name: routing-release-ci

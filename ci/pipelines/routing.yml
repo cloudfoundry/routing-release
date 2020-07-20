@@ -129,7 +129,7 @@ resources:
   type: git
   icon: github-box
   source:
-    branch: master
+    branch: main
     uri: git@github.com:cloudfoundry/routing-perf-release.git
     private_key: ((github_private_key.private_key))
 
