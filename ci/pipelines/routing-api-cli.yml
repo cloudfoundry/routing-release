@@ -45,7 +45,7 @@ resources:
 - name: routing-api-cli-src
   type: git
   source:
-    branch: master
+    branch: main
     uri: git@github.com:cloudfoundry/routing-api-cli.git
     private_key: ((github_private_key.private_key))
 

@@ -179,7 +179,7 @@ resources:
 - name: we-dont-use-vars-files
   type: git
   source:
-    branch: master
+    branch: main
     uri: git@github.com:cloudfoundry/networking-oss-deployments.git
     private_key: ((github_private_key.private_key))
 
