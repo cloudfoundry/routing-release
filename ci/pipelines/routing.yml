@@ -17,7 +17,6 @@ groups:
   - cf-deployment-cats
   - cf-deployment-drats
   - cf-deployment-rats
-  - cf-deployment-syslog-test
   - cf-deployment-smoke-and-indicator-protocol-tests
   - cf-deployment-deploy-and-run-cipher-suite-tests
 
@@ -1266,7 +1265,6 @@ jobs:
       - cf-deployment-cats
       - cf-deployment-rats
       - cf-deployment-drats
-      - cf-deployment-syslog-test
       - cf-deployment-smoke-and-indicator-protocol-tests
       - cf-deployment-deploy-and-run-cipher-suite-tests
       - ci-lite-rats
@@ -1580,55 +1578,6 @@ jobs:
         CONFIG_FILE_PATH: rats_integration_config.json
         GINKGO_ARGS: "-v"
     file: routing-release-ci/ci/tasks/run-rats/task.yml
-  - task: release-pooled-environment
-    file: routing-release-ci/ci/tasks/unclaim-cf-deployment-environment/task.yml
-    tags:
-    - vsphere-cf-networking
-    params:
-      TOOLSMITHS_API_TOKEN: ((toolsmiths_api_key))
-
-
-- name: cf-deployment-syslog-test
-  plan:
-  - in_parallel:
-    - get: networking-oss-deployments
-    - get: routing-release
-      trigger: true
-      passed:
-      - routing-release-unit
-    - get: routing-release-ci
-      params: {submodules: none}
-    - get: cf-deployment
-    - get: cf-deployment-concourse-tasks
-    - get: weekly
-      trigger: true
-  - task: claim-cf-deployment-environment
-    file: routing-release-ci/ci/tasks/claim-cf-deployment-environment/task.yml
-    tags:
-    - vsphere-cf-networking
-    params:
-      ENVIRONMENT_TYPE: cf-deployment
-      ENVIRONMENT_NOTES: cf-deployment-syslog-test
-      TOOLSMITHS_API_TOKEN: ((toolsmiths_api_key))
-  - task: merge-ops-files
-    file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
-    input_mapping:
-      source1: smoke-tests-ops-file
-  - task: redeploy-routing-release
-    file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
-    input_mapping:
-      toolsmiths-env: cf-environment
-      release: routing-release
-      ops-files: merged-operations
-      vars-files: routing-release
-    params:
-      OPS_FILES: |
-        use-compiled-releases.yml
-        syslog.yml
-  - task: syslog-test
-    file: routing-release-ci/ci/tasks/syslog-test/task.yml
-    input_mapping:
-      toolsmiths-metadata-dir: cf-environment
   - task: release-pooled-environment
     file: routing-release-ci/ci/tasks/unclaim-cf-deployment-environment/task.yml
     tags:

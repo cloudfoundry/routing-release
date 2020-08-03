@@ -14,4 +14,3 @@ This is the README for our Ops-files. To learn more about `routing-release`, go 
 | routing-smoke-tests.yml | Adds the instance group and job required for routing smoke tests. | |
 | scale-for-cats.yml | This is used for testing with a cf-deployment pooled env. They are provisioned pretty light, so we need to scale them up. Otherwise, CATS becomes very flakey. | Adds diego cells and increase their size. |
 | smoke-tests.yml | Configures the CF smoke tests. Required for running CF smoke tests. | Enables isolation segment smoke tests. Required for running CF smoke tests. |
-| syslog.yml | Configures deployment so the syslogs are forwarded via syslog-forwarded to the syslog-storer. | |
