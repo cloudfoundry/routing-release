@@ -16,6 +16,7 @@ templates:
   bpm-pre-start.erb: bin/bpm-pre-start
   retrieve-local-routes.erb: bin/retrieve-local-routes
   indicators.yml.erb: config/indicators.yml
+  error.html.erb: config/error.html
 
 packages:
   - routing_utils
@@ -267,6 +268,19 @@ properties:
       This is to comply with EU regulations that do not allow persisting personal data. When Gorouter is behind an L3 load balancer that
       persists the IP of the originating client, set this to true to comply with GDPR.
     default: false
+  router.html_error_template:
+    description: |
+      (optional) When given a valid Go template, gorouter will generate HTML error pages instead of plain text error pages.
+      The following is an example of a valid HTML template:
+
+      <html>
+        <body>
+          Code: {{ .Status }} {{ .StatusText }}
+          Message: {{ .Message }}
+          Cause: {{ .Header.Get "X-Cf-RouterError" }}
+        </body>
+      </html>
+    default: ""
 
   nats.user:
     description: User name for NATS authentication

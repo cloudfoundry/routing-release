@@ -292,5 +292,9 @@ pid_file: /var/vcap/sys/run/gorouter/gorouter.pid
 
 ip_local_port_range: <%= p("router.ip_local_port_range") %>
 
+<% if_p('router.html_error_template') do |t| %>
+html_error_template_file: <%= t == "" ? "" : "/var/vcap/jobs/gorouter/config/error.html" %>
+<% end %>
+
 #backwards compatibility only section
 empty_pool_response_code_503: <%= p("for_backwards_compatibility_only.empty_pool_response_code_503") %>

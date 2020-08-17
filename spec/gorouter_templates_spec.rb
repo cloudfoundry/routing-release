@@ -273,6 +273,22 @@ describe 'gorouter' do
         end
       end
 
+      context 'html_error_template' do
+        it 'is not set by default' do
+          expect(parsed_yaml['html_error_template_file']).to be_nil
+        end
+
+        context 'when enabled' do
+          before do
+            deployment_manifest_fragment['router']['html_error_template'] = '<html>...goes here...</html>'
+          end
+
+          it 'sets the template path to the templated file' do
+            expect(parsed_yaml['html_error_template_file']).to eq('/var/vcap/jobs/gorouter/config/error.html')
+          end
+        end
+      end
+
       context 'tls_pem' do
         context 'when correct tls_pem is provided' do
           it 'should configure the property' do
@@ -831,6 +847,29 @@ describe 'gorouter' do
 
     it 'contains indicators' do
       expect(parsed_yaml['spec']['indicators']).to_not be_empty
+    end
+  end
+
+  describe 'error.html' do
+    let(:template) { job.template('config/error.html') }
+    let(:rendered_template) do
+      template.render({ 'router' => { 'html_error_template' => html } })
+    end
+
+    context 'by default' do
+      let(:html) { '' }
+
+      it 'is empty' do
+        expect(rendered_template).to eq("\n")
+      end
+    end
+
+    context 'when an error template is defined' do
+      let(:html) { '<html>error</html>' }
+
+      it 'consists of the rendered template' do
+        expect(rendered_template).to eq("<html>error</html>\n")
+      end
     end
   end
 end
