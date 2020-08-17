@@ -849,15 +849,6 @@ jobs:
       trigger: true
       passed:
       - routing-release-unit
-  - task: upload-lb-cert-to-credhub
-    file: routing-release-ci/ci/tasks/set-cert-in-credhub/task.yml
-    params:
-      BBL_STATE_DIR: environments/ci-lite/bbl-state
-      CERTIFICATE_FILE: environments/ci-lite/lb_certs/cert.pem
-      CREDHUB_KEY: /bosh-ci-lite/cf/lb_cert
-    input_mapping:
-      bbl-state: networking-oss-deployments
-      cert-directory: networking-oss-deployments
   - task: merge-ops-files
     file: routing-release-ci/ci/tasks/merge-ops-files/task.yml
     params:
@@ -877,7 +868,7 @@ jobs:
         use-postgres.yml
         routing-acceptance-tests.yml
         routing-smoke-tests.yml
-        add-lb-ca-cert.yml
+        add-bosh-lite-ca-cert.yml
       BBL_STATE_DIR: environments/ci-lite/bbl-state
       GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
       BOSH_LITE: true
