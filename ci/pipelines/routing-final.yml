@@ -102,6 +102,10 @@ jobs:
       master-release: routing-release-rc
     params:
       TRACKER_API_TOKEN: ((tracker_api_token))
+  - task: print-bosh-job-spec-diff
+    file: routing-release-ci/ci/tasks/print-bosh-job-spec-diff/task.yml
+    input_mapping:
+      master-release: routing-release-rc
 
 - name: create-final-routing-release
   serial: true

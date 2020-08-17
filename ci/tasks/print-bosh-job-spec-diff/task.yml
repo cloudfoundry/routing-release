@@ -1,0 +1,17 @@
+---
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+
+platform: linux
+
+inputs:
+  - name: routing-release-ci
+  - name: master-release
+
+run:
+  path: routing-release-ci/ci/tasks/print-bosh-job-diff/task
+
+params:
+  SOURCE_DIR: master-release
