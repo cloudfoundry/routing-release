@@ -11,7 +11,7 @@ inputs:
   - name: master-release
 
 run:
-  path: routing-release-ci/ci/tasks/print-bosh-job-diff/task
+  path: routing-release-ci/ci/tasks/print-bosh-job-spec-diff/task
 
 params:
   SOURCE_DIR: master-release
