@@ -95,6 +95,8 @@ jobs:
         submodules: all
       trigger: true
     - get: routing-release-ci
+      params:
+        submodules: none
     - get: final-version
   - task: build-release-notes
     file: routing-release-ci/ci/tasks/build-release-notes/task.yml
