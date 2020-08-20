@@ -58,6 +58,24 @@ happens on the `develop` branch.
   ./scripts/update
   ```
 
+### Running BOSH Job Templating Tests
+From the root of the repo, run:
+
+#### Run the specs
+```bash
+rspec ./spec/
+```
+
+#### Lint the specs
+```bash
+rubocop ./spec/
+```
+
+If you do not have `rspec` or `rubocop` installed locally, run
+`./scripts/start-docker-for-testing.sh` and execute the commands in the docker
+container.
+
+
 ### Running Unit and Integration Tests
 
 #### In a Docker container
