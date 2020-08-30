@@ -32,12 +32,11 @@ if [ "${APP_CHECK}" != "0" ]; then
   pushd doctorroute
     echo "Pushing doctorroute..."
     cf target -o "${CF_ORG}" -s "${CF_SPACE}"
-    if [[ "${TCP}" = "true" ]]; then
-      cf push "${CF_APP_NAME}" -s "cflinuxfs3" -d "${TCP_DOMAIN}" --random-route
-    else
-      cf push "${CF_APP_NAME}" -s "cflinuxfs3" -d "${CF_APP_DOMAIN}" --random-route
-    fi
+    cf push "${CF_APP_NAME}" -s "cflinuxfs3" --no-route
     cf map-route "${CF_APP_NAME}" "${CF_APP_DOMAIN}" -n "${CF_APP_NAME}"
+    if [[ "${TCP}" = "true" ]]; then
+      cf map-route "${CF_APP_NAME}" "${TCP_DOMAIN}"
+    fi
   popd
 fi
 
