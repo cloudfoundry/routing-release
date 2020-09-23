@@ -93,3 +93,16 @@ ending the sticky session. Restarting the browser might or might not clear the
 `JSESSIONID` cookie.  Since the `__VCAP_ID__` cookie is the only header inspected
 for forwarding sticky session requests, only sending the `JSESSIONID` will not
 result in sticky session behavior and may actually result in undesired behavior.
+
+### How can I use a platform-deployed reverse proxy in front of an application that relies on sticky sessions?
+
+If you deploy a reverse proxy to the platform in front of your app, the backend
+app must return the `JSESSIONID` on every response in order to sticky sessions to
+work.
+
+### How can I tell if I got routed to a different instance than I was expecting?
+
+If the app instance requested in the `__VCAP_ID__` does not exist, then the
+Gorouter will route to another instance of the app. If you want to determine
+when this happens, the app can compare the `__VCAP_ID__` in the response to the
+one in the request.
