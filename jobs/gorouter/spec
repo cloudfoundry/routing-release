@@ -130,7 +130,7 @@ properties:
   router.backends.private_key:
     description: Private key used for client authentication to TLS-registered backends.  In PEM format.
   router.ssl_skip_validation:
-    description: "Skip validation of TLS certificates received from route services and UAA. Warning: If this is set to true Gorouter will not validate the backend identity which could result in misrouting. For more information see https://docs.cloudfoundry.org/concepts/http-routing.html#consistency"
+    description: "Skip validation of TLS certificates received from route services and UAA."
     default: false
   router.cipher_suites:
     description:
