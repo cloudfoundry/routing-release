@@ -145,7 +145,7 @@ properties:
     description: |
       How to handle the x-forwarded-client-cert (XFCC) HTTP header. Possible values are:
       - always_forward: Always forward the XFCC header in the request, regardless of whether the client connection is mTLS.
-        Use this value when your load balancer is forwarding the client certificate and requests are not forwarded to Gorouter over mTLS. 
+        Use this value when your load balancer is forwarding the client certificate and requests are not forwarded to Gorouter over mTLS.
         In the case where the connection between load balancer and Gorouter is mTLS, the client certificate received by Gorouter in the TLS handshake will not be put in the XFCC header.
       - forward: Forward the XFCC header received from the client only when the client connection is mTLS.
         This is a more secure version of `always_forward`. The client certificate received by Gorouter in the TLS handshake will not be put in the XFCC header.
@@ -269,6 +269,13 @@ properties:
       This is to comply with EU regulations that do not allow persisting personal data. When Gorouter is behind an L3 load balancer that
       persists the IP of the originating client, set this to true to comply with GDPR.
     default: false
+  router.redact_query_parameters:
+    description: |
+      (optional, string) This option can be used to hide potentially sensitive information on GET request query parameters in the access log.
+      none: Log all query parameters on GET requests. E.g. GET /users?name=peter
+      all: Log no query parameters on GET requests.   E.g. GET /users
+      hash: Log query parameters in hashed form only. E.g. GET /users?hash=a6909eece4005d85fb1894cc4efa38564b9c30c3
+    default: none
   router.html_error_template:
     description: |
       (optional) When given a valid Go template, gorouter will generate HTML error pages instead of plain text error pages.
