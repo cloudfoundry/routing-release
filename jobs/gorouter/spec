@@ -78,9 +78,10 @@ properties:
     default: 20
   router.drain_timeout:
     description: |
-      Delay in seconds after a drain has occurred so that existing connections may finish their active requests.
-      The drain timeout will being after drain wait has finished.
-      After the drain timeout, all remaining connections will be terminated so that Gorouter may be restarted.
+      Delay in seconds after drain wait has completed to allow existing connections to finish their active requests.
+      The drain will begin when there are no active connections or until the timeout is reached.
+      Any remaining connections that are open when the drain timeout is reached will be closed.
+      To reduce the drain time during deploys, set the value of drain timeout below the request timeout.
     default: 900
   router.healthcheck_user_agent:
     description: DEPRECATED. Use /health endpoint on port specified by status.port. User-Agent for the health check agent (usually the Load Balancer).
