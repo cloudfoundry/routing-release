@@ -21,17 +21,9 @@ channel.
 See the [Routing Contributing Resources](#routing-contributor-resources) section for more information on how to contribute.
 
 ## Table of Contents
-1. Routing Operator Resources
-   1. High Availability
-   1. Routing API
-   1. Metrics
-   1. Session Affinity
-1. Routing Contributor Resources
-   1. CI Statuses
-   1. Developer Workflow
-      1. Running BOSH Job Templating Tests
-      1. Running Unit and Integration Tests
-      1. Running Acceptance Tests
+1. [Routing Operator Resources](#routing-operator-resources)
+1. [Routing App Developer Resources](#routing-app-developer-resources)
+1. [Routing Contributor Resources](#routing-contributor-resources)
 
 ---
 ## <a name="routing-operator-resources"></a> Routing Operator Resources
@@ -54,10 +46,14 @@ the [CloudFoundry
 Documentation](http://docs.cloudfoundry.org/loggregator/all_metrics.html#routing).
 You can use the [NOAA Firehose sample app](https://github.com/cloudfoundry/noaa)
 to quickly consume metrics from the Firehose.
+## <a name="routing-app-developer-resources"></a> Routing App Developer Resources
 
 ### <a name="session-affinity"></a> Session Affinity
 For more information on how Routing release accomplishes session affinity, i.e.
 sticky sessions, refer to the [Session Affinity document](docs/session-affinity.md).
+
+### <a name="headers"></a> Headers
+[X-CF Headers](/docs/x_cf_headers.md) describes the X-CF headers that are set on requests and responses inside of CF.
 
 ## <a name="routing-contributor-resources"></a> Routing Contributor Resources
 ### <a name="ci-statues"></a> CI Statuses
