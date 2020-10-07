@@ -486,7 +486,7 @@ jobs:
       run:
         path: sleep
         args:
-        - 30
+        - "30"
   - task: http-perf-run
     file: routing-release-ci/ci/tasks/bosh2-command/task.yml
     params:
@@ -725,7 +725,7 @@ jobs:
       run:
         path: sleep
         args:
-        - 30
+        - "30"
   - task: tcp-perf-run
     file: routing-release-ci/ci/tasks/bosh2-command/task.yml
     params:
