@@ -17,7 +17,7 @@ resources:
   source:
     branch: release-candidate
     uri: https://github.com/cloudfoundry/routing-release.git
-    private_key: ((github_private_key.private_key))
+    private_key: ((routing_release_github_key_pair.private_key))
 
 - name: routing-release-master
   type: git
@@ -25,7 +25,7 @@ resources:
     branch: release
     uri: git@github.com:cloudfoundry/routing-release.git
     rebase: true
-    private_key: ((github_private_key.private_key))
+    private_key: ((routing_release_github_key_pair.private_key))
 
 - name: routing-github-release
   type: github-release
@@ -40,7 +40,7 @@ resources:
   source:
     branch: develop
     uri: git@github.com:cloudfoundry/routing-release.git
-    private_key: ((github_private_key.private_key))
+    private_key: ((routing_release_github_key_pair.private_key))
 
 - name: routing-perf-release
   type: git
