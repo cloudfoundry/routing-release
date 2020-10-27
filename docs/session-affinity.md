@@ -44,10 +44,9 @@ in the deployment manifest.
 
 When Gorouter receives a response from an app with `JSESSIONID` set, then
 Gorouter will set the `__VCAP_ID__` cookie to the instance guid of the
-responding app (Step 4 in the diagram). In subsequent requests, the end user
-should include the `__VCAP_ID__` cookie (Step 5 in the diagram), which is done
-automatically in web browsers.
-
+responding app with the same expiry as that of `JSESSIONID` (Step 4 in the diagram).
+In subsequent requests, the end user should include the `__VCAP_ID__` cookie
+(Step 5 in the diagram), which is done automatically in web browsers.
 When an end user sens a request to Gorouter with the `__VCAP_ID__` cookie,
 Gorouter will forward the request to the same application instance that
 originally responded (Step 6 in the diagram).
