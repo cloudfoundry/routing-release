@@ -152,14 +152,6 @@ resources:
     tag_filter: "v?(0.8\\..*)"
 
 #REPOS
-- name: deployments-routing
-  type: git
-  icon: github-box
-  source:
-    branch: master
-    private_key: ((github_private_key.private_key))
-    uri: git@github.com:cloudfoundry/deployments-routing.git
-
 - name: networking-oss-deployments
   type: git
   icon: github-box
@@ -412,7 +404,6 @@ jobs:
     - get: routing-release-ci
       params:
         submodules: none
-    - get: deployments-routing
   - task: upgrade-cf-cli-in-routing-release
     file: routing-release-ci/ci/tasks/upgrade-package-in-release/task.yml
     params:
@@ -798,7 +789,7 @@ jobs:
       bbl-state: updated-bbl-state
       bbl-config: updated-bbl-state
     ensure:
-      put: deployments-routing
+      put: networking-oss-deployments
       params:
         repository: updated-bbl-state
         rebase: true
