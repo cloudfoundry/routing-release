@@ -578,7 +578,7 @@ jobs:
     input_mapping:
       bbl-state: networking-oss-deployments
     params:
-      DEPLOYMENT_NAME: gorouter-standalone-1
+      DEPLOYMENT_NAME: gorouter-standalone-orinoco
       BBL_STATE_DIR: environments/orinoco/bbl-state
 
 - name: diana-tcp-perf-tests
