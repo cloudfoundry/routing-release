@@ -99,12 +99,15 @@ properties:
         port (required, integer, for all routes): Either `port` or `tls_port` are required; if both are provided, Gorouter will prefer tls_port.
           Requests for associated URIs will be forwarded unencypted by the router to this port.
           The IP is determined automatically from the host on which route-registrar is run.
+          Used for SNI routing along with server_cert_domain_san.
         tls_port (required, integer, for http routes): Either `port` or `tls_port` are required; if both are provided, Gorouter will prefer tls_port.
           Requests for associated URIs will be forwarded over TLS by the router to this port.
           The IP is determined automatically from the host on which route-registrar is run.
+          Do not use this for SNI routing, use port instead.
         route_service_url (optional, string, for http routes): When valid route service URL is provided, Gorouter will proxy requests received for the uris above to the specified route service URL.
         server_cert_domain_san (conditional, string, for http routes): Required if tls_port is present.
           Gorouter will validate that the TLS certificate presented by the destination host contains this as a Subject Alternative Name (SAN).
+          If tls_port is not present, uses external_port and port to create an SNI route.
         registration_interval (required, string, for all routes): Interval between heartbeated route registrations
           (e.g. 10s). It must parse to a positive time duration i.e. "-5s" is not permitted.
         tags (optional, array of objects, for http routes): Arbitrary key-value pairs emitted with metrics to support
@@ -116,6 +119,7 @@ properties:
           with error, the route is unregistered.
         router_group (required, string, for tcp routes): Name of the router group to which the TCP route should be added.
         external_port (required, string, for tcp routes): Port that the TCP router will listen on.
+        server_cert_domain_name_modifier (optional, string, for sni routes): a regex replace to help with complicated hostnames
 
       health_check object
         name (required, string): Human-readable reference for the healthcheck

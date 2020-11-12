@@ -30,7 +30,8 @@
 	url = https://github.com/nu7hatch/gouuid
 [submodule "src/code.cloudfoundry.org/cf-tcp-router"]
 	path = src/code.cloudfoundry.org/cf-tcp-router
-	url = https://github.com/cloudfoundry/cf-tcp-router
+	url = https://github.com/cf-gemfire-org/cf-tcp-router
+	branch = services-gateway-epic
 [submodule "src/code.cloudfoundry.org/clock"]
 	path = src/code.cloudfoundry.org/clock
 	url = https://github.com/cloudfoundry/clock
@@ -45,7 +46,8 @@
 	url = https://github.com/cloudfoundry/bbs
 [submodule "src/code.cloudfoundry.org/routing-api"]
 	path = src/code.cloudfoundry.org/routing-api
-	url = https://github.com/cloudfoundry/routing-api
+	url = https://github.com/cf-gemfire-org/routing-api
+	branch = services-gateway-epic
 [submodule "src/github.com/cactus/go-statsd-client"]
 	path = src/github.com/cactus/go-statsd-client
 	url = https://github.com/cactus/go-statsd-client
@@ -114,7 +116,8 @@
 	url = https://github.com/armon/go-proxyproto.git
 [submodule "src/code.cloudfoundry.org/route-registrar"]
 	path = src/code.cloudfoundry.org/route-registrar
-	url = https://github.com/cloudfoundry/route-registrar
+	url = https://github.com/cf-gemfire-org/route-registrar
+	branch = services-gateway-epic
 [submodule "src/code.cloudfoundry.org/multierror"]
 	path = src/code.cloudfoundry.org/multierror
 	url = https://github.com/cloudfoundry/multierror
