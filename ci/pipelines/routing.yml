@@ -212,14 +212,14 @@ resources:
   type: git
   icon: github-box
   source:
-    branch: master
+    branch: main
     uri: https://github.com/cloudfoundry/cf-deployment.git
 
 - name: cf-deployment-release-latest
   type: git
   icon: github-box
   source:
-    branch: master
+    branch: main
     tag_filter: v*
     uri: https://github.com/cloudfoundry/cf-deployment.git
 
@@ -227,7 +227,7 @@ resources:
   type: git
   icon: github-box
   source:
-    branch: master
+    branch: main
     uri: https://github.com/cloudfoundry/cf-smoke-tests-release.git
 
 # Concourse Tasks
@@ -235,14 +235,14 @@ resources:
   type: git
   icon: github-box
   source:
-    branch: master
+    branch: main
     uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks.git
 
 - name: cf-acceptance-tests
   type: git
   icon: github-box
   source:
-    branch: master
+    branch: main
     uri: https://github.com/cloudfoundry/cf-acceptance-tests
 
 #STEMCELLS
