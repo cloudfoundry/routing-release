@@ -1,6 +1,6 @@
 ---
 final_name: routing
 blobstore:
-  provider: gcs
+  provider: s3
   options:
-    bucket_name: routing-release-blobs
+    bucket_name: sni-routing-release-blobs

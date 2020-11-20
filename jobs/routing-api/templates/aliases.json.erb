@@ -1,0 +1,5 @@
+{
+    <% if_p("routing_api.fqdn") do |uri| %>
+        "<%= uri %>": ["<%= spec.address %>"]
+    <% end %>
+}

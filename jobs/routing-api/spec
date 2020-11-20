@@ -24,6 +24,8 @@ templates:
   bpm.yml.erb: config/bpm.yml
   bpm-pre-start.erb: bin/bpm-pre-start
 
+  aliases.json.erb: dns/aliases.json
+
 packages:
 - routing-api
 - routing_utils
@@ -127,6 +129,9 @@ properties:
   routing_api.sqldb.skip_hostname_validation:
     description: "skip checking the hostname of the server cert when connecting via TLS"
     default: false
+
+  routing_api.fqdn:
+    description: "fqdn where the routing API can be reached internally. TAS sets a default fqdn to routing-api.service.cf.internal"
 
   routing_api.sqldb.max_open_connections:
     description: |
