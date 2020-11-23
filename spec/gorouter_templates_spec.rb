@@ -405,61 +405,114 @@ describe 'gorouter' do
         end
       end
 
-      context 'ca_certs' do
-        context 'when correct ca_certs is provided' do
-          it 'should configure the property' do
-            expect(parsed_yaml['ca_certs']).to eq('test-certs')
+      context 'certficate authorities' do
+        context 'client_ca_certs' do
+          context 'are not provided' do
+            before do
+              deployment_manifest_fragment['router']['only_trust_client_ca_certs'] = true
+            end
+            it 'renders the manifest with a default of nothing' do
+              expect(parsed_yaml['client_ca_certs']).to eq('')
+            end
+          end
+
+          context 'are provided' do
+            context 'when only_trust_client_ca_certs is true' do
+              before do
+                deployment_manifest_fragment['router']['client_ca_certs'] = 'cool potato'
+                deployment_manifest_fragment['router']['ca_certs'] = 'lame rhutabega'
+                deployment_manifest_fragment['router']['only_trust_client_ca_certs'] = true
+              end
+
+              it 'client_ca_certs do not contain ca_certs' do
+                expect(parsed_yaml['client_ca_certs']).to eq('cool potato')
+              end
+
+              it 'sets only_trust_client_ca_certs to true' do
+                expect(parsed_yaml['only_trust_client_ca_certs']).to equal(true)
+              end
+            end
+
+            context 'when only_trust_client_ca_certs is false' do
+              before do
+                deployment_manifest_fragment['router']['client_ca_certs'] = 'cool potato'
+                deployment_manifest_fragment['router']['ca_certs'] = 'lame rhutabega'
+                deployment_manifest_fragment['router']['only_trust_client_ca_certs'] = false
+              end
+
+              it 'client_ca_certs do contain ca_certs' do
+                expect(parsed_yaml['client_ca_certs']).to include('cool potato')
+                expect(parsed_yaml['client_ca_certs']).to include('lame rhutabega')
+              end
+
+              it 'sets only_trust_client_ca_certs to false' do
+                expect(parsed_yaml['only_trust_client_ca_certs']).to equal(false)
+              end
+            end
           end
         end
-        context 'when ca_certs is blank' do
-          before do
-            deployment_manifest_fragment['router']['ca_certs'] = nil
-          end
-          it 'returns a helpful error message' do
-            expect { parsed_yaml }.to raise_error(/Can\'t find property \'\[\"router.ca_certs\"\]\'/)
-          end
-        end
-        context 'when a simple array is provided' do
-          before do
-            deployment_manifest_fragment['router']['ca_certs'] = ['some-tls-cert']
-          end
-          it 'raises error' do
-            expect { parsed_yaml }.to raise_error(RuntimeError, 'ca_certs must be provided as a single string block')
-          end
-        end
-        context 'when an empty array is provided' do
-          before do
-            deployment_manifest_fragment['router']['ca_certs'] = []
-          end
-          it 'raises error' do
-            expect { parsed_yaml }.to raise_error(RuntimeError, 'ca_certs must be provided as a single string block')
-          end
-        end
-        context 'when set to a multi-line string' do
-          let(:test_certs) do
-            '
-  some
-  multi
-  line
 
-  string
-  with lots
-
-  o
-
-  whitespace
-
-            '
+        context 'ca_certs' do
+          context 'when correct ca_certs is provided' do
+            it 'should configure the property' do
+              expect(parsed_yaml['ca_certs']).to eq('test-certs')
+            end
           end
 
-          before do
-            deployment_manifest_fragment['router']['ca_certs'] = test_certs
+          context 'when ca_certs is blank' do
+            before do
+              deployment_manifest_fragment['router']['ca_certs'] = nil
+            end
+            it 'returns a helpful error message' do
+              expect { parsed_yaml }.to raise_error(/Can\'t find property \'\[\"router.ca_certs\"\]\'/)
+            end
           end
-          it 'suceessfully configures the property' do
-            expect(parsed_yaml['ca_certs']).to eq(test_certs)
+
+          context 'when a simple array is provided' do
+            before do
+              deployment_manifest_fragment['router']['ca_certs'] = ['some-tls-cert']
+            end
+            it 'raises error' do
+              expect { parsed_yaml }.to raise_error(RuntimeError, 'ca_certs must be provided as a single string block')
+            end
+          end
+
+          context 'when an empty array is provided' do
+            before do
+              deployment_manifest_fragment['router']['ca_certs'] = []
+            end
+            it 'raises error' do
+              expect { parsed_yaml }.to raise_error(RuntimeError, 'ca_certs must be provided as a single string block')
+            end
+          end
+
+          context 'when set to a multi-line string' do
+            let(:test_certs) do
+              '
+    some
+    multi
+    line
+
+    string
+    with lots
+
+    of
+
+    whitespace
+
+              '
+            end
+
+            before do
+              deployment_manifest_fragment['router']['ca_certs'] = test_certs
+            end
+            it 'suceessfully configures the property' do
+              expect(parsed_yaml['ca_certs']).to eq(test_certs)
+            end
           end
         end
       end
+
       # ca_certs, private_key, cert_chain
       context 'routing-api' do
         context 'when the routing API is disabled' do

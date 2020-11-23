@@ -265,6 +265,21 @@ disable_http: <%= p("router.disable_http") %>
 <%= { 'ca_certs' => ca_certs }.to_yaml[3..-1] %>
 <% end %>
 
+<% if p("router.client_ca_certs")
+     client_ca_certs = p("router.client_ca_certs")
+     if !client_ca_certs.is_a?(String)
+       raise 'client_ca_certs must be provided as a single string block'
+     end
+
+     if p("router.only_trust_client_ca_certs") == false
+       client_ca_certs += ca_certs
+     end
+%>
+<%= { 'client_ca_certs' => client_ca_certs }.to_yaml[3..-1] %>
+<% end %>
+
+only_trust_client_ca_certs: <%= p("router.only_trust_client_ca_certs") %>
+
 skip_ssl_validation: <%= p("router.ssl_skip_validation") %>
 cipher_suites: <%= p("router.cipher_suites") %>
 forwarded_client_cert: <%= p("router.forwarded_client_cert") %>
