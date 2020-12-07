@@ -3,7 +3,7 @@
 This doc is for operators who want to use the new "only trust client CA certs" feature for gorouter to limit the CA certs that gorouter trusts. 
 
 ## Version
-This feature is available in .... 
+This feature is available in [0.210.0](https://github.com/cloudfoundry/routing-release/releases/tag/0.210.0) 
 
 ## Context
 Operators already had the ability to add custom CAs to the gorouter using `router.ca_certs`, but they didn't have the ability to stop the gorouter from trusting the default CAs that are provided with the stemcell.
