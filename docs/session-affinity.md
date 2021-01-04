@@ -97,7 +97,7 @@ result in sticky session behavior and may actually result in undesired behavior.
 Routing Release 0.211.0+: Sticky sessions will now work with platform deployed route services.
 Sticky sessions will continue to work for non-CF deployed route services.
 
-Routing Release >0.211.0: If you deploy a reverse proxy to the platform in front of your app, the backend
+Routing Release <0.211.0: If you deploy a reverse proxy to the platform in front of your app, the backend
 app must return the `JSESSIONID` on every response in order to sticky sessions to
 work.
 
