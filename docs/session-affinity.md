@@ -93,9 +93,11 @@ ending the sticky session. Restarting the browser might or might not clear the
 for forwarding sticky session requests, only sending the `JSESSIONID` will not
 result in sticky session behavior and may actually result in undesired behavior.
 
-### How can I use a platform-deployed reverse proxy in front of an application that relies on sticky sessions?
+### How can I use a route service (a platform-deployed reverse proxy) in front of an application that relies on sticky sessions?
+Routing Release 0.211.0+: Sticky sessions will now work with platform deployed route services.
+Sticky sessions will continue to work for non-CF deployed route services.
 
-If you deploy a reverse proxy to the platform in front of your app, the backend
+Routing Release >0.211.0: If you deploy a reverse proxy to the platform in front of your app, the backend
 app must return the `JSESSIONID` on every response in order to sticky sessions to
 work.
 
