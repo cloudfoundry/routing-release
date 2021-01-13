@@ -290,7 +290,7 @@ resources:
     pool_name: cf-deployment
     hostname: environments.toolsmiths.cf-app.com
   tags:
-  - vsphere-cf-networking
+  - jrussett-networking-oss-external-worker
 
 jobs:
 - name: upgrade-go1.x-in-routing-release
@@ -1116,7 +1116,7 @@ jobs:
     params:
       action: claim
     tags:
-    - vsphere-cf-networking
+    - jrussett-networking-oss-external-worker
 
 - name: manual-unclaim-cf-deployment
   plan:
@@ -1124,13 +1124,13 @@ jobs:
       passed:
         - claim-cf-deployment
       tags:
-        - vsphere-cf-networking
+        - jrussett-networking-oss-external-worker
     - put: cf-deployment-env
       params:
         action: unclaim
         env_file: cf-deployment-env/metadata
       tags:
-        - vsphere-cf-networking
+        - jrussett-networking-oss-external-worker
 
 - name: create-acceptance-environment
   plan:
@@ -1141,7 +1141,7 @@ jobs:
       - task: claim-cf-deployment-environment
         file: routing-release-ci/ci/tasks/claim-cf-deployment-environment/task.yml
         tags:
-        - vsphere-cf-networking
+        - jrussett-networking-oss-external-worker
         params:
           ENVIRONMENT_TYPE: cf-deployment
           ENVIRONMENT_NOTES: acceptance-environment
@@ -1182,7 +1182,7 @@ jobs:
       - task: claim-cf-deployment-environment
         file: routing-release-ci/ci/tasks/claim-cf-deployment-environment/task.yml
         tags:
-        - vsphere-cf-networking
+        - jrussett-networking-oss-external-worker
         params:
           ENVIRONMENT_TYPE: cf-deployment
           ENVIRONMENT_NOTES: cf-deployment-cats
@@ -1240,7 +1240,7 @@ jobs:
   - task: release-pooled-environment
     file: routing-release-ci/ci/tasks/unclaim-cf-deployment-environment/task.yml
     tags:
-    - vsphere-cf-networking
+    - jrussett-networking-oss-external-worker
     params:
       TOOLSMITHS_API_TOKEN: ((toolsmiths_api_key))
 
@@ -1263,7 +1263,7 @@ jobs:
   - task: claim-cf-deployment-environment
     file: routing-release-ci/ci/tasks/claim-cf-deployment-environment/task.yml
     tags:
-    - vsphere-cf-networking
+    - jrussett-networking-oss-external-worker
     params:
       ENVIRONMENT_TYPE: cf-deployment
       ENVIRONMENT_NOTES: cf-deployment-drats
@@ -1297,7 +1297,7 @@ jobs:
   - task: release-pooled-environment
     file: routing-release-ci/ci/tasks/unclaim-cf-deployment-environment/task.yml
     tags:
-    - vsphere-cf-networking
+    - jrussett-networking-oss-external-worker
     params:
       TOOLSMITHS_API_TOKEN: ((toolsmiths_api_key))
 
@@ -1320,7 +1320,7 @@ jobs:
   - task: claim-cf-deployment-environment
     file: routing-release-ci/ci/tasks/claim-cf-deployment-environment/task.yml
     tags:
-    - vsphere-cf-networking
+    - jrussett-networking-oss-external-worker
     params:
       ENVIRONMENT_TYPE: cf-deployment
       ENVIRONMENT_NOTES: cf-deployment-rats
@@ -1366,7 +1366,7 @@ jobs:
   - task: release-pooled-environment
     file: routing-release-ci/ci/tasks/unclaim-cf-deployment-environment/task.yml
     tags:
-    - vsphere-cf-networking
+    - jrussett-networking-oss-external-worker
     params:
       TOOLSMITHS_API_TOKEN: ((toolsmiths_api_key))
 
@@ -1392,7 +1392,7 @@ jobs:
   - task: claim-cf-deployment-environment
     file: routing-release-ci/ci/tasks/claim-cf-deployment-environment/task.yml
     tags:
-    - vsphere-cf-networking
+    - jrussett-networking-oss-external-worker
     params:
       ENVIRONMENT_TYPE: cf-deployment
       ENVIRONMENT_NOTES: cf-deployment-smoke-and-indicator-protocol-tests
@@ -1449,7 +1449,7 @@ jobs:
   - task: release-pooled-environment
     file: routing-release-ci/ci/tasks/unclaim-cf-deployment-environment/task.yml
     tags:
-    - vsphere-cf-networking
+    - jrussett-networking-oss-external-worker
     params:
       TOOLSMITHS_API_TOKEN: ((toolsmiths_api_key))
 
@@ -1473,7 +1473,7 @@ jobs:
   - task: claim-cf-deployment-environment
     file: routing-release-ci/ci/tasks/claim-cf-deployment-environment/task.yml
     tags:
-    - vsphere-cf-networking
+    - jrussett-networking-oss-external-worker
     params:
       ENVIRONMENT_TYPE: cf-deployment
       ENVIRONMENT_NOTES: cf-deployment-deploy-and-run-cipher-suite-tests
@@ -1499,6 +1499,6 @@ jobs:
   - task: release-pooled-environment
     file: routing-release-ci/ci/tasks/unclaim-cf-deployment-environment/task.yml
     tags:
-    - vsphere-cf-networking
+    - jrussett-networking-oss-external-worker
     params:
       TOOLSMITHS_API_TOKEN: ((toolsmiths_api_key))
