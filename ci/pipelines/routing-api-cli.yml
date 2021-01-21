@@ -15,7 +15,7 @@ resources:
   source:
     branch: master
     uri: git@github.com:cloudfoundry/deployments-routing.git
-    private_key: ((github_private_key.private_key))
+    private_key: ((routing-ci-bot-ssh-key.private_key))
 
 - name: routing-api-cli-release
   type: github-release
@@ -38,7 +38,7 @@ resources:
   source:
     branch: develop
     uri: git@github.com:cloudfoundry/routing-release.git
-    private_key: ((github_private_key.private_key))
+    private_key: ((routing-ci-bot-ssh-key.private_key))
     paths:
       - ci
 
@@ -47,7 +47,7 @@ resources:
   source:
     branch: main
     uri: git@github.com:cloudfoundry/routing-api-cli.git
-    private_key: ((github_private_key.private_key))
+    private_key: ((routing-ci-bot-ssh-key.private_key))
 
 jobs:
 - name: routing-api-cli-unit

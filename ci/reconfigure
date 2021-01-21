@@ -5,11 +5,12 @@ set -euo pipefail
 PIPELINE_DIR="$(dirname $0)/pipelines"
 
 PIPELINE_NAME=${1:-routing}
+TARGET=net
 
-fly -t ga sync
+fly -t "${TARGET}" sync
 
 fly \
-  --target ga \
+  --target "${TARGET}" \
   set-pipeline \
   --pipeline "${PIPELINE_NAME}" \
   --config "${PIPELINE_DIR}/${PIPELINE_NAME}.yml"

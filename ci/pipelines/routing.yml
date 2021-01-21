@@ -110,7 +110,7 @@ resources:
   source:
     branch: develop
     uri: git@github.com:cloudfoundry/routing-release.git
-    private_key: ((routing_release_github_key_pair.private_key))
+    private_key: ((routing-ci-bot-ssh-key.private_key))
 
 - name: cf-cli-release
   type: git
@@ -125,7 +125,7 @@ resources:
   source:
     branch: main
     uri: git@github.com:cloudfoundry/routing-perf-release.git
-    private_key: ((github_private_key.private_key))
+    private_key: ((routing-ci-bot-ssh-key.private_key))
 
 - name: disaster-recovery-acceptance-tests
   type: git
@@ -157,7 +157,7 @@ resources:
   icon: github-box
   source:
     branch: main
-    private_key: ((networking_oss_deployments_github_key_pair.private_key))
+    private_key: ((routing-ci-bot-ssh-key.private_key))
     uri: git@github.com:cloudfoundry/networking-oss-deployments.git
 
 # deploy-cf-with-created-release requires a vars-files input. However we don't use vars files when we deploy
@@ -167,7 +167,7 @@ resources:
   source:
     branch: main
     uri: git@github.com:cloudfoundry/networking-oss-deployments.git
-    private_key: ((networking_oss_deployments_github_key_pair.private_key))
+    private_key: ((routing-ci-bot-ssh-key.private_key))
 
 - name: routing-release-ci
   type: git
@@ -175,7 +175,7 @@ resources:
   source:
     branch: develop
     uri: git@github.com:cloudfoundry/routing-release.git
-    private_key: ((routing_release_github_key_pair.private_key))
+    private_key: ((routing-ci-bot-ssh-key.private_key))
     paths:
       - ci
 
@@ -192,14 +192,14 @@ resources:
   source:
     branch: master
     uri: git@github.com:cf-routing/zero-downtime-release.git
-    private_key: ((github_private_key.private_key))
+    private_key: ((routing-ci-bot-ssh-key.private_key))
 
 - name: routing-release-rc
   type: git
   source:
     branch: release-candidate
     uri: git@github.com:cloudfoundry/routing-release.git
-    private_key: ((routing_release_github_key_pair.private_key))
+    private_key: ((routing-ci-bot-ssh-key.private_key))
 
 # BOSH Deployments
 - name: diana-tcp-perf-deployment
