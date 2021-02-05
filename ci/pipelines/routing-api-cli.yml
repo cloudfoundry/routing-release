@@ -1,6 +1,6 @@
 ---
 resources:
-- name: final_routing_api_cli_version
+- name: final-routing-api-cli-version
   type: semver
   source:
     access_key_id: ((concourse_aws_access_key_id))
@@ -86,7 +86,7 @@ jobs:
     - get: routing-api-cli-src
       passed: [routing-api-cli-unit]
       trigger: true
-    - get: final_routing_api_cli_version
+    - get: final-routing-api-cli-version
       params:
         bump: minor
     - get: deployments-routing
@@ -95,17 +95,17 @@ jobs:
   - task: build-routing-api-cli
     file: routing-release-ci/ci/tasks/create-final-routing-api-cli-release/task.yml
     input_mapping:
-      version: final_routing_api_cli_version
+      version: final-routing-api-cli-version
     params:
       CF_ROUTING_RELEASE_DIR: routing-release-develop
       OUTPUT_DIR: cli-output
   - put: routing-api-cli-release
     params:
-      name: final_routing_api_cli_version/version
-      tag: final_routing_api_cli_version/version
+      name: final-routing-api-cli-version/version
+      tag: final-routing-api-cli-version/version
       globs:
       - cli-output/out/rtr-linux-*.tgz
       - cli-output/out/rtr-darwin-*.tgz
-  - put: final_routing_api_cli_version
+  - put: final-routing-api-cli-version
     params:
-      file: final_routing_api_cli_version/version
+      file: final-routing-api-cli-version/version
