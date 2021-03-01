@@ -8,7 +8,7 @@ DATE=$(date '+%Y-%m-%d %H:%M:%S')
 pushd release
   bosh create-release --tarball="${RELEASE_TARBALL_PATH}"
   mkdir -p docs
-  version=$(tar -Oxz packages/golang-1-linux.tgz < "${RELEASE_TARBALL_PATH}" | tar z --list | grep -ohE 'go[0-9]\.[0-9]{1,2}\.[0-9]{1,2}')
+  version=$(tar -Oxz packages/golang-1-linux.tgz < "${RELEASE_TARBALL_PATH}" | tar z --list | grep -ohE 'go[0-9]\.[0-9]{1,2}\.[0-9]{0,2}')
   echo "This file was updated by CI on ${DATE}" > docs/go.version
   echo "$version" >> docs/go.version
 
