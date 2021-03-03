@@ -27,6 +27,7 @@ files:
   - code.cloudfoundry.org/gorouter/common/spec/*.go # gosub
   - code.cloudfoundry.org/gorouter/common/uuid/*.go # gosub
   - code.cloudfoundry.org/gorouter/config/*.go # gosub
+  - code.cloudfoundry.org/gorouter/errorwriter/*.go # gosub
   - code.cloudfoundry.org/gorouter/fakes/*.go # gosub
   - code.cloudfoundry.org/gorouter/handlers/*.go # gosub
   - code.cloudfoundry.org/gorouter/integration/*.go # gosub
@@ -156,6 +157,10 @@ files:
   - golang.org/x/net/html/*.go # gosub
   - golang.org/x/net/html/atom/*.go # gosub
   - golang.org/x/net/html/charset/*.go # gosub
+  - golang.org/x/net/http2/*.go # gosub
+  - golang.org/x/net/http2/hpack/*.go # gosub
+  - golang.org/x/net/idna/*.go # gosub
+  - golang.org/x/net/lex/httplex/*.go # gosub
   - golang.org/x/text/encoding/*.go # gosub
   - golang.org/x/text/encoding/charmap/*.go # gosub
   - golang.org/x/text/encoding/htmlindex/*.go # gosub
@@ -170,6 +175,9 @@ files:
   - golang.org/x/text/internal/utf8internal/*.go # gosub
   - golang.org/x/text/language/*.go # gosub
   - golang.org/x/text/runes/*.go # gosub
+  - golang.org/x/text/secure/bidirule/*.go # gosub
   - golang.org/x/text/transform/*.go # gosub
+  - golang.org/x/text/unicode/bidi/*.go # gosub
+  - golang.org/x/text/unicode/norm/*.go # gosub
   - gopkg.in/alexcesaro/statsd.v2/*.go # gosub
   - gopkg.in/yaml.v2/*.go # gosub
