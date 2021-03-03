@@ -382,7 +382,7 @@ properties:
     default: true
 
   router.per_request_metrics_reporting:
-    description: "Report metrics for each request"
+    description: "Report the metrics latency, latency.<component> and route_lookup_time for each request"
     default: true
 
   router.send_http_start_stop_server_event:
