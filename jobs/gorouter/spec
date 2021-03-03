@@ -393,3 +393,15 @@ properties:
       This property is provided for backwards compatibility reasons. We recommend leaving it set to true.
       When it set to true, the gorouter will return a 503 when a route is known but there is nothing in the pool available to handle the request. When false, the gorouter will return a 404.
     default: true
+
+  router.per_request_metrics_reporting:
+    description: "Report metrics for each request"
+    default: true
+
+  router.send_http_start_stop_server_event:
+    description: "Send a httpstartstopevent of type server for each request"
+    default: true
+
+  router.send_http_start_stop_client_event:
+    description: "Send a httpstartstopevent of type client for each request"
+    default: true

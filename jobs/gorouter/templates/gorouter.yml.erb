@@ -314,3 +314,7 @@ html_error_template_file: <%= t == "" ? "" : "/var/vcap/jobs/gorouter/config/err
 
 #backwards compatibility only section
 empty_pool_response_code_503: <%= p("for_backwards_compatibility_only.empty_pool_response_code_503") %>
+
+per_request_metrics_reporting: <%= p("router.per_request_metrics_reporting") %> 
+send_http_start_stop_server_event: <%= p("router.send_http_start_stop_server_event") %> 
+send_http_start_stop_client_event: <%= p("router.send_http_start_stop_client_event") %> 
