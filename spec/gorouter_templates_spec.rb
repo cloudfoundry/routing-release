@@ -105,7 +105,10 @@ describe 'gorouter' do
             'private_key' => ROUTE_SERVICES_CLIENT_TEST_KEY
           },
           'frontend_idle_timeout' => 5,
-          'ip_local_port_range' => '1024 65535'
+          'ip_local_port_range' => '1024 65535',
+          'per_request_metrics_reporting' => true,
+          'send_http_start_stop_server_event' => true,
+          'send_http_start_stop_client_event' => true
         },
         'request_timeout_in_seconds' => 100,
         'routing_api' => {
