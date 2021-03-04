@@ -8,7 +8,7 @@ processes:
   limits:
     open_files: 100000
   env:
-    GODEBUG: netdns=cgo,x509ignoreCN=0
+    GODEBUG: netdns=cgo,x509ignoreCN=0,http2debug=1
   hooks:
     pre_start: /var/vcap/jobs/gorouter/bin/bpm-pre-start
   capabilities:

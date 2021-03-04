@@ -120,11 +120,11 @@ files:
   - golang.org/x/net/html/*.go # gosub
   - golang.org/x/net/html/atom/*.go # gosub
   - golang.org/x/net/html/charset/*.go # gosub
+  - golang.org/x/net/http/httpguts/*.go # gosub
   - golang.org/x/net/http2/*.go # gosub
   - golang.org/x/net/http2/hpack/*.go # gosub
   - golang.org/x/net/idna/*.go # gosub
   - golang.org/x/net/internal/timeseries/*.go # gosub
-  - golang.org/x/net/lex/httplex/*.go # gosub
   - golang.org/x/net/trace/*.go # gosub
   - golang.org/x/text/encoding/*.go # gosub
   - golang.org/x/text/encoding/charmap/*.go # gosub
