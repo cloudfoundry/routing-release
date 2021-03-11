@@ -179,7 +179,7 @@ instance_groups:
         host: tcp.diana.com
         port: 30001
         protocol: http
-        num_requests: 1500160
+        num_requests: 900000
         concurrent_requests: 64
         throughput_lower_limit: 40000
         latency_upper_limit_90: 2.5
