@@ -182,8 +182,8 @@ instance_groups:
         num_requests: 1000000
         concurrent_requests: 100
         throughput_lower_limit: 40000
-        latency_upper_limit_90: 2.5
-        latency_upper_limit_95: 2.9
+        latency_upper_limit_90: 3.0
+        latency_upper_limit_95: 3.1
         latency_upper_limit_99: 3.6
         routing_release_version: ROUTING_RELEASE_VERSION
         datadog_api_key: ((datadog_api_key))
