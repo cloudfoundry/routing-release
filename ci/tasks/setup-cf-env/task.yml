@@ -9,6 +9,8 @@ image_resource:
 inputs:
   - name: networking-oss-deployments
   - name: routing-release-ci
+  - name: toolsmiths-metadata-dir
+    optional: true
 
 run:
   path: routing-release-ci/ci/tasks/setup-cf-env/task

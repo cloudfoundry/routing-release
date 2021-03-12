@@ -1,0 +1,16 @@
+#!/bin/bash -eux
+
+function set_env_vars() {
+	set +x
+	local name
+	if [ -d toolsmiths-env ]; then
+		name="$(cat toolsmiths-env/name)"
+	elif [ -d toolsmiths-metadata-dir ]; then
+		name="$(cat toolsmiths-metadata-dir/name)"
+	fi
+	export ENVIRONMENT="${name}"
+	export SYSTEM_DOMAIN="cf-app.com"
+	export CF_APP_DOMAIN="${ENVIRONMENT}.${SYSTEM_DOMAIN}"
+	export APP_URL="http://${CF_APP_NAME}.${CF_APP_DOMAIN}"
+	set -x
+}

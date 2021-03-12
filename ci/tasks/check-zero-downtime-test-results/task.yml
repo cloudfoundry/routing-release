@@ -8,6 +8,8 @@ image_resource:
 
 inputs:
   - name: routing-release-ci
+  - name: toolsmiths-env
+    optional: true
 
 run:
   path: routing-release-ci/ci/tasks/check-zero-downtime-test-results/task

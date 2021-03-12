@@ -2,6 +2,9 @@
 set -ex
 
 source networking-oss-deployments/scripts/script_helpers.sh
+source routing-release-ci/ci/tasks/shared-functions
+set_env_vars
+
 ENVIRONMENT="${ENVIRONMENT:?"ENVIRONMENT not set"}"
 ENV_ROOT="${PWD}/networking-oss-deployments/environments/${ENVIRONMENT}"
 
@@ -24,8 +27,8 @@ else
 fi
 
 set +ex
-  bosh_login "${ENVIRONMENT}"
-  admin_password=$(extract_var ${ENVIRONMENT} cf_admin_password)
+  bosh_login_toolsmiths "${ENVIRONMENT}"
+  admin_password=$(get_cf_admin_password_toolsmiths "${ENVIRONMENT}")
 
   if [[ -z ${admin_password} ]]; then
     admin_password=$(bosh interpolate  "${ENV_ROOT}/creds.yml" --path=/cf_admin_password)

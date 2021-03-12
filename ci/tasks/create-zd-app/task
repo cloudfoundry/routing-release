@@ -2,8 +2,12 @@
 set -e
 
 source networking-oss-deployments/scripts/script_helpers.sh
+source routing-release-ci/ci/tasks/shared-functions
+set_env_vars
 
-cf_login "${ENVIRONMENT}"
+admin_password=$(get_cf_admin_password_toolsmiths "${ENVIRONMENT}")
+cf api "api.${CF_APP_DOMAIN}" --skip-ssl-validation
+cf auth admin "${admin_password}"
 cf target -o "${CF_ORG}" -s "${CF_SPACE}"
 
 if [[ "${TCP}" = "true" ]]; then

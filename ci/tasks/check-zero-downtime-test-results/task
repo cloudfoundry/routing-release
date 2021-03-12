@@ -4,8 +4,8 @@ set -ex
 # Cannot set -u before sourcing .bashrc because of all
 # the unbound variables in things beyond our control.
 source ~/.bashrc
-
-APP_URL="http://${CF_APP_NAME}.${CF_APP_DOMAIN}"
+source routing-release-ci/ci/tasks/shared-functions
+set_env_vars
 
 echo "Cloning routehealthparser repo"
 git clone https://github.com/cf-routing/routehealthparser.git

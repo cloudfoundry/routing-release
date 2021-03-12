@@ -2,10 +2,12 @@
 set -ex -o pipefail
 
 source networking-oss-deployments/scripts/script_helpers.sh
+source routing-release-ci/ci/tasks/shared-functions
+set_env_vars
 
 ENVIRONMENT="${ENVIRONMENT:?"ENVIRONMENT not set"}"
 set +x
-  bosh_login "${ENVIRONMENT}"
+  bosh_login_toolsmiths "${ENVIRONMENT}"
 set -x
 
 ZERODOWNTIME_DEPLOYMENT=$(mktemp -t zero_downtime.XXXX.yml)
@@ -70,9 +72,9 @@ instance_groups:
       route_registrar:
         routing_api:
           enabled_api_endpoints: "both"
-          server_ca_cert: ((/bosh-jubilee/cf/routing_api_tls_client.ca))
-          client_cert: ((/bosh-jubilee/cf/routing_api_tls_client.certificate))
-          client_private_key: ((/bosh-jubilee/cf/routing_api_tls_client.private_key))
+          server_ca_cert: ((/bosh-${ENVIRONMENT}/cf/routing_api_tls_client.ca))
+          client_cert: ((/bosh-${ENVIRONMENT}/cf/routing_api_tls_client.certificate))
+          client_private_key: ((/bosh-${ENVIRONMENT}/cf/routing_api_tls_client.private_key))
         routes:
         - name: drroute
           port: 8080
@@ -80,7 +82,7 @@ instance_groups:
           tags:
             component: drroute
           uris:
-          - "drroute_zero_downtime_tcp_release.${ENVIRONMENT}.routing.cf-app.com"
+          - "drroute_zero_downtime_tcp_release.${ENVIRONMENT}.cf-app.com"
 - name: drroute_zero_downtime
   azs:
   - z1
@@ -103,9 +105,9 @@ instance_groups:
       route_registrar:
         routing_api:
           enabled_api_endpoints: "both"
-          server_ca_cert: ((/bosh-jubilee/cf/routing_api_tls_client.ca))
-          client_cert: ((/bosh-jubilee/cf/routing_api_tls_client.certificate))
-          client_private_key: ((/bosh-jubilee/cf/routing_api_tls_client.private_key))
+          server_ca_cert: ((/bosh-${ENVIRONMENT}/cf/routing_api_tls_client.ca))
+          client_cert: ((/bosh-${ENVIRONMENT}/cf/routing_api_tls_client.certificate))
+          client_private_key: ((/bosh-${ENVIRONMENT}/cf/routing_api_tls_client.private_key))
         routes:
         - name: drroute
           port: 8080
@@ -113,7 +115,7 @@ instance_groups:
           tags:
             component: drroute
           uris:
-          - "drroute_zero_downtime_release.${ENVIRONMENT}.routing.cf-app.com"
+          - "drroute_zero_downtime_release.${ENVIRONMENT}.cf-app.com"
 releases:
 - name: bpm
   version: latest
