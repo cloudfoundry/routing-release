@@ -8,6 +8,8 @@ image_resource:
 
 inputs:
   - name: routing-release-ci
+  - name: toolsmiths-metadata-dir
+    optional: true
 
 run:
   path: routing-release-ci/ci/tasks/stop-zero-downtime-test/task

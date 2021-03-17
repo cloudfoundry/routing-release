@@ -2,15 +2,18 @@
 set -e
 
 source networking-oss-deployments/scripts/script_helpers.sh
+source routing-release-ci/ci/tasks/shared-functions
 
-cf_login "${ENVIRONMENT}"
+set_env_vars
+admin_password=$(get_cf_admin_password_toolsmiths "${ENVIRONMENT}")
+cf api "api.${CF_APP_DOMAIN}" --skip-ssl-validation
+cf auth admin "${admin_password}"
 cf target -o "${CF_ORG}" -s "${CF_SPACE}"
 
 # Expects the app to be already present
 cf apps | grep "${CF_APP_NAME}" | grep "started"
 
 echo "Starting zero downtime test..."
-APP_URL="http://${CF_APP_NAME}.${CF_APP_DOMAIN}"
 
 if [[ "${TCP}" = "true" ]]; then
   TCP_DOMAIN=tcp.${CF_APP_DOMAIN}

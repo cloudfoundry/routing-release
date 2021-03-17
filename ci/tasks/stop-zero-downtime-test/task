@@ -2,5 +2,8 @@
 set -ex
 
 echo "Stopping zero downtime test..."
-APP_URL="http://${CF_APP_NAME}.${CF_APP_DOMAIN}"
+
+source routing-release-ci/ci/tasks/shared-functions
+set_env_vars
+
 curl "${APP_URL}/stop" -d '{}'
