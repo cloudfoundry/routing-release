@@ -8,7 +8,7 @@ image_resource:
 
 inputs:
   - name: routing-release-ci
-  - name: toolsmiths-env
+  - name: toolsmiths-metadata-dir
     optional: true
 
 run:
