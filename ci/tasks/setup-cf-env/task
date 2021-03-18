@@ -11,7 +11,7 @@ ENV_ROOT="${PWD}/networking-oss-deployments/environments/${ENVIRONMENT}"
 set_username_password() {
   set +x
     local json_output
-    json_output=$(extract_var ${ENVIRONMENT} /jubilee/cf-user)
+    json_output=$(extract_var ${ENVIRONMENT} /cf/cf-user)
     CF_USERNAME=$(echo ${json_output} | jq -r .username)
     CF_PASSWORD=$(echo ${json_output} | jq -r .password)
   set -x
@@ -37,11 +37,11 @@ set +ex
   cf auth "${CF_ADMIN_USER}" "${admin_password}"
 
   if [[ -z ${CF_USERNAME} && -z ${CF_PASSWORD} ]]; then
-    credhub get -n /jubilee/cf-user > /dev/null
+    credhub get -n cf-user > /dev/null
     exit_code=$?
 
     if [[ ${exit_code} == "1" ]]; then
-      credhub generate -t user -n /jubilee/cf-user > /dev/null
+      credhub generate -t user -n cf-user > /dev/null
     fi
 
     set_username_password
