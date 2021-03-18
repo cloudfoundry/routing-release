@@ -2,6 +2,8 @@
 # rubocop:disable BlockLength
 require 'rspec'
 require 'yaml'
+require 'json'
+require 'bosh/template/test'
 require 'bosh/template/evaluation_context'
 
 TEST_CERT = 'some
