@@ -61,6 +61,7 @@ api:
   sqldb.to_yaml[4..-2]
 %>
 
+lock_resource_key: <%= p("routing_api.lock_resource_key") %>
 lock_ttl: <%= p("routing_api.lock_ttl") %>
 retry_interval: <%= p("routing_api.lock_retry_interval") %>
 
