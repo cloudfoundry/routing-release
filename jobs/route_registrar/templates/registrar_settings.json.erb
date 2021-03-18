@@ -66,6 +66,18 @@
     if route['prepend_instance_index']
       route['uris'].map! { |uri| "#{spec.index}-#{uri}" }
     end
+
+    if route['type'] == 'sni'
+      route['sni_routable_san'] = spec.address
+
+      if route.key?('server_cert_domain_name_modifier')
+        if route['server_cert_domain_name_modifier'].key?('key')
+            route['sni_routable_san'] = spec.address.gsub(route['server_cert_domain_name_modifier']['key'], route['server_cert_domain_name_modifier']['value'])
+        else
+            raise "expected route_registrar.routes[#{index}].route.server_cert_domain_name_modifier.key when server_cert_domain_name_modifier is provided"
+        end
+      end
+    end
   end
 
   host = nil
