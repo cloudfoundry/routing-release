@@ -7,10 +7,7 @@ source ~/.bashrc
 source routing-release-ci/ci/tasks/shared-functions
 set_env_vars
 
-echo "Cloning routehealthparser repo"
-git clone https://github.com/cf-routing/routehealthparser.git
-
-pushd routehealthparser
+pushd routing-release/src/github.com/routehealthparser
 	echo "Now checking if there were any 500's or 404's during deploy"
 	go run main.go --address=${APP_URL}/health
 	if [[ $? -ne 0 ]]; then
