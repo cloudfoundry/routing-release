@@ -236,7 +236,6 @@ properties:
     max_ttl: (( property_overrides.routing_api.max_ttl || nil ))
     lock_retry_interval: (( property_overrides.tcp_emitter.lock_retry_interval || nil ))
     lock_ttl: (( property_overrides.tcp_emitter.lock_ttl || nil ))
-    lock_resource_key: (( property_overrides.routing_api.lock_resource_key || nil ))
     etcd:
       servers: (( property_overrides.routing_api.etcd.servers || nil ))
       ca_cert: (( property_overrides.routing_api.etcd.ca_cert || nil ))

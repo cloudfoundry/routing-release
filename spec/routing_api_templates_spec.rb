@@ -125,7 +125,6 @@ describe 'routing_api' do
 
     it 'renders a file with default properties' do
       expect(rendered_config).to eq('admin_port' => 15_897,
-                                    'lock_resource_key' => 'routing_api_lock',
                                     'lock_ttl' => '10s',
                                     'retry_interval' => '5s',
                                     'debug_address' => '127.0.0.1:17002',
