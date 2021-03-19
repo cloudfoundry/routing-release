@@ -9,7 +9,7 @@ set_env_vars
 
 pushd routing-release/src/github.com/routehealthparser
 	echo "Now checking if there were any 500's or 404's during deploy"
-	go run main.go --address=${APP_URL}/health
+	go run main.go --address=${APP_URL}/health --threhold=${THRESHOLD:-99}
 	if [[ $? -ne 0 ]]; then
 		echo 'The tests failed'
 		exit 1
