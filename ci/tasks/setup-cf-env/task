@@ -11,7 +11,7 @@ ENV_ROOT="${PWD}/networking-oss-deployments/environments/${ENVIRONMENT}"
 set_username_password() {
   set +x
     local json_output
-    json_output=$(extract_var ${ENVIRONMENT} /cf/cf-user)
+    json_output=$(extract_var ${ENVIRONMENT} cf-user)
     CF_USERNAME=$(echo ${json_output} | jq -r .username)
     CF_PASSWORD=$(echo ${json_output} | jq -r .password)
   set -x
