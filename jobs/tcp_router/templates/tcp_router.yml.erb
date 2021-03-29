@@ -12,6 +12,8 @@ def routing_api_port
 end
 
 %>
+bind_address: "<%= spec.ip %>"
+
 oauth:
   token_endpoint: <%= p("uaa.token_endpoint") %>
   client_name: "tcp_router"

@@ -210,7 +210,8 @@ describe 'tcp_router' do
     end
 
     it 'renders a file with default properties' do
-      expect(rendered_config).to eq('isolation_segments' => [],
+      expect(rendered_config).to eq('bind_address' => '192.168.0.0',
+                                    'isolation_segments' => [],
                                     'haproxy_pid_file' => '/var/vcap/data/tcp_router/config/haproxy.pid',
                                     'oauth' => {
                                       'token_endpoint' => 'uaa.service.cf.internal',
