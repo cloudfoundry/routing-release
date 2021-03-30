@@ -107,3 +107,22 @@ If the app instance requested in the `__VCAP_ID__` does not exist, then the
 Gorouter will route to another instance of the app. If you want to determine
 when this happens, the app can compare the `__VCAP_ID__` in the response to the
 one in the request.
+
+
+### What about attributes?
+The `__VCAP_ID__` cookie will take _some_ of the attributes from the `JSESSIONID` cookie that is set by the app. [See code here](https://github.com/cloudfoundry/gorouter/blob/379860daa83a162ffe0b6039eafb7c8bfa1eaccf/proxy/round_tripper/proxy_round_tripper.go#L312-L355).
+#### Expiry 
+The `__VCAP_ID__` cookie will always have the same expiry attribute as the `JSESSIONID` cookie that is set by the app.
+#### Samesite 
+The `__VCAP_ID__` cookie will always have the same samesite attribute as the `JSESSIONID` cookie that is set by the app.
+#### Secure 
+The secure attribute on the `__VCAP_ID__` cookie is controlled by two levers: what is set on the `JSESSIONID` cookie by the app and the value of the [router.secure_cookies](https://github.com/cloudfoundry/routing-release/blob/f03f47b1dfe43a90e0717afd0d111e017e8d0fe1/jobs/gorouter/spec#L67-L69) bosh property.
+| router.secure_cookies | `JSESSIONID` is secure? | `__VCAP_ID__` is secure? |
+|-----------------------|-----------------------|------------------------|
+| false | true | true |
+| false | false | false |
+| true | true | true|
+| true | false | true |
+
+#### Max Age 
+If the max age attribute on the `JSESSIONID` cookie that is set by the app is less than 0, then the same value will be set on the `__VCAP_ID__`.
