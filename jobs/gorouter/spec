@@ -25,6 +25,8 @@ packages:
 provides:
   - name: gorouter
     type: http-router
+    properties:
+    - router.port
 
 consumes:
 - name: nats
@@ -32,6 +34,9 @@ consumes:
   optional: true
 - name: routing_api
   type: routing_api
+  optional: true
+- name: router_router_target_router
+  type: http-router
   optional: true
 
 properties:
@@ -405,3 +410,9 @@ properties:
   router.send_http_start_stop_client_event:
     description: "Send a httpstartstopevent of type client for each request"
     default: true
+
+  router.router_router:
+    description: |
+      Ignore NATS routing updates, and route all traffic to the routers consumed
+      by the router_router_target_router bosh link
+    default: false

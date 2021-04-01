@@ -317,4 +317,13 @@ empty_pool_response_code_503: <%= p("for_backwards_compatibility_only.empty_pool
 
 per_request_metrics_reporting: <%= p("router.per_request_metrics_reporting") %> 
 send_http_start_stop_server_event: <%= p("router.send_http_start_stop_server_event") %> 
-send_http_start_stop_client_event: <%= p("router.send_http_start_stop_client_event") %> 
+send_http_start_stop_client_event: <%= p("router.send_http_start_stop_client_event") %>
+<% if p("router.router_router") %>
+<% router_router_target_router_link = link("router_router_target_router") %>
+router_router: <%= p("router.router_router") %>
+router_router_target_routers:
+<% router_router_target_router_link.instances.each do |instance| %>
+- host: "<%= instance.address %>"
+  port: <%= router_router_target_router_link.p("router.port") %>
+<% end %>
+<% end %>
