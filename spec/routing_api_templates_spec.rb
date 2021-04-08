@@ -152,6 +152,7 @@ describe 'routing_api' do
                                       'mtls_server_key_file' => '/var/vcap/jobs/routing-api/config/certs/routing-api/server.key'
                                     },
                                     'router_groups' => [],
+                                    'reserved_system_component_ports' => [2_822, 2_825, 3_458, 3_459, 3_460, 3_461, 8_853, 9_100, 14_726, 14_727, 14_821, 14_822, 14_823, 14_824, 14_829, 15_821, 17_002, 35_095, 39_873, 40_177, 42_393, 46_567, 53_035, 53_080],
                                     'sqldb' => {
                                       'host' => 'host',
                                       'port' => 1234,

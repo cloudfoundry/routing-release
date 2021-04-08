@@ -41,6 +41,7 @@ provides:
   - routing_api.mtls_server_key
   - routing_api.mtls_client_cert
   - routing_api.mtls_client_key
+  - routing_api.reserved_system_component_ports
   - routing_api.enabled_api_endpoints
   - uaa.ca_cert
   - skip_ssl_validation
@@ -173,6 +174,13 @@ properties:
       - name: default-tcp
         reservable_ports: 1024-10000,12000
         type: tcp
+
+  routing_api.reserved_system_component_ports:
+    description: |
+      Array of ports that are reserved for system components.
+      Users will not be able to create router_groups with ports that overlap
+      with this value. Please see docs for more information about these ports.
+    default: [2822,2825,3458,3459,3460,3461,8853,9100,14726,14727,14821,14822,14823,14824,14829,15821,17002,35095,39873,40177,42393,46567,53035,53080]
 
   routing_api.lock_ttl:
     description: "TTL for service lock"

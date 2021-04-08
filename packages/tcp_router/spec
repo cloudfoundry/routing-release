@@ -6,6 +6,7 @@ dependencies:
 
 files:
   - code.cloudfoundry.org/cf-tcp-router/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/router_group_port_checker/*.go #gosub
   - code.cloudfoundry.org/cf-tcp-router/config/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/configurer/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/configurer/fakes/*.go # gosub

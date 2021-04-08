@@ -17,6 +17,7 @@ oauth:
 debug_address: <%= p("routing_api.debug_address") %>
 statsd_client_flush_interval: <%= p("routing_api.statsd_client_flush_interval") %>
 router_groups: <%= p("routing_api.router_groups").to_yaml.gsub("---","") %>
+reserved_system_component_ports: <%= p("routing_api.reserved_system_component_ports") %>
 uuid: <%= spec.id %>
 admin_port: <%= p("routing_api.admin_port") %>
 

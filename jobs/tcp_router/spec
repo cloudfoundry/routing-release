@@ -58,6 +58,8 @@ properties:
     description: "Routing API Client Private Key"
   routing_api.ca_cert:
     description: "Routing API Certificate Authority"
+  reserved_system_component_ports:
+    description: "This should come via a bosh link from the routing_api job. This property is here in case it needs to be overwritten."
 
   tcp_router.request_timeout_in_seconds:
     description: "Server and client timeouts in seconds"
@@ -65,6 +67,10 @@ properties:
   tcp_router.health_check_port:
     description: "Load balancer in front of TCP Routers should be configured to check the health of TCP Router instances by establishing a TCP connection on this port"
     default: 80
+
+  tcp_router.fail_on_router_port_conflicts:
+    description: "Fail the tcp router if routing_api.reserved_system_component_ports conflict with ports in existing router groups."
+    default: "false"
 
   uaa.token_endpoint:
     description: "UAA token endpoint host name. Do not include a scheme in this value; TCP Router will always use TLS to connect to UAA."

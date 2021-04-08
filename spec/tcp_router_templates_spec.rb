@@ -198,7 +198,8 @@ describe 'tcp_router' do
           name: 'routing_api',
           properties: {
             'routing_api' => {
-              'mtls_port' => 1337
+              'mtls_port' => 1337,
+              'reserved_system_component_ports' => [8080, 8081]
             }
           }
         )
@@ -219,6 +220,7 @@ describe 'tcp_router' do
                                       'port' => 1000,
                                       'skip_ssl_validation' => false
                                     },
+                                    'reserved_system_component_ports' => [8080, 8081],
                                     'routing_api' => {
                                       'uri' => 'https://routing-api.service.cf.internal',
                                       'port' => 1337,
@@ -227,6 +229,52 @@ describe 'tcp_router' do
                                       'ca_cert_path' => '/var/vcap/jobs/tcp_router/config/certs/routing-api/ca_cert.crt',
                                       'client_private_key_path' => '/var/vcap/jobs/tcp_router/config/keys/routing-api/client.key'
                                     })
+    end
+
+    describe 'routing_api.reserved_system_component_ports' do
+      describe 'when the property and link is defined' do
+        before do
+          merged_manifest_properties['reserved_system_component_ports'] = [1111]
+        end
+
+        it 'prefers the property' do
+          expect(rendered_config['reserved_system_component_ports']).to eq([1111])
+        end
+      end
+
+      describe 'when no property is defined and link is defined' do
+        it 'prefers the link' do
+          expect(rendered_config['reserved_system_component_ports']).to eq([8080, 8081])
+        end
+      end
+
+      describe 'when property is defined and no link is defined' do
+        before do
+          merged_manifest_properties['reserved_system_component_ports'] = [1111]
+        end
+
+        it 'prefers the property' do
+          expect(rendered_config['reserved_system_component_ports']).to eq([1111])
+        end
+      end
+
+      describe 'when no property and no link is defined' do
+        let(:links) do
+          [
+            Bosh::Template::Test::Link.new(
+              name: 'routing_api',
+              properties: {
+                'routing_api' => {
+                  'mtls_port' => 1337
+                }
+              }
+            )
+          ]
+        end
+        it 'defaults to empty' do
+          expect(rendered_config['reserved_system_component_ports']).to eq([])
+        end
+      end
     end
 
     describe 'routing_api.port' do
