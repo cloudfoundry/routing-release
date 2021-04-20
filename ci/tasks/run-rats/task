@@ -8,7 +8,7 @@ echo "Moving cf-routing-acceptance-tests onto the gopath..."
 mkdir -p $GOPATH
 cp -R routing-release/src $GOPATH
 
-go install github.com/onsi/ginkgo/ginkgo
+go get -u github.com/onsi/ginkgo/ginkgo
 
 cd ${GOPATH}/src/code.cloudfoundry.org/routing-acceptance-tests
 
