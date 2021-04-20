@@ -15,7 +15,8 @@ cd ${GOPATH}/src/code.cloudfoundry.org/routing-acceptance-tests
 packages=("http_routes" "tcp_routing" "smoke_tests")
 for i in "${packages[@]}"
 do
-  ginkgo -r "$i" "$GINKGO_ARGS" \
+  GO111MODULE=auto ginkgo \
+    -r "$i" "$GINKGO_ARGS" \
     -keepGoing \
     -randomizeAllSpecs \
     -skipPackage=helpers \
