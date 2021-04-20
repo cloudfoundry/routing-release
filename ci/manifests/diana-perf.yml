@@ -184,7 +184,7 @@ instance_groups:
         throughput_lower_limit: 40000
         latency_upper_limit_90: 3.0
         latency_upper_limit_95: 3.1
-        latency_upper_limit_99: 3.6
+        latency_upper_limit_99: 3.7
         routing_release_version: ROUTING_RELEASE_VERSION
         datadog_api_key: ((datadog_api_key))
   lifecycle: errand
