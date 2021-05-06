@@ -180,7 +180,7 @@ properties:
       Array of ports that are reserved for system components.
       Users will not be able to create router_groups with ports that overlap
       with this value. Please see docs for more information about these ports.
-    default: [2822,2825,3458,3459,3460,3461,8853,9100,14726,14727,14821,14822,14823,14824,14829,15821,17002,35095,39873,40177,42393,46567,53035,53080]
+    default: [2822,2825,3457,3458,3459,3460,3461,8853,9100,14726,14727,14821,14822,14823,14824,14829,14830,14920,14921,15821,17002,53035,53080]
 
   routing_api.lock_ttl:
     description: "TTL for service lock"
