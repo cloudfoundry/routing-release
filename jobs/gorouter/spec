@@ -30,6 +30,9 @@ consumes:
 - name: nats
   type: nats
   optional: true
+- name: nats-tls
+  type: nats-tls
+  optional: true
 - name: routing_api
   type: routing_api
   optional: true
@@ -310,6 +313,16 @@ properties:
     example: |
       - 192.168.50.123
       - 192.168.52.123
+  nats.tls_enabled:
+    description: When enabled, Gorouter will prefer to connect to NATS over TLS
+    default: false
+  nats.ca_certs:
+    description: "String of concatenated certificate authorities in PEM format, used to validate certificates presented by NATS."
+  nats.cert_chain:
+    description: Certificate chain used for client authentication to NATS. In PEM format.
+  nats.private_key:
+    description: Private key used for client authentication to NATS. In PEM format.
+
   router.offset:
     description:
     default: 0
