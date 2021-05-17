@@ -4,42 +4,65 @@ status:
   user: <%= p("router.status.user") %>
   pass: <%= p("router.status.password") %>
 
-<%
-  nats_machines = nil
-  if_p('nats.machines') do |ips|
-    nats_machines = ips.compact
+<%=
+nats = {}
+
+nats_link_name = 'nats'
+if p("nats.tls_enabled")
+  nats_link_name = 'nats-tls'
+
+  nats_ca_certs = ''
+  nats_cert_chain = ''
+  nats_private_key = ''
+
+  if_p("nats.ca_certs") do |val|
+    nats_ca_certs = val
   end.else do
-    nats_machines = link('nats').instances.map { |instance| instance.address }
+    nats_ca_certs = link(nats_link_name).p('nats.external.tls.ca')
+  end
+  
+  if_p("nats.cert_chain") { |val| nats_cert_chain = val }
+  if_p("nats.private_key") { |val| nats_private_key = val }
+
+  if (nats_cert_chain != '') ^ (nats_private_key != '')
+    raise 'nats.cert_chain and nats.private_key must be both provided or not at all'
   end
 
-  nats_port = nil
-  if_p('nats.port') do |prop|
-    nats_port = prop
-  end.else do
-    nats_port = link('nats').p("nats.port")
-  end
+  nats['tls_enabled'] = true
+  nats['ca_certs'] = nats_ca_certs
+  nats['cert_chain'] = nats_cert_chain
+  nats['private_key'] = nats_private_key
+end
 
-  nats_user = nil
-  if_p('nats.user') do |prop|
-    nats_user = prop
-  end.else do
-    nats_user = link('nats').p("nats.user")
-  end
+nats_port = nil
+if_p('nats.port') do |prop|
+  nats_port = prop
+end.else do
+  nats_port = link(nats_link_name).p("nats.port")
+end
 
-  nats_password = nil
-  if_p('nats.password') do |prop|
-    nats_password = prop
-  end.else do
-    nats_password = link('nats').p("nats.password")
-  end
+nats_machines = nil
+if_p('nats.machines') do |ips|
+  nats_machines = ips.compact
+end.else do
+  nats_machines = link(nats_link_name).instances.map { |instance| instance.address }
+end
+nats['hosts'] = nats_machines.map { |hostname| {"hostname" => hostname, "port" => nats_port} }
+
+if_p('nats.user') do |prop|
+  nats['user'] = prop
+end.else do
+  nats['user'] = link(nats_link_name).p("nats.user")
+end
+
+if_p('nats.password') do |prop|
+  nats['pass'] = prop
+end.else do
+  nats['pass'] = link(nats_link_name).p("nats.password")
+end
+
+{"nats" => nats}.to_yaml[3..-1]
 %>
-nats:
-<% nats_machines.each do |address| %>
-  - host: <%= address %>
-    port: <%= nats_port %>
-    user: <%= nats_user %>
-    pass: "<%= nats_password %>"
-<% end %>
 
 logging:
   syslog: vcap.gorouter
