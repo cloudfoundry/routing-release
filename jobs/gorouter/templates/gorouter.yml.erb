@@ -45,7 +45,11 @@ nats_machines = nil
 if_p('nats.machines') do |ips|
   nats_machines = ips.compact
 end.else do
-  nats_machines = link(nats_link_name).instances.map { |instance| instance.address }
+  link(nats_link_name).if_p("nats.hostname") do |hostname|
+    nats_machines = [hostname]
+  end.else do
+    nats_machines = link(nats_link_name).instances.map { |instance| instance.address }
+  end
 end
 nats['hosts'] = nats_machines.map { |hostname| {"hostname" => hostname, "port" => nats_port} }
 
