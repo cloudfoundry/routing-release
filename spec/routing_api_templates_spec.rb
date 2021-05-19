@@ -230,5 +230,29 @@ describe 'routing_api' do
         expect(rendered_config['sqldb']['skip_hostname_validation']).to be true
       end
     end
+
+    context 'reserved_system_component_ports' do
+      describe 'when an array of ints is provided' do
+        before do
+          merged_manifest_properties['routing_api']['reserved_system_component_ports'] = [1000, 2000, 3000]
+        end
+
+        it 'should render the yml accordingly' do
+          expect(rendered_config['reserved_system_component_ports']).to eq [1000, 2000, 3000]
+        end
+      end
+    end
+
+    context 'reserved_system_component_ports' do
+      describe 'when an array of strings is provided' do
+        before do
+          merged_manifest_properties['routing_api']['reserved_system_component_ports'] = %w(1000 2000 3000)
+        end
+
+        it 'should render the yml accordingly' do
+          expect(rendered_config['reserved_system_component_ports']).to eq [1000, 2000, 3000]
+        end
+      end
+    end
   end
 end
