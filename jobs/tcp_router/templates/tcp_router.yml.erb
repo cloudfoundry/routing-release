@@ -11,6 +11,19 @@ def routing_api_port
   raise RuntimeError, 'Routing API port not found in properties nor in routing_api Link. This value can be specified using the routing_api.port property.'
 end
 
+def reserved_system_component_ports
+  if_p('reserved_system_component_ports') do |prop|
+    return prop
+  end.else do
+    if_link('routing_api') do |link|
+      link.if_p('routing_api.reserved_system_component_ports') do |prop|
+        return prop
+      end
+    end
+  end
+  return []
+end
+
 %>
 oauth:
   token_endpoint: <%= p("uaa.token_endpoint") %>
@@ -32,3 +45,4 @@ routing_api:
 
 haproxy_pid_file: "/var/vcap/data/tcp_router/config/haproxy.pid"
 isolation_segments: <%= p("tcp_router.isolation_segments") %>
+reserved_system_component_ports: <%=  reserved_system_component_ports %>

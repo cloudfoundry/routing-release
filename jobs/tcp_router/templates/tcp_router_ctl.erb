@@ -84,7 +84,8 @@ exec /var/vcap/packages/tcp_router/bin/cf-tcp-router\
   -tcpLoadBalancerStatsUnixSocket="${CONF_DIR}/haproxy.sock" \
   -haproxyReloader="/var/vcap/jobs/tcp_router/bin/haproxy_reloader" \
   -statsCollectionInterval=<%= p("tcp_router.tcp_stats_collection_interval") %> \
-  -dropsondePort=<%=p("metron.port") %>
+  -dropsondePort=<%=p("metron.port") %> \
+  -routingGroupCheckExit=<%= p("tcp_router.fail_on_router_port_conflicts") %>
 
 while kill -0 "$(cat ${HAPROXY_PID_FILE})"; do
   sleep 1

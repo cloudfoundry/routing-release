@@ -152,6 +152,7 @@ describe 'routing_api' do
                                       'mtls_server_key_file' => '/var/vcap/jobs/routing-api/config/certs/routing-api/server.key'
                                     },
                                     'router_groups' => [],
+                                    'reserved_system_component_ports' => [2_822, 2_825, 3_457, 3_458, 3_459, 3_460, 3_461, 8_853, 9_100, 14_726, 14_727, 14_821, 14_822, 14_823, 14_824, 14_829, 14_830, 14_920, 14_922, 15_821, 17_002, 53_035, 53_080],
                                     'sqldb' => {
                                       'host' => 'host',
                                       'port' => 1234,
@@ -227,6 +228,30 @@ describe 'routing_api' do
 
       it 'should render the yml accordingly' do
         expect(rendered_config['sqldb']['skip_hostname_validation']).to be true
+      end
+    end
+
+    context 'reserved_system_component_ports' do
+      describe 'when an array of ints is provided' do
+        before do
+          merged_manifest_properties['routing_api']['reserved_system_component_ports'] = [1000, 2000, 3000]
+        end
+
+        it 'should render the yml accordingly' do
+          expect(rendered_config['reserved_system_component_ports']).to eq [1000, 2000, 3000]
+        end
+      end
+    end
+
+    context 'reserved_system_component_ports' do
+      describe 'when an array of strings is provided' do
+        before do
+          merged_manifest_properties['routing_api']['reserved_system_component_ports'] = %w(1000 2000 3000)
+        end
+
+        it 'should render the yml accordingly' do
+          expect(rendered_config['reserved_system_component_ports']).to eq [1000, 2000, 3000]
+        end
       end
     end
   end
