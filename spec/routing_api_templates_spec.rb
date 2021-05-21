@@ -246,7 +246,7 @@ describe 'routing_api' do
     context 'reserved_system_component_ports' do
       describe 'when an array of strings is provided' do
         before do
-          merged_manifest_properties['routing_api']['reserved_system_component_ports'] = %w(1000 2000 3000)
+          merged_manifest_properties['routing_api']['reserved_system_component_ports'] = %w[1000 2000 3000]
         end
 
         it 'should render the yml accordingly' do
