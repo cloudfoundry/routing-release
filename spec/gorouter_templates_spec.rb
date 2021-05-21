@@ -136,7 +136,11 @@ describe 'gorouter' do
           'machines' => ['127.0.0.1'],
           'port' => 8080,
           'user' => 'test',
-          'password' => 'test_pass'
+          'password' => 'test_pass',
+          'tls_enabled' => true,
+          'ca_certs' => 'test_ca_cert',
+          'cert_chain' => 'test_cert_chain',
+          'private_key' => 'test_private_key'
         },
         'metron' => {
           'port' => 3745
@@ -773,6 +777,231 @@ describe 'gorouter' do
               link: 'routing_api.mtls_client_cert',
               parsed_yaml_property: 'routing_api.cert_chain'
             )
+          end
+        end
+      end
+
+      context 'nats' do
+        let(:property_value) { ('a'..'z').to_a.shuffle.join }
+        let(:link_value) { ('a'..'z').to_a.shuffle.join }
+
+        class LinkConfiguration
+          attr_reader :description, :property, :link, :parsed_yaml_property
+
+          def initialize(description:, property:, link:, parsed_yaml_property:)
+            @description = description
+            @property = property
+            @link = link
+            @parsed_yaml_property = parsed_yaml_property
+          end
+
+          def link_namespace
+            link.split('.').first
+          end
+        end
+
+        shared_examples 'overridable_link' do |link_config|
+          def get_at_property(hash, property)
+            property_chain = property.split('.')
+
+            get_this = hash
+            property_chain.each do |getter|
+              getter = getter.to_i if get_this.class == Array
+              get_this = get_this.fetch(getter)
+            end
+
+            get_this
+          end
+
+          def set_at_property(hash, property, value)
+            property_chain = property.split('.')
+
+            getters = property_chain[0..-2]
+            setter = property_chain.last
+
+            set_this = hash
+            getters.each do |getter|
+              getter = getter.to_i if set_this.class == Array
+              set_this = set_this.fetch(getter)
+            end
+
+            set_this.store(setter, value)
+          end
+
+          def delete_at_property(hash, property)
+            property_chain = property.split('.')
+
+            getters = property_chain[0..-2]
+            setter = property_chain.last
+
+            set_this = hash
+            getters.each do |getter|
+              getter = getter.to_i if set_this.class == Array
+              set_this = set_this.fetch(getter)
+            end
+
+            set_this.delete(setter)
+          end
+
+          context 'when the link is not provided' do
+            context 'when the property is set' do
+              before do
+                # TODO: constant it
+                set_at_property(deployment_manifest_fragment, link_config.property, property_value)
+              end
+
+              it 'should prefer the value in the properties' do
+                expect(get_at_property(parsed_yaml, link_config.parsed_yaml_property)).to eq(property_value)
+              end
+            end
+
+            context 'when the property is not set' do
+              before do
+                delete_at_property(deployment_manifest_fragment, link_config.property)
+              end
+
+              it 'should error' do
+                expect do
+                  parsed_yaml
+                end.to raise_error(
+                  RuntimeError,
+                  "#{link_config.description} not found in properties nor in \"#{link_config.link_namespace}\" link. This value can be specified using the \"#{link_config.property}\" property."
+                )
+              end
+            end
+          end
+
+          context 'when the link is provided' do
+            def make_properties(link, link_property)
+              property_chain = link.split('.').reverse
+
+              property_chain.reduce(link_property) do |memo, obj|
+                { obj => memo }
+              end
+            end
+
+            let(:links) do
+              [
+                Bosh::Template::Test::Link.new(
+                  name: link_config.link_namespace,
+                  properties: make_properties(link_config.link, link_value)
+                )
+              ]
+            end
+
+            let(:rendered_template) { template.render(deployment_manifest_fragment, consumes: links) }
+
+            context 'when the property is set' do
+              before do
+                set_at_property(deployment_manifest_fragment, link_config.property, property_value)
+              end
+
+              it 'should prefer the value in the properties' do
+                expect(get_at_property(parsed_yaml, link_config.parsed_yaml_property)).to eq(property_value)
+              end
+            end
+
+            context 'when the property is not set' do
+              before do
+                delete_at_property(deployment_manifest_fragment, link_config.property)
+              end
+
+              it 'should render the value from the link' do
+                expect(get_at_property(parsed_yaml, link_config.parsed_yaml_property)).to eq(link_value)
+              end
+            end
+          end
+        end
+
+        describe 'NATS port' do
+          it_behaves_like 'overridable_link', LinkConfiguration.new(
+            description: 'NATS server port number',
+            property: 'nats.port',
+            link: 'nats-tls.nats.port',
+            parsed_yaml_property: 'nats.hosts.0.port'
+          )
+        end
+
+        describe 'ca_certs' do
+          let(:ca_certs) { parsed_yaml['nats']['ca_certs'] }
+
+          context 'when a simple array is provided' do
+            before do
+              deployment_manifest_fragment['nats']['ca_certs'] = ['some-tls-cert']
+            end
+
+            it 'raises error' do
+              expect { parsed_yaml }.to raise_error(RuntimeError, 'nats.ca_certs must be provided as a single string block')
+            end
+          end
+
+          context 'when set to a multi-line string' do
+            let(:str) { "some   \nmulti\nline\n  string" }
+
+            before do
+              deployment_manifest_fragment['nats']['ca_certs'] = str
+            end
+
+            it 'successfully configures the property' do
+              expect(ca_certs).to eq(str)
+            end
+          end
+
+          context 'when containing dashes' do
+            let(:str) { '---some---string------with--dashes' }
+
+            before do
+              deployment_manifest_fragment['nats']['ca_certs'] = str
+            end
+
+            it 'successfully configures the property' do
+              expect(ca_certs).to eq(str)
+            end
+          end
+
+          it_behaves_like 'overridable_link', LinkConfiguration.new(
+            description: 'NATS server CA certificate',
+            property: 'nats.ca_certs',
+            link: 'nats-tls.nats.external.tls.ca',
+            parsed_yaml_property: 'nats.ca_certs'
+          )
+        end
+
+        describe 'private_key' do
+          context 'when set to a multi-line string' do
+            let(:str) { "some   \nmulti\nline\n  string" }
+
+            before do
+              deployment_manifest_fragment['nats']['private_key'] = str
+            end
+
+            it 'successfully configures the property' do
+              expect(parsed_yaml['nats']['private_key']).to eq(str)
+            end
+          end
+        end
+
+        describe 'cert_chain' do
+          context 'when a simple array is provided' do
+            before do
+              deployment_manifest_fragment['nats']['cert_chain'] = ['some-tls-cert']
+            end
+
+            it 'raises error' do
+              expect { parsed_yaml }.to raise_error(RuntimeError, 'nats.cert_chain must be provided as a single string block')
+            end
+          end
+
+          context 'when set to a multi-line string' do
+            let(:str) { "some   \nmulti\nline\n  string" }
+
+            before do
+              deployment_manifest_fragment['nats']['cert_chain'] = str
+            end
+
+            it 'successfully configures the property' do
+              expect(parsed_yaml['nats']['cert_chain']).to eq(str)
+            end
           end
         end
       end
