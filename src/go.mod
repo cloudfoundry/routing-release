@@ -21,6 +21,7 @@ require (
 	code.cloudfoundry.org/tlsconfig v0.0.0-20200131000646-bbe0f8da39b3
 	code.cloudfoundry.org/trace-logger v0.0.0-20170119230301-107ef08a939d
 	code.cloudfoundry.org/uaa-go-client v0.0.0-20200427231439-19a7eb57a1dc
+	github.com/apex/log v1.9.0
 	github.com/apoydence/eachers v0.0.0-20181020210610-23942921fe77 // indirect
 	github.com/armon/go-proxyproto v0.0.0-20210323213023-7e956b284f0a
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
@@ -28,10 +29,8 @@ require (
 	github.com/cloudfoundry-incubator/cf-test-helpers v1.0.0
 	github.com/cloudfoundry/custom-cats-reporters v0.0.2
 	github.com/cloudfoundry/dropsonde v1.0.1-0.20180504154030-a5c24343b09d
-	github.com/cloudfoundry/gosteno v0.0.0-20150423193413-0c8581caea35 // indirect
-	github.com/cloudfoundry/loggregatorlib v0.0.0-20170823162133-36eddf15ef12 // indirect
 	github.com/cloudfoundry/sonde-go v0.0.0-20200416163440-a42463ba266b
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
+	github.com/go-kit/kit v0.10.0
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gogo/protobuf v1.3.2
 	github.com/hashicorp/consul/api v1.8.1 // indirect
@@ -45,15 +44,17 @@ require (
 	github.com/onsi/ginkgo v1.16.2
 	github.com/onsi/gomega v1.12.0
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
+	github.com/sirupsen/logrus v1.8.1
+	github.com/stretchr/testify v1.6.1
 	github.com/tedsuo/ifrit v0.0.0-20191009134036-9a97d0632f00
 	github.com/tedsuo/rata v1.0.0
+	github.com/uber-common/bark v1.3.0
 	github.com/urfave/cli v1.22.5
 	github.com/urfave/negroni v1.0.0
 	github.com/vito/go-sse v1.0.0
-	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
 	golang.org/x/net v0.0.0-20210521195947-fe42d452be8f
 	google.golang.org/grpc v1.38.0
+	gopkg.in/inconshreveable/log15.v2 v2.0.0-20200109203555-b30bc20e4fd1
 	gopkg.in/yaml.v2 v2.4.0
-	launchpad.net/gocheck v0.0.0-20140225173054-000000000087 // indirect
 )

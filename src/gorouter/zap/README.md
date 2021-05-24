@@ -3,7 +3,7 @@
 Blazing fast, structured, leveled logging in Go.
 
 ## Installation
-`go get -u github.com/uber-go/zap`
+`go get -u code.cloudfoundry.org/routing-release/gorouter/zap`
 
 ## Structure
 
@@ -90,13 +90,13 @@ Released under the [MIT License](LICENSE.txt).
 benchmarking against slightly older versions of other libraries. Versions are
 pinned in zap's [glide.lock][] file. [↩](#anchor-versions)
 
-[doc-img]: https://godoc.org/github.com/uber-go/zap?status.svg
-[doc]: https://godoc.org/github.com/uber-go/zap
+[doc-img]: https://godoc.org/code.cloudfoundry.org/routing-release/gorouter/zap?status.svg
+[doc]: https://godoc.org/code.cloudfoundry.org/routing-release/gorouter/zap
 [ci-img]: https://travis-ci.org/uber-go/zap.svg?branch=master
 [ci]: https://travis-ci.org/uber-go/zap
 [cov-img]: https://coveralls.io/repos/github/uber-go/zap/badge.svg?branch=master
 [cov]: https://coveralls.io/github/uber-go/zap?branch=master
-[benchmarking suite]: https://github.com/uber-go/zap/tree/master/benchmarks
-[glide.lock]: https://github.com/uber-go/zap/blob/master/glide.lock
+[benchmarking suite]: https://code.cloudfoundry.org/routing-release/gorouter/zap/tree/master/benchmarks
+[glide.lock]: https://code.cloudfoundry.org/routing-release/gorouter/zap/blob/master/glide.lock
 [bark]: https://github.com/uber-common/bark
-[v1]: https://github.com/uber-go/zap/projects/1
+[v1]: https://code.cloudfoundry.org/routing-release/gorouter/zap/projects/1

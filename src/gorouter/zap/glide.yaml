@@ -1,10 +1,10 @@
-package: github.com/uber-go/zap
+package: code.cloudfoundry.org/routing-release/gorouter/zap
 license: MIT
 import:
 - package: github.com/uber-common/bark
 - package: code.cloudfoundry.org/routing-release/gorouter/atomic
 testImport:
-- package: github.com/Sirupsen/logrus
+- package: github.com/sirupsen/logrus
 - package: github.com/apex/log
   subpackages:
   - handlers/json

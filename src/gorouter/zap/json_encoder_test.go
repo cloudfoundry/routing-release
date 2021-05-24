@@ -30,7 +30,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/uber-go/zap/spywrite"
+	"code.cloudfoundry.org/routing-release/gorouter/zap/spywrite"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

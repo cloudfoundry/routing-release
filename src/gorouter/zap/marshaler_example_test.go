@@ -23,7 +23,7 @@ package zap_test
 import (
 	"time"
 
-	"github.com/uber-go/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 )
 
 type Auth struct {

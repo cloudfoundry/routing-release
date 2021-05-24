@@ -28,7 +28,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/uber-go/zap/spywrite"
+	"code.cloudfoundry.org/routing-release/gorouter/zap/spywrite"
 )
 
 func newTextEncoder(opts ...TextOption) *textEncoder {

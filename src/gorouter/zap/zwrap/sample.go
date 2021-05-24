@@ -24,7 +24,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/uber-go/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 
 	"code.cloudfoundry.org/routing-release/gorouter/atomic"
 )

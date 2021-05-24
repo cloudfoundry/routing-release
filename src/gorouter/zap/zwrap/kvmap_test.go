@@ -26,7 +26,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/uber-go/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 )
 
 type unloggable struct{}

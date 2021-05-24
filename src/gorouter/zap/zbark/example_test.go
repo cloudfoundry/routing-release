@@ -23,10 +23,10 @@ package zbark_test
 import (
 	"os"
 
-	"github.com/uber-go/zap"
-	"github.com/uber-go/zap/zbark"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap/zbark"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/uber-common/bark"
 )
 

@@ -27,7 +27,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/uber-go/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 )
 
 func Example() {

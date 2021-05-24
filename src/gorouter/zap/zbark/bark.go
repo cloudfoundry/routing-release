@@ -24,7 +24,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/uber-go/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 
 	"github.com/uber-common/bark"
 )

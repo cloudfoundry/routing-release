@@ -26,8 +26,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/uber-go/zap"
-	"github.com/uber-go/zap/zwrap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap/zwrap"
 )
 
 var errExample = errors.New("fail")

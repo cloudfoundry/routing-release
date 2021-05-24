@@ -24,7 +24,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/uber-go/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 )
 
 // ErrInvalidLevel indicates that the user chose an invalid Level when

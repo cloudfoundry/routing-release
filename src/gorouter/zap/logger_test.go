@@ -28,7 +28,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/uber-go/zap/spywrite"
+	"code.cloudfoundry.org/routing-release/gorouter/zap/spywrite"
 
 	"github.com/stretchr/testify/assert"
 )

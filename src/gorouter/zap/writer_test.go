@@ -27,7 +27,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/uber-go/zap/spywrite"
+	"code.cloudfoundry.org/routing-release/gorouter/zap/spywrite"
 )
 
 func requireWriteWorks(t testing.TB, ws WriteSyncer) {

@@ -25,7 +25,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/uber-go/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 )
 
 type user struct {

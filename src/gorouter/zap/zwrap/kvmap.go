@@ -20,7 +20,7 @@
 
 package zwrap
 
-import "github.com/uber-go/zap"
+import "code.cloudfoundry.org/routing-release/gorouter/zap"
 
 // KeyValueMap implements zap.KeyValue backed by a map.
 type KeyValueMap map[string]interface{}

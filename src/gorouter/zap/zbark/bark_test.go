@@ -28,7 +28,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/uber-go/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/uber-common/bark"

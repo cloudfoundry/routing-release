@@ -30,8 +30,8 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/uber-go/zap"
-	"github.com/uber-go/zap/spy"
+	. "code.cloudfoundry.org/routing-release/gorouter/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap/spy"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

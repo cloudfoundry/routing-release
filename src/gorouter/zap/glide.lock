@@ -5,7 +5,7 @@ imports:
   version: d8eabe07bc70ff9ba6a56836cde99d1ea3d005f7
   subpackages:
   - statsd
-- name: github.com/Sirupsen/logrus
+- name: github.com/sirupsen/logrus
   version: 1445b7a38228c041834afc69231b7966b9943397
 - name: github.com/uber-common/bark
   version: 8841a0f8e7ca869284ccb29c08a14cf3f4310f46

@@ -23,7 +23,7 @@ package zap_test
 import (
 	"testing"
 
-	"github.com/uber-go/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 )
 
 func withBenchedTee(b *testing.B, f func(zap.Logger)) {
