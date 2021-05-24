@@ -1,0 +1,49 @@
+#!/bin/bash
+
+set -exu
+
+if ! [ -x "$(command -v go)" ]; then
+    echo "Go is not installed."
+    exit 1
+fi
+
+if [ "${GOPATH:-}" = "" ]; then
+  echo "GOPATH empty or not set."
+  exit 1
+fi
+
+echo "GOPATH=$GOPATH"
+
+# install nats-server
+go get -v github.com/nats-io/nats-server
+
+# install shadow tool
+go get -u golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow
+
+go vet ./...
+go vet -vettool="$(command -v shadow)"
+
+# install ginkgo
+if ! [ -x "$(command -v ginkgo)" ]; then
+    go get -u github.com/onsi/ginkgo/ginkgo
+fi
+
+echo -e "\n Formatting packages..."
+go fmt ./...
+
+if ! ginkgo \
+  -keepGoing \
+  -trace \
+  -progress \
+  -r \
+  -failOnPending \
+  -randomizeAllSpecs \
+  -p \
+  -race \
+  -timeout 20m \
+  -slowSpecThreshold 20 \
+  "$@"; then
+    echo -e "\nSWEET SUITE SUCCESS"
+else
+    echo -e "\nSUITE FAILURE"
+fi

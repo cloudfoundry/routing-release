@@ -1,0 +1,19 @@
+oauth:
+  token_endpoint: "uaa.service.cf.internal"
+  client_name: "someclient"
+  client_secret: "somesecret"
+  port: 8443
+  skip_ssl_validation: true
+  ca_certs: "some-ca-cert"
+
+routing_api:
+  uri: http://routing-api.service.cf.internal
+  port: 3000
+  auth_disabled: false
+  client_cert_path: /a/client_cert
+  client_private_key_path: /b/private_key
+  ca_cert_path: /c/ca_cert
+
+haproxy_pid_file: /path/to/pid/file
+isolation_segments: ["foo-iso-seg"]
+reserved_system_component_ports: [8080, 8081]

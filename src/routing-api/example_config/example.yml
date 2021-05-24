@@ -1,0 +1,48 @@
+# values in this example are only suitable for testing and are not recommended
+# for production systems
+admin_port: 9999
+log_guid: "my_logs"
+oauth:
+  token_endpoint: "127.0.0.1"
+  port: 8080
+  ca_certs: "some-ca-cert"
+skip_ssl_validation: true
+metron_config:
+  address: "1.2.3.4"
+  port: "4567"
+metrics_reporting_interval: "500ms"
+statsd_endpoint: "localhost:8125"
+system_domain: "example.com"
+max_ttl: "2m"
+statsd_client_flush_interval: "10ms"
+uuid: "fake-uuid"
+api:
+  listen_address: 0.0.0.0
+  listen_port: 3000
+  mtls_listen_port: 3001
+  mtls_client_ca_file: "client ca file path"
+  mtls_server_key_file: "server key file path"
+  mtls_server_cert_file: "server cert file path"
+sqldb:
+  username: "username"
+  password: "password"
+  schema: "routing_api_test"
+  type: mysql
+  port: 1234
+  host: "localhost"
+  ca_cert: "some CA cert"
+  skip_hostname_validation: true
+  max_idle_connections: 2
+  max_open_connections: 5
+  connections_max_lifetime_seconds: 1200
+lock_resource_key: my-key
+lock_ttl: 10s
+retry_interval: 5s
+locket:
+  locket_address: "http://localhost:5678"
+  locket_ca_cert_file: "some-locket-ca-cert"
+  locket_client_cert_file: "some-locket-client-cert"
+  locket_client_key_file: "some-locket-client-key"
+reserved_system_component_ports:
+  - 5555
+  - 6666

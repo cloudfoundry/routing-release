@@ -1,0 +1,12 @@
+oauth:
+  token_endpoint: "uaa.service.cf.internal"
+  client_name: 
+  client_secret: 
+  port: 8443
+  skip_ssl_validation: true
+
+routing_api:
+  uri: http://routing-api.service.cf.internal
+  port: 3000
+
+haproxy_pid_file: /path/to/pid/file

@@ -1,0 +1,22 @@
+language: go
+go_import_path: code.cloudfoundry.org/routing-release/routing-api-cli
+go:
+  - 1.6.3
+  - tip
+
+matrix:
+  allow_failures:
+    - go: tip
+
+install:
+  - git clone --branch=develop --recurse-submodules https://github.com/cloudfoundry-incubator/routing-release.git $HOME/routing-release
+  - export PATH=$HOME/routing-release/bin:$PATH
+  - export GOPATH=$GOPATH:$HOME/routing-release
+
+before_script:
+  - go install -v github.com/onsi/ginkgo/ginkgo
+
+script:
+  - ./bin/test
+
+sudo: false

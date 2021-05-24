@@ -1,0 +1,383 @@
+package registry
+
+import (
+	"encoding/json"
+	"strings"
+	"sync"
+	"time"
+
+	"go.uber.org/zap"
+
+	"code.cloudfoundry.org/routing-release/gorouter/config"
+	"code.cloudfoundry.org/routing-release/gorouter/logger"
+	"code.cloudfoundry.org/routing-release/gorouter/metrics"
+	"code.cloudfoundry.org/routing-release/gorouter/registry/container"
+	"code.cloudfoundry.org/routing-release/gorouter/route"
+)
+
+//go:generate counterfeiter -o fakes/fake_registry.go . Registry
+type Registry interface {
+	Register(uri route.Uri, endpoint *route.Endpoint)
+	Unregister(uri route.Uri, endpoint *route.Endpoint)
+	Lookup(uri route.Uri) *route.EndpointPool
+	LookupWithInstance(uri route.Uri, appID, appIndex string) *route.EndpointPool
+}
+
+type PruneStatus int
+
+const (
+	CONNECTED = PruneStatus(iota)
+	DISCONNECTED
+)
+
+type RouteRegistry struct {
+	sync.RWMutex
+
+	logger logger.Logger
+
+	// Access to the Trie datastructure should be governed by the RWMutex of RouteRegistry
+	byURI *container.Trie
+
+	// used for ability to suspend pruning
+	suspendPruning func() bool
+	pruningStatus  PruneStatus
+
+	pruneStaleDropletsInterval time.Duration
+	dropletStaleThreshold      time.Duration
+
+	reporter metrics.RouteRegistryReporter
+
+	ticker           *time.Ticker
+	timeOfLastUpdate time.Time
+
+	routingTableShardingMode string
+	isolationSegments        []string
+
+	maxConnsPerBackend int64
+}
+
+func NewRouteRegistry(logger logger.Logger, c *config.Config, reporter metrics.RouteRegistryReporter) *RouteRegistry {
+	r := &RouteRegistry{}
+	r.logger = logger
+	r.byURI = container.NewTrie()
+
+	r.pruneStaleDropletsInterval = c.PruneStaleDropletsInterval
+	r.dropletStaleThreshold = c.DropletStaleThreshold
+	r.suspendPruning = func() bool { return false }
+
+	r.reporter = reporter
+
+	r.routingTableShardingMode = c.RoutingTableShardingMode
+	r.isolationSegments = c.IsolationSegments
+
+	r.maxConnsPerBackend = c.Backends.MaxConns
+
+	return r
+}
+
+func (r *RouteRegistry) Register(uri route.Uri, endpoint *route.Endpoint) {
+	if !r.endpointInRouterShard(endpoint) {
+		return
+	}
+
+	endpointAdded := r.register(uri, endpoint)
+
+	r.reporter.CaptureRegistryMessage(endpoint)
+
+	if endpointAdded == route.ADDED && !endpoint.UpdatedAt.IsZero() {
+		r.reporter.CaptureRouteRegistrationLatency(time.Since(endpoint.UpdatedAt))
+	}
+
+	switch endpointAdded {
+	case route.ADDED:
+		r.logger.Info("endpoint-registered", zapData(uri, endpoint)...)
+	case route.UPDATED:
+		r.logger.Debug("endpoint-registered", zapData(uri, endpoint)...)
+	default:
+		r.logger.Debug("endpoint-not-registered", zapData(uri, endpoint)...)
+	}
+}
+
+func (r *RouteRegistry) register(uri route.Uri, endpoint *route.Endpoint) route.PoolPutResult {
+	r.Lock()
+	defer r.Unlock()
+
+	t := time.Now()
+
+	routekey := uri.RouteKey()
+
+	pool := r.byURI.Find(routekey)
+	if pool == nil {
+		host, contextPath := splitHostAndContextPath(uri)
+		pool = route.NewPool(&route.PoolOpts{
+			Logger:             r.logger,
+			RetryAfterFailure:  r.dropletStaleThreshold / 4,
+			Host:               host,
+			ContextPath:        contextPath,
+			MaxConnsPerBackend: r.maxConnsPerBackend,
+		})
+		r.byURI.Insert(routekey, pool)
+		r.logger.Info("route-registered", zap.Stringer("uri", routekey))
+		// for backward compatibility:
+		r.logger.Debug("uri-added", zap.Stringer("uri", routekey))
+	}
+
+	if endpoint.StaleThreshold > r.dropletStaleThreshold || endpoint.StaleThreshold == 0 {
+		endpoint.StaleThreshold = r.dropletStaleThreshold
+	}
+
+	endpointAdded := pool.Put(endpoint)
+
+	r.timeOfLastUpdate = t
+
+	return endpointAdded
+}
+
+func (r *RouteRegistry) Unregister(uri route.Uri, endpoint *route.Endpoint) {
+	if !r.endpointInRouterShard(endpoint) {
+		return
+	}
+
+	r.unregister(uri, endpoint)
+
+	r.reporter.CaptureUnregistryMessage(endpoint)
+}
+
+func (r *RouteRegistry) unregister(uri route.Uri, endpoint *route.Endpoint) {
+	r.Lock()
+	defer r.Unlock()
+
+	uri = uri.RouteKey()
+
+	pool := r.byURI.Find(uri)
+	if pool != nil {
+		endpointRemoved := pool.Remove(endpoint)
+		if endpointRemoved {
+			r.logger.Info("endpoint-unregistered", zapData(uri, endpoint)...)
+		} else {
+			r.logger.Debug("endpoint-not-unregistered", zapData(uri, endpoint)...)
+		}
+
+		if pool.IsEmpty() {
+			r.byURI.Delete(uri)
+			r.logger.Info("route-unregistered", zap.Stringer("uri", uri))
+		}
+	}
+}
+
+func (r *RouteRegistry) Lookup(uri route.Uri) *route.EndpointPool {
+	started := time.Now()
+
+	pool := r.lookup(uri)
+
+	endLookup := time.Now()
+	r.reporter.CaptureLookupTime(endLookup.Sub(started))
+
+	return pool
+}
+
+func (r *RouteRegistry) lookup(uri route.Uri) *route.EndpointPool {
+	r.RLock()
+	defer r.RUnlock()
+
+	uri = uri.RouteKey()
+	var err error
+	pool := r.byURI.MatchUri(uri)
+	for pool == nil && err == nil {
+		uri, err = uri.NextWildcard()
+		pool = r.byURI.MatchUri(uri)
+	}
+	return pool
+}
+
+func (r *RouteRegistry) endpointInRouterShard(endpoint *route.Endpoint) bool {
+	if r.routingTableShardingMode == config.SHARD_ALL {
+		return true
+	}
+
+	if r.routingTableShardingMode == config.SHARD_SHARED_AND_SEGMENTS && endpoint.IsolationSegment == "" {
+		return true
+	}
+
+	for _, v := range r.isolationSegments {
+		if endpoint.IsolationSegment == v {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (r *RouteRegistry) LookupWithInstance(uri route.Uri, appID string, appIndex string) *route.EndpointPool {
+	uri = uri.RouteKey()
+	p := r.Lookup(uri)
+
+	if p == nil {
+		return nil
+	}
+
+	var surgicalPool *route.EndpointPool
+
+	p.Each(func(e *route.Endpoint) {
+		if (e.ApplicationId == appID) && (e.PrivateInstanceIndex == appIndex) {
+			surgicalPool = route.NewPool(&route.PoolOpts{
+				Logger:             r.logger,
+				RetryAfterFailure:  0,
+				Host:               p.Host(),
+				ContextPath:        p.ContextPath(),
+				MaxConnsPerBackend: p.MaxConnsPerBackend(),
+			})
+			surgicalPool.Put(e)
+		}
+	})
+
+	return surgicalPool
+}
+
+func (r *RouteRegistry) StartPruningCycle() {
+	if r.pruneStaleDropletsInterval > 0 {
+		r.Lock()
+		defer r.Unlock()
+		r.ticker = time.NewTicker(r.pruneStaleDropletsInterval)
+
+		go func() {
+			for {
+				select {
+				case <-r.ticker.C:
+					r.logger.Debug("start-pruning-routes")
+					r.pruneStaleDroplets()
+					r.logger.Debug("finished-pruning-routes")
+					r.reporter.CaptureRouteStats(r.NumUris(), r.MSSinceLastUpdate())
+				}
+			}
+		}()
+	}
+}
+
+func (r *RouteRegistry) StopPruningCycle() {
+	r.Lock()
+	defer r.Unlock()
+	if r.ticker != nil {
+		r.ticker.Stop()
+	}
+}
+
+func (registry *RouteRegistry) NumUris() int {
+	registry.RLock()
+	defer registry.RUnlock()
+
+	return registry.byURI.PoolCount()
+}
+
+func (r *RouteRegistry) MSSinceLastUpdate() int64 {
+	timeOfLastUpdate := r.TimeOfLastUpdate()
+	if (timeOfLastUpdate == time.Time{}) {
+		return -1
+	}
+	return int64(time.Since(timeOfLastUpdate) / time.Millisecond)
+}
+
+func (r *RouteRegistry) TimeOfLastUpdate() time.Time {
+	r.RLock()
+	defer r.RUnlock()
+
+	return r.timeOfLastUpdate
+}
+
+func (r *RouteRegistry) NumEndpoints() int {
+	r.RLock()
+	defer r.RUnlock()
+
+	return r.byURI.EndpointCount()
+}
+
+func (r *RouteRegistry) MarshalJSON() ([]byte, error) {
+	r.RLock()
+	defer r.RUnlock()
+
+	return json.Marshal(r.byURI.ToMap())
+}
+
+func (r *RouteRegistry) pruneStaleDroplets() {
+	r.Lock()
+	defer r.Unlock()
+
+	// suspend pruning if option enabled and if NATS is unavailable
+	if r.suspendPruning() {
+		r.logger.Info("prune-suspended")
+		r.pruningStatus = DISCONNECTED
+		return
+	}
+	if r.pruningStatus == DISCONNECTED {
+		// if we are coming back from being disconnected from source,
+		// bulk update routes / mark updated to avoid pruning right away
+		r.logger.Debug("prune-unsuspended-refresh-routes-start")
+		r.freshenRoutes()
+		r.logger.Debug("prune-unsuspended-refresh-routes-complete")
+	}
+	r.pruningStatus = CONNECTED
+
+	r.byURI.EachNodeWithPool(func(t *container.Trie) {
+		endpoints := t.Pool.PruneEndpoints()
+		t.Snip()
+		if len(endpoints) > 0 {
+			addresses := []string{}
+			for _, e := range endpoints {
+				addresses = append(addresses, e.CanonicalAddr())
+			}
+			isolationSegment := endpoints[0].IsolationSegment
+			if isolationSegment == "" {
+				isolationSegment = "-"
+			}
+			r.logger.Info("pruned-route",
+				zap.String("uri", t.ToPath()),
+				zap.Object("endpoints", addresses),
+				zap.Object("isolation_segment", isolationSegment),
+			)
+			r.reporter.CaptureRoutesPruned(uint64(len(endpoints)))
+		}
+	})
+}
+
+func (r *RouteRegistry) SuspendPruning(f func() bool) {
+	r.Lock()
+	defer r.Unlock()
+	r.suspendPruning = f
+}
+
+// bulk update to mark pool / endpoints as updated
+func (r *RouteRegistry) freshenRoutes() {
+	now := time.Now()
+	r.byURI.EachNodeWithPool(func(t *container.Trie) {
+		t.Pool.MarkUpdated(now)
+	})
+}
+
+func splitHostAndContextPath(uri route.Uri) (string, string) {
+	contextPath := "/"
+	split := strings.SplitN(strings.TrimPrefix(uri.String(), "/"), "/", 2)
+
+	if len(split) > 1 {
+		contextPath += split[1]
+	}
+
+	if idx := strings.Index(string(contextPath), "?"); idx >= 0 {
+		contextPath = contextPath[0:idx]
+	}
+
+	return split[0], contextPath
+}
+
+func zapData(uri route.Uri, endpoint *route.Endpoint) []zap.Field {
+	isoSegField := zap.String("isolation_segment", "-")
+	if endpoint.IsolationSegment != "" {
+		isoSegField = zap.String("isolation_segment", endpoint.IsolationSegment)
+	}
+	return []zap.Field{
+		zap.Stringer("uri", uri),
+		zap.String("backend", endpoint.CanonicalAddr()),
+		zap.Object("modification_tag", endpoint.ModificationTag),
+		isoSegField,
+		zap.Bool("isTLS", endpoint.IsTLS()),
+	}
+}

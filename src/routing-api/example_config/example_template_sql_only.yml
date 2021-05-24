@@ -1,0 +1,30 @@
+# values in this example are only suitable for testing and are not recommended
+# for production systems
+log_guid: "my_logs"
+admin_port: {{.AdminPort}}
+oauth:
+  token_endpoint: "127.0.0.1"
+  port: {{.UAAPort}}
+  skip_ssl_validation: false
+  ca_certs: "{{.CACerts}}"
+debug_address: "1.2.3.4:1234"
+system_domain: "example.com"
+metron_config:
+  address: "1.2.3.4"
+  port: "4567"
+metrics_reporting_interval: "500ms"
+uuid: "fake-uuid"
+statsd_endpoint: "localhost:{{.Port}}"
+statsd_client_flush_interval: "10ms"
+router_groups:
+- name: "default-tcp"
+  type: "tcp"
+  reservable_ports: "1024-65535"
+sqldb:
+  username: "root"
+  password: "password"
+  schema: "{{.Schema}}"
+  port: 3306
+  host: "localhost"
+  type: "mysql"
+retry_interval: 50ms

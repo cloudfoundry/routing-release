@@ -1,0 +1,12 @@
+oauth:
+  token_endpoint: "uaa.service.cf.internal"
+  client_name: "someclient"
+  client_secret: "somesecret"
+  port: 8443
+  skip_ssl_validation: true
+  ca_certs: "some-ca-cert"
+
+routing_api:
+  uri: http://routing-api.service.cf.internal
+  port: 3000
+  auth_disabled: false

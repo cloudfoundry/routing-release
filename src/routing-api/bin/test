@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e -u -x
+
+if ! [ -x "$(command -v errcheck)" ]; then
+    go get -u github.com/kisielk/errcheck
+fi
+
+if ! [ -x "$(command -v ginkgo)" ]; then
+    go get -u github.com/onsi/ginkgo/ginkgo
+fi
+
+errcheck ./...
+go vet ./...
+
+ginkgo -r  -p -failOnPending -randomizeAllSpecs -race -slowSpecThreshold 20 "$@"

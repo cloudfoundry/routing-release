@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e -u -x
+
+if ! [ -x "$(command -v ginkgo)" ]; then
+    go get -u github.com/onsi/ginkgo/ginkgo
+fi
+
+ginkgo -r  -p -failOnPending -randomizeAllSpecs -race "$@"
