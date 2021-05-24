@@ -16,6 +16,7 @@ import (
 
 	"code.cloudfoundry.org/clock"
 	"code.cloudfoundry.org/debugserver"
+	"code.cloudfoundry.org/lager"
 	"code.cloudfoundry.org/routing-release/gorouter/accesslog"
 	"code.cloudfoundry.org/routing-release/gorouter/common/schema"
 	"code.cloudfoundry.org/routing-release/gorouter/common/secure"
@@ -31,7 +32,6 @@ import (
 	"code.cloudfoundry.org/routing-release/gorouter/router"
 	"code.cloudfoundry.org/routing-release/gorouter/routeservice"
 	rvarz "code.cloudfoundry.org/routing-release/gorouter/varz"
-	"code.cloudfoundry.org/lager"
 	routing_api "code.cloudfoundry.org/routing-release/routing-api"
 	uaa_client "code.cloudfoundry.org/uaa-go-client"
 	uaa_config "code.cloudfoundry.org/uaa-go-client/config"

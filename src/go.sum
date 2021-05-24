@@ -64,6 +64,8 @@ github.com/cloudfoundry/custom-cats-reporters v0.0.2 h1:ySBjBh6I2an5FvbJ2egszOyi
 github.com/cloudfoundry/custom-cats-reporters v0.0.2/go.mod h1:uxXHu50QB3u67C2PZlaFBlc9yTy9gQ4Nb+nL3J959bU=
 github.com/cloudfoundry/dropsonde v1.0.0 h1:9MT6WFmhU96fQjhTiglx4b1X3ObNjk/Sze7KPntNitE=
 github.com/cloudfoundry/dropsonde v1.0.0/go.mod h1:6zwvrWK5TpxBVYi1cdkE5WDsIO8E0n7qAJg3wR9B67c=
+github.com/cloudfoundry/dropsonde v1.0.1-0.20180504154030-a5c24343b09d h1:M/1+KAhmsCEXhK2yI0YpTB954qe9pmRyMcUAUM5KZTw=
+github.com/cloudfoundry/dropsonde v1.0.1-0.20180504154030-a5c24343b09d/go.mod h1:6zwvrWK5TpxBVYi1cdkE5WDsIO8E0n7qAJg3wR9B67c=
 github.com/cloudfoundry/gosteno v0.0.0-20150423193413-0c8581caea35 h1:HdAWGlVEbFxuALqHXYu14XvAbRbyWZLd817ojygGnk0=
 github.com/cloudfoundry/gosteno v0.0.0-20150423193413-0c8581caea35/go.mod h1:3YBPUR85RIrvaUTdA1dL38YSp6s3OHu1xrWLkGt2Mog=
 github.com/cloudfoundry/loggregatorlib v0.0.0-20170823162133-36eddf15ef12 h1:A+SRy/ndY6QSrN+bVWIhKDLU4t7OLFWVlLPxUWL/oGE=

@@ -95,7 +95,7 @@ github.com/cloudfoundry-incubator/cf-test-helpers/workflowhelpers/internal
 # github.com/cloudfoundry/custom-cats-reporters v0.0.2
 ## explicit
 github.com/cloudfoundry/custom-cats-reporters/honeycomb/client
-# github.com/cloudfoundry/dropsonde v1.0.0
+# github.com/cloudfoundry/dropsonde v1.0.1-0.20180504154030-a5c24343b09d
 ## explicit
 github.com/cloudfoundry/dropsonde
 github.com/cloudfoundry/dropsonde/emitter
@@ -114,8 +114,6 @@ github.com/cloudfoundry/dropsonde/metrics
 github.com/cloudfoundry/dropsonde/runtime_stats
 # github.com/cloudfoundry/gosteno v0.0.0-20150423193413-0c8581caea35
 ## explicit
-github.com/cloudfoundry/gosteno
-github.com/cloudfoundry/gosteno/syslog
 # github.com/cloudfoundry/loggregatorlib v0.0.0-20170823162133-36eddf15ef12
 ## explicit
 # github.com/cloudfoundry/sonde-go v0.0.0-20200416163440-a42463ba266b

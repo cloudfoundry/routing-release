@@ -27,7 +27,7 @@ require (
 	github.com/cactus/go-statsd-client/v5 v5.0.0
 	github.com/cloudfoundry-incubator/cf-test-helpers v1.0.0
 	github.com/cloudfoundry/custom-cats-reporters v0.0.2
-	github.com/cloudfoundry/dropsonde v1.0.0
+	github.com/cloudfoundry/dropsonde v1.0.1-0.20180504154030-a5c24343b09d
 	github.com/cloudfoundry/gosteno v0.0.0-20150423193413-0c8581caea35 // indirect
 	github.com/cloudfoundry/loggregatorlib v0.0.0-20170823162133-36eddf15ef12 // indirect
 	github.com/cloudfoundry/sonde-go v0.0.0-20200416163440-a42463ba266b
