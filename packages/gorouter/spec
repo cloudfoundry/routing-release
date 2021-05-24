@@ -10,3 +10,5 @@ files:
 - gorouter/**/*
 - routing-api/**/*
 - vendor/**/*
+- jq/jq-*-linux64.tgz
+
