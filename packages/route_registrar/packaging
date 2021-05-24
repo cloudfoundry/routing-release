@@ -1,18 +1,8 @@
 set -ex
 
 source /var/vcap/packages/golang-*-linux/bosh/compile.env
-export GO111MODULE=auto
+export GOPATH=/var/vcap
 mkdir -p "${BOSH_INSTALL_TARGET}/bin"
-mkdir -p "${GOPATH}/src"
-
-mv code.cloudfoundry.org "${GOPATH}/src"
-mv github.com "${GOPATH}/src"
-mv golang.org "${GOPATH}/src"
-
-pushd ${GOPATH}/src/code.cloudfoundry.org/route-registrar
-  go build -o "${BOSH_INSTALL_TARGET}/bin/route-registrar" .
-popd
+go build -mod=vendor -o ${BOSH_INSTALL_TARGET}/bin/route-registrar ./route-registrar/
 
 chmod +x "${BOSH_INSTALL_TARGET}/bin/route-registrar"
-
-rm -rf "${GOPATH}/pkg" "${GOPATH}/src"

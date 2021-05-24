@@ -26,6 +26,8 @@ code.cloudfoundry.org/localip v0.0.0-20210513163154-20d795cea8ec h1:BME5EBU+xVmK
 code.cloudfoundry.org/localip v0.0.0-20210513163154-20d795cea8ec/go.mod h1:O/nBMgAvoGdByNJwsWuXXOplnY6IAkW22yd25dq18VU=
 code.cloudfoundry.org/locket v0.0.0-20210519145606-91fc7012746e h1:FugS+PPF8iZ0lZgyhw8tDoK+V6XDN7QpYm9m0kAALG4=
 code.cloudfoundry.org/locket v0.0.0-20210519145606-91fc7012746e/go.mod h1:AwHLRkdXtttLXNB8RHgLfErJ2kKafH62AR2OClhy6xI=
+code.cloudfoundry.org/multierror v0.0.0-20170123201326-dafed03eebc6 h1:FQ2hzil6fbEJL+aJvvktImjFvd3tjhKpl3nkBchaeWA=
+code.cloudfoundry.org/multierror v0.0.0-20170123201326-dafed03eebc6/go.mod h1:c+YiqRxUyZdHqUjTeibfQS6ElBOOLhKNh3NBfZ57HnI=
 code.cloudfoundry.org/rfc5424 v0.0.0-20201103192249-000122071b78 h1:mrZQaZmuDIPhSp6b96b+CRKC2uH44ifa5cjDV2epKis=
 code.cloudfoundry.org/rfc5424 v0.0.0-20201103192249-000122071b78/go.mod h1:tkZo8GtzBjySJ7USvxm4E36lNQw1D3xM6oKHGqdaAJ4=
 code.cloudfoundry.org/tlsconfig v0.0.0-20200131000646-bbe0f8da39b3 h1:2Qal+q+tw/DmDOoJBWwDCPE3lIJNj/1o7oMkkb2c5SI=

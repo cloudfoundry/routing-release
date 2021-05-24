@@ -5,21 +5,8 @@ dependencies:
 - golang-1-linux
 
 files:
-- code.cloudfoundry.org/cfhttp/**
-- code.cloudfoundry.org/clock/**
-- code.cloudfoundry.org/lager/**
-- code.cloudfoundry.org/lager/lagerflags/**
-- code.cloudfoundry.org/routing-api/**
-- code.cloudfoundry.org/routing-api-cli/**
-- code.cloudfoundry.org/routing-api-cli/commands/**
-- code.cloudfoundry.org/routing-api/models/**
-- code.cloudfoundry.org/trace-logger/**
-- code.cloudfoundry.org/uaa-go-client/**
-- code.cloudfoundry.org/uaa-go-client/config/**
-- code.cloudfoundry.org/uaa-go-client/schema/**
-- github.com/bmizerany/pat/**
-- github.com/codegangsta/cli/**
-- github.com/dgrijalva/jwt-go/**
-- github.com/nu7hatch/gouuid/**
-- github.com/tedsuo/rata/**
-- github.com/vito/go-sse/sse/**
+- go.mod
+- go.sum
+- routing-api-cli/**/*
+- routing-api/**/*
+- vendor/**/*

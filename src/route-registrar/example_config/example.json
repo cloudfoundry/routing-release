@@ -1,0 +1,72 @@
+{
+  "host": "127.0.0.1",
+  "routes": [
+    {
+      "name": "route-0",
+      "port": 3000,
+      "uris": [
+        "my-app.my-domain.com"
+      ],
+      "registration_interval": "20s"
+    },
+    {
+      "name": "route-1",
+      "tls_port": 3001,
+      "uris": [
+        "my-other-app.my-domain.com"
+      ],
+      "registration_interval": "10s",
+      "server_cert_domain_san": "my.internal.cert"
+    },
+    {
+      "name": "route-2",
+      "port": 3000,
+      "tls_port": 3001,
+      "uris": [
+        "my-other-app.my-domain.com"
+      ],
+      "registration_interval": "10s",
+      "server_cert_domain_san": "my.internal.cert"
+    },
+    {
+        "type": "tcp",
+        "port": 15000,
+        "host": "127.0.1.1",
+        "external_port": 5000,
+        "router_group": "some-router-group",
+        "registration_interval": "10s"
+    },
+    {
+      "type": "sni",
+      "sni_port": 17000,
+      "external_port": 16000,
+      "sni_routable_san": "sni.internal",
+      "router_group": "some-router-group",
+      "registration_interval": "10s"
+    }
+  ],
+  "message_bus_servers": [
+    {
+      "host": "some-host",
+      "user": "some-user",
+      "password": "some-password"
+    },
+    {
+      "host": "another-host",
+      "user": "another-user",
+      "password": "another-password"
+    }
+  ],
+  "routing_api": {
+    "api_url": "http://api.example.com",
+    "oauth_url": "https://uaa.somewhere",
+    "client_id": "clientid",
+    "client_secret": "secret"
+  },
+  "nats_mtls_config": {
+    "enabled": true,
+    "cert_path": "cert-path",
+    "key_path": "key-path",
+    "ca_path": "ca-path"
+  }
+}

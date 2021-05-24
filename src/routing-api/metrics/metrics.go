@@ -8,6 +8,7 @@ import (
 
 	"code.cloudfoundry.org/lager"
 	"code.cloudfoundry.org/routing-release/routing-api/db"
+	"github.com/cactus/go-statsd-client/v5/statsd"
 )
 
 const (
@@ -20,8 +21,8 @@ const (
 )
 
 type PartialStatsdClient interface {
-	GaugeDelta(stat string, value int64, rate float32) error
-	Gauge(stat string, value int64, rate float32) error
+	GaugeDelta(stat string, value int64, rate float32, test ...statsd.Tag) error
+	Gauge(stat string, value int64, rate float32, test ...statsd.Tag) error
 }
 
 type MetricsReporter struct {

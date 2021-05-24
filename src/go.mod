@@ -16,6 +16,7 @@ require (
 	code.cloudfoundry.org/lager v2.0.0+incompatible
 	code.cloudfoundry.org/localip v0.0.0-20210513163154-20d795cea8ec
 	code.cloudfoundry.org/locket v0.0.0-20210519145606-91fc7012746e
+	code.cloudfoundry.org/multierror v0.0.0-20170123201326-dafed03eebc6
 	code.cloudfoundry.org/rfc5424 v0.0.0-20201103192249-000122071b78 // indirect
 	code.cloudfoundry.org/tlsconfig v0.0.0-20200131000646-bbe0f8da39b3
 	code.cloudfoundry.org/trace-logger v0.0.0-20170119230301-107ef08a939d

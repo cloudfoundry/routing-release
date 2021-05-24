@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -eux
+
+MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_DIR="$( cd "${MY_DIR}"/.. && pwd )"
+
+go get github.com/nats-io/nats-server
+
+pushd "${PROJECT_DIR}" > /dev/null
+  ginkgo \
+    -r \
+    -p \
+    -race \
+    -failOnPending \
+    -randomizeAllSpecs \
+    -randomizeSuites \
+    "$@"
+popd > /dev/null

@@ -48,6 +48,9 @@ code.cloudfoundry.org/locket/cmd/locket/config
 code.cloudfoundry.org/locket/cmd/locket/testrunner
 code.cloudfoundry.org/locket/lock
 code.cloudfoundry.org/locket/models
+# code.cloudfoundry.org/multierror v0.0.0-20170123201326-dafed03eebc6
+## explicit
+code.cloudfoundry.org/multierror
 # code.cloudfoundry.org/rfc5424 v0.0.0-20201103192249-000122071b78
 ## explicit
 code.cloudfoundry.org/rfc5424
