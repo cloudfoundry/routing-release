@@ -5,7 +5,7 @@ import (
 
 	"code.cloudfoundry.org/routing-release/gorouter/common/uuid"
 	"code.cloudfoundry.org/routing-release/gorouter/logger"
-	"go.uber.org/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 	"github.com/urfave/negroni"
 )
 

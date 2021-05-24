@@ -42,7 +42,7 @@ import (
 	"github.com/tedsuo/ifrit"
 	"github.com/tedsuo/ifrit/grouper"
 	"github.com/tedsuo/ifrit/sigmon"
-	"go.uber.org/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 )
 
 var (

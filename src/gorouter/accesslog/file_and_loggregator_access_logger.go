@@ -4,7 +4,7 @@ import (
 	"io"
 	"log/syslog"
 
-	"go.uber.org/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 
 	"code.cloudfoundry.org/routing-release/gorouter/accesslog/schema"
 	"code.cloudfoundry.org/routing-release/gorouter/config"

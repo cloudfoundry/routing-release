@@ -11,7 +11,7 @@ import (
 
 	"code.cloudfoundry.org/routing-release/gorouter/logger"
 	"code.cloudfoundry.org/routing-release/gorouter/proxy/utils"
-	"go.uber.org/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 )
 
 type Forwarder struct {

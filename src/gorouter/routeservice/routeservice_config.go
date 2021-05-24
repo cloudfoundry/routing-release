@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"time"
 
-	"go.uber.org/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 
 	"code.cloudfoundry.org/routing-release/gorouter/common/secure"
 	"code.cloudfoundry.org/routing-release/gorouter/logger"

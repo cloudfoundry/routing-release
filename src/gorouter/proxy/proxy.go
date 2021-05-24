@@ -26,7 +26,7 @@ import (
 	"code.cloudfoundry.org/routing-release/gorouter/route"
 	"code.cloudfoundry.org/routing-release/gorouter/routeservice"
 	"github.com/cloudfoundry/dropsonde"
-	"go.uber.org/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 	"github.com/urfave/negroni"
 )
 

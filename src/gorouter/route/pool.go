@@ -9,7 +9,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"go.uber.org/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 
 	"code.cloudfoundry.org/routing-release/gorouter/config"
 	"code.cloudfoundry.org/routing-release/gorouter/logger"

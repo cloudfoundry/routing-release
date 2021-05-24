@@ -7,7 +7,7 @@ import (
 
 	"code.cloudfoundry.org/routing-release/gorouter/logger"
 	"github.com/cloudfoundry/dropsonde/metrics"
-	"go.uber.org/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 )
 
 type FileDescriptor struct {

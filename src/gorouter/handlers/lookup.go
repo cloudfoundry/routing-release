@@ -13,7 +13,7 @@ import (
 	"code.cloudfoundry.org/routing-release/gorouter/metrics"
 	"code.cloudfoundry.org/routing-release/gorouter/registry"
 	"code.cloudfoundry.org/routing-release/gorouter/route"
-	"go.uber.org/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 	"github.com/urfave/negroni"
 )
 

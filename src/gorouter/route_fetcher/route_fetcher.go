@@ -16,7 +16,7 @@ import (
 	uaa_client "code.cloudfoundry.org/uaa-go-client"
 	"code.cloudfoundry.org/uaa-go-client/schema"
 	"github.com/cloudfoundry/dropsonde/metrics"
-	"go.uber.org/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 )
 
 type RouteFetcher struct {

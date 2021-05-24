@@ -6,7 +6,7 @@ import (
 
 	"code.cloudfoundry.org/routing-release/gorouter/logger"
 	"github.com/cloudfoundry/dropsonde/metrics"
-	"go.uber.org/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 )
 
 //go:generate counterfeiter -o ../fakes/fake_subscriber.go . Subscriber

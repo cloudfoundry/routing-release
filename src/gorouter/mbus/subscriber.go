@@ -19,7 +19,7 @@ import (
 
 	"github.com/mailru/easyjson"
 	"github.com/nats-io/nats.go"
-	"go.uber.org/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 )
 
 //go:generate easyjson --all subscriber.go

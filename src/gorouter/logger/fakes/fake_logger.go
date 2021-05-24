@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"code.cloudfoundry.org/routing-release/gorouter/logger"
-	"go.uber.org/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 )
 
 type FakeLogger struct {

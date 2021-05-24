@@ -17,7 +17,7 @@ import (
 	"code.cloudfoundry.org/routing-release/gorouter/metrics"
 	"code.cloudfoundry.org/routing-release/gorouter/proxy/utils"
 	"code.cloudfoundry.org/routing-release/gorouter/route"
-	"go.uber.org/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 )
 
 const (

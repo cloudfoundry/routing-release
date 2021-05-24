@@ -8,11 +8,11 @@ import (
 	"code.cloudfoundry.org/routing-release/gorouter/logger"
 	"github.com/onsi/ginkgo"
 	"github.com/onsi/gomega/gbytes"
-	"go.uber.org/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 )
 
 // We add 1 to zap's default values to match our level definitions
-// https://go.uber.org/zap/blob/47f41350ff078ea1415b63c117bf1475b7bbe72c/level.go#L36
+// https://code.cloudfoundry.org/routing-release/gorouter/zap/blob/47f41350ff078ea1415b63c117bf1475b7bbe72c/level.go#L36
 func levelNumber(level zap.Level) int {
 	return int(level) + 1
 }
@@ -23,7 +23,7 @@ type TestZapLogger struct {
 	*TestZapSink
 }
 
-// Taken from go.uber.org/zap
+// Taken from code.cloudfoundry.org/routing-release/gorouter/zap
 type TestZapSink struct {
 	*gbytes.Buffer
 }

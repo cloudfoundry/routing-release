@@ -3,7 +3,7 @@ package logger
 import (
 	"time"
 
-	"go.uber.org/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 )
 
 // Logger is the zap.Logger interface with additional Session methods.
@@ -124,7 +124,7 @@ func numberLevelFormatter() zap.LevelFormatter {
 }
 
 // We add 1 to zap's default values to match our level definitions
-// https://go.uber.org/zap/blob/47f41350ff078ea1415b63c117bf1475b7bbe72c/level.go#L36
+// https://code.cloudfoundry.org/routing-release/gorouter/zap/blob/47f41350ff078ea1415b63c117bf1475b7bbe72c/level.go#L36
 func levelNumber(level zap.Level) int {
 	return int(level) + 1
 }

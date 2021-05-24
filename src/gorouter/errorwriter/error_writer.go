@@ -8,7 +8,7 @@ import (
 	"net/http"
 
 	"code.cloudfoundry.org/routing-release/gorouter/logger"
-	"go.uber.org/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 )
 
 type ErrorWriter interface {

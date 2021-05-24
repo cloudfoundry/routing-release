@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"go.uber.org/zap"
+	"code.cloudfoundry.org/routing-release/gorouter/zap"
 	"github.com/urfave/negroni"
 
 	"code.cloudfoundry.org/routing-release/gorouter/logger"
