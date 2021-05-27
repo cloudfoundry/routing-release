@@ -1,8 +1,6 @@
 processes:
   - name: route_registrar
     executable: /var/vcap/packages/route_registrar/bin/route-registrar
-    env:
-      GODEBUG: x509ignoreCN=0
     args:
     - --configPath
     - /var/vcap/jobs/route_registrar/config/registrar_settings.json
