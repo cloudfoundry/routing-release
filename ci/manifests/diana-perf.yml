@@ -284,16 +284,18 @@ variables:
   options:
     ca: service_cf_internal_ca
     common_name: locket.service.cf.internal
-    extended_key_usage:
-    - server_auth
     alternative_names:
     - "*.locket.service.cf.internal"
     - locket.service.cf.internal
+    extended_key_usage:
+    - server_auth
 - name: diego_locket_client
   type: certificate
   options:
     ca: service_cf_internal_ca
-    common_name: locket client
+    common_name: locket-client
+    alternative_names:
+    - "locket-client"
     extended_key_usage:
     - client_auth
 - name: locket_database_password
@@ -308,25 +310,31 @@ variables:
   options:
     ca: loggregator_ca
     common_name: metron
+    alternative_names:
+    - metron
     extended_key_usage:
     - client_auth
     - server_auth
 - name: routing_api_ca
+  type: certificate
   options:
     common_name: routing_api
     is_ca: true
-  type: certificate
 - name: routing_api_tls
+  type: certificate
   options:
     ca: routing_api_ca
     common_name: routing-api.service.cf.internal
+    alternative_names:
+    - routing-api.service.cf.internal
     extended_key_usage:
     - server_auth
-  type: certificate
 - name: routing_api_tls_client
+  type: certificate
   options:
     ca: routing_api_ca
     common_name: routing-api-client
+    alternative_names:
+    - routing-api-client
     extended_key_usage:
     - client_auth
-  type: certificate
