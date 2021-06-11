@@ -1,6 +1,8 @@
 processes:
   - name: routing-api
     executable: /var/vcap/packages/routing-api/bin/routing-api
+    env:
+      GODEBUG: x509ignoreCN=0
     args:
     - -config
     - /var/vcap/jobs/routing-api/config/routing-api.yml
