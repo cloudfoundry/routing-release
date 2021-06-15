@@ -117,9 +117,7 @@ command and looking in the output for values in the `X509v3 Subject Alternative 
 ## 🐛 Example Errors 🐞
 
 Here are some example errors when an operator does not provide a SAN in the
-Load Balancer certificate and tries to [deploy
-`cf-deployment`](https://github.com/cloudfoundry/cf-deployment):
-
+Load Balancer certificate and tries to interact with the foundation.
 
 ### Attempting to use the cf CLI to target the foundation API
 ```
