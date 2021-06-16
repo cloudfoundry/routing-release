@@ -1,7 +1,8 @@
 # golang 1.15 X.509 CommonName deprecation
 
-This doc helps operators understand why certificates used by  gorouter to
-serve TLS traffic must contain at least one Subject Alternative Name (SAN).
+This doc helps operators understand why certificates used by network Load
+Balancers and the gorouter to serve TLS traffic must contain at least one
+Subject Alternative Name (SAN).
 
 ## 🔥 Version
 This deprecation is firmly observed in [0.215.0](https://github.com/cloudfoundry/routing-release/releases/tag/0.215.0).
@@ -30,12 +31,12 @@ we have removed the use of the `x509ignoreCN=0` flag to stay ahead of the golang
 release curve, now requiring that operators have compatible certificates.
 
 ## 🤔 What does this mean for operators?
-### 1️⃣ When the gorouter terminates TLS
+### 1️⃣ Gorouter TLS Certificates
 
 If an operator has configured `routing-release` by enabling the
 `router.enable_ssl` [bosh
 property](https://github.com/cloudfoundry/routing-release/blob/1de3053a8b3b6d3169ac53729832fb51c93fc1ac/jobs/gorouter/spec#L90-L92)
-to terminate TLS for the foundation:
+to serve TLS for the foundation:
 
 ```yaml
   router.enable_ssl:
@@ -62,13 +63,13 @@ same domain that would be set in the `CommonName`.
           -----END RSA PRIVATE KEY-----
 ```
 
-### 2️⃣ When a network load balancer terminates TLS for the gorouter
+### 2️⃣  Network Load Balancers
 
-If an operator has disabled the gorouter from terminating TLS by setting
-`router.enable_ssl` to `false`, the operator *must* provide a certificate to the
-Load Balancer that includes a SAN. Follow the procedure in [How to check a
-certificate for SANs](#--how-to-check-a-certificate-for-subject-alternative-names-sans) to validate that the
-certificate used contains the appropriate SAN(s).
+If the foundation leverages a network Load Balancer that includes a certificate
+to forward TLS traffic to the router, the operator *must* ensure the certificate
+for the Load Balancer includes a SAN. Follow the procedure in [How to check a
+certificate for SANs](#--how-to-check-a-certificate-for-subject-alternative-names-sans) to
+validate that the certificate used contains the appropriate SAN(s).
 
 ## 📝 👩‍🔬 How to check a certificate for Subject Alternative Names (SANs)
 Operators can check if their certificates contain a SAN by running the following
@@ -111,61 +112,4 @@ command and looking in the output for values in the `X509v3 Subject Alternative 
 	      X509v3 Subject Alternative Name:
 		  DNS:*.no-sans-env.funtime.lol
 #### Need to have this final property ↑ that matches the CommonName (CN)
-```
-
-
-## 🐛 Example Errors 🐞
-
-Here are some example errors when an operator does not provide a SAN in the
-Load Balancer certificate and tries to interact with the foundation.
-
-### Attempting to use the cf CLI to target the foundation API
-```
-$ cf api --skip-ssl-validation https://api.no-sans-env.funtime.lol
-Setting API endpoint to https://api.no-sans-env.funtime.lol...
-Unexpected Response
-Response Code: 502
-Code: 0, Title: , Detail:
-<html><head>
-<meta http-equiv="content-type" content="text/html;charset=utf-8">
-<title>502 Server Error</title>
-</head>
-<body text=#000000 bgcolor=#ffffff>
-<h1>Error: Server Error</h1>
-<h2>The server encountered a temporary error and could not complete your request.<p>Please try again in 30 seconds.</h2>
-<h2></h2>
-</body></html>
-```
-
-### Authentication with the cf cli
-```
-$ cf auth admin "****"
-Unexpected Response
-Response Code: 502
-Code: 0, Title: , Detail:
-<html><head>
-<meta http-equiv="content-type" content="text/html;charset=utf-8">
-<title>502 Server Error</title>
-</head>
-<body text=#000000 bgcolor=#ffffff>
-<h1>Error: Server Error</h1>
-<h2>The server encountered a temporary error and could not complete your request.<p>Please try again in 30 seconds.</h2>
-<h2></h2>
-</body></html>
-FAILED
-```
-
-### Accessing an application that was already deployed on the foundation (before the gorouter or LB cert lacked a SAN)
-```
-$ curl -k https://potato.no-sans-env.funtime.lol/
-
-<html><head>
-<meta http-equiv="content-type" content="text/html;charset=utf-8">
-<title>502 Server Error</title>
-</head>
-<body text=#000000 bgcolor=#ffffff>
-<h1>Error: Server Error</h1>
-<h2>The server encountered a temporary error and could not complete your request.<p>Please try again in 30 seconds.</h2>
-<h2></h2>
-</body></html>
 ```
