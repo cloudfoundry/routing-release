@@ -1,45 +1,92 @@
 ---
+<%
+def property_or_link(description, property, link_path, link_name=nil)
+  link_name ||= link_path.split('.').first
+  if_p(property) do |prop|
+    return prop
+  end.else do
+    if_link(link_name) do |link_object|
+      return link_object.p(link_path)
+    end
+  end
+  raise RuntimeError, "#{description} not found in properties nor in \"#{link_name}\" link."
+end
+%>
+
 status:
   port: <%= p("router.status.port") %>
   user: <%= p("router.status.user") %>
   pass: <%= p("router.status.password") %>
 
-<%
-  nats_machines = nil
-  if_p('nats.machines') do |ips|
-    nats_machines = ips.compact
-  end.else do
-    nats_machines = link('nats').instances.map { |instance| instance.address }
+<%=
+nats = {}
+
+nats_link_name = 'nats'
+if p("nats.tls_enabled")
+  nats_link_name = 'nats-tls'
+
+  nats_ca_certs = property_or_link(
+    'NATS server CA certificate',
+    'nats.ca_certs',
+    "nats.external.tls.ca",
+    link_name=nats_link_name,
+  )
+  if !nats_ca_certs.is_a?(String)
+    raise 'nats.ca_certs must be provided as a single string block'
   end
 
-  nats_port = nil
-  if_p('nats.port') do |prop|
-    nats_port = prop
-  end.else do
-    nats_port = link('nats').p("nats.port")
+  nats_cert_chain = ''
+  nats_private_key = ''
+  if_p("nats.cert_chain") { |val| nats_cert_chain = val }
+  if_p("nats.private_key") { |val| nats_private_key = val }
+
+  if (nats_cert_chain != '') ^ (nats_private_key != '')
+    raise 'nats.cert_chain and nats.private_key must be both provided or not at all'
+  end
+  if !nats_cert_chain.is_a?(String)
+    raise 'nats.cert_chain must be provided as a single string block'
   end
 
-  nats_user = nil
-  if_p('nats.user') do |prop|
-    nats_user = prop
-  end.else do
-    nats_user = link('nats').p("nats.user")
-  end
+  nats['tls_enabled'] = true
+  nats['ca_certs'] = nats_ca_certs
+  nats['cert_chain'] = nats_cert_chain
+  nats['private_key'] = nats_private_key
+end
 
-  nats_password = nil
-  if_p('nats.password') do |prop|
-    nats_password = prop
+nats_port = property_or_link(
+  'NATS server port number',
+  'nats.port',
+  "nats.port",
+  link_name=nats_link_name,
+)
+
+nats_machines = nil
+if_p('nats.machines') do |ips|
+  nats_machines = ips.compact
+end.else do
+  link(nats_link_name).if_p("nats.hostname") do |hostname|
+    nats_machines = [hostname]
   end.else do
-    nats_password = link('nats').p("nats.password")
+    nats_machines = link(nats_link_name).instances.map { |instance| instance.address }
   end
+end
+nats['hosts'] = nats_machines.map { |hostname| {"hostname" => hostname, "port" => nats_port} }
+
+nats['user'] = property_or_link(
+  'NATS server username',
+  'nats.user',
+  "nats.user",
+  link_name=nats_link_name,
+)
+nats['pass'] = property_or_link(
+  'NATS server username',
+  'nats.password',
+  "nats.password",
+  link_name=nats_link_name,
+)
+
+{"nats" => nats}.to_yaml[3..-1]
 %>
-nats:
-<% nats_machines.each do |address| %>
-  - host: <%= address %>
-    port: <%= nats_port %>
-    user: <%= nats_user %>
-    pass: "<%= nats_password %>"
-<% end %>
 
 logging:
   syslog: vcap.gorouter
@@ -145,18 +192,6 @@ oauth:
   <% end %>
 
 <% if p("routing_api.enabled")
-  def property_or_link(description, property, link_path)
-    link_name = link_path.split('.').first
-    if_p(property) do |prop|
-      return prop
-    end.else do
-      if_link(link_name) do |link_object|
-        return link_object.p(link_path)
-      end
-    end
-    raise RuntimeError, "#{description} not found in properties nor in \"#{link_name}\" link. This value can be specified using the \"#{property}\" property."
-  end
-
   ca_certs = property_or_link(
     'Routing API server CA certificate',
     'routing_api.ca_certs',
