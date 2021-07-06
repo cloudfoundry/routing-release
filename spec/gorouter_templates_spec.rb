@@ -785,25 +785,25 @@ describe 'gorouter' do
         let(:property_value) { ('a'..'z').to_a.shuffle.join }
         let(:link_value) { ('a'..'z').to_a.shuffle.join }
 
-        class LinkConfiguration
-          attr_reader :description, :property, :link, :parsed_yaml_property
+        class NatsLinkConfiguration
+          attr_reader :description, :property, :link, :parsed_yaml_property, :name
 
-          def initialize(description:, property:, link:, parsed_yaml_property:)
+          def initialize(description:, property:, link:, parsed_yaml_property:, name:)
             @description = description
             @property = property
             @link = link
             @parsed_yaml_property = parsed_yaml_property
+            @name = name
           end
 
           def link_namespace
-            link.split('.').first
+            @name
           end
         end
 
-        shared_examples 'overridable_link' do |link_config|
+        shared_examples 'nats_overridable_link' do |link_config|
           def get_at_property(hash, property)
             property_chain = property.split('.')
-
             get_this = hash
             property_chain.each do |getter|
               getter = getter.to_i if get_this.class == Array
@@ -824,7 +824,6 @@ describe 'gorouter' do
               getter = getter.to_i if set_this.class == Array
               set_this = set_this.fetch(getter)
             end
-
             set_this.store(setter, value)
           end
 
@@ -846,7 +845,6 @@ describe 'gorouter' do
           context 'when the link is not provided' do
             context 'when the property is set' do
               before do
-                # TODO: constant it
                 set_at_property(deployment_manifest_fragment, link_config.property, property_value)
               end
 
@@ -865,7 +863,7 @@ describe 'gorouter' do
                   parsed_yaml
                 end.to raise_error(
                   RuntimeError,
-                  "#{link_config.description} not found in properties nor in \"#{link_config.link_namespace}\" link. This value can be specified using the \"#{link_config.property}\" property."
+                  "#{link_config.description} not found in properties nor in \"#{link_config.link_namespace}\" link."
                 )
               end
             end
@@ -881,7 +879,7 @@ describe 'gorouter' do
             end
 
             let(:links) do
-              [
+              return [
                 Bosh::Template::Test::Link.new(
                   name: link_config.link_namespace,
                   properties: make_properties(link_config.link, link_value)
@@ -914,11 +912,13 @@ describe 'gorouter' do
         end
 
         describe 'NATS port' do
-          it_behaves_like 'overridable_link', LinkConfiguration.new(
+
+          it_behaves_like 'nats_overridable_link', NatsLinkConfiguration.new(
             description: 'NATS server port number',
             property: 'nats.port',
-            link: 'nats-tls.nats.port',
-            parsed_yaml_property: 'nats.hosts.0.port'
+            link: 'nats.port',
+            parsed_yaml_property: 'nats.hosts.0.port',
+            name: 'nats-tls'
           )
         end
 
@@ -959,11 +959,12 @@ describe 'gorouter' do
             end
           end
 
-          it_behaves_like 'overridable_link', LinkConfiguration.new(
+          it_behaves_like 'nats_overridable_link', NatsLinkConfiguration.new(
             description: 'NATS server CA certificate',
             property: 'nats.ca_certs',
-            link: 'nats-tls.nats.external.tls.ca',
-            parsed_yaml_property: 'nats.ca_certs'
+            link: 'nats.external.tls.ca',
+            parsed_yaml_property: 'nats.ca_certs',
+            name: 'nats-tls'
           )
         end
 
@@ -1023,7 +1024,7 @@ describe 'gorouter' do
           end
         end
 
-        fcontext 'when the timestamp format is set to deprecated' do
+        context 'when the timestamp format is set to deprecated' do
           before do
             deployment_manifest_fragment['router']['logging'] = { 'format' => { 'timestamp' => 'deprecated' } }
           end

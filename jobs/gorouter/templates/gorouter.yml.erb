@@ -1,7 +1,6 @@
 ---
 <%
-def property_or_link(description, property, link_path, link_name=nil)
-  link_name ||= link_path.split('.').first
+def nats_property_or_link(description, property, link_path, link_name)
   if_p(property) do |prop|
     return prop
   end.else do
@@ -25,11 +24,11 @@ nats_link_name = 'nats'
 if p("nats.tls_enabled")
   nats_link_name = 'nats-tls'
 
-  nats_ca_certs = property_or_link(
+  nats_ca_certs = nats_property_or_link(
     'NATS server CA certificate',
     'nats.ca_certs',
     "nats.external.tls.ca",
-    link_name=nats_link_name,
+    nats_link_name,
   )
   if !nats_ca_certs.is_a?(String)
     raise 'nats.ca_certs must be provided as a single string block'
@@ -53,11 +52,11 @@ if p("nats.tls_enabled")
   nats['private_key'] = nats_private_key
 end
 
-nats_port = property_or_link(
+nats_port = nats_property_or_link(
   'NATS server port number',
   'nats.port',
   "nats.port",
-  link_name=nats_link_name,
+  nats_link_name,
 )
 
 nats_machines = nil
@@ -72,17 +71,17 @@ end.else do
 end
 nats['hosts'] = nats_machines.map { |hostname| {"hostname" => hostname, "port" => nats_port} }
 
-nats['user'] = property_or_link(
+nats['user'] = nats_property_or_link(
   'NATS server username',
   'nats.user',
   "nats.user",
-  link_name=nats_link_name,
+  nats_link_name,
 )
-nats['pass'] = property_or_link(
+nats['pass'] = nats_property_or_link(
   'NATS server username',
   'nats.password',
   "nats.password",
-  link_name=nats_link_name,
+  nats_link_name,
 )
 
 {"nats" => nats}.to_yaml[3..-1]
@@ -192,6 +191,19 @@ oauth:
   <% end %>
 
 <% if p("routing_api.enabled")
+
+  def property_or_link(description, property, link_path)
+    link_name = link_path.split('.').first
+    if_p(property) do |prop|
+      return prop
+    end.else do
+      if_link(link_name) do |link_object|
+        return link_object.p(link_path)
+      end
+    end
+    raise RuntimeError, "#{description} not found in properties nor in \"#{link_name}\" link. This value can be specified using the \"#{property}\" property."
+  end
+
   ca_certs = property_or_link(
     'Routing API server CA certificate',
     'routing_api.ca_certs',
