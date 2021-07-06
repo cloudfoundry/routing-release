@@ -255,6 +255,7 @@ ssl_port: <%= p("router.tls_port") %>
 <% end %>
 
 disable_http: <%= p("router.disable_http") %>
+enable_http2: <%= p("router.enable_http2") %>
 
 <% if p("router.ca_certs")
      ca_certs = p("router.ca_certs")
