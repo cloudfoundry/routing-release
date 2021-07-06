@@ -901,6 +901,7 @@ describe 'gorouter' do
 
             context 'when the property is not set' do
               before do
+                p links
                 delete_at_property(deployment_manifest_fragment, link_config.property)
               end
 
