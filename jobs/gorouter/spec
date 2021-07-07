@@ -109,7 +109,7 @@ properties:
     description: |
       Maximum accepted version of TLS protocol. Versions below this will, down to the min_tls_version, will also be accepted. Valid values are TLSv1.2 and TLSv1.3.
       Warning: Setting this to TLSv1.3 will cause things to fail with any Java clients using versions of Java without a fix for the following issue: https://bugs.openjdk.java.net/browse/JDK-8236039
-    default: TLSv1.2
+    default: TLSv1.3
   router.dns_health_check_host:
       description: "Host to ping for confirmation of DNS resolution, only used when Routing API is enabled"
       default: "uaa.service.cf.internal"
