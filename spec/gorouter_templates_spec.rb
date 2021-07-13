@@ -202,7 +202,7 @@ describe 'gorouter' do
             end
 
             it 'fails' do
-              expect { raise parsed_yaml }.to raise_error(RuntimeError, 'router.min_tls_version must be "TLSv1.0", "TLSv1.1", or "TLSv1.2"')
+              expect { raise parsed_yaml }.to raise_error(RuntimeError, 'router.min_tls_version must be "TLSv1.0", "TLSv1.1", "TLSv1.2" or "TLSv1.3"')
             end
           end
         end
