@@ -109,7 +109,7 @@ properties:
     description: Enables the HTTP/2 protocol for communicating with apps. Currently in beta, use at your own risk. Will default to true when the feature exits beta.
     default: false
   router.min_tls_version:
-    description: Minimum accepted version of TLS protocol. All versions above this, up to the max_tls_version, will also be accepted. Valid values are TLSv1.0, TLSv1.1, and TLSv1.2.
+    description: Minimum accepted version of TLS protocol. All versions above this, up to the max_tls_version, will also be accepted. Valid values are TLSv1.0, TLSv1.1, TLSv1.2, and TLSv1.3.
     default: TLSv1.2
   router.max_tls_version:
     description: |
