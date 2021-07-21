@@ -421,3 +421,7 @@ properties:
   router.send_http_start_stop_client_event:
     description: "Send a httpstartstopevent of type client for each request"
     default: true
+
+  router.max_open_files:
+    description: "The number of file descriptors a router can have open at one time"
+    default: 100000
