@@ -33,7 +33,7 @@ tee_output_to_sys_log "${LOG_DIR}" "pre-start" <%= p("router.logging.format.time
 <% end %>
 
 # Allowed number of open file descriptors
-ulimit -n 100000
+ulimit -n <%= p("router.max_open_files") %>
 
 # Add jq to path
 cp /var/vcap/jobs/gorouter/bin/setup-jq /etc/profile.d/jq.sh
