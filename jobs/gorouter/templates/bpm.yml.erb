@@ -6,7 +6,7 @@ processes:
   - -c
   - /var/vcap/jobs/gorouter/config/gorouter.yml
   limits:
-    open_files: 100000
+    open_files: <%= p("router.max_open_files") %>
   env:
     GODEBUG: netdns=cgo,x509ignoreCN=0
   hooks:
