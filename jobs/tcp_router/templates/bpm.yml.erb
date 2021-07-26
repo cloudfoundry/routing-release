@@ -1,14 +1,30 @@
----
-processes:
-- name: tcp_router
-  hooks:
-    pre_start: /var/vcap/jobs/tcp_router/bin/bpm-pre-start
-  additional_volumes:
-    - path: /var/vcap/data/tcp_router/config
-      writable: true
-  capabilities:
-  - NET_BIND_SERVICE
-  - SYS_RESOURCE
-  executable: /var/vcap/jobs/tcp_router/bin/tcp_router_ctl
-  env:
-    GODEBUG: x509ignoreCN=0
+<%=
+require 'yaml'
+
+bpm = {
+  "processes" => [
+    "name" => "tcp_router",
+    "executable" => "/var/vcap/jobs/tcp_router/bin/tcp_router_ctl",
+    "env" => {},
+    "hooks" => {
+      "pre_start" => "/var/vcap/jobs/tcp_router/bin/bpm-pre-start"
+    },
+    "additional_volumes" => [
+      { "path" =>  "/var/vcap/data/tcp_router/config",
+      "writable" => true,
+      },
+    ],
+    "capabilities" => [
+      "NET_BIND_SERVICE",
+      "SYS_RESOURCE"
+    ],
+  ]
+}
+
+
+if p('golang.x509ignoreCN') == true
+  bpm['processes'][0]['env'].merge!({"GODEBUG" => "x509ignoreCN=0"})
+end
+
+YAML.dump(bpm)
+%>

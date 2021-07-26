@@ -213,3 +213,8 @@ properties:
   release_level_backup:
     default: false
     description: "Include routing api database in backup and restore operations"
+
+
+  golang.x509ignoreCN:
+    description: "Environment Flag to temporarily ignore golang's strict checking for at least one SAN in a TLS certificate. See: https://github.com/cloudfoundry/routing-release/blob/develop/docs/golang1.15-remove-x509ignoreCN%3D0-flag-certificates-now-require-SANs.md for more info."
+    default: true

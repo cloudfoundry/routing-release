@@ -1,15 +1,28 @@
----
-processes:
-- name: gorouter
-  executable: /var/vcap/packages/gorouter/bin/gorouter
-  args:
-  - -c
-  - /var/vcap/jobs/gorouter/config/gorouter.yml
-  limits:
-    open_files: <%= p("router.max_open_files") %>
-  env:
-    GODEBUG: netdns=cgo,x509ignoreCN=0
-  hooks:
-    pre_start: /var/vcap/jobs/gorouter/bin/bpm-pre-start
-  capabilities:
-  - NET_BIND_SERVICE
+<%=
+require 'yaml'
+
+bpm = {
+  "processes" => [
+    { "name" => "gorouter",
+      "executable" => "/var/vcap/packages/gorouter/bin/gorouter",
+      "args" => [ "-c", "/var/vcap/jobs/gorouter/config/gorouter.yml"],
+      "limits" => {
+        "open_files" =>  p("router.max_open_files")
+      },
+      "env" => {
+        "GODEBUG" => "netdns=cgo"
+      },
+      "hooks" => {
+          "pre_start" => "/var/vcap/jobs/gorouter/bin/bpm-pre-start"
+      },
+      "capabilities" => ["NET_BIND_SERVICE"]
+    }
+  ]
+}
+
+if p('golang.x509ignoreCN') == true
+      bpm['processes'][0]['env']['GODEBUG'] = 'netdns=cgo,x509ignoreCN=0'
+end
+
+YAML.dump(bpm)
+%>

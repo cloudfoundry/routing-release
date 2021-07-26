@@ -94,3 +94,7 @@ properties:
   uaa.ca_cert:
     description : "Certificate authority for communication between clients and uaa."
     default: ""
+
+  golang.x509ignoreCN:
+    description: "Environment Flag to temporarily ignore golang's strict checking for at least one SAN in a TLS certificate. See: https://github.com/cloudfoundry/routing-release/blob/develop/docs/golang1.15-remove-x509ignoreCN%3D0-flag-certificates-now-require-SANs.md for more info."
+    default: true

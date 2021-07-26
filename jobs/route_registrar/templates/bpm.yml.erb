@@ -1,34 +1,54 @@
-processes:
-  - name: route_registrar
-    executable: /var/vcap/packages/route_registrar/bin/route-registrar
-    env:
-      GODEBUG: x509ignoreCN=0
-    args:
-    - --configPath
-    - /var/vcap/jobs/route_registrar/config/registrar_settings.json
-    - -timeFormat
-    - rfc3339
-    - -logLevel
-    - <%= p('route_registrar.logging_level') %>
-<%
-  paths = []
-  routes = p('route_registrar.routes')
-  routes.each do |route|
-    if route['health_check']
-      # valid path is /var/vcap/jobs/JOB
-      matched = /(^\/var\/vcap\/jobs\/[^\/]*)\/.*/.match(route['health_check']['script_path'])
-      if matched
-        paths << matched[1]
-      end
+<%=
+require 'yaml'
+
+bpm = {
+  "processes" => [
+    { "name" => "route_registrar",
+    "executable" => "/var/vcap/packages/route_registrar/bin/route-registrar",
+    "env" => {},
+    "args" => [
+       "--configPath",
+       "/var/vcap/jobs/route_registrar/config/registrar_settings.json",
+       "-timeFormat",
+       "rfc3339",
+       "-logLevel",
+       p('route_registrar.logging_level'),
+     ],
+    }
+  ]
+}
+
+paths = []
+routes = p('route_registrar.routes')
+routes.each do |route|
+  if route['health_check']
+    # valid path is /var/vcap/jobs/JOB
+    matched = /(^\/var\/vcap\/jobs\/[^\/]*)\/.*/.match(route['health_check']['script_path'])
+    if matched
+      paths << matched[1]
     end
   end
+end
 
-  unless paths.empty? %>
-    unsafe:
-      unrestricted_volumes:
-<% end
-   paths.each do |path| %>
-         - path: <%= path %>
-           allow_executions: true
-         - path: <%= path.sub! 'jobs', 'data' %>
-<% end %>
+unless paths.empty?
+  unsafe = {
+    "unsafe" => {
+      "unrestricted_volumes" => []
+    }
+  }
+
+   paths.each do |path|
+     unsafe['unsafe']['unrestricted_volumes'] << {"path" =>  path, "allow_executions" => true}
+     unsafe['unsafe']['unrestricted_volumes'] << {"path" => path.sub!('jobs', 'data')}
+  end
+
+  bpm['processes'][0].merge!(unsafe)
+end
+
+
+if p('golang.x509ignoreCN') == true
+  bpm['processes'][0]['env'].merge!({"GODEBUG" => "x509ignoreCN=0"})
+end
+
+YAML.dump(bpm)
+%>

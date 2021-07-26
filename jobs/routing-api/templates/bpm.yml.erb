@@ -1,18 +1,31 @@
-processes:
-  - name: routing-api
-    executable: /var/vcap/packages/routing-api/bin/routing-api
-    env:
-      GODEBUG: x509ignoreCN=0
-    args:
-    - -config
-    - /var/vcap/jobs/routing-api/config/routing-api.yml
-    - -logLevel
-    - <%= p("routing_api.log_level") %>
-    - -timeFormat
-    - rfc3339
-    - -ip
-    - <%= spec.ip %>
-    <% if p("routing_api.auth_disabled") == true %>- -devMode <% end %>
+<%=
+require 'yaml'
 
-    hooks:
-      pre_start: /var/vcap/jobs/routing-api/bin/bpm-pre-start
+bpm = {
+  "processes" => [
+    { "name" => "routing-api",
+      "executable" => "/var/vcap/packages/routing-api/bin/routing-api",
+      "env" => {},
+      "args" => [
+        "-config",
+        "/var/vcap/jobs/routing-api/config/routing-api.yml",
+        "-logLevel",
+        p("routing_api.log_level"),
+        "-timeFormat",
+        "rfc3339",
+        "-ip",
+        spec.ip,
+      ],
+      "hooks" => {
+        "pre_start" => "/var/vcap/jobs/routing-api/bin/bpm-pre-start"
+      }
+    }
+  ]
+}
+
+if p('golang.x509ignoreCN') == true
+  bpm['processes'][0]['env'].merge!({"GODEBUG" => "x509ignoreCN=0"})
+end
+
+YAML.dump(bpm)
+%>
