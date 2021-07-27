@@ -227,7 +227,7 @@ describe 'route_registrar' do
             name: 'nats',
             properties: {
               'nats' => {
-                'host' => 'nats-host', 'user' => 'nats-user', 'password' => 'nats-password', 'port' => 8080
+                'hostname' => 'nats-host', 'user' => 'nats-user', 'password' => 'nats-password', 'port' => 8080
               }
             },
             instances: [Bosh::Template::Test::LinkInstance.new(address: 'my-nats-ip')]
@@ -236,7 +236,7 @@ describe 'route_registrar' do
             name: 'nats-tls',
             properties: {
               'nats' => {
-                'host' => 'nats-tls-host', 'user' => 'nats-tls-user', 'password' => 'nats-tls-password', 'port' => 9090
+                'hostname' => 'nats-tls-host', 'user' => 'nats-tls-user', 'password' => 'nats-tls-password', 'port' => 9090
               }
             },
             instances: [Bosh::Template::Test::LinkInstance.new(address: 'my-nats-tls-ip')]
@@ -247,12 +247,11 @@ describe 'route_registrar' do
       context 'when mTLS is enabled for NATS' do
         it 'renders with the nats-tls properties' do
           merged_manifest_properties['nats'] = { 'tls' => { 'enabled' => true } }
-          merged_manifest_properties['nats']['tls']['hostname'] = 'my-nats-tls-hostname'
 
           rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
           expect(rendered_hash['nats_mtls_config']['enabled']).to be true
           expect(rendered_hash['message_bus_servers'].length).to eq(1)
-          expect(rendered_hash['message_bus_servers'][0]['host']).to eq('my-nats-tls-hostname:9090')
+          expect(rendered_hash['message_bus_servers'][0]['host']).to eq('nats-tls-host:9090')
           expect(rendered_hash['message_bus_servers'][0]['user']).to eq('nats-tls-user')
           expect(rendered_hash['message_bus_servers'][0]['password']).to eq('nats-tls-password')
         end
@@ -263,7 +262,7 @@ describe 'route_registrar' do
           rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
           expect(rendered_hash['nats_mtls_config']['enabled']).to be false
           expect(rendered_hash['message_bus_servers'].length).to eq(1)
-          expect(rendered_hash['message_bus_servers'][0]['host']).to eq('my-nats-ip:8080')
+          expect(rendered_hash['message_bus_servers'][0]['host']).to eq('nats-host:8080')
           expect(rendered_hash['message_bus_servers'][0]['user']).to eq('nats-user')
           expect(rendered_hash['message_bus_servers'][0]['password']).to eq('nats-password')
         end
