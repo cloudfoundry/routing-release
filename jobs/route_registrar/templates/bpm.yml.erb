@@ -39,7 +39,7 @@ unless paths.empty?
 
    paths.each do |path|
      unsafe['unsafe']['unrestricted_volumes'] << {"path" =>  path, "allow_executions" => true}
-     unsafe['unsafe']['unrestricted_volumes'] << {"path" => path.sub!('jobs', 'data')}
+     unsafe['unsafe']['unrestricted_volumes'] << {"path" => path.sub('jobs', 'data')}
   end
 
   bpm['processes'][0].merge!(unsafe)
