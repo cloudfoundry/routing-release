@@ -1,19 +1,14 @@
 <%=
   require 'json'
 
-  nats_link_name = 'nats'
-  if p('nats.tls.enabled')
-    nats_link_name = 'nats-tls'
-  end
-
   nats_machines = nil
   if_p('nats.machines') do |ips|
     nats_machines = ips.compact
   end.else do
-    link(nats_link_name).if_p("nats.hostname") do |hostname|
+    link('nats').if_p("nats.hostname") do |hostname|
       nats_machines = [hostname]
     end.else do
-      nats_machines = link(nats_link_name).instances.map { |instance| instance.address }
+      nats_machines = link('nats').instances.map { |instance| instance.address }
     end
   end
 
@@ -21,21 +16,36 @@
   if_p('nats.port') do |prop|
     nats_port = prop
   end.else do
-    nats_port = link(nats_link_name).p("nats.port")
+    nats_port = link('nats').p("nats.port")
   end
 
   nats_user = nil
   if_p('nats.user') do |prop|
     nats_user = prop
   end.else do
-    nats_user = link(nats_link_name).p("nats.user")
+    nats_user = link('nats').p("nats.user")
   end
 
   nats_password = nil
   if_p('nats.password') do |prop|
     nats_password = prop
   end.else do
-    nats_password = link(nats_link_name).p("nats.password")
+    nats_password = link('nats').p("nats.password")
+  end
+
+  if_link('nats-tls') do |nats_link|
+    if p('nats.tls.enabled')
+      nats_machines = nats_link.instances.map { |instance| instance.address }
+      nats_link.if_p("nats.hostname") do |hostname|
+        nats_machines = [hostname]
+      end
+      if_p("nats.tls.hostname") do | prop |
+        nats_machines = [prop]
+      end
+      nats_port = nats_link.p("nats.port")
+      nats_user = nats_link.p("nats.user")
+      nats_password = nats_link.p("nats.password")
+    end
   end
 
   message_bus_servers = nats_machines.map do |host|
