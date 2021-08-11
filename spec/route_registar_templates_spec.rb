@@ -203,7 +203,7 @@ describe 'route_registrar' do
           name: 'nats',
           properties: {
             'nats' => {
-              'host' => 'nats-host', 'user' => 'nats-user', 'password' => 'nats-password', 'port' => 8080
+              'hostname' => 'nats-host', 'user' => 'nats-user', 'password' => 'nats-password', 'port' => 8080
             }
           },
           instances: [Bosh::Template::Test::LinkInstance.new(address: 'my-nats-address')]
@@ -214,7 +214,7 @@ describe 'route_registrar' do
     describe 'nats properties' do
       it 'renders with the default' do
         rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
-        expect(rendered_hash['message_bus_servers'][0]['host']).to eq('my-nats-address:8080')
+        expect(rendered_hash['message_bus_servers'][0]['host']).to eq('nats-host:8080')
         expect(rendered_hash['message_bus_servers'][0]['user']).to eq('nats-user')
         expect(rendered_hash['message_bus_servers'][0]['password']).to eq('nats-password')
       end
@@ -285,7 +285,7 @@ describe 'route_registrar' do
               name: 'nats',
               properties: {
                 'nats' => {
-                  'host' => '', 'user' => '', 'password' => '', 'port' => 8080
+                  'hostname' => '', 'user' => '', 'password' => '', 'port' => 8080
                 }
               }
             )
@@ -318,7 +318,7 @@ describe 'route_registrar' do
         rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
         expect(rendered_hash).to eq(
           'host' => '192.168.0.0',
-          'message_bus_servers' => [{ 'host' => 'my-nats-address:8080', 'password' => 'nats-password', 'user' => 'nats-user' }],
+          'message_bus_servers' => [{ 'host' => 'nats-host:8080', 'password' => 'nats-password', 'user' => 'nats-user' }],
           'routes' => [
             {
               'health_check' => { 'name' => 'uaa-healthcheck', 'script_path' => '/var/vcap/jobs/uaa/bin/health_check' },
