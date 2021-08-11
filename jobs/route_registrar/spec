@@ -53,8 +53,6 @@ properties:
     description: "PEM-encoded certificate for the route-emitter to present to NATS for verification when connecting via TLS."
   nats.tls.client_key:
     description: "PEM-encoded private key for the route-emitter to present to NATS for verification when connecting via TLS."
-  nats.tls.hostname:
-    description: "Hostname of the NATS cluster."
 
   host:
     description: (string, optional) By default, route_registrar will detect the IP of the VM and use it, in combination with port as the backend destination for each uri being registered. This property enables overriding the destination hostname or IP.
