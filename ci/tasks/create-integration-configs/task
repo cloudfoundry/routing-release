@@ -40,34 +40,35 @@ RATS_INTEGRATION_CONFIG='created-integration-configs/rats_integration_config.jso
 echo "Creating ${CATS_INTEGRATION_CONFIG}"
 cat > "${CATS_INTEGRATION_CONFIG}" <<EOF
 {
-  "api": "api.${SYSTEM_DOMAIN}",
-  "admin_user": "admin",
   "admin_password": "PROGRAMMATICALLY REPLACED",
+  "admin_user": "admin",
+  "api": "api.${SYSTEM_DOMAIN}",
   "apps_domain": "${SYSTEM_DOMAIN}",
   "artifacts_directory": "logs",
-  "skip_ssl_validation": true,
-  "use_http": true,
-  "timeout_scale": 2,
   "backend": "diego",
   "include_apps": true,
   "include_backend_compatibility": false,
   "include_detect": true,
   "include_docker": false,
-  "include_ssh": false,
+  "include_http2_routing": true,
   "include_internet_dependent": true,
-  "include_privileged_container_support": false,
   "include_isolation_segments": ${ENABLE_ISOLATION_SEGMENT_TESTS},
-  "include_tcp_isolation_segments": ${ENABLE_ISOLATION_SEGMENT_TESTS},
-  "isolation_segment_name": "${ISO_SEG_NAME}",
+  "include_privileged_container_support": false,
   "include_route_services": true,
   "include_routing": true,
   "include_security_groups": true,
   "include_services": true,
+  "include_ssh": false,
   "include_sso": false,
   "include_tasks": false,
+  "include_tcp_isolation_segments": ${ENABLE_ISOLATION_SEGMENT_TESTS},
   "include_v3": false,
   "include_zipkin": true,
-  "stacks": ["cflinuxfs3"]
+  "isolation_segment_name": "${ISO_SEG_NAME}",
+  "skip_ssl_validation": true,
+  "stacks": ["cflinuxfs3"],
+  "timeout_scale": 2,
+  "use_http": true
 }
 EOF
 
