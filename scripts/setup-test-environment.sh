@@ -22,9 +22,12 @@ echo "Running template tests"
   bundle exec rspec
 echo "Finished running template tests"
 
-export PATH=$PATH:$PWD/bin
-go get github.com/nats-io/nats-server
-go get github.com/onsi/ginkgo/ginkgo
-go get github.com/onsi/gomega
+export BIN_DIR="$PWD/bin"
+export PATH=$PATH:$BIN_DIR
+
+pushd src/code.cloudfoundry.org
+go build -o "$BIN_DIR/nats-server" github.com/nats-io/nats-server/v2
+go build -o "$BIN_DIR/ginkgo" github.com/onsi/ginkgo/ginkgo
+popd
 
 echo "Done setting up for tests"

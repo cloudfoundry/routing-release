@@ -6,12 +6,15 @@ dependencies:
 
 files:
   - jq/jq-1.6-linux64.tgz
+  - code.cloudfoundry.org/go.mod
+  - code.cloudfoundry.org/go.sum
+  - code.cloudfoundry.org/vendor/modules.txt
   - code.cloudfoundry.org/gorouter/**/*.{go,golden,proto,c,h,}
   - code.cloudfoundry.org/gorouter/LICENSE
   - code.cloudfoundry.org/gorouter/NOTICE
-  - code.cloudfoundry.org/cfhttp/v2/*.go # gosub
-  - code.cloudfoundry.org/clock/*.go # gosub
-  - code.cloudfoundry.org/debugserver/*.go # gosub
+  - code.cloudfoundry.org/vendor/code.cloudfoundry.org/cfhttp/v2/*.go # gosub
+  - code.cloudfoundry.org/vendor/code.cloudfoundry.org/clock/*.go # gosub
+  - code.cloudfoundry.org/vendor/code.cloudfoundry.org/debugserver/*.go # gosub
   - code.cloudfoundry.org/gorouter/*.go # gosub
   - code.cloudfoundry.org/gorouter/accesslog/*.go # gosub
   - code.cloudfoundry.org/gorouter/accesslog/fakes/*.go # gosub
@@ -27,6 +30,7 @@ files:
   - code.cloudfoundry.org/gorouter/common/spec/*.go # gosub
   - code.cloudfoundry.org/gorouter/common/uuid/*.go # gosub
   - code.cloudfoundry.org/gorouter/config/*.go # gosub
+  - code.cloudfoundry.org/gorouter/errorwriter/*.go # gosub
   - code.cloudfoundry.org/gorouter/fakes/*.go # gosub
   - code.cloudfoundry.org/gorouter/handlers/*.go # gosub
   - code.cloudfoundry.org/gorouter/integration/*.go # gosub
@@ -62,114 +66,140 @@ files:
   - code.cloudfoundry.org/gorouter/test_util/rss/commands/*.go # gosub
   - code.cloudfoundry.org/gorouter/test_util/rss/common/*.go # gosub
   - code.cloudfoundry.org/gorouter/varz/*.go # gosub
-  - code.cloudfoundry.org/lager/*.go # gosub
-  - code.cloudfoundry.org/lager/internal/truncate/*.go # gosub
-  - code.cloudfoundry.org/localip/*.go # gosub
+  - code.cloudfoundry.org/vendor/code.cloudfoundry.org/lager/*.go # gosub
+  - code.cloudfoundry.org/vendor/code.cloudfoundry.org/localip/*.go # gosub
   - code.cloudfoundry.org/routing-api/*.go # gosub
   - code.cloudfoundry.org/routing-api/models/*.go # gosub
-  - code.cloudfoundry.org/tlsconfig/*.go # gosub
+  - code.cloudfoundry.org/vendor/code.cloudfoundry.org/tlsconfig/*.go # gosub
   - code.cloudfoundry.org/trace-logger/*.go # gosub
   - code.cloudfoundry.org/uaa-go-client/*.go # gosub
   - code.cloudfoundry.org/uaa-go-client/config/*.go # gosub
   - code.cloudfoundry.org/uaa-go-client/schema/*.go # gosub
-  - github.com/armon/go-proxyproto/*.go # gosub
-  - github.com/bmizerany/pat/*.go # gosub
-  - github.com/cloudfoundry/custom-cats-reporters/honeycomb/client/*.go # gosub
-  - github.com/cloudfoundry/dropsonde/*.go # gosub
-  - github.com/cloudfoundry/dropsonde/emitter/*.go # gosub
-  - github.com/cloudfoundry/dropsonde/envelope_sender/*.go # gosub
-  - github.com/cloudfoundry/dropsonde/envelopes/*.go # gosub
-  - github.com/cloudfoundry/dropsonde/factories/*.go # gosub
-  - github.com/cloudfoundry/dropsonde/instrumented_handler/*.go # gosub
-  - github.com/cloudfoundry/dropsonde/instrumented_round_tripper/*.go # gosub
-  - github.com/cloudfoundry/dropsonde/log_sender/*.go # gosub
-  - github.com/cloudfoundry/dropsonde/logs/*.go # gosub
-  - github.com/cloudfoundry/dropsonde/metric_sender/*.go # gosub
-  - github.com/cloudfoundry/dropsonde/metricbatcher/*.go # gosub
-  - github.com/cloudfoundry/dropsonde/metrics/*.go # gosub
-  - github.com/cloudfoundry/dropsonde/runtime_stats/*.go # gosub
-  - github.com/cloudfoundry/sonde-go/events/*.go # gosub
-  - github.com/codegangsta/cli/*.go # gosub
-  - github.com/dgrijalva/jwt-go/*.go # gosub
-  - github.com/facebookgo/clock/*.go # gosub
-  - github.com/facebookgo/limitgroup/*.go # gosub
-  - github.com/facebookgo/muster/*.go # gosub
-  - github.com/gogo/protobuf/gogoproto/*.go # gosub
-  - github.com/gogo/protobuf/proto/*.go # gosub
-  - github.com/gogo/protobuf/protoc-gen-gogo/descriptor/*.go # gosub
-  - github.com/honeycombio/libhoney-go/*.go # gosub
-  - github.com/honeycombio/libhoney-go/transmission/*.go # gosub
-  - github.com/mailru/easyjson/*.go # gosub
-  - github.com/mailru/easyjson/buffer/*.go # gosub
-  - github.com/mailru/easyjson/jlexer/*.go # gosub
-  - github.com/mailru/easyjson/jwriter/*.go # gosub
-  - github.com/nats-io/jwt/*.go # gosub
-  - github.com/nats-io/nats.go/*.go # gosub
-  - github.com/nats-io/nats.go/encoders/builtin/*.go # gosub
-  - github.com/nats-io/nats.go/util/*.go # gosub
-  - github.com/nats-io/nkeys/*.go # gosub
-  - github.com/nats-io/nuid/*.go # gosub
-  - github.com/nu7hatch/gouuid/*.go # gosub
-  - github.com/onsi/ginkgo/*.go # gosub
-  - github.com/onsi/ginkgo/config/*.go # gosub
-  - github.com/onsi/ginkgo/internal/codelocation/*.go # gosub
-  - github.com/onsi/ginkgo/internal/containernode/*.go # gosub
-  - github.com/onsi/ginkgo/internal/failer/*.go # gosub
-  - github.com/onsi/ginkgo/internal/leafnodes/*.go # gosub
-  - github.com/onsi/ginkgo/internal/remote/*.go # gosub
-  - github.com/onsi/ginkgo/internal/spec/*.go # gosub
-  - github.com/onsi/ginkgo/internal/spec_iterator/*.go # gosub
-  - github.com/onsi/ginkgo/internal/specrunner/*.go # gosub
-  - github.com/onsi/ginkgo/internal/suite/*.go # gosub
-  - github.com/onsi/ginkgo/internal/testingtproxy/*.go # gosub
-  - github.com/onsi/ginkgo/internal/writer/*.go # gosub
-  - github.com/onsi/ginkgo/reporters/*.go # gosub
-  - github.com/onsi/ginkgo/reporters/stenographer/*.go # gosub
-  - github.com/onsi/ginkgo/reporters/stenographer/support/go-colorable/*.go # gosub
-  - github.com/onsi/ginkgo/types/*.go # gosub
-  - github.com/onsi/gomega/*.go # gosub
-  - github.com/onsi/gomega/format/*.go # gosub
-  - github.com/onsi/gomega/gbytes/*.go # gosub
-  - github.com/onsi/gomega/gexec/*.go # gosub
-  - github.com/onsi/gomega/internal/assertion/*.go # gosub
-  - github.com/onsi/gomega/internal/asyncassertion/*.go # gosub
-  - github.com/onsi/gomega/internal/oraclematcher/*.go # gosub
-  - github.com/onsi/gomega/internal/testingtsupport/*.go # gosub
-  - github.com/onsi/gomega/matchers/*.go # gosub
-  - github.com/onsi/gomega/matchers/support/goraph/bipartitegraph/*.go # gosub
-  - github.com/onsi/gomega/matchers/support/goraph/edge/*.go # gosub
-  - github.com/onsi/gomega/matchers/support/goraph/node/*.go # gosub
-  - github.com/onsi/gomega/matchers/support/goraph/util/*.go # gosub
-  - github.com/onsi/gomega/types/*.go # gosub
-  - github.com/rcrowley/go-metrics/*.go # gosub
-  - github.com/tedsuo/ifrit/*.go # gosub
-  - github.com/tedsuo/ifrit/grouper/*.go # gosub
-  - github.com/tedsuo/ifrit/http_server/*.go # gosub
-  - github.com/tedsuo/ifrit/sigmon/*.go # gosub
-  - github.com/tedsuo/rata/*.go # gosub
-  - github.com/uber-go/atomic/*.go # gosub
-  - github.com/uber-go/zap/*.go # gosub
-  - github.com/urfave/negroni/*.go # gosub
-  - github.com/vito/go-sse/sse/*.go # gosub
-  - golang.org/x/crypto/ed25519/*.go # gosub
-  - golang.org/x/crypto/pbkdf2/*.go # gosub
-  - golang.org/x/net/html/*.go # gosub
-  - golang.org/x/net/html/atom/*.go # gosub
-  - golang.org/x/net/html/charset/*.go # gosub
-  - golang.org/x/text/encoding/*.go # gosub
-  - golang.org/x/text/encoding/charmap/*.go # gosub
-  - golang.org/x/text/encoding/htmlindex/*.go # gosub
-  - golang.org/x/text/encoding/internal/*.go # gosub
-  - golang.org/x/text/encoding/internal/identifier/*.go # gosub
-  - golang.org/x/text/encoding/japanese/*.go # gosub
-  - golang.org/x/text/encoding/korean/*.go # gosub
-  - golang.org/x/text/encoding/simplifiedchinese/*.go # gosub
-  - golang.org/x/text/encoding/traditionalchinese/*.go # gosub
-  - golang.org/x/text/encoding/unicode/*.go # gosub
-  - golang.org/x/text/internal/tag/*.go # gosub
-  - golang.org/x/text/internal/utf8internal/*.go # gosub
-  - golang.org/x/text/language/*.go # gosub
-  - golang.org/x/text/runes/*.go # gosub
-  - golang.org/x/text/transform/*.go # gosub
-  - gopkg.in/alexcesaro/statsd.v2/*.go # gosub
-  - gopkg.in/yaml.v2/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/armon/go-proxyproto/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/bmizerany/pat/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/cloudfoundry/custom-cats-reporters/honeycomb/client/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/cloudfoundry/dropsonde/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/cloudfoundry/dropsonde/emitter/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/cloudfoundry/dropsonde/envelope_sender/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/cloudfoundry/dropsonde/envelopes/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/cloudfoundry/dropsonde/factories/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/cloudfoundry/dropsonde/instrumented_handler/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/cloudfoundry/dropsonde/instrumented_round_tripper/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/cloudfoundry/dropsonde/log_sender/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/cloudfoundry/dropsonde/logs/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/cloudfoundry/dropsonde/metric_sender/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/cloudfoundry/dropsonde/metricbatcher/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/cloudfoundry/dropsonde/metrics/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/cloudfoundry/dropsonde/runtime_stats/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/cloudfoundry/sonde-go/events/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/codegangsta/cli/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/dgrijalva/jwt-go/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/facebookgo/clock/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/facebookgo/limitgroup/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/facebookgo/muster/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/fsnotify/fsnotify/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/gogo/protobuf/gogoproto/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/gogo/protobuf/proto/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/gogo/protobuf/protoc-gen-gogo/descriptor/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/golang/snappy/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/golang/snappy/*.s # gosub
+  - code.cloudfoundry.org/vendor/github.com/honeycombio/libhoney-go/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/honeycombio/libhoney-go/transmission/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/josharian/intern/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/klauspost/compress/fse/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/klauspost/compress/huff0/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/klauspost/compress/zstd/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/klauspost/compress/zstd/internal/xxhash/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/klauspost/compress/zstd/internal/xxhash/*.s # gosub
+  - code.cloudfoundry.org/vendor/github.com/mailru/easyjson/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/mailru/easyjson/buffer/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/mailru/easyjson/jlexer/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/mailru/easyjson/jwriter/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/encoders/builtin/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/util/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/nats-io/nkeys/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/nats-io/nuid/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/nu7hatch/gouuid/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/nxadm/tail/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/nxadm/tail/ratelimiter/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/nxadm/tail/util/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/nxadm/tail/watch/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/config/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/formatter/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/internal/codelocation/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/internal/containernode/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/internal/failer/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/internal/global/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/internal/leafnodes/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/internal/remote/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/internal/spec/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/internal/spec_iterator/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/internal/specrunner/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/internal/suite/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/internal/testingtproxy/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/internal/writer/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/reporters/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/reporters/stenographer/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/reporters/stenographer/support/go-colorable/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/reporters/stenographer/support/go-isatty/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/types/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/format/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/gbytes/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/gexec/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/assertion/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/asyncassertion/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/defaults/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/oraclematcher/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/testingtsupport/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/support/goraph/bipartitegraph/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/support/goraph/edge/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/support/goraph/node/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/support/goraph/util/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/types/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/rcrowley/go-metrics/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/tedsuo/ifrit/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/tedsuo/ifrit/grouper/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/tedsuo/ifrit/http_server/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/tedsuo/ifrit/sigmon/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/tedsuo/rata/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/uber-go/atomic/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/uber-go/zap/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/urfave/negroni/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/vito/go-sse/sse/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/vmihailenco/msgpack/v4/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/vmihailenco/msgpack/v4/codes/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/vmihailenco/tagparser/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/vmihailenco/tagparser/internal/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/vmihailenco/tagparser/internal/parser/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/crypto/ed25519/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/crypto/pbkdf2/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/net/html/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/net/html/atom/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/net/html/charset/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/sys/internal/unsafeheader/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/sys/unix/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/sys/unix/*.s # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/text/encoding/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/text/encoding/charmap/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/text/encoding/htmlindex/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/text/encoding/internal/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/text/encoding/internal/identifier/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/text/encoding/japanese/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/text/encoding/korean/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/text/encoding/simplifiedchinese/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/text/encoding/traditionalchinese/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/text/encoding/unicode/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/text/internal/language/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/text/internal/language/compact/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/text/internal/tag/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/text/internal/utf8internal/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/text/language/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/text/runes/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/text/transform/*.go # gosub
+  - code.cloudfoundry.org/vendor/gopkg.in/alexcesaro/statsd.v2/*.go # gosub
+  - code.cloudfoundry.org/vendor/gopkg.in/tomb.v1/*.go # gosub
+  - code.cloudfoundry.org/vendor/gopkg.in/yaml.v2/*.go # gosub

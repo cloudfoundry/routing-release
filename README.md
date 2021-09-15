@@ -85,19 +85,6 @@ happens on the `develop` branch.
   cd routing-release/
   ```
 
-1. Automate `$GOPATH` and `$PATH` setup.
-
-  This BOSH release doubles as a `$GOPATH`. It will automatically be set up for
-  you if you have [direnv](http://direnv.net) installed.
-
-  ```bash
-  direnv allow
-  ```
-
-  If you do not wish to use `direnv`, you can simply `source` the `.envrc` file
-  at the root of the repository.  You may manually need to update your `$GOPATH`
-  and `$PATH` variables as you switch in and out of the directory.
-
 1. Initialize and sync submodules.
 
   ```bash

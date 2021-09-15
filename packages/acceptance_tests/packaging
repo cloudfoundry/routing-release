@@ -2,27 +2,20 @@
 
 set -ex
 
-source /var/vcap/packages/golang-*-linux/bosh/compile.env
-export GO111MODULE=auto
-mkdir -p "${BOSH_INSTALL_TARGET}/bin"
-mkdir -p "${GOPATH}/src"
+mkdir -p ${BOSH_INSTALL_TARGET}/src
+cp -a . ${BOSH_INSTALL_TARGET}/src
 
-mv code.cloudfoundry.org "${GOPATH}/src"
-mv github.com "${GOPATH}/src"
-mv golang.org "${GOPATH}/src"
-mv gopkg.in "${GOPATH}/src"
+pushd "${BOSH_INSTALL_TARGET}"
+  source /var/vcap/packages/golang-1-linux/bosh/compile.env
 
-go install github.com/onsi/ginkgo/...
+  pushd src/code.cloudfoundry.org
+      go install github.com/onsi/ginkgo/ginkgo
+  popd
 
-mv "${GOPATH}/bin/ginkgo" "${BOSH_INSTALL_TARGET}/bin"
-
-pushd "${GOPATH}/src/code.cloudfoundry.org/routing-acceptance-tests"
-  mv ./assets "${BOSH_INSTALL_TARGET}/"
-  go test -c -race -o "${BOSH_INSTALL_TARGET}/bin/http-routes.test" ./http_routes
-  go test -c -race -o "${BOSH_INSTALL_TARGET}/bin/smoke.test" ./smoke_tests
-  go test -c -race -o "${BOSH_INSTALL_TARGET}/bin/tcp-routing.test" ./tcp_routing
+  pushd src/code.cloudfoundry.org/routing-acceptance-tests
+    mv ./assets "${BOSH_INSTALL_TARGET}/"
+    go test -c -race -o "${BOSH_INSTALL_TARGET}/bin/http-routes.test" ./http_routes
+    go test -c -race -o "${BOSH_INSTALL_TARGET}/bin/smoke.test" ./smoke_tests
+    go test -c -race -o "${BOSH_INSTALL_TARGET}/bin/tcp-routing.test" ./tcp_routing
+  popd
 popd
-
-chmod +x "${BOSH_INSTALL_TARGET}/bin/http-routes.test" \
-  "${BOSH_INSTALL_TARGET}/bin/smoke.test" \
-  "${BOSH_INSTALL_TARGET}/bin/tcp-routing.test"

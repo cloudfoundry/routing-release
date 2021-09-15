@@ -1,15 +1,14 @@
 set -ex
 
-source /var/vcap/packages/golang-*-linux/bosh/compile.env
-export GO111MODULE=auto
-mkdir -p "${BOSH_INSTALL_TARGET}/bin"
-mkdir -p "${GOPATH}/src"
+mkdir -p ${BOSH_INSTALL_TARGET}/src
+mv * ${BOSH_INSTALL_TARGET}/src
+mv ${BOSH_INSTALL_TARGET}/src .
 
-mv code.cloudfoundry.org "${GOPATH}/src"
-mv github.com "${GOPATH}/src"
+source /var/vcap/packages/golang-1-linux/bosh/compile.env
 
-pushd ${GOPATH}/src/code.cloudfoundry.org/routing-api-cli
-  go build -o "${BOSH_INSTALL_TARGET}/bin/rtr" .
+mkdir ${BOSH_INSTALL_TARGET}/bin
+export GOBIN=${BOSH_INSTALL_TARGET}/bin
+
+pushd src/code.cloudfoundry.org
+go build -o ${GOBIN}/rtr code.cloudfoundry.org/routing-api-cli
 popd
-
-chmod +x "${BOSH_INSTALL_TARGET}/bin/rtr"

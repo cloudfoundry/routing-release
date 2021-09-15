@@ -1,8 +1,8 @@
 #!/bin/bash
 set -exuo pipefail
 
-GOPATH="${PWD}/release"
-PATH="$PATH:$GOPATH/bin"
+RELEASE_DIR="${PWD}/release"
+PATH="$PATH:$RELEASE_DIR/bin"
 
 pushd release
   mkdir bin

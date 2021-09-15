@@ -1,216 +1,42 @@
-[submodule "src/github.com/tedsuo/rata"]
-	path = src/github.com/tedsuo/rata
-	url = https://github.com/tedsuo/rata
-[submodule "src/github.com/onsi/ginkgo"]
-	path = src/github.com/onsi/ginkgo
-	url = https://github.com/onsi/ginkgo
-[submodule "src/github.com/onsi/gomega"]
-	path = src/github.com/onsi/gomega
-	url = https://github.com/onsi/gomega
-[submodule "src/github.com/bmizerany/pat"]
-	path = src/github.com/bmizerany/pat
-	url = https://github.com/bmizerany/pat
-[submodule "src/code.cloudfoundry.org/debugserver"]
-	path = src/code.cloudfoundry.org/debugserver
-	url = https://github.com/cloudfoundry/debugserver
-[submodule "src/code.cloudfoundry.org/lager"]
-	path = src/code.cloudfoundry.org/lager
-	url = https://github.com/cloudfoundry/lager
-[submodule "src/github.com/cloudfoundry/dropsonde"]
-	path = src/github.com/cloudfoundry/dropsonde
-	url = https://github.com/cloudfoundry/dropsonde
-[submodule "src/github.com/tedsuo/ifrit"]
-	path = src/github.com/tedsuo/ifrit
-	url = https://github.com/tedsuo/ifrit
-[submodule "src/github.com/gogo/protobuf"]
-	path = src/github.com/gogo/protobuf
-	url = https://github.com/gogo/protobuf
-[submodule "src/github.com/nu7hatch/gouuid"]
-	path = src/github.com/nu7hatch/gouuid
-	url = https://github.com/nu7hatch/gouuid
 [submodule "src/code.cloudfoundry.org/cf-tcp-router"]
 	path = src/code.cloudfoundry.org/cf-tcp-router
 	url = https://github.com/cloudfoundry/cf-tcp-router
-[submodule "src/code.cloudfoundry.org/clock"]
-	path = src/code.cloudfoundry.org/clock
-	url = https://github.com/cloudfoundry/clock
-[submodule "src/code.cloudfoundry.org/cfhttp"]
-	path = src/code.cloudfoundry.org/cfhttp
-	url = https://github.com/cloudfoundry/cfhttp
-[submodule "src/github.com/vito/go-sse"]
-	path = src/github.com/vito/go-sse
-	url = https://github.com/vito/go-sse
-[submodule "src/code.cloudfoundry.org/bbs"]
-	path = src/code.cloudfoundry.org/bbs
-	url = https://github.com/cloudfoundry/bbs
+	branch = with-go-mod
 [submodule "src/code.cloudfoundry.org/routing-api"]
 	path = src/code.cloudfoundry.org/routing-api
 	url = https://github.com/cloudfoundry/routing-api
-[submodule "src/github.com/cactus/go-statsd-client"]
-	path = src/github.com/cactus/go-statsd-client
-	url = https://github.com/cactus/go-statsd-client
+	branch = with-go-mod
 [submodule "src/code.cloudfoundry.org/trace-logger"]
 	path = src/code.cloudfoundry.org/trace-logger
 	url = https://github.com/cloudfoundry-incubator/trace-logger
-[submodule "src/github.com/dgrijalva/jwt-go"]
-	path = src/github.com/dgrijalva/jwt-go
-	url = https://github.com/dgrijalva/jwt-go
-[submodule "src/github.com/ugorji/go"]
-	path = src/github.com/ugorji/go
-	url = https://github.com/ugorji/go
-[submodule "src/github.com/cloudfoundry/sonde-go"]
-	path = src/github.com/cloudfoundry/sonde-go
-	url = https://github.com/cloudfoundry/sonde-go
-[submodule "src/code.cloudfoundry.org/consuladapter"]
-	path = src/code.cloudfoundry.org/consuladapter
-	url = https://github.com/cloudfoundry-incubator/consuladapter
-[submodule "src/github.com/hashicorp/consul"]
-	path = src/github.com/hashicorp/consul
-	url = https://github.com/hashicorp/consul.git
-[submodule "src/code.cloudfoundry.org/locket"]
-	path = src/code.cloudfoundry.org/locket
-	url = http://github.com/cloudfoundry-incubator/locket
 [submodule "src/code.cloudfoundry.org/routing-info"]
 	path = src/code.cloudfoundry.org/routing-info
 	url = http://github.com/cloudfoundry-incubator/routing-info
 [submodule "src/code.cloudfoundry.org/routing-api-cli"]
 	path = src/code.cloudfoundry.org/routing-api-cli
 	url = https://github.com/cloudfoundry-incubator/routing-api-cli
-[submodule "src/github.com/codegangsta/cli"]
-	path = src/github.com/codegangsta/cli
-	url = https://github.com/codegangsta/cli
+	branch = with-go-mod
 [submodule "src/code.cloudfoundry.org/uaa-go-client"]
 	path = src/code.cloudfoundry.org/uaa-go-client
 	url = https://github.com/cloudfoundry-incubator/uaa-go-client
-[submodule "src/github.com/cloudfoundry-incubator/cf-test-helpers"]
-	path = src/github.com/cloudfoundry-incubator/cf-test-helpers
-	url = https://github.com/cloudfoundry-incubator/cf-test-helpers
 [submodule "src/code.cloudfoundry.org/cf-routing-test-helpers"]
 	path = src/code.cloudfoundry.org/cf-routing-test-helpers
 	url = https://github.com/cloudfoundry/cf-routing-test-helpers
 [submodule "src/code.cloudfoundry.org/gorouter"]
 	path = src/code.cloudfoundry.org/gorouter
 	url = https://github.com/cloudfoundry/gorouter
-[submodule "src/github.com/nats-io/go-nats"]
-	path = src/github.com/nats-io/go-nats
-	url = https://github.com/nats-io/go-nats
-[submodule "src/code.cloudfoundry.org/localip"]
-	path = src/code.cloudfoundry.org/localip
-	url = https://github.com/cloudfoundry/localip
-[submodule "src/github.com/rcrowley/go-metrics"]
-	path = src/github.com/rcrowley/go-metrics
-	url = https://github.com/rcrowley/go-metrics
-[submodule "src/golang.org/x/crypto"]
-	path = src/golang.org/x/crypto
-	url = https://github.com/golang/crypto
-[submodule "src/github.com/nats-io/nuid"]
-	path = src/github.com/nats-io/nuid
-	url = https://github.com/nats-io/nuid
+	branch = with-go-mod
 [submodule "src/code.cloudfoundry.org/routing-acceptance-tests"]
 	path = src/code.cloudfoundry.org/routing-acceptance-tests
 	url = https://github.com/cloudfoundry/routing-acceptance-tests
-[submodule "src/github.com/armon/go-proxyproto"]
-	path = src/github.com/armon/go-proxyproto
-	url = https://github.com/armon/go-proxyproto.git
+	branch = with-go-mod
 [submodule "src/code.cloudfoundry.org/route-registrar"]
 	path = src/code.cloudfoundry.org/route-registrar
 	url = https://github.com/cloudfoundry/route-registrar
+	branch = with-go-mod
 [submodule "src/code.cloudfoundry.org/multierror"]
 	path = src/code.cloudfoundry.org/multierror
 	url = https://github.com/cloudfoundry/multierror
-[submodule "src/gopkg.in/yaml.v2"]
-	path = src/gopkg.in/yaml.v2
-	url = https://gopkg.in/yaml.v2
 [submodule "src/code.cloudfoundry.org/runtimeschema"]
 	path = src/code.cloudfoundry.org/runtimeschema
 	url = https://github.com/cloudfoundry/runtimeschema
-[submodule "src/github.com/jinzhu/gorm"]
-	path = src/github.com/jinzhu/gorm
-	url = https://github.com/jinzhu/gorm
-[submodule "src/github.com/jinzhu/inflection"]
-	path = src/github.com/jinzhu/inflection
-	url = https://github.com/jinzhu/inflection
-[submodule "src/github.com/go-sql-driver/mysql"]
-	path = src/github.com/go-sql-driver/mysql
-	url = https://github.com/go-sql-driver/mysql
-[submodule "src/github.com/golang/protobuf"]
-	path = src/github.com/golang/protobuf
-	url = https://github.com/golang/protobuf
-[submodule "src/github.com/urfave/negroni"]
-	path = src/github.com/urfave/negroni
-	url = https://github.com/urfave/negroni
-[submodule "src/code.cloudfoundry.org/eventhub"]
-	path = src/code.cloudfoundry.org/eventhub
-	url = https://github.com/cloudfoundry/eventhub
-[submodule "src/github.com/lib/pq"]
-	path = src/github.com/lib/pq
-	url = https://github.com/lib/pq
-[submodule "src/github.com/uber-go/zap"]
-	path = src/github.com/uber-go/zap
-	url = https://github.com/uber-go/zap
-[submodule "src/github.com/uber-go/atomic"]
-	path = src/github.com/uber-go/atomic
-	url = https://github.com/uber-go/atomic
-[submodule "src/github.com/google/go-genproto"]
-	path = src/github.com/google/go-genproto
-	url = https://github.com/google/go-genproto
-[submodule "src/golang.org/x/net"]
-	path = src/golang.org/x/net
-	url = https://go.googlesource.com/net
-[submodule "src/golang.org/x/text"]
-	path = src/golang.org/x/text
-	url = https://go.googlesource.com/text
-[submodule "src/google.golang.org/grpc"]
-	path = src/google.golang.org/grpc
-	url = https://github.com/grpc/grpc-go
-[submodule "src/github.com/cf-routing/gosub"]
-	path = src/github.com/cf-routing/gosub
-	url = https://github.com/cf-routing/gosub
-[submodule "src/code.cloudfoundry.org/go-loggregator"]
-	path = src/code.cloudfoundry.org/go-loggregator
-	url = https://github.com/cloudfoundry-incubator/go-loggregator
-[submodule "src/code.cloudfoundry.org/diego-logging-client"]
-	path = src/code.cloudfoundry.org/diego-logging-client
-	url = https://github.com/cloudfoundry/diego-logging-client
-[submodule "src/github.com/mailru/easyjson"]
-	path = src/github.com/mailru/easyjson
-	url = https://github.com/mailru/easyjson.git
-[submodule "src/code.cloudfoundry.org/durationjson"]
-	path = src/code.cloudfoundry.org/durationjson
-	url = https://github.com/cloudfoundry/durationjson
-[submodule "src/code.cloudfoundry.org/go-diodes"]
-	path = src/code.cloudfoundry.org/go-diodes
-	url = https://github.com/cloudfoundry/go-diodes
-[submodule "src/code.cloudfoundry.org/tlsconfig"]
-	path = src/code.cloudfoundry.org/tlsconfig
-	url = https://github.com/cloudfoundry/tlsconfig
-[submodule "src/github.com/honeycombio/libhoney-go"]
-	path = src/github.com/honeycombio/libhoney-go
-	url = https://github.com/honeycombio/libhoney-go
-[submodule "src/github.com/cloudfoundry/custom-cats-reporters"]
-	path = src/github.com/cloudfoundry/custom-cats-reporters
-	url = https://github.com/cloudfoundry/custom-cats-reporters
-[submodule "src/github.com/facebookgo/limitgroup"]
-	path = src/github.com/facebookgo/limitgroup
-	url = https://github.com/facebookgo/limitgroup
-[submodule "src/github.com/facebookgo/clock"]
-	path = src/github.com/facebookgo/clock
-	url = https://github.com/facebookgo/clock
-[submodule "src/github.com/facebookgo/muster"]
-	path = src/github.com/facebookgo/muster
-	url = https://github.com/facebookgo/muster
-[submodule "src/gopkg.in/alexcesaro/statsd.v2"]
-	path = src/gopkg.in/alexcesaro/statsd.v2
-	url = https://gopkg.in/alexcesaro/statsd.v2
-[submodule "src/github.com/nats-io/nats.go"]
-	path = src/github.com/nats-io/nats.go
-	url = https://github.com/nats-io/nats.go.git
-[submodule "src/github.com/nats-io/jwt"]
-	path = src/github.com/nats-io/jwt
-	url = https://github.com/nats-io/jwt.git
-[submodule "src/github.com/nats-io/nkeys"]
-	path = src/github.com/nats-io/nkeys
-	url = https://github.com/nats-io/nkeys.git
-[submodule "src/github.com/nats-io/nats-server"]
-	path = src/github.com/nats-io/nats-server
-	url = https://github.com/nats-io/nats-server

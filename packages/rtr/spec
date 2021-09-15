@@ -5,21 +5,24 @@ dependencies:
 - golang-1-linux
 
 files:
-- code.cloudfoundry.org/cfhttp/**
-- code.cloudfoundry.org/clock/**
-- code.cloudfoundry.org/lager/**
-- code.cloudfoundry.org/lager/lagerflags/**
-- code.cloudfoundry.org/routing-api/**
-- code.cloudfoundry.org/routing-api-cli/**
-- code.cloudfoundry.org/routing-api-cli/commands/**
-- code.cloudfoundry.org/routing-api/models/**
-- code.cloudfoundry.org/trace-logger/**
-- code.cloudfoundry.org/uaa-go-client/**
-- code.cloudfoundry.org/uaa-go-client/config/**
-- code.cloudfoundry.org/uaa-go-client/schema/**
-- github.com/bmizerany/pat/**
-- github.com/codegangsta/cli/**
-- github.com/dgrijalva/jwt-go/**
-- github.com/nu7hatch/gouuid/**
-- github.com/tedsuo/rata/**
-- github.com/vito/go-sse/sse/**
+  - code.cloudfoundry.org/go.mod
+  - code.cloudfoundry.org/go.sum
+  - code.cloudfoundry.org/vendor/modules.txt
+  - code.cloudfoundry.org/vendor/code.cloudfoundry.org/cfhttp/v2/*.go # gosub
+  - code.cloudfoundry.org/vendor/code.cloudfoundry.org/clock/*.go # gosub
+  - code.cloudfoundry.org/vendor/code.cloudfoundry.org/lager/*.go # gosub
+  - code.cloudfoundry.org/vendor/code.cloudfoundry.org/lager/lagerflags/*.go # gosub
+  - code.cloudfoundry.org/routing-api/*.go # gosub
+  - code.cloudfoundry.org/routing-api-cli/*.go # gosub
+  - code.cloudfoundry.org/routing-api-cli/commands/*.go # gosub
+  - code.cloudfoundry.org/routing-api/models/*.go # gosub
+  - code.cloudfoundry.org/trace-logger/*.go # gosub
+  - code.cloudfoundry.org/uaa-go-client/*.go # gosub
+  - code.cloudfoundry.org/uaa-go-client/config/*.go # gosub
+  - code.cloudfoundry.org/uaa-go-client/schema/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/bmizerany/pat/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/codegangsta/cli/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/dgrijalva/jwt-go/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/nu7hatch/gouuid/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/tedsuo/rata/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/vito/go-sse/sse/*.go # gosub

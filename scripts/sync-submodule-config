@@ -1,0 +1,24 @@
+#!/bin/bash
+set -e -x
+
+# ensure gosub is installed (this will recompile it only if necessary)
+GO111MODULE=on go get github.com/vito/gosub
+FORCE_SUBMODULE_HTTPS="${FORCE_SUBMODULE_HTTPS:-false}"
+
+rm -rf /tmp/packages
+cat >> /tmp/packages <<EOF
+code.cloudfoundry.org/cf-routing-test-helpers
+code.cloudfoundry.org/cf-tcp-router
+code.cloudfoundry.org/gorouter
+code.cloudfoundry.org/multierror
+code.cloudfoundry.org/route-registrar
+code.cloudfoundry.org/routing-acceptance-tests
+code.cloudfoundry.org/routing-api
+code.cloudfoundry.org/routing-api-cli
+code.cloudfoundry.org/routing-info
+code.cloudfoundry.org/runtimeschema
+code.cloudfoundry.org/uaa-go-client
+code.cloudfoundry.org/trace-logger
+EOF
+
+cat /tmp/packages | xargs -s 1048576 gosub sync --force-https=$FORCE_SUBMODULE_HTTPS
