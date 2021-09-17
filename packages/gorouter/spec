@@ -2,7 +2,7 @@
 name: gorouter
 
 dependencies:
-- golang-1-linux
+- golang-1.16-linux
 
 files:
   - jq/jq-1.6-linux64.tgz
