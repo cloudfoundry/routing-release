@@ -1,4 +1,4 @@
-// Copyright 2017-2018 The NATS Authors
+// Copyright 2021 The NATS Authors
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -11,17 +11,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// +build go1.8
+// +build openbsd
 
-package util
+package server
 
-import "crypto/tls"
+import (
+	"os"
+	"syscall"
+)
 
-// CloneTLSConfig returns a copy of c.
-func CloneTLSConfig(c *tls.Config) *tls.Config {
-	if c == nil {
-		return &tls.Config{}
+func diskAvailable(storeDir string) int64 {
+	var ba int64
+	if _, err := os.Stat(storeDir); os.IsNotExist(err) {
+		os.MkdirAll(storeDir, defaultDirPerms)
 	}
-
-	return c.Clone()
+	var fs syscall.Statfs_t
+	if err := syscall.Statfs(storeDir, &fs); err == nil {
+		// Estimate 75% of available storage.
+		ba = int64(uint64(fs.F_bavail) * uint64(fs.F_bsize) / 4 * 3)
+	} else {
+		// Used 1TB default as a guess if all else fails.
+		ba = JetStreamMaxStoreDefault
+	}
+	return ba
 }

@@ -108,7 +108,7 @@ func validateTrustedOperators(o *Options) error {
 			return fmt.Errorf("using nats based account resolver - the system account needs to be specified in configuration or the operator jwt")
 		}
 	}
-	ver := strings.Split(strings.Split(VERSION, "-")[0], ".RC")[0]
+	ver := strings.Split(strings.Split(strings.Split(VERSION, "-")[0], ".RC")[0], ".beta")[0]
 	srvMajor, srvMinor, srvUpdate, _ := jwt.ParseServerVersion(ver)
 	for _, opc := range o.TrustedOperators {
 		if major, minor, update, err := jwt.ParseServerVersion(opc.AssertServerVersion); err != nil {
@@ -142,6 +142,17 @@ func validateTrustedOperators(o *Options) error {
 	for _, key := range o.TrustedKeys {
 		if !nkeys.IsValidPublicOperatorKey(key) {
 			return fmt.Errorf("trusted Keys %q are required to be a valid public operator nkey", key)
+		}
+	}
+	if len(o.resolverPinnedAccounts) > 0 {
+		for key := range o.resolverPinnedAccounts {
+			if !nkeys.IsValidPublicAccountKey(key) {
+				return fmt.Errorf("pinned account key %q is not a valid public account nkey", key)
+			}
+		}
+		// ensure the system account (belonging to the operator can always connect)
+		if o.SystemAccount != _EMPTY_ {
+			o.resolverPinnedAccounts[o.SystemAccount] = struct{}{}
 		}
 	}
 	return nil
