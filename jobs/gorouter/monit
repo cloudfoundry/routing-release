@@ -4,3 +4,12 @@ check process gorouter
     with timeout 60 seconds
   stop program "/var/vcap/jobs/bpm/bin/bpm stop gorouter"
   group vcap
+
+check process gorouter-healthchecker
+  with pidfile /var/vcap/sys/run/bpm/gorouter/gorouter-healthchecker.pid
+  start program "/var/vcap/jobs/bpm/bin/bpm start gorouter -p gorouter-healthchecker"
+    with timeout 65 seconds
+  stop program "/var/vcap/jobs/bpm/bin/bpm stop gorouter -p gorouter-healthchecker"
+  if 2 restarts within 3 cycles then exec "/var/vcap/jobs/gorouter/bin/restart-gorouter"
+  depends on gorouter
+  group vcap

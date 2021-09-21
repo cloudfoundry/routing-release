@@ -16,6 +16,10 @@ bpm = {
           "pre_start" => "/var/vcap/jobs/gorouter/bin/bpm-pre-start"
       },
       "capabilities" => ["NET_BIND_SERVICE"]
+    },
+    { "name" => "gorouter-healthchecker",
+      "executable" => "/var/vcap/packages/gorouter/bin/healthchecker",
+      "args" => [ "-c", "/var/vcap/jobs/gorouter/config/gorouter.yml"]
     }
   ]
 }

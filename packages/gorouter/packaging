@@ -12,7 +12,11 @@ mkdir ${BOSH_INSTALL_TARGET}/bin
 export GOBIN=${BOSH_INSTALL_TARGET}/bin
 
 pushd src/code.cloudfoundry.org
-go install code.cloudfoundry.org/gorouter
+  go install code.cloudfoundry.org/gorouter
+popd
+
+pushd ${GOPATH}/src/code.cloudfoundry.org/gorouter/healthchecker
+  go build -o "${BOSH_INSTALL_TARGET}/bin/healthchecker" .
 popd
 
 # install jq

@@ -17,6 +17,7 @@ templates:
   retrieve-local-routes.erb: bin/retrieve-local-routes
   indicators.yml.erb: config/indicators.yml
   error.html.erb: config/error.html
+  restart-gorouter.erb: bin/restart-gorouter
 
 packages:
   - routing_utils
