@@ -25,7 +25,6 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
-	"sync/atomic"
 	"time"
 
 	"github.com/nats-io/jwt/v2"
@@ -394,11 +393,10 @@ func (s *Server) processClientOrLeafAuthentication(c *client, opts *Options) boo
 		return true
 	}
 	var (
-		username      string
-		password      string
-		token         string
-		noAuthUser    string
-		pinnedAcounts map[string]struct{}
+		username   string
+		password   string
+		token      string
+		noAuthUser string
 	)
 	tlsMap := opts.TLSMap
 	if c.kind == CLIENT {
@@ -443,7 +441,7 @@ func (s *Server) processClientOrLeafAuthentication(c *client, opts *Options) boo
 
 	// Check if we have trustedKeys defined in the server. If so we require a user jwt.
 	if s.trustedKeys != nil {
-		if c.opts.JWT == _EMPTY_ {
+		if c.opts.JWT == "" {
 			s.mu.Unlock()
 			c.Debugf("Authentication requires a user JWT")
 			return false
@@ -462,13 +460,12 @@ func (s *Server) processClientOrLeafAuthentication(c *client, opts *Options) boo
 			c.Debugf("User JWT no longer valid: %+v", vr)
 			return false
 		}
-		pinnedAcounts = opts.resolverPinnedAccounts
 	}
 
 	// Check if we have nkeys or users for client.
 	hasNkeys := len(s.nkeys) > 0
 	hasUsers := len(s.users) > 0
-	if hasNkeys && c.opts.Nkey != _EMPTY_ {
+	if hasNkeys && c.opts.Nkey != "" {
 		nkey, ok = s.nkeys[c.opts.Nkey]
 		if !ok || !c.connectionTypeAllowed(nkey.AllowedConnectionTypes) {
 			s.mu.Unlock()
@@ -480,17 +477,17 @@ func (s *Server) processClientOrLeafAuthentication(c *client, opts *Options) boo
 			authorized := checkClientTLSCertSubject(c, func(u string, certDN *ldap.DN, _ bool) (string, bool) {
 				// First do literal lookup using the resulting string representation
 				// of RDNSequence as implemented by the pkix package from Go.
-				if u != _EMPTY_ {
+				if u != "" {
 					usr, ok := s.users[u]
 					if !ok || !c.connectionTypeAllowed(usr.AllowedConnectionTypes) {
-						return _EMPTY_, ok
+						return "", ok
 					}
 					user = usr
 					return usr.Username, ok
 				}
 
 				if certDN == nil {
-					return _EMPTY_, false
+					return "", false
 				}
 
 				// Look through the accounts for a DN that is equal to the one
@@ -523,13 +520,13 @@ func (s *Server) processClientOrLeafAuthentication(c *client, opts *Options) boo
 						return usr.Username, true
 					}
 				}
-				return _EMPTY_, false
+				return "", false
 			})
 			if !authorized {
 				s.mu.Unlock()
 				return false
 			}
-			if c.opts.Username != _EMPTY_ {
+			if c.opts.Username != "" {
 				s.Warnf("User %q found in connect proto, but user required from cert", c.opts.Username)
 			}
 			// Already checked that the client didn't send a user in connect
@@ -587,15 +584,8 @@ func (s *Server) processClientOrLeafAuthentication(c *client, opts *Options) boo
 			return false
 		}
 		issuer := juc.Issuer
-		if juc.IssuerAccount != _EMPTY_ {
+		if juc.IssuerAccount != "" {
 			issuer = juc.IssuerAccount
-		}
-		if pinnedAcounts != nil {
-			if _, ok := pinnedAcounts[issuer]; !ok {
-				c.Debugf("Account %s not listed as operator pinned account", issuer)
-				atomic.AddUint64(&s.pinnedAccFail, 1)
-				return false
-			}
 		}
 		if acc, err = s.LookupAccount(issuer); acc == nil {
 			c.Debugf("Account JWT lookup error: %v", err)
@@ -627,7 +617,7 @@ func (s *Server) processClientOrLeafAuthentication(c *client, opts *Options) boo
 		// FIXME: if BearerToken is only for WSS, need check for server with that port enabled
 		if !juc.BearerToken {
 			// Verify the signature against the nonce.
-			if c.opts.Sig == _EMPTY_ {
+			if c.opts.Sig == "" {
 				c.Debugf("Signature missing")
 				return false
 			}
@@ -681,13 +671,13 @@ func (s *Server) processClientOrLeafAuthentication(c *client, opts *Options) boo
 		acc.mu.RLock()
 		c.Debugf("Authenticated JWT: %s %q (claim-name: %q, claim-tags: %q) "+
 			"signed with %q by Account %q (claim-name: %q, claim-tags: %q) signed with %q",
-			c.kindString(), juc.Subject, juc.Name, juc.Tags, juc.Issuer, issuer, acc.nameTag, acc.tags, acc.Issuer)
+			c.typeString(), juc.Subject, juc.Name, juc.Tags, juc.Issuer, issuer, acc.nameTag, acc.tags, acc.Issuer)
 		acc.mu.RUnlock()
 		return true
 	}
 
 	if nkey != nil {
-		if c.opts.Sig == _EMPTY_ {
+		if c.opts.Sig == "" {
 			c.Debugf("Signature missing")
 			return false
 		}
@@ -725,9 +715,9 @@ func (s *Server) processClientOrLeafAuthentication(c *client, opts *Options) boo
 	}
 
 	if c.kind == CLIENT {
-		if token != _EMPTY_ {
+		if token != "" {
 			return comparePasswords(token, c.opts.Token)
-		} else if username != _EMPTY_ {
+		} else if username != "" {
 			if username != c.opts.Username {
 				return false
 			}

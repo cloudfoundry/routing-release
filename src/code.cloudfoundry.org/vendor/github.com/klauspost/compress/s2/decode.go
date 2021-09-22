@@ -144,13 +144,12 @@ type Reader struct {
 	// maximum expected buffer size.
 	maxBufSize int
 	// alloc a buffer this size if > 0.
-	lazyBuf     int
-	readHeader  bool
-	paramsOK    bool
-	snappyFrame bool
+	lazyBuf    int
+	readHeader bool
+	paramsOK   bool
 }
 
-// ensureBufferSize will ensure that the buffer can take at least n bytes.
+// ensureBufferSize will ensure that the buffe can take at least n bytes.
 // If false is returned the buffer exceeds maximum allowed size.
 func (r *Reader) ensureBufferSize(n int) bool {
 	if len(r.buf) >= n {
@@ -253,9 +252,7 @@ func (r *Reader) Read(p []byte) (int, error) {
 				return 0, r.err
 			}
 			if !r.ensureBufferSize(chunkLen) {
-				if r.err == nil {
-					r.err = ErrUnsupported
-				}
+				r.err = ErrUnsupported
 				return 0, r.err
 			}
 			buf := r.buf[:chunkLen]
@@ -270,11 +267,6 @@ func (r *Reader) Read(p []byte) (int, error) {
 				r.err = err
 				return 0, r.err
 			}
-			if r.snappyFrame && n > maxSnappyBlockSize {
-				r.err = ErrCorrupt
-				return 0, r.err
-			}
-
 			if n > len(r.decoded) {
 				if n > r.maxBlock {
 					r.err = ErrCorrupt
@@ -300,9 +292,7 @@ func (r *Reader) Read(p []byte) (int, error) {
 				return 0, r.err
 			}
 			if !r.ensureBufferSize(chunkLen) {
-				if r.err == nil {
-					r.err = ErrUnsupported
-				}
+				r.err = ErrUnsupported
 				return 0, r.err
 			}
 			buf := r.buf[:checksumSize]
@@ -312,10 +302,6 @@ func (r *Reader) Read(p []byte) (int, error) {
 			checksum := uint32(buf[0]) | uint32(buf[1])<<8 | uint32(buf[2])<<16 | uint32(buf[3])<<24
 			// Read directly into r.decoded instead of via r.buf.
 			n := chunkLen - checksumSize
-			if r.snappyFrame && n > maxSnappyBlockSize {
-				r.err = ErrCorrupt
-				return 0, r.err
-			}
 			if n > len(r.decoded) {
 				if n > r.maxBlock {
 					r.err = ErrCorrupt
@@ -346,11 +332,7 @@ func (r *Reader) Read(p []byte) (int, error) {
 				if string(r.buf[:len(magicBody)]) != magicBodySnappy {
 					r.err = ErrCorrupt
 					return 0, r.err
-				} else {
-					r.snappyFrame = true
 				}
-			} else {
-				r.snappyFrame = false
 			}
 			continue
 		}
@@ -426,9 +408,7 @@ func (r *Reader) Skip(n int64) error {
 				return r.err
 			}
 			if !r.ensureBufferSize(chunkLen) {
-				if r.err == nil {
-					r.err = ErrUnsupported
-				}
+				r.err = ErrUnsupported
 				return r.err
 			}
 			buf := r.buf[:chunkLen]
@@ -474,9 +454,7 @@ func (r *Reader) Skip(n int64) error {
 				return r.err
 			}
 			if !r.ensureBufferSize(chunkLen) {
-				if r.err != nil {
-					r.err = ErrUnsupported
-				}
+				r.err = ErrUnsupported
 				return r.err
 			}
 			buf := r.buf[:checksumSize]
@@ -539,27 +517,4 @@ func (r *Reader) Skip(n int64) error {
 		}
 	}
 	return nil
-}
-
-// ReadByte satisfies the io.ByteReader interface.
-func (r *Reader) ReadByte() (byte, error) {
-	if r.err != nil {
-		return 0, r.err
-	}
-	if r.i < r.j {
-		c := r.decoded[r.i]
-		r.i++
-		return c, nil
-	}
-	var tmp [1]byte
-	for i := 0; i < 10; i++ {
-		n, err := r.Read(tmp[:])
-		if err != nil {
-			return 0, err
-		}
-		if n == 1 {
-			return tmp[0], nil
-		}
-	}
-	return 0, io.ErrNoProgress
 }

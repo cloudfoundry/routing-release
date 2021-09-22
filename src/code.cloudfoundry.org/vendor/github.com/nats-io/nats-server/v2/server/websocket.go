@@ -1384,7 +1384,3 @@ func (c *client) wsCollapsePtoNB() (net.Buffers, int64) {
 func isWSURL(u *url.URL) bool {
 	return strings.HasPrefix(strings.ToLower(u.Scheme), wsSchemePrefix)
 }
-
-func isWSSURL(u *url.URL) bool {
-	return strings.HasPrefix(strings.ToLower(u.Scheme), wsSchemePrefixTLS)
-}

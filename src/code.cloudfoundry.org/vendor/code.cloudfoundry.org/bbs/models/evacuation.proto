@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package models;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "actual_lrp.proto";
+import "error.proto";
+
+option (gogoproto.equal_all) = false;
+
+message EvacuationResponse {
+  Error error = 1;
+  bool keep_container = 2 [(gogoproto.jsontag) = "keep_container"];
+}
+
+message EvacuateClaimedActualLRPRequest {
+  ActualLRPKey actual_lrp_key = 1;
+  ActualLRPInstanceKey actual_lrp_instance_key = 2;
+}
+
+message EvacuateRunningActualLRPRequest {
+  reserved 4; // previously removed ttl value
+
+  ActualLRPKey actual_lrp_key = 1;
+  ActualLRPInstanceKey actual_lrp_instance_key = 2;
+  ActualLRPNetInfo actual_lrp_net_info = 3;
+}
+
+message EvacuateStoppedActualLRPRequest {
+  ActualLRPKey actual_lrp_key = 1;
+  ActualLRPInstanceKey actual_lrp_instance_key = 2;
+}
+
+message EvacuateCrashedActualLRPRequest {
+  ActualLRPKey actual_lrp_key = 1;
+  ActualLRPInstanceKey actual_lrp_instance_key = 2;
+  string error_message = 3 [(gogoproto.jsontag) = "error_message"];
+}
+
+message RemoveEvacuatingActualLRPRequest {
+  ActualLRPKey actual_lrp_key = 1;
+  ActualLRPInstanceKey actual_lrp_instance_key = 2;
+}
+
+message RemoveEvacuatingActualLRPResponse {
+  Error error = 1;
+}

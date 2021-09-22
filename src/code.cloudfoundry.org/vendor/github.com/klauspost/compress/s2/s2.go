@@ -90,9 +90,6 @@ const (
 	// Default block size
 	defaultBlockSize = 1 << 20
 
-	// maxSnappyBlockSize is the maximum snappy block size.
-	maxSnappyBlockSize = 1 << 16
-
 	obufHeaderLen = checksumSize + chunkHeaderSize
 )
 

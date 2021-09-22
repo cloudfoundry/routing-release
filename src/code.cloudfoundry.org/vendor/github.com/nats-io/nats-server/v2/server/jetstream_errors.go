@@ -2,29 +2,8 @@ package server
 
 import (
 	"fmt"
+	"strings"
 )
-
-type errOpts struct {
-	err error
-}
-
-// ErrorOption configures a NATS Error helper
-type ErrorOption func(*errOpts)
-
-// Unless ensures that if err is a ApiErr that err will be returned rather than the one being created via the helper
-func Unless(err error) ErrorOption {
-	return func(opts *errOpts) {
-		opts.err = err
-	}
-}
-
-func parseOpts(opts []ErrorOption) *errOpts {
-	eopts := &errOpts{}
-	for _, opt := range opts {
-		opt(eopts)
-	}
-	return eopts
-}
 
 type ErrorIdentifier uint16
 
@@ -39,6 +18,7 @@ func IsNatsErr(err error, ids ...ErrorIdentifier) bool {
 		return false
 	}
 
+	found := false
 	for _, id := range ids {
 		ae, ok := ApiErrors[id]
 		if !ok || ae == nil {
@@ -46,11 +26,11 @@ func IsNatsErr(err error, ids ...ErrorIdentifier) bool {
 		}
 
 		if ce.ErrCode == ae.ErrCode {
-			return true
+			found = true
 		}
 	}
 
-	return false
+	return found
 }
 
 // ApiError is included in all responses if there was an error.
@@ -76,12 +56,43 @@ func (e *ApiError) Error() string {
 	return fmt.Sprintf("%s (%d)", e.Description, e.ErrCode)
 }
 
-func (e *ApiError) toReplacerArgs(replacements []interface{}) []string {
-	var (
-		ra  []string
-		key string
-	)
+// ErrOrNewT returns err if it's an ApiError else creates a new error using NewT()
+func (e *ApiError) ErrOrNewT(err error, replacements ...interface{}) *ApiError {
+	if ae, ok := err.(*ApiError); ok {
+		return ae
+	}
 
+	return e.NewT(replacements...)
+}
+
+// ErrOr returns err if it's an ApiError else creates a new error
+func (e *ApiError) ErrOr(err error) *ApiError {
+	if ae, ok := err.(*ApiError); ok {
+		return ae
+	}
+
+	return e
+}
+
+// NewT creates a new error using strings.Replacer on the Description field, arguments must be an even number like NewT("{err}", err)
+func (e *ApiError) NewT(replacements ...interface{}) *ApiError {
+	ne := &ApiError{
+		Code:        e.Code,
+		ErrCode:     e.ErrCode,
+		Description: e.Description,
+	}
+
+	if len(replacements) == 0 {
+		return ne
+	}
+
+	if len(replacements)%2 != 0 {
+		panic("invalid error replacement")
+	}
+
+	var ra []string
+
+	var key string
 	for i, replacement := range replacements {
 		if i%2 == 0 {
 			key = replacement.(string)
@@ -98,5 +109,7 @@ func (e *ApiError) toReplacerArgs(replacements []interface{}) []string {
 		}
 	}
 
-	return ra
+	ne.Description = strings.NewReplacer(ra...).Replace(e.Description)
+
+	return ne
 }

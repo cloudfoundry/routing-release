@@ -290,9 +290,8 @@ type Options struct {
 	inCmdLine map[string]bool
 
 	// private fields for operator mode
-	operatorJWT            []string
-	resolverPreloads       map[string]string
-	resolverPinnedAccounts map[string]struct{}
+	operatorJWT      []string
+	resolverPreloads map[string]string
 
 	// private fields, used for testing
 	gatewaysSolicitDelay time.Duration
@@ -1105,16 +1104,11 @@ func (o *Options) processConfigFileLine(k string, v interface{}, errors *[]error
 			*errors = append(*errors, err)
 			return
 		}
-		tlsConfig, err := GenTLSConfig(tc)
-		if err != nil {
+		if o.AccountResolverTLSConfig, err = GenTLSConfig(tc); err != nil {
 			err := &configErr{tk, err.Error()}
 			*errors = append(*errors, err)
 			return
 		}
-		o.AccountResolverTLSConfig = tlsConfig
-		// GenTLSConfig loads the CA file into ClientCAs, but since this will
-		// be used as a client connection, we need to set RootCAs.
-		o.AccountResolverTLSConfig.RootCAs = tlsConfig.ClientCAs
 	case "resolver_preload":
 		mp, ok := v.(map[string]interface{})
 		if !ok {
@@ -1126,7 +1120,8 @@ func (o *Options) processConfigFileLine(k string, v interface{}, errors *[]error
 		for key, val := range mp {
 			tk, val = unwrapValue(val, &lt)
 			if jwtstr, ok := val.(string); !ok {
-				*errors = append(*errors, &configErr{tk, "preload map value should be a string JWT"})
+				err := &configErr{tk, "preload map value should be a string JWT"}
+				*errors = append(*errors, err)
 				continue
 			} else {
 				// Make sure this is a valid account JWT, that is a config error.
@@ -1138,33 +1133,6 @@ func (o *Options) processConfigFileLine(k string, v interface{}, errors *[]error
 				}
 				o.resolverPreloads[key] = jwtstr
 			}
-		}
-	case "resolver_pinned_accounts":
-		switch v := v.(type) {
-		case string:
-			o.resolverPinnedAccounts = map[string]struct{}{v: {}}
-		case []string:
-			o.resolverPinnedAccounts = make(map[string]struct{})
-			for _, mv := range v {
-				o.resolverPinnedAccounts[mv] = struct{}{}
-			}
-		case []interface{}:
-			o.resolverPinnedAccounts = make(map[string]struct{})
-			for _, mv := range v {
-				tk, mv = unwrapValue(mv, &lt)
-				if key, ok := mv.(string); ok {
-					o.resolverPinnedAccounts[key] = struct{}{}
-				} else {
-					err := &configErr{tk,
-						fmt.Sprintf("error parsing resolver_pinned_accounts: unsupported type in array %T", mv)}
-					*errors = append(*errors, err)
-					continue
-				}
-			}
-		default:
-			err := &configErr{tk, fmt.Sprintf("error parsing resolver_pinned_accounts: unsupported type %T", v)}
-			*errors = append(*errors, err)
-			return
 		}
 	case "no_auth_user":
 		o.NoAuthUser = v.(string)
@@ -3584,14 +3552,6 @@ func parseTLS(v interface{}, isClientCtx bool) (t *TLSConfigOpts, retErr error) 
 				at = float64(mv)
 			case float64:
 				at = mv
-			case string:
-				d, err := time.ParseDuration(mv)
-				if err != nil {
-					return nil, &configErr{tk, fmt.Sprintf("error parsing tls config, 'timeout' %s", err)}
-				}
-				at = d.Seconds()
-			default:
-				return nil, &configErr{tk, "error parsing tls config, 'timeout' wrong type"}
 			}
 			tc.Timeout = at
 		case "pinned_certs":
