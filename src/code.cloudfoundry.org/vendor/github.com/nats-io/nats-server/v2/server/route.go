@@ -710,7 +710,7 @@ func (c *client) updateRemoteRoutePerms(sl *Sublist, info *Info) {
 		_localSubs [4096]*subscription
 		localSubs  = _localSubs[:0]
 	)
-	sl.localSubs(&localSubs)
+	sl.localSubs(&localSubs, false)
 
 	c.sendRouteSubProtos(localSubs, false, func(sub *subscription) bool {
 		subj := string(sub.subject)
@@ -1420,7 +1420,10 @@ func (s *Server) addRoute(c *client, info *Info) (bool, bool) {
 	if !exists {
 		s.routes[c.cid] = c
 		s.remotes[id] = c
-		s.nodeToInfo.Store(c.route.hash, nodeInfo{c.route.remoteName, s.info.Cluster, id, false, info.JetStream})
+		// check to be consistent and future proof. but will be same domain
+		if s.sameDomain(info.Domain) {
+			s.nodeToInfo.Store(c.route.hash, nodeInfo{c.route.remoteName, s.info.Cluster, info.Domain, id, false, info.JetStream})
+		}
 		c.mu.Lock()
 		c.route.connectURLs = info.ClientConnectURLs
 		c.route.wsConnURLs = info.WSConnectURLs
@@ -1691,6 +1694,7 @@ func (s *Server) startRouteAcceptLoop() {
 		GatewayURL:   s.getGatewayURL(),
 		Headers:      s.supportsHeaders(),
 		Cluster:      s.info.Cluster,
+		Domain:       s.info.Domain,
 		Dynamic:      s.isClusterNameDynamic(),
 		LNOC:         true,
 	}

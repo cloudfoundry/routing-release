@@ -235,20 +235,22 @@ type RaftConfig struct {
 }
 
 var (
-	errProposalFailed  = errors.New("raft: proposal failed")
-	errNotLeader       = errors.New("raft: not leader")
-	errAlreadyLeader   = errors.New("raft: already leader")
-	errNilCfg          = errors.New("raft: no config given")
-	errCorruptPeers    = errors.New("raft: corrupt peer state")
-	errStepdownFailed  = errors.New("raft: stepdown failed")
-	errEntryLoadFailed = errors.New("raft: could not load entry from WAL")
-	errNodeClosed      = errors.New("raft: node is closed")
-	errBadSnapName     = errors.New("raft: snapshot name could not be parsed")
-	errNoSnapAvailable = errors.New("raft: no snapshot available")
-	errCatchupsRunning = errors.New("raft: snapshot can not be installed while catchups running")
-	errSnapshotCorrupt = errors.New("raft: snapshot corrupt")
-	errTooManyPrefs    = errors.New("raft: stepdown requires at most one preferred new leader")
-	errStepdownNoPeer  = errors.New("raft: stepdown failed, could not match new leader")
+	errProposalFailed   = errors.New("raft: proposal failed")
+	errNotLeader        = errors.New("raft: not leader")
+	errAlreadyLeader    = errors.New("raft: already leader")
+	errNilCfg           = errors.New("raft: no config given")
+	errCorruptPeers     = errors.New("raft: corrupt peer state")
+	errStepdownFailed   = errors.New("raft: stepdown failed")
+	errEntryLoadFailed  = errors.New("raft: could not load entry from WAL")
+	errEntryStoreFailed = errors.New("raft: could not storeentry to WAL")
+	errNodeClosed       = errors.New("raft: node is closed")
+	errBadSnapName      = errors.New("raft: snapshot name could not be parsed")
+	errNoSnapAvailable  = errors.New("raft: no snapshot available")
+	errCatchupsRunning  = errors.New("raft: snapshot can not be installed while catchups running")
+	errSnapshotCorrupt  = errors.New("raft: snapshot corrupt")
+	errTooManyPrefs     = errors.New("raft: stepdown requires at most one preferred new leader")
+	errStepdownNoPeer   = errors.New("raft: stepdown failed, could not match new leader")
+	errNoPeerState      = errors.New("raft: no peerstate")
 )
 
 // This will bootstrap a raftNode by writing its config into the store directory.
@@ -335,7 +337,7 @@ func (s *Server) startRaftNode(cfg *RaftConfig) (RaftNode, error) {
 		return nil, err
 	}
 	if ps == nil {
-		return nil, errors.New("raft: no peerstate")
+		return nil, errNoPeerState
 	}
 
 	n := &raft{
@@ -418,12 +420,17 @@ func (s *Server) startRaftNode(cfg *RaftConfig) (RaftNode, error) {
 		for index := state.FirstSeq; index <= state.LastSeq; index++ {
 			ae, err := n.loadEntry(index)
 			if err != nil {
-				n.warn("Could not load %d from WAL [%+v] with error: %v", index, state, err)
-				continue
+				n.warn("Could not load %d from WAL [%+v]: %v", index, state, err)
+				if err := n.wal.Truncate(index); err != nil {
+					n.setWriteErrLocked(err)
+				}
+				break
 			}
 			if ae.pindex != index-1 {
-				n.warn("Corrupt WAL, truncating and fixing")
-				n.truncateWal(ae)
+				n.warn("Corrupt WAL, will truncate")
+				if err := n.wal.Truncate(index); err != nil {
+					n.setWriteErrLocked(err)
+				}
 				break
 			}
 			n.processAppendEntry(ae, nil)
@@ -1245,11 +1252,15 @@ func (n *raft) Peers() []*Peer {
 
 	var peers []*Peer
 	for id, ps := range n.peers {
+		var lag uint64
+		if n.commit > ps.li {
+			lag = n.commit - ps.li
+		}
 		p := &Peer{
 			ID:      id,
 			Current: id == n.leader || ps.li >= n.applied,
 			Last:    time.Unix(0, ps.ts),
-			Lag:     n.commit - ps.li,
+			Lag:     lag,
 		}
 		peers = append(peers, p)
 	}
@@ -1647,7 +1658,7 @@ func (n *raft) decodeAppendEntryResponse(msg []byte) *appendEntryResponse {
 }
 
 // Called when a remove peer proposal has been forwarded
-func (n *raft) handleForwardedRemovePeerProposal(sub *subscription, c *client, _, reply string, msg []byte) {
+func (n *raft) handleForwardedRemovePeerProposal(sub *subscription, c *client, _ *Account, _, reply string, msg []byte) {
 	n.debug("Received forwarded remove peer proposal: %q", msg)
 
 	if !n.Leader() {
@@ -1678,7 +1689,7 @@ func (n *raft) handleForwardedRemovePeerProposal(sub *subscription, c *client, _
 }
 
 // Called when a peer has forwarded a proposal.
-func (n *raft) handleForwardedProposal(sub *subscription, c *client, _, reply string, msg []byte) {
+func (n *raft) handleForwardedProposal(sub *subscription, c *client, _ *Account, _, reply string, msg []byte) {
 	if !n.Leader() {
 		n.debug("Ignoring forwarded proposal, not leader")
 		return
@@ -2108,6 +2119,8 @@ func (n *raft) applyCommit(index uint64) error {
 				}
 			}
 			n.writePeerState(&peerState{n.peerNames(), n.csz})
+			// We pass these up as well.
+			committed = append(committed, e)
 		case EntryRemovePeer:
 			peer := string(e.Data)
 			n.debug("Removing peer %q", peer)
@@ -2330,7 +2343,7 @@ func (n *raft) runAsCandidate() {
 }
 
 // handleAppendEntry handles an append entry from the wire.
-func (n *raft) handleAppendEntry(sub *subscription, c *client, subject, reply string, msg []byte) {
+func (n *raft) handleAppendEntry(sub *subscription, c *client, _ *Account, subject, reply string, msg []byte) {
 	if n.outOfResources() {
 		n.debug("AppendEntry not processing inbound, no resources")
 		return
@@ -2400,15 +2413,13 @@ func (n *raft) attemptStepDown(newLeader string) {
 	}
 }
 
-func (n *raft) truncateWal(ae *appendEntry) {
+// Truncate our WAL and reset.
+func (n *raft) truncateWAL(pterm, pindex uint64) {
 	n.debug("Truncating and repairing WAL")
-
-	if err := n.wal.Truncate(ae.pindex); err != nil {
+	n.pterm, n.pindex = pterm, pindex
+	if err := n.wal.Truncate(pindex); err != nil {
 		n.setWriteErrLocked(err)
-		return
 	}
-	n.pindex = ae.pindex
-	n.pterm = ae.term
 }
 
 // Lock should be held
@@ -2542,7 +2553,7 @@ func (n *raft) processAppendEntry(ae *appendEntry, sub *subscription) {
 			if eae, err := n.loadEntry(ae.pindex); err == nil && eae != nil {
 				// If terms mismatched, delete that entry and all others past it.
 				if ae.pterm > eae.pterm {
-					n.truncateWal(ae)
+					n.truncateWAL(ae.pterm, ae.pindex)
 					ar = &appendEntryResponse{n.pterm, n.pindex, n.id, false, _EMPTY_}
 				} else {
 					ar = &appendEntryResponse{ae.pterm, ae.pindex, n.id, true, _EMPTY_}
@@ -2561,11 +2572,10 @@ func (n *raft) processAppendEntry(ae *appendEntry, sub *subscription) {
 		if catchingUp {
 			// Check if only our terms do not match here.
 			if ae.pindex == n.pindex {
-				n.truncateWal(ae)
-				n.cancelCatchup()
 				// Make sure pterms match and we take on the leader's.
 				// This prevents constant spinning.
-				n.pterm = ae.pterm
+				n.truncateWAL(ae.pterm, ae.pindex)
+				n.cancelCatchup()
 				n.Unlock()
 				return
 			}
@@ -2622,11 +2632,8 @@ func (n *raft) processAppendEntry(ae *appendEntry, sub *subscription) {
 		}
 	}
 
-	// Heartbeat or do we have entries.
-	isHeartbeat := len(ae.entries) == 0
-
 	// Save to our WAL if we have entries.
-	if !isHeartbeat {
+	if len(ae.entries) > 0 {
 		// Only store if an original which will have sub != nil
 		if sub != nil {
 			if err := n.storeToWAL(ae); err != nil {
@@ -2729,7 +2736,7 @@ func (n *raft) processAppendEntryResponse(ar *appendEntryResponse) {
 }
 
 // handleAppendEntryResponse processes responses to append entries.
-func (n *raft) handleAppendEntryResponse(sub *subscription, c *client, subject, reply string, msg []byte) {
+func (n *raft) handleAppendEntryResponse(sub *subscription, c *client, _ *Account, subject, reply string, msg []byte) {
 	// Ignore if not the leader.
 	if !n.Leader() {
 		return
@@ -2765,9 +2772,23 @@ func (n *raft) storeToWAL(ae *appendEntry) error {
 	}
 
 	// Sanity checking for now.
-	if ae.pindex != seq-1 {
-		n.Unlock()
-		panic(fmt.Sprintf("[%s-%s] Placed an entry at the wrong index, ae is %+v, seq is %d, n.pindex is %d\n\n", n.s, n.group, ae, seq, n.pindex))
+	if index := ae.pindex + 1; index != seq {
+		// We are missing store state from our state.
+		if index > seq {
+			// Reset to last before this one.
+			if ae, err := n.loadEntry(seq - 1); err == nil && ae != nil {
+				n.truncateWAL(ae.pterm, ae.pindex)
+				if n.state == Leader {
+					n.attemptStepDown(n.selectNextLeader())
+				}
+			} else {
+				panic(fmt.Sprintf("[%s | %s] Wrong index, ae is %+v, seq is %d, n.pindex is %d\n\n", n.s, n.group, ae, seq, n.pindex))
+			}
+		} else {
+			// Truncate back to our last known.
+			n.truncateWAL(n.pterm, n.pindex)
+		}
+		return errEntryStoreFailed
 	}
 
 	n.pterm = ae.term
@@ -2785,7 +2806,6 @@ func (n *raft) sendAppendEntry(entries []*Entry) {
 	// If we have entries store this in our wal.
 	if len(entries) > 0 {
 		if err := n.storeToWAL(ae); err != nil {
-			n.setWriteErrLocked(err)
 			return
 		}
 		// We count ourselves.
@@ -2972,7 +2992,7 @@ func (n *raft) setWriteErrLocked(err error) {
 
 	// For now since this can be happening all under the covers, we will call up and disable JetStream.
 	n.Unlock()
-	n.s.handleOutOfSpace("")
+	n.s.handleOutOfSpace(_EMPTY_)
 	n.Lock()
 }
 
@@ -3003,6 +3023,7 @@ func (n *raft) fileWriter() {
 			n.RUnlock()
 			if err := ioutil.WriteFile(tvf, buf[:], 0640); err != nil {
 				n.setWriteErr(err)
+				n.error("Error writing term and vote file for %q: %v", n.group, err)
 			}
 		case <-n.wpsch:
 			n.RLock()
@@ -3010,6 +3031,7 @@ func (n *raft) fileWriter() {
 			n.RUnlock()
 			if err := ioutil.WriteFile(psf, buf, 0640); err != nil {
 				n.setWriteErr(err)
+				n.error("Error writing peer state file for %q: %v", n.group, err)
 			}
 		}
 	}
@@ -3068,7 +3090,7 @@ func (n *raft) decodeVoteResponse(msg []byte) *voteResponse {
 	return vr
 }
 
-func (n *raft) handleVoteResponse(sub *subscription, c *client, _, reply string, msg []byte) {
+func (n *raft) handleVoteResponse(sub *subscription, c *client, _ *Account, _, reply string, msg []byte) {
 	vr := n.decodeVoteResponse(msg)
 	n.debug("Received a voteResponse %+v", vr)
 	if vr == nil {
@@ -3133,7 +3155,7 @@ func (n *raft) processVoteRequest(vr *voteRequest) error {
 	return nil
 }
 
-func (n *raft) handleVoteRequest(sub *subscription, c *client, subject, reply string, msg []byte) {
+func (n *raft) handleVoteRequest(sub *subscription, c *client, _ *Account, subject, reply string, msg []byte) {
 	vr := n.decodeVoteRequest(msg, reply)
 	if vr == nil {
 		n.error("Received malformed vote request for %q", n.group)
