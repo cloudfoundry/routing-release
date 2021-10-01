@@ -1,5 +1,5 @@
 ---
-<%
+<%=
 def property_or_link(description, property, link_path, link_name=nil)
   link_name ||= link_path.split('.').first
   if_p(property) do |prop|
@@ -11,14 +11,69 @@ def property_or_link(description, property, link_path, link_name=nil)
   end
   raise RuntimeError, "#{description} not found in properties nor in \"#{link_name}\" link. This value can be specified using the \"#{property}\" property."
 end
-%>
 
-status:
-  port: <%= p("router.status.port") %>
-  user: <%= p("router.status.user") %>
-  pass: <%= p("router.status.password") %>
+access_log_file = p('router.write_access_logs_locally') ? '/var/vcap/sys/log/gorouter/access.log' : ''
 
-<%=
+params = {
+  'status' => {
+    'port' => p('router.status.port'),
+    'user' => p('router.status.user'),
+    'pass' => p('router.status.password'),
+  },
+  'tracing' => {
+    'enable_zipkin' => p('router.tracing.enable_zipkin'),
+    'enable_w3c' => p('router.tracing.enable_w3c'),
+  },
+  'port' => p('router.port'),
+  'index' => p('router.offset') + spec.index,
+  'go_max_procs' => p('router.number_of_cpus'),
+  'trace_key' => p('router.trace_key'),
+  'debug_addr' => p('router.debug_address'),
+  'secure_cookies' => p('router.secure_cookies'),
+  'sticky_session_cookie_names' => p('router.sticky_session_cookie_names'),
+  'access_log' => {
+    'file' => access_log_file,
+  },
+  'publish_start_message_interval' => '30s',
+  'prune_stale_droplets_interval' => '30s',
+  'droplet_stale_threshold' => '120s',
+  'publish_active_apps_interval' => '0s', # 0 means disabled
+  'suspend_pruning_if_nats_unavailable' => p("router.suspend_pruning_if_nats_unavailable"),
+  'route_latency_metric_muzzle_duration' => '30s',
+  'frontend_idle_timeout' => "#{p('router.frontend_idle_timeout')}s",
+  'drain_wait' => "#{p('router.drain_wait')}s",
+  'drain_timeout' => "#{p('router.drain_timeout')}s",
+  'healthcheck_user_agent' => p('router.healthcheck_user_agent'),
+  'endpoint_timeout' => "#{p('request_timeout_in_seconds')}s",
+  'start_response_delay_interval' => "#{p('router.requested_route_registration_interval_in_seconds')}s",
+  'load_balancer_healthy_threshold' => "#{p('router.load_balancer_healthy_threshold')}s",
+  'balancing_algorithm' => p('router.balancing_algorithm'),
+  'only_trust_client_ca_certs' => p('router.only_trust_client_ca_certs'),
+  'skip_ssl_validation' => p('router.ssl_skip_validation'),
+  'cipher_suites' => p('router.cipher_suites'),
+  'forwarded_client_cert' => p('router.forwarded_client_cert'),
+  'isolation_segments' => p('router.isolation_segments'),
+  'routing_table_sharding_mode' => p('router.routing_table_sharding_mode'),
+  'route_services_timeout' => "#{p('router.route_services_timeout')}s",
+  'route_services_secret' => p('router.route_services_secret'),
+  'route_services_secret_decrypt_only' => p('router.route_services_secret_decrypt_only'),
+  'route_services_recommend_https' => p('router.route_services_recommend_https'),
+  'route_services_hairpinning' => p('router.route_services_internal_lookup'),
+  'extra_headers_to_log' => p('router.extra_headers_to_log'),
+  'token_fetcher_max_retries' => 3,
+  'token_fetcher_retry_interval' => '5s',
+  'token_fetcher_expiration_buffer_time' => 30,
+  'enable_proxy' => p('router.enable_proxy'),
+  'force_forwarded_proto_https' => p('router.force_forwarded_proto_https'),
+  'sanitize_forwarded_proto' => p('router.sanitize_forwarded_proto'),
+  'pid_file' => '/var/vcap/sys/run/gorouter/gorouter.pid',
+  'ip_local_port_range' => p('router.ip_local_port_range'),
+  'empty_pool_response_code_503' => p('for_backwards_compatibility_only.empty_pool_response_code_503'), # backwards compatibility only section
+  'per_request_metrics_reporting' => p('router.per_request_metrics_reporting'),
+  'send_http_start_stop_server_event' => p('router.send_http_start_stop_server_event'),
+  'send_http_start_stop_client_event' => p("router.send_http_start_stop_client_event"),
+}
+
 nats = {}
 
 nats_link_name = 'nats'
@@ -64,13 +119,13 @@ nats_machines = nil
 if_p('nats.machines') do |ips|
   nats_machines = ips.compact
 end.else do
-  link(nats_link_name).if_p("nats.hostname") do |hostname|
+  link(nats_link_name).if_p('nats.hostname') do |hostname|
     nats_machines = [hostname]
   end.else do
     nats_machines = link(nats_link_name).instances.map { |instance| instance.address }
   end
 end
-nats['hosts'] = nats_machines.map { |hostname| {"hostname" => hostname, "port" => nats_port} }
+nats['hosts'] = nats_machines.map { |hostname| {'hostname' => hostname, 'port' => nats_port} }
 
 nats['user'] = property_or_link(
   'NATS server username',
@@ -85,113 +140,67 @@ nats['pass'] = property_or_link(
   link_name=nats_link_name,
 )
 
-{"nats" => nats}.to_yaml[3..-1]
-%>
+params['nats'] = nats
 
-logging:
-  syslog: vcap.gorouter
-  level: <%= p("router.logging_level") %>
-  loggregator_enabled: true
-  metron_address: "localhost:<%=p("metron.port") %>"
-  disable_log_forwarded_for: <%= p("router.disable_log_forwarded_for") %>
-  disable_log_source_ip: <%= p("router.disable_log_source_ip") %>
-  redact_query_params: <%= p("router.redact_query_parameters") %>
-<%
-if !['rfc3339', 'deprecated', 'unix-epoch'].include?(p('router.logging.format.timestamp'))
-  raise "'#{p('router.logging.format.timestamp')}' is not a valid timestamp format for the property 'router.logging.format.timestamp'. Valid options are: 'rfc3339', 'deprecated', and 'unix-epoch'."
+if p("router.max_idle_connections") && p("router.max_idle_connections") > 0
+  params['disable_keep_alives'] = false
+  params['max_idle_conns'] = p("router.max_idle_connections")
+  params['max_idle_conns_per_host'] = 100
+  params['endpoint_keep_alive_probe_interval'] = p("router.keep_alive_probe_interval")
+else
+  params['disable_keep_alives'] = true
 end
-timestamp_format=p('router.logging.format.timestamp')
-if timestamp_format == 'deprecated'
-  timestamp_format = 'unix-epoch'
+
+if p('router.tracing.enable_w3c')
+  params['tracing']['w3c_tenant_id'] = p('router.tracing.w3c_tenant_id')
 end
-%>
-  format:
-    timestamp: <%= timestamp_format %>
 
-tracing:
-  enable_zipkin: <%= p("router.tracing.enable_zipkin") %>
-  enable_w3c: <%= p("router.tracing.enable_w3c") %>
-  <% if p("router.tracing.enable_w3c") %>
-  w3c_tenant_id: <%= p("router.tracing.w3c_tenant_id") %>
-  <% end %>
+backend_cert_chain = ''
+backend_private_key = ''
+if_p('router.backends.cert_chain') { |val| backend_cert_chain = val }
+if_p('router.backends.private_key') { |val| backend_private_key = val }
 
-port: <%= p("router.port") %>
-index: <%= p("router.offset") + spec.index %>
-go_max_procs: <%= p("router.number_of_cpus") %>
-trace_key: <%= p("router.trace_key") %>
-debug_addr: <%= p("router.debug_address") %>
-secure_cookies: <%= p("router.secure_cookies") %>
-sticky_session_cookie_names: <%= p("router.sticky_session_cookie_names") %>
+if (backend_cert_chain != '') ^ (backend_private_key != '')
+  raise 'backends.cert_chain and backends.private_key must be both provided or not at all'
+end
 
-access_log:
-  file: <%= p("router.write_access_logs_locally") ? "/var/vcap/sys/log/gorouter/access.log" : "" %>
+backends = {
+  'max_conns' => p('router.backends.max_conns'),
+  'cert_chain' => backend_cert_chain,
+  'private_key' => backend_private_key,
+}
 
-publish_start_message_interval: 30s
-prune_stale_droplets_interval: 30s
-droplet_stale_threshold: 120s
-publish_active_apps_interval: 0s # 0 means disabled
-suspend_pruning_if_nats_unavailable: <%= p("router.suspend_pruning_if_nats_unavailable") %>
-route_latency_metric_muzzle_duration: 30s
+params['backends'] = backends
 
-<% if p("router.max_idle_connections") && p("router.max_idle_connections") > 0 %>
-disable_keep_alives: false
-max_idle_conns: <%= p("router.max_idle_connections") %>
-max_idle_conns_per_host: 100
-endpoint_keep_alive_probe_interval: <%= p("router.keep_alive_probe_interval") %>
-<% else %>
-disable_keep_alives: true
-<% end%>
+route_services_cert_chain = ''
+route_services_private_key = ''
+if_p('router.route_services.cert_chain') { |val| route_services_cert_chain  = val }
+if_p('router.route_services.private_key') { |val| route_services_private_key = val }
 
-frontend_idle_timeout: <%= p("router.frontend_idle_timeout") %>s
+if (route_services_cert_chain != '') ^ (route_services_private_key != '')
+  raise 'route_services.cert_chain and route_services.private_key must be both provided or not at all'
+end
 
-<%=
-  backend_cert_chain = ''
-  backend_private_key = ''
-  if_p("router.backends.cert_chain") { |val| backend_cert_chain = val }
-  if_p("router.backends.private_key") { |val| backend_private_key = val }
+route_services = {
+  'cert_chain' => route_services_cert_chain,
+  'private_key' => route_services_private_key,
+}
 
-  if (backend_cert_chain != '') ^ (backend_private_key != '')
-    raise 'backends.cert_chain and backends.private_key must be both provided or not at all'
-  end
+params['route_services'] = route_services
 
-  backends = {
-    "max_conns" => p("router.backends.max_conns"),
-    "cert_chain" => backend_cert_chain,
-    "private_key" => backend_private_key,
-  }
+params['oauth'] = {
+  'token_endpoint' => p('uaa.token_endpoint'),
+  'client_name' => 'gorouter',
+  'client_secret' => p('uaa.clients.gorouter.secret'),
+  'port' => p('uaa.ssl.port'),
+  'skip_ssl_validation' => p('router.ssl_skip_validation'),
+}
 
-  { "backends" => backends }.to_yaml[3..-1]
-%>
+if p('uaa.ca_cert') != ''
+  params['oauth']['ca_certs'] = '/var/vcap/jobs/gorouter/config/certs/uaa/ca.crt'
+end
 
-<%=
-  route_services_cert_chain = ''
-  route_services_private_key = ''
-  if_p("router.route_services.cert_chain") { |val| route_services_cert_chain  = val }
-  if_p("router.route_services.private_key") { |val| route_services_private_key = val }
-
-  if (route_services_cert_chain != '') ^ (route_services_private_key != '')
-    raise 'route_services.cert_chain and route_services.private_key must be both provided or not at all'
-  end
-
-  route_services = {
-    "cert_chain" => route_services_cert_chain,
-    "private_key" => route_services_private_key,
-  }
-
-  { "route_services" => route_services }.to_yaml[3..-1]
-%>
-
-oauth:
-  token_endpoint: <%= p("uaa.token_endpoint") %>
-  client_name: "gorouter"
-  client_secret: <%= p("uaa.clients.gorouter.secret") %>
-  port: <%= p("uaa.ssl.port") %>
-  skip_ssl_validation: <%= p("router.ssl_skip_validation") %>
-  <% if p("uaa.ca_cert") != "" %>
-  ca_certs: "/var/vcap/jobs/gorouter/config/certs/uaa/ca.crt"
-  <% end %>
-
-<% if p("routing_api.enabled")
+if p('routing_api.enabled')
   ca_certs = property_or_link(
     'Routing API server CA certificate',
     'routing_api.ca_certs',
@@ -221,136 +230,108 @@ oauth:
     'routing_api.mtls_port',
   )
 
-  routing_api_config = {
-    'routing_api' => {
-      'uri' => p('routing_api.uri'),
-      'port' => port,
-      'auth_disabled' => p('routing_api.auth_disabled'),
-      'private_key' => private_key,
-      'ca_certs' => ca_certs,
-      'cert_chain' => cert_chain,
-    }
+  params['routing_api'] = {
+    'uri' => p('routing_api.uri'),
+    'port' => port,
+    'auth_disabled' => p('routing_api.auth_disabled'),
+    'private_key' => private_key,
+    'ca_certs' => ca_certs,
+    'cert_chain' => cert_chain,
   }
-end %>
+end
 
-<% if p("routing_api.enabled") %>
-<%= routing_api_config.to_yaml[3..-1] %>
-<% end %>
+if !['rfc3339', 'deprecated', 'unix-epoch'].include?(p('router.logging.format.timestamp'))
+  raise "'#{p('router.logging.format.timestamp')}' is not a valid timestamp format for the property 'router.logging.format.timestamp'. Valid options are: 'rfc3339', 'deprecated', and 'unix-epoch'."
+end
 
-drain_wait: <%= p("router.drain_wait") %>s
-drain_timeout: <%= p("router.drain_timeout") %>s
-healthcheck_user_agent: <%= p("router.healthcheck_user_agent") %>
-endpoint_timeout: <%= p("request_timeout_in_seconds") %>s
+timestamp_format=p('router.logging.format.timestamp')
+if timestamp_format == 'deprecated'
+  timestamp_format = 'unix-epoch'
+end
 
-start_response_delay_interval: <%= p("router.requested_route_registration_interval_in_seconds") %>s
-load_balancer_healthy_threshold: <%= p("router.load_balancer_healthy_threshold") %>s
+params['logging'] = {
+  'syslog' => 'vcap.gorouter',
+  'level' => p('router.logging_level'),
+  'loggregator_enabled' => true,
+  'metron_address' => "localhost:#{p('metron.port')}",
+  'disable_log_forwarded_for' => p('router.disable_log_forwarded_for'),
+  'disable_log_source_ip' => p('router.disable_log_source_ip'),
+  'redact_query_params' => p('router.redact_query_parameters'),
+  'format' => {
+    'timestamp' => timestamp_format,
+  },
+}
 
-balancing_algorithm: <%= p("router.balancing_algorithm") %>
-
-enable_ssl: <%= p("router.enable_ssl") %>
-<% if p("router.enable_ssl") %>
-<%
-  p("router.tls_pem").each { |cert_pair|
-    if !cert_pair.is_a?(Hash) || !cert_pair.key?("cert_chain") || !cert_pair.key?("private_key")
+params['enable_ssl'] = p('router.enable_ssl')
+if p('router.enable_ssl')
+  p('router.tls_pem').each { |cert_pair|
+    if !cert_pair.is_a?(Hash) || !cert_pair.key?('cert_chain') || !cert_pair.key?('private_key')
       raise 'must provide cert_chain and private_key with tls_pem'
     end
   }
-  tls_pem = { 'tls_pem' => p('router.tls_pem') }
-%>
-<%= tls_pem.to_yaml[3..-1] %>
+  params['tls_pem'] = p('router.tls_pem')
 
-<%
   allowed_client_cert_validations = ["none", "request", "require"]
   client_cert_validation = p("router.client_cert_validation")
 
   if !allowed_client_cert_validations.include?(client_cert_validation)
     raise 'router.client_cert_validation must be "none", "request", or "require"'
   end
-%>
-client_cert_validation: <%= client_cert_validation %>
-<%
+
+  params['client_cert_validation'] = client_cert_validation
+
   allowed_min_tls_versions = ["TLSv1.0", "TLSv1.1", "TLSv1.2", "TLSv1.3"]
   min_tls_version = p("router.min_tls_version")
 
   if !allowed_min_tls_versions.include?(min_tls_version)
     raise 'router.min_tls_version must be "TLSv1.0", "TLSv1.1", "TLSv1.2" or "TLSv1.3"'
   end
-%>
-min_tls_version: <%= p("router.min_tls_version") %>
-<%
-  allowed_max_tls_versions = ["TLSv1.2", "TLSv1.3"]
-  max_tls_version = p("router.max_tls_version")
+
+  params['min_tls_version'] = p('router.min_tls_version')
+
+  allowed_max_tls_versions = ['TLSv1.2', 'TLSv1.3']
+  max_tls_version = p('router.max_tls_version')
 
   if !allowed_max_tls_versions.include?(max_tls_version)
     raise 'router.max_tls_version must be "TLSv1.2" or "TLSv1.3"'
   end
+
+  params['max_tls_version'] = p('router.max_tls_version')
+  params['ssl_port'] = p('router.tls_port')
+end
+
+params['disable_http'] = p('router.disable_http')
+params['enable_http2'] = p('router.enable_http2')
+
+if p('router.ca_certs')
+  ca_certs = p('router.ca_certs')
+  if !ca_certs.is_a?(String)
+    raise 'ca_certs must be provided as a single string block'
+  end
+
+  params['ca_certs'] = ca_certs
+end
+
+if p('router.client_ca_certs')
+  client_ca_certs = p('router.client_ca_certs')
+  if !client_ca_certs.is_a?(String)
+    raise 'client_ca_certs must be provided as a single string block'
+  end
+
+  if p('router.only_trust_client_ca_certs') == false
+    client_ca_certs += ca_certs
+  end
+
+  params['client_ca_certs'] = client_ca_certs
+end
+
+if_p('router.http_rewrite') do |r|
+  params['http_rewrite'] = r
+end
+
+if_p('router.html_error_template') do |t|
+  params['html_error_template_file'] = t == '' ? '' : '/var/vcap/jobs/gorouter/config/error.html'
+end
+
+params.to_yaml[3..-1]
 %>
-max_tls_version: <%= p("router.max_tls_version") %>
-ssl_port: <%= p("router.tls_port") %>
-<% end %>
-
-disable_http: <%= p("router.disable_http") %>
-enable_http2: <%= p("router.enable_http2") %>
-
-<% if p("router.ca_certs")
-     ca_certs = p("router.ca_certs")
-     if !ca_certs.is_a?(String)
-       raise 'ca_certs must be provided as a single string block'
-     end
-%>
-<%= { 'ca_certs' => ca_certs }.to_yaml[3..-1] %>
-<% end %>
-
-<% if p("router.client_ca_certs")
-     client_ca_certs = p("router.client_ca_certs")
-     if !client_ca_certs.is_a?(String)
-       raise 'client_ca_certs must be provided as a single string block'
-     end
-
-     if p("router.only_trust_client_ca_certs") == false
-       client_ca_certs += ca_certs
-     end
-%>
-<%= { 'client_ca_certs' => client_ca_certs }.to_yaml[3..-1] %>
-<% end %>
-
-only_trust_client_ca_certs: <%= p("router.only_trust_client_ca_certs") %>
-
-skip_ssl_validation: <%= p("router.ssl_skip_validation") %>
-cipher_suites: <%= p("router.cipher_suites") %>
-forwarded_client_cert: <%= p("router.forwarded_client_cert") %>
-
-isolation_segments: <%= p("router.isolation_segments") %>
-routing_table_sharding_mode: <%= p("router.routing_table_sharding_mode") %>
-
-route_services_timeout: <%= p("router.route_services_timeout") %>s
-route_services_secret: <%= p("router.route_services_secret") %>
-route_services_secret_decrypt_only: <%= p("router.route_services_secret_decrypt_only") %>
-route_services_recommend_https: <%= p("router.route_services_recommend_https") %>
-route_services_hairpinning: <%= p("router.route_services_internal_lookup") %>
-
-extra_headers_to_log: <%= p("router.extra_headers_to_log") %>
-token_fetcher_max_retries: 3
-token_fetcher_retry_interval: 5s
-token_fetcher_expiration_buffer_time: 30
-enable_proxy: <%= p("router.enable_proxy") %>
-force_forwarded_proto_https: <%= p("router.force_forwarded_proto_https") %>
-sanitize_forwarded_proto: <%= p("router.sanitize_forwarded_proto") %>
-<% if_p("router.http_rewrite") do |r| %>
-http_rewrite: <%= r.to_json %>
-<% end %>
-
-pid_file: /var/vcap/sys/run/gorouter/gorouter.pid
-
-ip_local_port_range: <%= p("router.ip_local_port_range") %>
-
-<% if_p('router.html_error_template') do |t| %>
-html_error_template_file: <%= t == "" ? "" : "/var/vcap/jobs/gorouter/config/error.html" %>
-<% end %>
-
-#backwards compatibility only section
-empty_pool_response_code_503: <%= p("for_backwards_compatibility_only.empty_pool_response_code_503") %>
-
-per_request_metrics_reporting: <%= p("router.per_request_metrics_reporting") %> 
-send_http_start_stop_server_event: <%= p("router.send_http_start_stop_server_event") %> 
-send_http_start_stop_client_event: <%= p("router.send_http_start_stop_client_event") %> 
