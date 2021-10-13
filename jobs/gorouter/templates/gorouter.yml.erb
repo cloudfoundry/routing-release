@@ -268,7 +268,18 @@ if p('router.enable_ssl')
     if !cert_pair.is_a?(Hash) || !cert_pair.key?('cert_chain') || !cert_pair.key?('private_key')
       raise 'must provide cert_chain and private_key with tls_pem'
     end
+
+    cert = OpenSSL::X509::Certificate.new cert_pair['cert_chain']
+    has_san = cert.extensions.map { |ext|
+      x509ext = OpenSSL::X509::Extension.new ext
+      x509ext.oid == "2.5.29.17" # https://oidref.com/2.5.29.17
+    }.reduce(:|)
+
+    if ! p('golang.x509ignoreCN') and ! has_san
+      raise 'tls_pem must include a SAN entry'
+    end
   }
+
   params['tls_pem'] = p('router.tls_pem')
 
   allowed_client_cert_validations = ["none", "request", "require"]

@@ -6,16 +6,90 @@ require 'json'
 require 'bosh/template/test'
 require 'bosh/template/evaluation_context'
 require 'spec_helper'
+require 'openssl'
 
-TEST_CERT = 'some
+TEST_CERT = '-----BEGIN CERTIFICATE-----
+MIIESjCCAjKgAwIBAgIRAMLNrkeAdcANSxOHGdVhsfowDQYJKoZIhvcNAQELBQAw
+EjEQMA4GA1UEAxMHdGVzdC1jYTAeFw0yMTEwMjExNzA0MDFaFw0yMzA0MjExNjI5
+MDVaMBwxGjAYBgNVBAMTEXRlc3Qtd2l0aC1zYW4uY29tMIIBIjANBgkqhkiG9w0B
+AQEFAAOCAQ8AMIIBCgKCAQEA3q+N8Se+LMXjanIBlkHhzrcKT71C0T6iB64jvyCJ
+oQ0Z63M7pRs7h1YZV37KJCE3/QuIt6Atw/EA88/yIvSxWw9ytVQntzqtcKambC3b
+8qGWxpF9piktyzZjpXJvTIWrYYyCOlZM1QkJ976O76+yoZM2Ttp36n1OqIX2DpEt
+XJ9/VoMDBhQ/TvEAUdEUP0GFrBrUP7WoSLOjRnEn8gPvuGMQ7QDjx+EWScAaDz3c
+R3X7UGa5w7+RdcZ6zhKlftg7D1+XMgCelsZjxZjEECNF7p/YhaSLhgKN/XZ5CtEt
+5sa1EVSQmiIb715B8ee8BjwUEzD9VteYdCaH6YivoeDyzQIDAQABo4GQMIGNMA4G
+A1UdDwEB/wQEAwIDuDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwHQYD
+VR0OBBYEFCtWb9SZGcuTEmthC8enxyYwHbXSMB8GA1UdIwQYMBaAFBIf8JzVENnJ
+GH272x8d5Ld5ZjNMMBwGA1UdEQQVMBOCEXRlc3Qtd2l0aC1zYW4uY29tMA0GCSqG
+SIb3DQEBCwUAA4ICAQDIwIxeB5F1DC48OtDiHj2pbX0O7IsWwax6SAlY+j0taQuy
+EMDuBWYXw1sDdnTHY+AytymRd8KFNdCzzsZhflLwp+iZ9zb81xS7IfdOo3KV6dc/
+zEtaU0B2aP1Q7yfdl9TwZ0FNoSf0AZYLizr85KcW1LStWypiegY/7CcuwrUnXiZB
+Lg8/YM5BTd2rZIgnid4d2fvp2KgcU1ztiCCJVGkty/LKtwwJxrjvuwGxjJVWRcjq
+l1VObuX8HYHufn62EW3L1WL5TMYd5t34eXo1KAjv+FGqD280SjwFFaaOZ5qfYkx1
+wcItuinnx6m2TtSB8Rj/QFdItLVhEOTxoPbmMi0iVw/fYEcqUBn4OIDPBZbKzlcU
+jizmjv8waQlFgZbLKZBDYht3+x45k9+IWViLl5IPM4I4cVj9kYRUr0GOlPxBYRkW
+0evndFjeCka24cjdW1/b7NHq9uCRDj/Px+i0oUfvEAVQU94N/Pir3nuUIKpkx/TQ
+A1xXeONZVuGuarQmcRN9gCC3FUbnkh1lUO4qgFE8iIKnOtFeUnMdiBcWPmRaOJRI
+BdgLIJDrTJStUc4OcZSE6gBkHAt0SAtST7BcLyholehyvheFw4nWUOEvEs1p/bkY
+NexOrpDV8Ump01u0IPyZZv/LNNaWX1wpxbjusVYZCxCfTO2d7s/VQSdRsyH5Hg==
+-----END CERTIFICATE-----'.freeze
 
-multiline
-
-cert'.freeze
+TEST_CERT2 = '-----BEGIN CERTIFICATE-----
+MIIESzCCAjOgAwIBAgIQDnaPUSkJl2T+TaMLHUlWqzANBgkqhkiG9w0BAQsFADAS
+MRAwDgYDVQQDEwd0ZXN0LWNhMB4XDTIxMTAyMTIwMDIzMloXDTIzMDQyMTE2Mjkw
+NVowHTEbMBkGA1UEAxMSdGVzdDItd2l0aC1zYW4uY29tMIIBIjANBgkqhkiG9w0B
+AQEFAAOCAQ8AMIIBCgKCAQEAwc8fvFNfGF1SqVs7UOTwYbQCv18wF+EfJYT4tq3P
+1MLBuW7eURKnJ4ZAslsogX4WXmksYHnjRbIsQw6mtgAkMtkC+C5tuRO5uaEBSFxP
+vA9z7b9uM9MGA2YSJVP1+U00y/HCrwI5LEc/SGij3bvKOcs+CUAEmHhr3sG95BTF
+atVE5vbG+XHLw2DwaWzDFrtPG3o9zBtDb7/yqTNJCb+i7iyp9Yh0N2ZHgKjNI8Ru
+6rEkQz8nYk44NjCwV5l0fKV3eKLXTRyfEb+Gr1RHfTtG7wRvfDcDanS5XTZQWAAr
+a61V38xfR+bYniYsSLmH/VZ1CAhqY8t45N9Sc47cH6gOHQIDAQABo4GRMIGOMA4G
+A1UdDwEB/wQEAwIDuDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwHQYD
+VR0OBBYEFMl9dHRf9wJoWyuWNg93QldFc5IKMB8GA1UdIwQYMBaAFBIf8JzVENnJ
+GH272x8d5Ld5ZjNMMB0GA1UdEQQWMBSCEnRlc3QyLXdpdGgtc2FuLmNvbTANBgkq
+hkiG9w0BAQsFAAOCAgEADQFp7nPDLMRPbwWo1fRj7jF6XC85qJF5F9hMRyuioxu9
+ZHnlejEpi8o41/NRCV0lPLIAXe9/0owppZF3WhqF7eYUFa1YxFr+BkQg3r4nAq9g
+UKkT2qB/AmJA72HYGGYbb1OdxccRxbgh1+nWzEkxFzB7HbiIrY7OqmDFLr7JRAeF
+kaH27wLnZ2TJ2MCDQZNM8n12+3szwytZDl8uz6Dl5W7L4HcK6KIROhvjA6s3lAvA
+3E2VJ07bkAvMcXGX0jobcTVDB/+WVvVoZym0TfmMUVQ0JD6vFe8sNdsJysWCsUe9
+DbE9ZRA+3GaURVlpZ89n4sURVIopP+N51Vs6aZAIZdOuOvFwu+7N82LjI4i8800c
+P90vC+M77jSGmu7Cuehu62Q0aUIx+X98TXQXpb4KLQ5Ot5RIPV0E3ksmKuqIrwuO
+m5tSO2hX/BIkj160bikWbi3oqU8+91+jeW9fQnRLApkPwLWXSViF1Q7K8c6+/H/p
+oyX7VxkqnU43+nzL+Egc9ibYRF22XMkCBICZFrPu3rZbz8zHTw43ldqHezvx+O/J
+R5DG1U9dcbt9urELWUBEWlrDudlyC1p6ZvMYQIHP2e27pUaU6wFy7xnIrTxYbDM6
+HTngE/Gz+qIUe7OkPXPPkFeoSfR1poQ3yNz4bim9Vx+w50l6m+h6SZOYJTxEUds=
+-----END CERTIFICATE-----'.freeze
 
 TEST_KEY = 'some
 
+
 multi line key'.freeze
+
+CERT_WITHOUT_CN = '-----BEGIN CERTIFICATE-----
+MIIEITCCAgmgAwIBAgIRAMGCNmHhXZnK1fSdCinKK9owDQYJKoZIhvcNAQELBQAw
+EjEQMA4GA1UEAxMHdGVzdC1jYTAeFw0yMTEwMjExNjU2NTJaFw0yMzA0MjExNjI5
+MDVaMBMxETAPBgNVBAMTCHRlc3QuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8A
+MIIBCgKCAQEAwY9FO90qNGnztTlPSUODTLvdKex08dA+/hQ2URMBStqI5g6dJZP9
+RcLVyRpp9719KKs2PL2ol/QEfUMXKSB1pld6kRGFEXbPkz8rxLhYt79UzjAC8lWj
+z/NbyIvNVzqgYlB7Tk+sgIBF3LSV3Zh4ZsrNoXMu/VDG+ODm/1dcLZJE3QXaMM6Z
+nbvdy/eUOhJ12BzgM+1PKjNi93azOB6uBiXZ1QgzWbmWJHnGmvX/HUdT8s4e1snt
+5mAsS7hmsrxpu2QD9b3gGUIgy6z6ZuFp1kq0S5HxoFDNjvi88p2E4Jk+unfFMaO9
+4+OyOZWW5TqyyhTYCrhBEcZ4m5hm82v76wIDAQABo3EwbzAOBgNVHQ8BAf8EBAMC
+A7gwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMB0GA1UdDgQWBBRZ7D+U
+LkHi0vbszx8bMG2LZSqUejAfBgNVHSMEGDAWgBQSH/Cc1RDZyRh9u9sfHeS3eWYz
+TDANBgkqhkiG9w0BAQsFAAOCAgEA1YluE0iSE4HEc2N2fdYhmwF2LP3pjUfmzF/g
+NcxjhydQUoxyOxf6+1RsNe7taXQRLhmpN2JaiE8yCf+wDciIhRWnqyHgJEKoJgK6
+4liu7JUpOFgAloe8koKhWxEerkU4VcPy8kN5gZ8I6b8Mso4hTq2O5NhntqKDFRS0
+v0ZpMkz1PhWwI79No8WXU0tUwx5pT3mcwjCr57mnyYWmeHqAXgnUI4U0QnSyr3sa
+jmjpLk2TncpC3CSTr1AbOhm/yglsrbLllvufHUbYv5QNlzkOauvgCzvXQ4ScFttn
+epDzPE8PrsY8N/26BwOCc6ftQqabhpIKzT6w6DN5xYRZi5fyzRNho5+5RuBDRKmL
+AGfrpiixm4zzgUL7jVlOVlZXQ/vkQ+h4+aqS2ssRwPoqGxilFxfUMgO+hr3jZkxz
+o9Z7Yeljt7rzeYESEDtkwou+75LHzfKduVT8Kxwn8LwiB0trgbcx3qj2ab8fucM4
+UUXAXr6ve5DcdkKevLoNypq2kCh7hySjrjDp/gnCMhuc0ch8oV2RV2ZlA+QOD+J4
+VAgYLhy03ZZaUFvmGhCx+FEkkzq/d2GGWuNd1T2MMkTBplf+pK+3l+jHxYuSc8DR
+gPYhs8i50bWlTVu/yJgJGBzAmWcybfi7NmUkQyYHmpLP3GRbtdI+eESF9vAJpKSs
+ONppgXo=
+-----END CERTIFICATE----- '.freeze
 
 ROUTE_SERVICES_CLIENT_TEST_CERT = 'route services
 
@@ -71,11 +145,11 @@ describe 'gorouter' do
           'disable_log_source_ip' => true,
           'tls_pem' => [
             {
-              'cert_chain' => 'test-chain',
+              'cert_chain' => TEST_CERT,
               'private_key' => 'test-key'
             },
             {
-              'cert_chain' => 'test-chain2',
+              'cert_chain' => TEST_CERT2,
               'private_key' => 'test-key2'
             }
           ],
@@ -113,6 +187,7 @@ describe 'gorouter' do
           'send_http_start_stop_server_event' => true,
           'send_http_start_stop_client_event' => true
         },
+        'golang' => {},
         'request_timeout_in_seconds' => 100,
         'routing_api' => {
           'enabled' => false,
@@ -303,9 +378,9 @@ describe 'gorouter' do
         context 'when correct tls_pem is provided' do
           it 'should configure the property' do
             expect(parsed_yaml['tls_pem'].length).to eq(2)
-            expect(parsed_yaml['tls_pem'][0]).to eq('cert_chain' => 'test-chain',
+            expect(parsed_yaml['tls_pem'][0]).to eq('cert_chain' => TEST_CERT,
                                                     'private_key' => 'test-key')
-            expect(parsed_yaml['tls_pem'][1]).to eq('cert_chain' => 'test-chain2',
+            expect(parsed_yaml['tls_pem'][1]).to eq('cert_chain' => TEST_CERT2,
                                                     'private_key' => 'test-key2')
           end
         end
@@ -334,6 +409,25 @@ describe 'gorouter' do
           end
           it 'should error' do
             expect { raise parsed_yaml }.to raise_error(RuntimeError, 'must provide cert_chain and private_key with tls_pem')
+          end
+        end
+
+        context 'when a tls_pem does not have a SAN and ignoreX509CN is enabled' do
+          before do
+            deployment_manifest_fragment['router']['tls_pem'][1]['cert_chain'] = CERT_WITHOUT_CN
+            deployment_manifest_fragment['golang']['x509ignoreCN'] = true
+          end
+          it 'should not error' do
+            expect {raise parsed_yaml }.to_not raise_error(RuntimeError)
+          end
+        end
+        context 'when a tls_pem does not have a SAN and ignoreX509CN is not enabled' do
+          before do
+            deployment_manifest_fragment['router']['tls_pem'][1]['cert_chain'] = CERT_WITHOUT_CN
+            deployment_manifest_fragment['golang']['x509ignoreCN'] = false
+          end
+          it 'should error' do
+            expect {raise parsed_yaml }.to raise_error(RuntimeError, 'tls_pem must include a SAN entry')
           end
         end
       end
