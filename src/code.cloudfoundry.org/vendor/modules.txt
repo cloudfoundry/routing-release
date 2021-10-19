@@ -2,12 +2,17 @@
 ## explicit
 code.cloudfoundry.org/bbs/db/sqldb/helpers
 code.cloudfoundry.org/bbs/db/sqldb/helpers/monitor
+code.cloudfoundry.org/bbs/encryption
+code.cloudfoundry.org/bbs/format
 code.cloudfoundry.org/bbs/guidprovider
+code.cloudfoundry.org/bbs/models
 # code.cloudfoundry.org/cfhttp/v2 v2.0.1-0.20210513172332-4c5ee488a657
+## explicit
 code.cloudfoundry.org/cfhttp/v2
 # code.cloudfoundry.org/clock v1.0.0
 ## explicit
 code.cloudfoundry.org/clock
+code.cloudfoundry.org/clock/fakeclock
 # code.cloudfoundry.org/consuladapter v0.0.0-20210615194356-31457193d2fd
 ## explicit
 code.cloudfoundry.org/consuladapter
@@ -20,6 +25,9 @@ code.cloudfoundry.org/diego-logging-client
 # code.cloudfoundry.org/durationjson v0.0.0-20210615172401-3a89d41c90da
 ## explicit
 code.cloudfoundry.org/durationjson
+# code.cloudfoundry.org/eventhub v0.0.0-20210615172938-0b896ce72257
+## explicit
+code.cloudfoundry.org/eventhub
 # code.cloudfoundry.org/go-diodes v0.0.0-20190809170250-f77fb823c7ee
 code.cloudfoundry.org/go-diodes
 # code.cloudfoundry.org/go-loggregator/v8 v8.0.5
@@ -32,16 +40,24 @@ code.cloudfoundry.org/go-loggregator/v8/runtimeemitter
 # code.cloudfoundry.org/lager v2.0.0+incompatible
 ## explicit
 code.cloudfoundry.org/lager
+code.cloudfoundry.org/lager/lagerctx
 code.cloudfoundry.org/lager/lagerflags
+code.cloudfoundry.org/lager/lagertest
+# code.cloudfoundry.org/localip v0.0.0-20210608161955-43c3ec713c20
+## explicit
+code.cloudfoundry.org/localip
 # code.cloudfoundry.org/locket v0.0.0-20210706150026-b8ae29a4de0f
 ## explicit
 code.cloudfoundry.org/locket
 code.cloudfoundry.org/locket/cmd/locket
+code.cloudfoundry.org/locket/cmd/locket/certauthority
 code.cloudfoundry.org/locket/cmd/locket/config
+code.cloudfoundry.org/locket/cmd/locket/testrunner
 code.cloudfoundry.org/locket/db
 code.cloudfoundry.org/locket/expiration
 code.cloudfoundry.org/locket/grpcserver
 code.cloudfoundry.org/locket/handlers
+code.cloudfoundry.org/locket/lock
 code.cloudfoundry.org/locket/metrics
 code.cloudfoundry.org/locket/metrics/helpers
 code.cloudfoundry.org/locket/models
@@ -53,14 +69,69 @@ code.cloudfoundry.org/tlsconfig
 # github.com/armon/go-metrics v0.3.9
 ## explicit
 github.com/armon/go-metrics
+# github.com/armon/go-proxyproto v0.0.0-20210323213023-7e956b284f0a
+## explicit
+github.com/armon/go-proxyproto
 # github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f
 ## explicit
+github.com/bmizerany/pat
+# github.com/cactus/go-statsd-client v0.0.0-00010101000000-000000000000 => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
+## explicit
+github.com/cactus/go-statsd-client/statsd
 # github.com/cloudfoundry-incubator/bbs v0.0.0-20210615140220-2942e7d25726
 ## explicit
+# github.com/cloudfoundry-incubator/cf-test-helpers v1.0.0
+## explicit
+github.com/cloudfoundry-incubator/cf-test-helpers/cf
+github.com/cloudfoundry-incubator/cf-test-helpers/commandreporter
+github.com/cloudfoundry-incubator/cf-test-helpers/commandstarter
+github.com/cloudfoundry-incubator/cf-test-helpers/config
+github.com/cloudfoundry-incubator/cf-test-helpers/generator
+github.com/cloudfoundry-incubator/cf-test-helpers/helpers
+github.com/cloudfoundry-incubator/cf-test-helpers/helpers/internal
+github.com/cloudfoundry-incubator/cf-test-helpers/internal
+github.com/cloudfoundry-incubator/cf-test-helpers/silentcommandstarter
+github.com/cloudfoundry-incubator/cf-test-helpers/workflowhelpers
+github.com/cloudfoundry-incubator/cf-test-helpers/workflowhelpers/internal
 # github.com/cloudfoundry-incubator/executor v0.0.0-20210615140407-a538c11377aa
 ## explicit
+# github.com/cloudfoundry/custom-cats-reporters v0.0.2
+## explicit
+github.com/cloudfoundry/custom-cats-reporters/honeycomb/client
+# github.com/cloudfoundry/dropsonde v1.0.0 => github.com/cloudfoundry/dropsonde v1.0.1-0.20180504154030-a5c24343b09d
+## explicit
+github.com/cloudfoundry/dropsonde
+github.com/cloudfoundry/dropsonde/emitter
+github.com/cloudfoundry/dropsonde/emitter/fake
+github.com/cloudfoundry/dropsonde/envelope_sender
+github.com/cloudfoundry/dropsonde/envelopes
+github.com/cloudfoundry/dropsonde/factories
+github.com/cloudfoundry/dropsonde/instrumented_handler
+github.com/cloudfoundry/dropsonde/instrumented_round_tripper
+github.com/cloudfoundry/dropsonde/log_sender
+github.com/cloudfoundry/dropsonde/logs
+github.com/cloudfoundry/dropsonde/metric_sender
+github.com/cloudfoundry/dropsonde/metric_sender/fake
+github.com/cloudfoundry/dropsonde/metricbatcher
+github.com/cloudfoundry/dropsonde/metrics
+github.com/cloudfoundry/dropsonde/runtime_stats
+# github.com/cloudfoundry/sonde-go v0.0.0-20200416163440-a42463ba266b
+## explicit
+github.com/cloudfoundry/sonde-go/events
 # github.com/cockroachdb/apd v1.1.0
 ## explicit
+# github.com/codegangsta/cli v0.0.0-00010101000000-000000000000 => github.com/codegangsta/cli v1.6.0
+## explicit
+github.com/codegangsta/cli
+# github.com/dgrijalva/jwt-go v3.2.0+incompatible
+## explicit
+github.com/dgrijalva/jwt-go
+# github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a
+github.com/facebookgo/clock
+# github.com/facebookgo/limitgroup v0.0.0-20150612190941-6abd8d71ec01
+github.com/facebookgo/limitgroup
+# github.com/facebookgo/muster v0.0.0-20150708232844-fd3d7953fd52
+github.com/facebookgo/muster
 # github.com/fsnotify/fsnotify v1.4.9
 github.com/fsnotify/fsnotify
 # github.com/go-sql-driver/mysql v1.6.0
@@ -73,7 +144,11 @@ github.com/go-task/slim-sprig
 # github.com/gofrs/uuid v4.0.0+incompatible
 ## explicit
 # github.com/gogo/protobuf v1.3.2
+## explicit
+github.com/gogo/protobuf/gogoproto
 github.com/gogo/protobuf/proto
+github.com/gogo/protobuf/protoc-gen-gogo/descriptor
+github.com/gogo/protobuf/sortkeys
 # github.com/golang/protobuf v1.5.2
 github.com/golang/protobuf/jsonpb
 github.com/golang/protobuf/proto
@@ -81,6 +156,8 @@ github.com/golang/protobuf/ptypes
 github.com/golang/protobuf/ptypes/any
 github.com/golang/protobuf/ptypes/duration
 github.com/golang/protobuf/ptypes/timestamp
+# github.com/golang/snappy v0.0.3
+github.com/golang/snappy
 # github.com/hashicorp/consul v1.10.0 => github.com/hashicorp/consul v0.7.0
 ## explicit
 github.com/hashicorp/consul/api
@@ -93,6 +170,10 @@ github.com/hashicorp/go-immutable-radix
 github.com/hashicorp/golang-lru/simplelru
 # github.com/hashicorp/serf v0.9.5
 github.com/hashicorp/serf/coordinate
+# github.com/honeycombio/libhoney-go v1.15.3
+## explicit
+github.com/honeycombio/libhoney-go
+github.com/honeycombio/libhoney-go/transmission
 # github.com/jackc/fake v0.0.0-20150926172116-812a484cc733
 ## explicit
 # github.com/jackc/pgx v3.6.2+incompatible
@@ -104,15 +185,37 @@ github.com/jackc/pgx/pgio
 github.com/jackc/pgx/pgproto3
 github.com/jackc/pgx/pgtype
 github.com/jackc/pgx/stdlib
+# github.com/jinzhu/gorm v1.9.16
+## explicit
+github.com/jinzhu/gorm
+github.com/jinzhu/gorm/dialects/mysql
+github.com/jinzhu/gorm/dialects/postgres
+# github.com/jinzhu/inflection v1.0.0
+github.com/jinzhu/inflection
+# github.com/josharian/intern v1.0.0
+github.com/josharian/intern
 # github.com/kisielk/errcheck v1.6.0
 ## explicit
 github.com/kisielk/errcheck
 github.com/kisielk/errcheck/errcheck
 # github.com/klauspost/compress v1.12.2
-## explicit
+github.com/klauspost/compress/fse
+github.com/klauspost/compress/huff0
 github.com/klauspost/compress/s2
+github.com/klauspost/compress/zstd
+github.com/klauspost/compress/zstd/internal/xxhash
 # github.com/lib/pq v1.10.2
 ## explicit
+github.com/lib/pq
+github.com/lib/pq/hstore
+github.com/lib/pq/oid
+github.com/lib/pq/scram
+# github.com/mailru/easyjson v0.7.7
+## explicit
+github.com/mailru/easyjson
+github.com/mailru/easyjson/buffer
+github.com/mailru/easyjson/jlexer
+github.com/mailru/easyjson/jwriter
 # github.com/minio/highwayhash v1.0.1
 github.com/minio/highwayhash
 # github.com/nats-io/jwt/v2 v2.0.2
@@ -126,13 +229,17 @@ github.com/nats-io/nats-server/v2/logger
 github.com/nats-io/nats-server/v2/server
 github.com/nats-io/nats-server/v2/server/pse
 github.com/nats-io/nats-server/v2/server/sysmem
-# github.com/nats-io/nats.go v1.13.0
+# github.com/nats-io/nats.go v1.11.0
 ## explicit
+github.com/nats-io/nats.go
+github.com/nats-io/nats.go/encoders/builtin
+github.com/nats-io/nats.go/util
 # github.com/nats-io/nkeys v0.3.0
 github.com/nats-io/nkeys
 # github.com/nats-io/nuid v1.0.1
 github.com/nats-io/nuid
 # github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
+## explicit
 github.com/nu7hatch/gouuid
 # github.com/nxadm/tail v1.4.8
 github.com/nxadm/tail
@@ -142,7 +249,9 @@ github.com/nxadm/tail/watch
 github.com/nxadm/tail/winfile
 # github.com/onsi/ginkgo v1.16.4
 ## explicit
+github.com/onsi/ginkgo
 github.com/onsi/ginkgo/config
+github.com/onsi/ginkgo/extensions/table
 github.com/onsi/ginkgo/formatter
 github.com/onsi/ginkgo/ginkgo
 github.com/onsi/ginkgo/ginkgo/convert
@@ -155,34 +264,81 @@ github.com/onsi/ginkgo/ginkgo/watch
 github.com/onsi/ginkgo/internal/codelocation
 github.com/onsi/ginkgo/internal/containernode
 github.com/onsi/ginkgo/internal/failer
+github.com/onsi/ginkgo/internal/global
 github.com/onsi/ginkgo/internal/leafnodes
 github.com/onsi/ginkgo/internal/remote
 github.com/onsi/ginkgo/internal/spec
 github.com/onsi/ginkgo/internal/spec_iterator
+github.com/onsi/ginkgo/internal/specrunner
+github.com/onsi/ginkgo/internal/suite
+github.com/onsi/ginkgo/internal/testingtproxy
 github.com/onsi/ginkgo/internal/writer
 github.com/onsi/ginkgo/reporters
 github.com/onsi/ginkgo/reporters/stenographer
 github.com/onsi/ginkgo/reporters/stenographer/support/go-colorable
 github.com/onsi/ginkgo/reporters/stenographer/support/go-isatty
 github.com/onsi/ginkgo/types
+# github.com/onsi/gomega v1.13.0
+## explicit
+github.com/onsi/gomega
+github.com/onsi/gomega/format
+github.com/onsi/gomega/gbytes
+github.com/onsi/gomega/gexec
+github.com/onsi/gomega/ghttp
+github.com/onsi/gomega/internal/assertion
+github.com/onsi/gomega/internal/asyncassertion
+github.com/onsi/gomega/internal/defaults
+github.com/onsi/gomega/internal/oraclematcher
+github.com/onsi/gomega/internal/testingtsupport
+github.com/onsi/gomega/matchers
+github.com/onsi/gomega/matchers/support/goraph/bipartitegraph
+github.com/onsi/gomega/matchers/support/goraph/edge
+github.com/onsi/gomega/matchers/support/goraph/node
+github.com/onsi/gomega/matchers/support/goraph/util
+github.com/onsi/gomega/types
 # github.com/pivotal-golang/clock v1.0.0
 ## explicit
 # github.com/pivotal-golang/lager v2.0.0+incompatible
 ## explicit
 # github.com/pkg/errors v0.9.1
 github.com/pkg/errors
+# github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
+## explicit
+github.com/rcrowley/go-metrics
 # github.com/shopspring/decimal v1.2.0
 ## explicit
-# github.com/stretchr/testify v1.6.1
-## explicit
+# github.com/square/certstrap v1.2.0
+github.com/square/certstrap/pkix
 # github.com/tedsuo/ifrit v0.0.0-20191009134036-9a97d0632f00
+## explicit
 github.com/tedsuo/ifrit
+github.com/tedsuo/ifrit/ginkgomon
 github.com/tedsuo/ifrit/grouper
 github.com/tedsuo/ifrit/http_server
 github.com/tedsuo/ifrit/sigmon
 # github.com/tedsuo/rata v1.0.0
 ## explicit
+github.com/tedsuo/rata
+# github.com/uber-go/atomic v0.0.0-00010101000000-000000000000 => github.com/uber-go/atomic v1.1.0
+## explicit
+github.com/uber-go/atomic
+# github.com/uber-go/zap v0.0.0-00010101000000-000000000000 => github.com/uber-go/zap v0.0.0-20161222040304-a5783ee4b216
+## explicit
+github.com/uber-go/zap
+# github.com/urfave/negroni v1.0.0
+## explicit
+github.com/urfave/negroni
 # github.com/vito/go-sse v1.0.0
+## explicit
+github.com/vito/go-sse/sse
+# github.com/vmihailenco/msgpack/v4 v4.3.12
+github.com/vmihailenco/msgpack/v4
+github.com/vmihailenco/msgpack/v4/codes
+# github.com/vmihailenco/tagparser v0.1.1
+github.com/vmihailenco/tagparser
+github.com/vmihailenco/tagparser/internal
+github.com/vmihailenco/tagparser/internal/parser
+# go.uber.org/atomic v1.8.0
 ## explicit
 # golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e
 ## explicit
@@ -200,7 +356,11 @@ golang.org/x/crypto/poly1305
 ## explicit
 golang.org/x/mod/semver
 # golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d
+## explicit
 golang.org/x/net/context
+golang.org/x/net/html
+golang.org/x/net/html/atom
+golang.org/x/net/html/charset
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
 golang.org/x/net/http2/hpack
@@ -220,10 +380,21 @@ golang.org/x/sys/windows/svc/eventlog
 golang.org/x/sys/windows/svc/mgr
 # golang.org/x/text v0.3.6
 golang.org/x/text/cases
+golang.org/x/text/encoding
+golang.org/x/text/encoding/charmap
+golang.org/x/text/encoding/htmlindex
+golang.org/x/text/encoding/internal
+golang.org/x/text/encoding/internal/identifier
+golang.org/x/text/encoding/japanese
+golang.org/x/text/encoding/korean
+golang.org/x/text/encoding/simplifiedchinese
+golang.org/x/text/encoding/traditionalchinese
+golang.org/x/text/encoding/unicode
 golang.org/x/text/internal
 golang.org/x/text/internal/language
 golang.org/x/text/internal/language/compact
 golang.org/x/text/internal/tag
+golang.org/x/text/internal/utf8internal
 golang.org/x/text/language
 golang.org/x/text/runes
 golang.org/x/text/secure/bidirule
@@ -266,6 +437,18 @@ golang.org/x/tools/internal/typesinternal
 # golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
+# google.golang.org/appengine v1.6.5
+google.golang.org/appengine
+google.golang.org/appengine/datastore
+google.golang.org/appengine/datastore/internal/cloudkey
+google.golang.org/appengine/datastore/internal/cloudpb
+google.golang.org/appengine/internal
+google.golang.org/appengine/internal/app_identity
+google.golang.org/appengine/internal/base
+google.golang.org/appengine/internal/datastore
+google.golang.org/appengine/internal/log
+google.golang.org/appengine/internal/modules
+google.golang.org/appengine/internal/remote_api
 # google.golang.org/genproto v0.0.0-20210701191553-46259e63a0a9
 ## explicit
 google.golang.org/genproto/googleapis/rpc/status
@@ -348,8 +531,13 @@ google.golang.org/protobuf/types/descriptorpb
 google.golang.org/protobuf/types/known/anypb
 google.golang.org/protobuf/types/known/durationpb
 google.golang.org/protobuf/types/known/timestamppb
+# gopkg.in/alexcesaro/statsd.v2 v2.0.0
+gopkg.in/alexcesaro/statsd.v2
 # gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7
 gopkg.in/tomb.v1
+# gopkg.in/yaml.v2 v2.4.0
+## explicit
+gopkg.in/yaml.v2
 # github.com/uber-go/zap => github.com/uber-go/zap v0.0.0-20161222040304-a5783ee4b216
 # github.com/uber-go/atomic => github.com/uber-go/atomic v1.1.0
 # github.com/codegangsta/cli => github.com/codegangsta/cli v1.6.0
