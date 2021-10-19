@@ -255,7 +255,10 @@ func (ms *memStore) GetSeqFromTime(t time.Time) uint64 {
 func (ms *memStore) FilteredState(sseq uint64, subj string) SimpleState {
 	ms.mu.RLock()
 	defer ms.mu.RUnlock()
+	return ms.filteredStateLocked(sseq, subj)
+}
 
+func (ms *memStore) filteredStateLocked(sseq uint64, subj string) SimpleState {
 	var ss SimpleState
 
 	if sseq < ms.state.FirstSeq {
@@ -267,10 +270,9 @@ func (ms *memStore) FilteredState(sseq uint64, subj string) SimpleState {
 		return ss
 	}
 
-	// If we want everything.
-	if subj == _EMPTY_ || subj == fwcs {
-		ss.Msgs, ss.First, ss.Last = ms.state.Msgs, ms.state.FirstSeq, ms.state.LastSeq
-		return ss
+	// Empty same as everything.
+	if subj == _EMPTY_ {
+		subj = fwcs
 	}
 
 	wc := subjectHasWildcard(subj)
@@ -312,6 +314,31 @@ func (ms *memStore) FilteredState(sseq uint64, subj string) SimpleState {
 		}
 	}
 	return ss
+}
+
+// SubjectsState returns a map of SimpleState for all matching subjects.
+func (ms *memStore) SubjectsState(subject string) map[string]SimpleState {
+	ms.mu.RLock()
+	defer ms.mu.RUnlock()
+
+	if len(ms.fss) == 0 {
+		return nil
+	}
+
+	fss := make(map[string]SimpleState)
+	for subj, ss := range ms.fss {
+		if subject == _EMPTY_ || subject == fwcs || subjectIsSubsetMatch(subj, subject) {
+			oss := fss[subj]
+			if oss.First == 0 { // New
+				fss[subj] = *ss
+			} else {
+				// Merge here.
+				oss.Last, oss.Msgs = ss.Last, oss.Msgs+ss.Msgs
+				fss[subj] = oss
+			}
+		}
+	}
+	return fss
 }
 
 // Will check the msg limit for this tracked subject.
@@ -569,9 +596,29 @@ func (ms *memStore) LoadMsg(seq uint64) (string, []byte, []byte, int64, error) {
 		if seq <= last {
 			err = ErrStoreMsgNotFound
 		}
-		return "", nil, nil, 0, err
+		return _EMPTY_, nil, nil, 0, err
 	}
 	return sm.subj, sm.hdr, sm.msg, sm.ts, nil
+}
+
+// LoadLastMsg will return the last message we have that matches a given subject.
+// The subject can be a wildcard.
+func (ms *memStore) LoadLastMsg(subject string) (subj string, seq uint64, hdr, msg []byte, ts int64, err error) {
+	var sm *storedMsg
+	var ok bool
+
+	ms.mu.RLock()
+	defer ms.mu.RUnlock()
+
+	if subject == _EMPTY_ || subject == fwcs {
+		sm, ok = ms.msgs[ms.state.LastSeq]
+	} else if ss := ms.filteredStateLocked(1, subject); ss.Msgs > 0 {
+		sm, ok = ms.msgs[ss.Last]
+	}
+	if !ok || sm == nil {
+		return _EMPTY_, 0, nil, nil, 0, ErrStoreMsgNotFound
+	}
+	return sm.subj, sm.seq, sm.hdr, sm.msg, sm.ts, nil
 }
 
 // RemoveMsg will remove the message from this store.
@@ -718,6 +765,12 @@ func (ms *memStore) State() StreamState {
 	return state
 }
 
+func (ms *memStore) Utilization() (total, reported uint64, err error) {
+	ms.mu.RLock()
+	defer ms.mu.RUnlock()
+	return ms.state.Bytes, ms.state.Bytes, nil
+}
+
 func memStoreMsgSize(subj string, hdr, msg []byte) uint64 {
 	return uint64(len(subj) + len(hdr) + len(msg) + 16) // 8*2 for seq + age
 }
@@ -781,8 +834,14 @@ func (os *consumerMemStore) Stop() error {
 func (os *consumerMemStore) Delete() error {
 	return os.Stop()
 }
+func (os *consumerMemStore) StreamDelete() error {
+	return os.Stop()
+}
 
 func (os *consumerMemStore) State() (*ConsumerState, error) { return nil, nil }
+
+// Type returns the type of the underlying store.
+func (os *consumerMemStore) Type() StorageType { return MemoryStorage }
 
 // Templates
 type templateMemStore struct{}
