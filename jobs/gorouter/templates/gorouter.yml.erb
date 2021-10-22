@@ -152,7 +152,7 @@ else
 end
 
 if p('router.tracing.enable_w3c')
-  params['tracing']['w3c_tenant_id'] = p('router.tracing.w3c_tenant_id')
+  params['tracing']['w3c_tenant_id'] = p('router.tracing.w3c_tenant_id') == '' ? nil : p('router.tracing.w3c_tenant_id')
 end
 
 backend_cert_chain = ''
@@ -330,7 +330,7 @@ if_p('router.http_rewrite') do |r|
 end
 
 if_p('router.html_error_template') do |t|
-  params['html_error_template_file'] = t == '' ? '' : '/var/vcap/jobs/gorouter/config/error.html'
+  params['html_error_template_file'] = t == '' ? nil : '/var/vcap/jobs/gorouter/config/error.html'
 end
 
 params.to_yaml[3..-1]
