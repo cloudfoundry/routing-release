@@ -106,7 +106,8 @@ rubocop ./spec/
 
 If you do not have `rspec` or `rubocop` installed locally, run
 `./scripts/start-docker-for-testing.sh` and execute the commands in the docker
-container.
+container. Prepend "sudo" to he script if you are an unpreviledged user.
+
 
 
 #### <a name="running-unit-and-integration-tests"></a> Running Unit and Integration Tests
@@ -121,7 +122,7 @@ container.
   runs unit *and* integration tests, that's why they need to run in a container.
 
   ```bash
-  ./scripts/run-unit-tests-in-docker
+  ./scripts/run-unit-tests-in-docker #sudo for unpreviledged users
   ```
 
 * If you'd like to run a specific component's tests in a Docker container,
