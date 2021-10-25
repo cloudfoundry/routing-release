@@ -344,6 +344,12 @@ properties:
       and `router.keep_alive_probe_interval`.
     default: 900
 
+  tls_handshake_timeout_in_seconds:
+    description: |
+      Maximum time in seconds for gorouter to establish a TLS connection with a backend container. This timeout is for establishing
+      the TLS connection only. Actual HTTP request timeout is defined by `router.request_timeout_in_seconds`.
+    default: 10
+
   metron.port:
     description: "The port used to emit dropsonde messages to the Metron agent."
     default: 3457

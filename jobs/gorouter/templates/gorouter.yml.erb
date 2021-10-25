@@ -45,6 +45,7 @@ params = {
   'drain_timeout' => "#{p('router.drain_timeout')}s",
   'healthcheck_user_agent' => p('router.healthcheck_user_agent'),
   'endpoint_timeout' => "#{p('request_timeout_in_seconds')}s",
+  'tls_handshake_timeout' => "#{p('tls_handshake_timeout_in_seconds')}s",
   'start_response_delay_interval' => "#{p('router.requested_route_registration_interval_in_seconds')}s",
   'load_balancer_healthy_threshold' => "#{p('router.load_balancer_healthy_threshold')}s",
   'balancing_algorithm' => p('router.balancing_algorithm'),
