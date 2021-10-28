@@ -418,7 +418,7 @@ describe 'gorouter' do
             deployment_manifest_fragment['golang']['x509ignoreCN'] = true
           end
           it 'should not error' do
-            expect {raise parsed_yaml }.to_not raise_error(RuntimeError)
+            expect { raise parsed_yaml }.to_not raise_error(RuntimeError)
           end
         end
         context 'when a tls_pem does not have a SAN and ignoreX509CN is not enabled' do
@@ -427,7 +427,7 @@ describe 'gorouter' do
             deployment_manifest_fragment['golang']['x509ignoreCN'] = false
           end
           it 'should error' do
-            expect {raise parsed_yaml }.to raise_error(RuntimeError, 'tls_pem must include a SAN entry')
+            expect { raise parsed_yaml }.to raise_error(RuntimeError, 'tls_pem[1].cert_chain must include a subjectAltName extension')
           end
         end
       end
