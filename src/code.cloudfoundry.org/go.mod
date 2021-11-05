@@ -58,8 +58,9 @@ require (
 	github.com/nats-io/nats-server/v2 v2.3.0
 	github.com/nats-io/nats.go v1.11.0
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo v1.16.4
-	github.com/onsi/gomega v1.13.0
+	github.com/onsi/ginkgo v1.16.5
+	github.com/onsi/gomega v1.16.0
+	github.com/openzipkin/zipkin-go v0.3.0
 	github.com/pivotal-golang/clock v1.0.0 // indirect
 	github.com/pivotal-golang/lager v2.0.0+incompatible // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
@@ -71,12 +72,12 @@ require (
 	github.com/urfave/negroni v1.0.0
 	github.com/vito/go-sse v1.0.0
 	go.uber.org/atomic v1.8.0 // indirect
-	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e
+	golang.org/x/crypto v0.0.0-20210920023735-84f357641f63
 	golang.org/x/mod v0.5.1 // indirect
-	golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d
+	golang.org/x/net v0.0.0-20210917221730-978cfadd31cf
 	golang.org/x/sys v0.0.0-20210927094055-39ccf1dd6fa6 // indirect
 	golang.org/x/tools v0.1.7
 	google.golang.org/genproto v0.0.0-20210701191553-46259e63a0a9 // indirect
-	google.golang.org/grpc v1.39.0
+	google.golang.org/grpc v1.41.0
 	gopkg.in/yaml.v2 v2.4.0
 )
