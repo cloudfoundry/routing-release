@@ -83,17 +83,15 @@ files:
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/format/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/gbytes/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/gexec/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/assertion/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/asyncassertion/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/defaults/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/oraclematcher/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/testingtsupport/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/assertion.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/async_assertion.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/gomega.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/support/goraph/bipartitegraph/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/support/goraph/edge/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/support/goraph/node/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/support/goraph/util/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/types/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/types/types.go # gosub
   - code.cloudfoundry.org/vendor/github.com/tedsuo/rata/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/vito/go-sse/sse/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/html/*.go # gosub

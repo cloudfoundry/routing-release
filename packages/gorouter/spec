@@ -101,8 +101,6 @@ files:
   - code.cloudfoundry.org/vendor/github.com/gogo/protobuf/gogoproto/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/gogo/protobuf/proto/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/gogo/protobuf/protoc-gen-gogo/descriptor/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/golang/snappy/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/golang/snappy/*.s # gosub
   - code.cloudfoundry.org/vendor/github.com/honeycombio/libhoney-go/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/honeycombio/libhoney-go/transmission/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/josharian/intern/*.go # gosub
@@ -149,11 +147,9 @@ files:
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/format/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/gbytes/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/gexec/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/assertion/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/asyncassertion/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/defaults/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/oraclematcher/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/testingtsupport/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/assertion.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/async_assertion.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/gomega.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/support/goraph/bipartitegraph/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/support/goraph/edge/*.go # gosub
