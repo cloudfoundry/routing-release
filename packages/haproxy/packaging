@@ -2,7 +2,8 @@ set -ex
 
 tar xzf haproxy/haproxy-*.tar.gz
 cd haproxy-*
-make TARGET=linux2628 USE_OPENSSL=1
+# gcc 10+ changed the default to "-fno-common"; we change it back to build properly
+make TARGET=linux2628 USE_OPENSSL=1 TARGET_CFLAGS=-fcommon
 mkdir ${BOSH_INSTALL_TARGET}/bin
 cp haproxy ${BOSH_INSTALL_TARGET}/bin/
 chmod 755 ${BOSH_INSTALL_TARGET}/bin/haproxy
