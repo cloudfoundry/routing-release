@@ -121,15 +121,13 @@ files:
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/format/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/gbytes/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/gexec/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/assertion.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/async_assertion.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/gomega.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/support/goraph/bipartitegraph/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/support/goraph/edge/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/support/goraph/node/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/support/goraph/util/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/types/types.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/types/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/pkg/errors/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/square/certstrap/pkix/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/tedsuo/ifrit/*.go # gosub
@@ -209,6 +207,7 @@ files:
   - code.cloudfoundry.org/vendor/google.golang.org/grpc/internal/syscall/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/grpc/internal/transport/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/grpc/internal/transport/networktype/*.go # gosub
+  - code.cloudfoundry.org/vendor/google.golang.org/grpc/internal/xds/env/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/grpc/keepalive/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/grpc/metadata/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/grpc/peer/*.go # gosub
