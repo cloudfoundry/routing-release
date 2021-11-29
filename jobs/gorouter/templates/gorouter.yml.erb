@@ -1,13 +1,18 @@
 ---
 <%=
-def property_or_link(description, property, link_path, link_name=nil)
+def property_or_link(description, property, link_path, link_name=nil, optional=false)
   link_name ||= link_path.split('.').first
   if_p(property) do |prop|
     return prop
   end.else do
     if_link(link_name) do |link_object|
-      return link_object.p(link_path)
+      link_object.if_p(link_path) do |prop|
+        return prop
+      end
     end
+  end
+  if optional
+    return nil
   end
   raise RuntimeError, "#{description} not found in properties nor in \"#{link_name}\" link. This value can be specified using the \"#{property}\" property."
 end
@@ -128,18 +133,26 @@ end.else do
 end
 nats['hosts'] = nats_machines.map { |hostname| {'hostname' => hostname, 'port' => nats_port} }
 
-nats['user'] = property_or_link(
+nats_user = property_or_link(
   'NATS server username',
   'nats.user',
   "nats.user",
   link_name=nats_link_name,
+  optional=true,
 )
-nats['pass'] = property_or_link(
+if nats_user
+  nats['user'] = nats_user
+end
+nats_pass = property_or_link(
   'NATS server username',
   'nats.password',
   "nats.password",
   link_name=nats_link_name,
+  optional=true,
 )
+if nats_pass
+  nats['pass'] = nats_pass
+end
 
 params['nats'] = nats
 

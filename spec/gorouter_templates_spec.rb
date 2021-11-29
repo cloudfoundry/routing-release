@@ -509,7 +509,7 @@ describe 'gorouter' do
         end
       end
 
-      context 'certficate authorities' do
+      context 'certificate authorities' do
         context 'client_ca_certs' do
           context 'are not provided' do
             before do
@@ -610,7 +610,7 @@ describe 'gorouter' do
             before do
               deployment_manifest_fragment['router']['ca_certs'] = test_certs
             end
-            it 'suceessfully configures the property' do
+            it 'successfully configures the property' do
               expect(parsed_yaml['ca_certs']).to eq(test_certs)
             end
           end
@@ -763,6 +763,33 @@ describe 'gorouter' do
             link_namespace: 'nats-tls',
             parsed_yaml_property: 'nats.hosts.0.port'
           )
+        end
+
+        describe 'optional authentication' do
+          let(:nats) { parsed_yaml['nats'] }
+
+          context 'when username and password are provided' do
+            before do
+              deployment_manifest_fragment['nats']['user'] = 'nats'
+              deployment_manifest_fragment['nats']['password'] = 'stan'
+            end
+
+            it 'contains auth information' do
+              expect(nats['user']).to eq('nats')
+              expect(nats['pass']).to eq('stan')
+            end
+          end
+          context 'when username and password are not provided' do
+            before do
+              deployment_manifest_fragment['nats']['user'] = nil
+              deployment_manifest_fragment['nats']['password'] = nil
+            end
+
+            it 'omits auth information' do
+              expect(nats['user']).to be_nil
+              expect(nats['pass']).to be_nil
+            end
+          end
         end
 
         describe 'ca_certs' do

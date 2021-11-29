@@ -269,6 +269,35 @@ describe 'route_registrar' do
       end
     end
 
+    context 'when nats-tls link is present with mTLS authentication only' do
+      let(:links) do
+        [
+          Bosh::Template::Test::Link.new(
+            name: 'nats-tls',
+            properties: {
+              'nats' => {
+                'hostname' => 'nats-tls-host', 'port' => 9090
+              }
+            },
+            instances: [Bosh::Template::Test::LinkInstance.new(address: 'my-nats-tls-ip')]
+          )
+        ]
+      end
+
+      context 'when mTLS is enabled for NATS' do
+        it 'renders with the nats-tls properties without password authentication' do
+          merged_manifest_properties['nats'] = { 'tls' => { 'enabled' => true } }
+
+          rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+          expect(rendered_hash['nats_mtls_config']['enabled']).to be true
+          expect(rendered_hash['message_bus_servers'].length).to eq(1)
+          expect(rendered_hash['message_bus_servers'][0]['host']).to eq('nats-tls-host:9090')
+          expect(rendered_hash['message_bus_servers'][0]['user']).to be_nil
+          expect(rendered_hash['message_bus_servers'][0]['password']).to be_nil
+        end
+      end
+    end
+
     describe 'routing_api' do
       context 'when routing_api is mtls only' do
         let(:links) do
