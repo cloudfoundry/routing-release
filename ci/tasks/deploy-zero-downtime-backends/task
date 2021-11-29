@@ -67,7 +67,7 @@ instance_groups:
   - name: route_registrar
     release: routing
     consumes:
-     nats: {from: nats, deployment: cf}
+     nats-tls: {from: nats-tls, deployment: cf}
     properties:
       route_registrar:
         routing_api:
@@ -100,7 +100,7 @@ instance_groups:
   - name: route_registrar
     release: routing
     consumes:
-     nats: {from: nats, deployment: cf}
+     nats-tls: {from: nats-tls, deployment: cf}
     properties:
       route_registrar:
         routing_api:
