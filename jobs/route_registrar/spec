@@ -50,9 +50,9 @@ properties:
     description: Enable connecting to NATS server via TLS.
     default: false
   nats.tls.client_cert:
-    description: "PEM-encoded certificate for the route-emitter to present to NATS for verification when connecting via TLS."
+    description: "PEM-encoded certificate for the route-registrar to present to NATS for verification when connecting via TLS."
   nats.tls.client_key:
-    description: "PEM-encoded private key for the route-emitter to present to NATS for verification when connecting via TLS."
+    description: "PEM-encoded private key for the route-registrar to present to NATS for verification when connecting via TLS."
 
   host:
     description: (string, optional) By default, route_registrar will detect the IP of the VM and use it, in combination with port as the backend destination for each uri being registered. This property enables overriding the destination hostname or IP.
