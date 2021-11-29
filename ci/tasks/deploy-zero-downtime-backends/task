@@ -66,9 +66,12 @@ instance_groups:
     release: zero-downtime
   - name: route_registrar
     release: routing
-    consumes:
-     nats: {from: nats-tls, deployment: cf}
     properties:
+      nats:
+        tls:
+          enabled: true
+          client_cert: "((/bosh-${ENVIRONMENT}/cf/nats_client_cert.certificate))"
+          client_key: "((/bosh-${ENVIRONMENT}/cf/nats_client_cert.private_key))"
       route_registrar:
         routing_api:
           enabled_api_endpoints: "both"
@@ -99,9 +102,12 @@ instance_groups:
     release: zero-downtime
   - name: route_registrar
     release: routing
-    consumes:
-     nats: {from: nats-tls, deployment: cf}
     properties:
+      nats:
+        tls:
+          enabled: true
+          client_cert: "((/bosh-${ENVIRONMENT}/cf/nats_client_cert.certificate))"
+          client_key: "((/bosh-${ENVIRONMENT}/cf/nats_client_cert.private_key))"
       route_registrar:
         routing_api:
           enabled_api_endpoints: "both"
