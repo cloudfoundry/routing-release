@@ -13,7 +13,7 @@
     nats_link.if_p("nats.hostname") do |hostname|
       nats_machines = [hostname]
     end.else do
-      nats_machines = link(nats_link_name).instances.map { |instance| instance.address }
+      nats_machines = nats_link.instances.map { |instance| instance.address }
     end
   end
 

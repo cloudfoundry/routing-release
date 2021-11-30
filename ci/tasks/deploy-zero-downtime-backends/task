@@ -66,6 +66,8 @@ instance_groups:
     release: zero-downtime
   - name: route_registrar
     release: routing
+    consumes:
+      nats-tls: {from: nats-tls, deployment: cf}
     properties:
       nats:
         tls:
@@ -102,6 +104,8 @@ instance_groups:
     release: zero-downtime
   - name: route_registrar
     release: routing
+    consumes:
+      nats-tls: {from: nats-tls, deployment: cf}
     properties:
       nats:
         tls:
