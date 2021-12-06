@@ -1,3 +1,13 @@
-set -e -x
+#!/bin/bash
+
+set -ex
+
+source /var/vcap/packages/golang-1.16-linux/bosh/compile.env
+
+mkdir ${BOSH_INSTALL_TARGET}/bin
+
+pushd routing_utils/nats_client
+  go build -o "${BOSH_INSTALL_TARGET}/bin/nats_client" .
+popd
 
 cp -a routing_utils/*.sh ${BOSH_INSTALL_TARGET}
