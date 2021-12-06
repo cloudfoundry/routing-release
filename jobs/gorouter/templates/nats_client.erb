@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -euo pipefail
+
+/var/vcap/packages/routing_utils/bin/nats_client /var/vcap/jobs/gorouter/config/gorouter.yml "$@"

@@ -1,6 +1,13 @@
 ---
 name: routing_utils
 
+dependencies:
+- golang-1.16-linux
+
 files:
   - routing_utils/pid_utils.sh
   - routing_utils/syslog_utils.sh
+  - routing_utils/nats_client/vendor/modules.txt
+  - routing_utils/nats_client/**/*.go
+  - routing_utils/nats_client/go.mod
+  - routing_utils/nats_client/go.sum
