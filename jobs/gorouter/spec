@@ -343,7 +343,11 @@ properties:
       are idle for longer than this duration will be closed. Related properties: `router.max_idle_connections`
       and `router.keep_alive_probe_interval`.
     default: 900
-
+  endpoint_dial_timeout_in_seconds:
+    description: |
+      Maximum time in seconds for gorouter to establish a TCP connection with a backend. This timeout comes before `tls_handshake_timeout_in_seconds`
+      and `request_timeout_in_seconds`.
+    default: 5
   tls_handshake_timeout_in_seconds:
     description: |
       Maximum time in seconds for gorouter to establish a TLS connection with a backend container. This timeout is for establishing

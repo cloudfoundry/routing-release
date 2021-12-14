@@ -189,6 +189,8 @@ describe 'gorouter' do
         },
         'golang' => {},
         'request_timeout_in_seconds' => 100,
+        'endpoint_dial_timeout_in_seconds' => 6,
+        'tls_handshake_timeout_in_seconds' => 9,
         'routing_api' => {
           'enabled' => false,
           'port' => '23423',
@@ -436,6 +438,14 @@ describe 'gorouter' do
         it 'should configure properly' do
           expect(parsed_yaml['drain_wait']).to eq('10s')
           expect(parsed_yaml['drain_timeout']).to eq('300s')
+        end
+      end
+
+      describe 'connection and request timeouts' do
+        it 'should configure properly' do
+          expect(parsed_yaml['endpoint_dial_timeout']).to eq('6s')
+          expect(parsed_yaml['tls_handshake_timeout']).to eq('9s')
+          expect(parsed_yaml['endpoint_timeout']).to eq('100s')
         end
       end
 
