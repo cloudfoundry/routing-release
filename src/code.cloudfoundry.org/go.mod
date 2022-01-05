@@ -22,7 +22,7 @@ require (
 	code.cloudfoundry.org/eventhub v0.0.0-20210615172938-0b896ce72257
 	code.cloudfoundry.org/lager v2.0.0+incompatible
 	code.cloudfoundry.org/localip v0.0.0-20210608161955-43c3ec713c20
-	code.cloudfoundry.org/locket v0.0.0-20210706150026-b8ae29a4de0f
+	code.cloudfoundry.org/locket v0.0.0-20211014150347-5712a0767913
 	code.cloudfoundry.org/tlsconfig v0.0.0-20210615191307-5d92ef3894a7
 	github.com/armon/go-proxyproto v0.0.0-20210323213023-7e956b284f0a
 	github.com/cactus/go-statsd-client v0.0.0-00010101000000-000000000000
@@ -51,7 +51,7 @@ require (
 	github.com/uber-go/zap v0.0.0-00010101000000-000000000000
 	github.com/urfave/negroni v1.0.0
 	github.com/vito/go-sse v1.0.0
-	golang.org/x/crypto v0.0.0-20211202192323-5770296d904e
+	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
 	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2
 	golang.org/x/tools v0.1.7
 	google.golang.org/grpc v1.41.0
@@ -104,7 +104,7 @@ require (
 	github.com/vmihailenco/tagparser v0.1.1 // indirect
 	go.uber.org/atomic v1.8.0 // indirect
 	golang.org/x/mod v0.5.1 // indirect
-	golang.org/x/sys v0.0.0-20210927094055-39ccf1dd6fa6 // indirect
+	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect

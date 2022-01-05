@@ -48,7 +48,7 @@ code.cloudfoundry.org/lager/lagertest
 # code.cloudfoundry.org/localip v0.0.0-20210608161955-43c3ec713c20
 ## explicit; go 1.16
 code.cloudfoundry.org/localip
-# code.cloudfoundry.org/locket v0.0.0-20210706150026-b8ae29a4de0f
+# code.cloudfoundry.org/locket v0.0.0-20211014150347-5712a0767913
 ## explicit
 code.cloudfoundry.org/locket
 code.cloudfoundry.org/locket/cmd/locket
@@ -125,6 +125,8 @@ github.com/cloudfoundry/sonde-go/events
 # github.com/codegangsta/cli v0.0.0-00010101000000-000000000000 => github.com/codegangsta/cli v1.6.0
 ## explicit
 github.com/codegangsta/cli
+# github.com/cpuguy83/go-md2man/v2 v2.0.0
+## explicit; go 1.12
 # github.com/dgrijalva/jwt-go v3.2.0+incompatible
 ## explicit
 github.com/dgrijalva/jwt-go
@@ -183,6 +185,8 @@ github.com/hashicorp/serf/coordinate
 ## explicit; go 1.14
 github.com/honeycombio/libhoney-go
 github.com/honeycombio/libhoney-go/transmission
+# github.com/howeyc/gopass v0.0.0-20170109162249-bf9dde6d0d2c
+## explicit
 # github.com/jackc/fake v0.0.0-20150926172116-812a484cc733
 ## explicit
 # github.com/jackc/pgx v3.6.2+incompatible
@@ -327,8 +331,12 @@ github.com/pkg/errors
 # github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
 ## explicit
 github.com/rcrowley/go-metrics
+# github.com/russross/blackfriday/v2 v2.0.1
+## explicit
 # github.com/shopspring/decimal v1.2.0
 ## explicit; go 1.13
+# github.com/shurcooL/sanitized_anchor_name v1.0.0
+## explicit
 # github.com/square/certstrap v1.2.0
 ## explicit
 github.com/square/certstrap/pkix
@@ -348,6 +356,8 @@ github.com/uber-go/atomic
 # github.com/uber-go/zap v0.0.0-00010101000000-000000000000 => github.com/uber-go/zap v0.0.0-20161222040304-a5783ee4b216
 ## explicit
 github.com/uber-go/zap
+# github.com/urfave/cli v1.22.2
+## explicit; go 1.11
 # github.com/urfave/negroni v1.0.0
 ## explicit
 github.com/urfave/negroni
@@ -365,7 +375,7 @@ github.com/vmihailenco/tagparser/internal
 github.com/vmihailenco/tagparser/internal/parser
 # go.uber.org/atomic v1.8.0
 ## explicit; go 1.13
-# golang.org/x/crypto v0.0.0-20211202192323-5770296d904e
+# golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
 ## explicit; go 1.17
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
@@ -392,7 +402,7 @@ golang.org/x/net/http2/hpack
 golang.org/x/net/idna
 golang.org/x/net/internal/timeseries
 golang.org/x/net/trace
-# golang.org/x/sys v0.0.0-20210927094055-39ccf1dd6fa6
+# golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
@@ -403,6 +413,8 @@ golang.org/x/sys/windows/registry
 golang.org/x/sys/windows/svc
 golang.org/x/sys/windows/svc/eventlog
 golang.org/x/sys/windows/svc/mgr
+# golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1
+## explicit; go 1.11
 # golang.org/x/text v0.3.7
 ## explicit; go 1.17
 golang.org/x/text/cases
