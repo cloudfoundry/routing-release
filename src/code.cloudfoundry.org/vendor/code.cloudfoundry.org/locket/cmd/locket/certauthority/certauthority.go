@@ -146,7 +146,7 @@ func generateCAAndKey(depotDir, commonName string) (string, string, error) {
 		return handleError(err)
 	}
 
-	crt, err := pkix.CreateIntermediateCertificateAuthority(ca, crtKey, csr, time.Now().AddDate(1, 0, 0))
+	crt, err := pkix.CreateIntermediateCertificateAuthority(ca, caKey, csr, time.Now().AddDate(1, 0, 0))
 	if err != nil {
 		caLock.Unlock()
 		return handleError(err)
