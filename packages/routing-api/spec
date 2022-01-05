@@ -2,7 +2,7 @@
 name: routing-api
 
 dependencies:
-  - golang-1.16-linux
+  - golang-1.17-linux
 
 files:
   - code.cloudfoundry.org/go.mod
