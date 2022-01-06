@@ -15,6 +15,7 @@ outputs:
 
 params:
   BRANCH: develop
+  PACKAGE:
   # Identity to use for the git commit
   GIT_COMMIT_USERNAME: "CF Networking Team CI Bot"
   GIT_COMMIT_EMAIL: "CF-Networking@pivotal.io"
