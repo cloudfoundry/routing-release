@@ -24,6 +24,18 @@ def reserved_system_component_ports
   return []
 end
 
+def parse_ip (ip, var_name)
+  unless ip.empty?
+    ip = ip.split(":")[0]
+      begin
+        parsed = IPAddr.new ip
+      rescue  => e
+        raise "Invalid #{var_name} '#{ip}': #{e}"
+      end
+  end
+end
+
+parse_ip(p('tcp_router.debug_address'), 'tcp_router.debug_address')
 %>
 oauth:
   token_endpoint: <%= p("uaa.token_endpoint") %>

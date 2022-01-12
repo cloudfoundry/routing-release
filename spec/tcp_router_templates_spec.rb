@@ -210,6 +210,16 @@ describe 'tcp_router' do
       YAML.safe_load(template.render(merged_manifest_properties, consumes: links))
     end
 
+    context 'when ips have leading 0s' do
+      it 'debug_address fails with a nice message' do
+        merged_manifest_properties['tcp_router']['debug_address'] = '127.0.0.01:17002'
+        expect {
+          rendered_config
+        }.to raise_error (/Invalid tcp_router.debug_address/)
+      end
+    end
+
+
     it 'renders a file with default properties' do
       expect(rendered_config).to eq('isolation_segments' => [],
                                     'haproxy_pid_file' => '/var/vcap/data/tcp_router/config/haproxy.pid',
