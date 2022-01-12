@@ -17,6 +17,19 @@ def property_or_link(description, property, link_path, link_name=nil, optional=f
   raise RuntimeError, "#{description} not found in properties nor in \"#{link_name}\" link. This value can be specified using the \"#{property}\" property."
 end
 
+def parse_ip (ip, var_name)
+  unless ip.empty?
+    ip = ip.split(":")[0]
+      begin 
+        parsed = IPAddr.new ip
+      rescue  => e
+        raise "Invalid #{var_name} '#{ip}': #{e}"
+      end
+  end
+end
+
+parse_ip(p('router.debug_address'), 'router.debug_address')
+
 access_log_file = p('router.write_access_logs_locally') ? '/var/vcap/sys/log/gorouter/access.log' : ''
 
 params = {

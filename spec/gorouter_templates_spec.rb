@@ -234,6 +234,15 @@ describe 'gorouter' do
     subject(:parsed_yaml) { YAML.safe_load(rendered_template) }
 
     context 'given a generally valid manifest' do
+      context 'when ips have leading 0s' do
+        it 'debug_address fails with a nice message' do
+          deployment_manifest_fragment['router']['debug_address'] = '127.0.0.01:17002'
+          expect {
+            rendered_template
+          }.to raise_error (/Invalid router.debug_address/)
+        end
+      end
+
       describe 'keep alives' do
         context 'max_idle_connections is set' do
           context 'using default values' do
