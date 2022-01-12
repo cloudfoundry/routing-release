@@ -103,6 +103,15 @@ describe 'routing_api' do
       YAML.safe_load(template.render(merged_manifest_properties))
     end
 
+    context 'when ips have leading 0s' do
+      it 'debug_address fails with a nice message' do
+        merged_manifest_properties['routing_api']['debug_address'] = '127.0.0.01:17002'
+        expect {
+          rendered_config
+        }.to raise_error (/Invalid routing_api.debug_address/)
+      end
+    end
+
     describe "when the client cert isn't supplied" do
       before do
         merged_manifest_properties['routing_api'].delete('mtls_client_cert')

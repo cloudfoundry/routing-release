@@ -14,6 +14,20 @@ oauth:
   <% if p("uaa.ca_cert") != "" %>
   ca_certs: "/var/vcap/jobs/routing-api/config/certs/uaa/ca.crt"
   <% end %>
+<%-
+def parse_ip (ip, var_name)
+  unless ip.empty?
+    ip = ip.split(":")[0]
+      begin
+        parsed = IPAddr.new ip
+      rescue  => e
+        raise "Invalid #{var_name} '#{ip}': #{e}"
+      end
+  end
+end
+
+parse_ip(p('routing_api.debug_address'), 'routing_api.debug_address')
+-%>
 debug_address: <%= p("routing_api.debug_address") %>
 statsd_client_flush_interval: <%= p("routing_api.statsd_client_flush_interval") %>
 router_groups: <%= p("routing_api.router_groups").to_yaml.gsub("---","") %>
