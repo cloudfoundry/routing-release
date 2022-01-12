@@ -213,12 +213,11 @@ describe 'tcp_router' do
     context 'when ips have leading 0s' do
       it 'debug_address fails with a nice message' do
         merged_manifest_properties['tcp_router']['debug_address'] = '127.0.0.01:17002'
-        expect {
+        expect do
           rendered_config
-        }.to raise_error (/Invalid tcp_router.debug_address/)
+        end.to raise_error(/Invalid tcp_router.debug_address/)
       end
     end
-
 
     it 'renders a file with default properties' do
       expect(rendered_config).to eq('isolation_segments' => [],

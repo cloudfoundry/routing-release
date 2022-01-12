@@ -1,5 +1,6 @@
 # rubocop:disable LineLength
 # rubocop:disable BlockLength
+
 require 'rspec'
 require 'yaml'
 require 'json'
@@ -237,9 +238,9 @@ describe 'gorouter' do
       context 'when ips have leading 0s' do
         it 'debug_address fails with a nice message' do
           deployment_manifest_fragment['router']['debug_address'] = '127.0.0.01:17002'
-          expect {
+          expect do
             rendered_template
-          }.to raise_error (/Invalid router.debug_address/)
+          end.to raise_error(/Invalid router.debug_address/)
         end
       end
 
@@ -1030,7 +1031,8 @@ describe 'gorouter' do
   describe 'error.html' do
     let(:template) { job.template('config/error.html') }
     let(:rendered_template) do
-      template.render({'router' => { 'html_error_template' => html }})
+      updated_properties = { 'router' => { 'html_error_template' => html } }
+      template.render(updated_properties)
     end
 
     context 'by default' do
