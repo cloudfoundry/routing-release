@@ -1021,7 +1021,7 @@ describe 'gorouter' do
   describe 'error.html' do
     let(:template) { job.template('config/error.html') }
     let(:rendered_template) do
-      template.render('router' => { 'html_error_template' => html })
+      template.render({'router' => { 'html_error_template' => html }})
     end
 
     context 'by default' do
