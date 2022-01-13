@@ -3,7 +3,7 @@
 BASEDIR="$(cd $(dirname "$0") && pwd)"
 ROUTING_RELEASE_DIR="${BASEDIR}/.."
 
-IMAGE="cf-routing-pipeline"
+IMAGE="cloudfoundry/cf-routing-pipeline"
 MOUNT_DIR="/routing-release"
 PREPARE_CONTAINER="cd ${MOUNT_DIR}; source .envrc; scripts/setup-test-environment.sh; bash"
 
