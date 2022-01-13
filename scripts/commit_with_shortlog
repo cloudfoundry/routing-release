@@ -1,9 +1,5 @@
 #!/bin/bash
 script_dir=$(dirname $0)
 
-if [[ $# -eq 0 ]] ; then
-    echo 'Story number must be provided'
-    exit 1
-fi
 
 $script_dir/staged_shortlog "$@" | git duet-commit  -F -
