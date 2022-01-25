@@ -186,7 +186,8 @@ describe 'gorouter' do
           'ip_local_port_range' => '1024 65535',
           'per_request_metrics_reporting' => true,
           'send_http_start_stop_server_event' => true,
-          'send_http_start_stop_client_event' => true
+          'send_http_start_stop_client_event' => true,
+          'per_app_prometheus_http_metrics_reporting' => false,
         },
         'golang' => {},
         'request_timeout_in_seconds' => 100,
@@ -456,6 +457,36 @@ describe 'gorouter' do
           expect(parsed_yaml['endpoint_dial_timeout']).to eq('6s')
           expect(parsed_yaml['tls_handshake_timeout']).to eq('9s')
           expect(parsed_yaml['endpoint_timeout']).to eq('100s')
+        end
+      end
+
+      describe 'prometheus metrics' do
+        context 'by default' do
+          it 'should not be configured' do
+            expect(parsed_yaml['per_app_prometheus_http_metrics_reporting']).to be false
+            expect(parsed_yaml['prometheus']).to be_nil
+          end
+        end
+        context 'when prometheus is configured' do
+          before do
+            deployment_manifest_fragment['router']['per_app_prometheus_http_metrics_reporting'] = true
+            deployment_manifest_fragment['router']['prometheus'] = {'port' => 9090 }
+          end
+          it 'should set prometheus configuration' do
+            expect(parsed_yaml['per_app_prometheus_http_metrics_reporting']).to be true
+            expect(parsed_yaml['prometheus']['port']).to eq(9090)
+            expect(parsed_yaml['prometheus']['cert_path']).to eq("/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.crt")
+            expect(parsed_yaml['prometheus']['key_path']).to eq("/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.key")
+            expect(parsed_yaml['prometheus']['ca_path']).to eq("/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus_ca.crt")
+          end
+        end
+        context 'when per app metrics is configured but prometheus port is not' do
+          before do
+            deployment_manifest_fragment['router']['per_app_prometheus_http_metrics_reporting'] = true
+          end
+          it 'should error' do
+            expect { raise parsed_yaml }.to raise_error(RuntimeError, 'per_app_prometheus_http_metrics_reporting should not be set without configuring prometheus')
+          end
         end
       end
 
@@ -1025,6 +1056,37 @@ describe 'gorouter' do
 
     it 'contains indicators' do
       expect(parsed_yaml['spec']['indicators']).to_not be_empty
+    end
+  end
+
+  describe 'prom_scraper_config.yml' do
+    let(:deployment_manifest_fragment) { Hash.new }
+    let(:template) { job.template('config/prom_scraper_config.yml') }
+    let(:rendered_template) { template.render(deployment_manifest_fragment) }
+    subject(:parsed_yaml) { YAML.safe_load(rendered_template) }
+
+    it 'renders an empty file' do
+      expect(parsed_yaml).to be_nil
+    end
+
+    context 'when gorouter prometheus support is enabled' do
+      before do
+        deployment_manifest_fragment['router'] = {
+          'prometheus' => {
+            'port' => 9090,
+            'server_name' => 'example.org'
+          }
+        }
+      end
+      it 'configures the prom scraper to scrape the gorouter prometheus endpoint' do
+        expect(parsed_yaml['port']).to eq(9090)
+        expect(parsed_yaml['scheme']).to eq('https')
+        expect(parsed_yaml['server_name']).to eq('example.org')
+      end
+      it 'configures the prom scraper to emit events with source_id and instance_id tags' do
+        expect(parsed_yaml['source_id']).to eq('gorouter')
+        expect(parsed_yaml['instance_id']).to_not be_empty
+      end
     end
   end
 

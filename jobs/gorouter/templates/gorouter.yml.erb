@@ -90,9 +90,23 @@ params = {
   'ip_local_port_range' => p('router.ip_local_port_range'),
   'empty_pool_response_code_503' => p('for_backwards_compatibility_only.empty_pool_response_code_503'), # backwards compatibility only section
   'per_request_metrics_reporting' => p('router.per_request_metrics_reporting'),
+  'per_app_prometheus_http_metrics_reporting' => p('router.per_app_prometheus_http_metrics_reporting'),
   'send_http_start_stop_server_event' => p('router.send_http_start_stop_server_event'),
   'send_http_start_stop_client_event' => p("router.send_http_start_stop_client_event"),
 }
+
+if_p('router.prometheus.port') do |port|
+  params['prometheus'] = {
+    'port' => port,
+    'cert_path' => '/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.crt',
+    'key_path' => '/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.key',
+    'ca_path' => '/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus_ca.crt'
+  }
+end.else do
+  if p('router.per_app_prometheus_http_metrics_reporting')
+    raise 'per_app_prometheus_http_metrics_reporting should not be set without configuring prometheus'
+  end
+end
 
 nats = {}
 
