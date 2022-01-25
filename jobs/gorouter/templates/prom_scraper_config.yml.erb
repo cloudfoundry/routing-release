@@ -1,0 +1,7 @@
+<% if p('router.prometheus.port', 0) != 0 %>
+port: <%= p("router.prometheus.port") %>
+source_id: "gorouter"
+instance_id: <%= spec.id || spec.index.to_s %>
+scheme: https
+server_name: <%= p("router.prometheus.server_name") %>
+<% end %>

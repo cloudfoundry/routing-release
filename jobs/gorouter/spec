@@ -10,6 +10,10 @@ templates:
   dns_health_check.erb: bin/dns_health_check
   nats_client.erb: bin/nats_client
   gorouter.yml.erb: config/gorouter.yml
+  prom_scraper_config.yml.erb: config/prom_scraper_config.yml
+  prometheus.crt.erb: config/certs/prometheus/prometheus.crt
+  prometheus.key.erb: config/certs/prometheus/prometheus.key
+  prometheus_ca.crt.erb: config/certs/prometheus/prometheus_ca.crt
   drain.erb: bin/drain
   uaa_ca.crt.erb: config/certs/uaa/ca.crt
   bpm.yml.erb: config/bpm.yml
@@ -50,6 +54,19 @@ properties:
     default: router-status
   router.status.password:
     description: "Password for HTTP basic auth to the /varz and /routes endpoints."
+  router.prometheus.port:
+    description: "Port for the prometheus endpoint."
+  router.prometheus.server_name:
+    description: "The server name used in the certificate for the metrics endpoint."
+  router.prometheus.ca_cert:
+    description: "TLS CA cert to verify requests to prometheus endpoint."
+    default: ""
+  router.prometheus.cert:
+    description: "TLS certificate for prometheus server."
+    default: ""
+  router.prometheus.key:
+    description: "TLS private key for prometheus server."
+    default: ""
   router.requested_route_registration_interval_in_seconds:
     description: |
       On startup, the router will delay listening for requests by this duration to increase likelihood that it has a complete routing table before serving requests.
@@ -420,6 +437,10 @@ properties:
       This property is provided for backwards compatibility reasons. We recommend leaving it set to true.
       When it set to true, the gorouter will return a 503 when a route is known but there is nothing in the pool available to handle the request. When false, the gorouter will return a 404.
     default: true
+
+  router.per_app_prometheus_http_metrics_reporting:
+    description: "Reports the http latency in a prometheus histogram for each application"
+    default: false
 
   router.per_request_metrics_reporting:
     description: "Report the metrics latency, latency.<component> and route_lookup_time for each request"
