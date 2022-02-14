@@ -20,6 +20,7 @@ require (
 	code.cloudfoundry.org/clock v1.0.0
 	code.cloudfoundry.org/debugserver v0.0.0-20210608171006-d7658ce493f4
 	code.cloudfoundry.org/eventhub v0.0.0-20210615172938-0b896ce72257
+	code.cloudfoundry.org/go-metric-registry v0.0.0-20220203232021-f2ac4dfd60ec
 	code.cloudfoundry.org/lager v2.0.0+incompatible
 	code.cloudfoundry.org/localip v0.0.0-20210608161955-43c3ec713c20
 	code.cloudfoundry.org/locket v0.0.0-20211014150347-5712a0767913
@@ -67,7 +68,9 @@ require (
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
 	code.cloudfoundry.org/rep v0.1441.2 // indirect
 	github.com/armon/go-metrics v0.3.9 // indirect
+	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
+	github.com/cespare/xxhash/v2 v2.1.1 // indirect
 	github.com/cloudfoundry-incubator/bbs v0.0.0-20210615140220-2942e7d25726 // indirect
 	github.com/cloudfoundry-incubator/executor v0.0.0-20210615140407-a538c11377aa // indirect
 	github.com/cockroachdb/apd v1.1.0 // indirect
@@ -89,6 +92,7 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
+	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/minio/highwayhash v1.0.1 // indirect
 	github.com/nats-io/jwt/v2 v2.0.2 // indirect
 	github.com/nats-io/nkeys v0.3.0 // indirect
@@ -97,6 +101,10 @@ require (
 	github.com/pivotal-golang/clock v1.0.0 // indirect
 	github.com/pivotal-golang/lager v2.0.0+incompatible // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/prometheus/client_golang v1.4.0 // indirect
+	github.com/prometheus/client_model v0.2.0 // indirect
+	github.com/prometheus/common v0.9.1 // indirect
+	github.com/prometheus/procfs v0.0.8 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/square/certstrap v1.2.0 // indirect
 	github.com/uber-go/atomic v0.0.0-00010101000000-000000000000 // indirect
