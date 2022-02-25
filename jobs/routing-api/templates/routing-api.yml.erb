@@ -26,12 +26,27 @@ def parse_ip (ip, var_name)
   end
 end
 
+def fail_on_router_port_conflicts
+  if_p('routing_api.fail_on_router_port_conflicts') do |prop|
+    return prop
+  end.else do
+    if_link('tcp_router') do |link|
+      link.if_p('tcp_router.fail_on_router_port_conflicts') do |prop|
+        return prop
+      end
+    end
+  end
+
+  return 'false' # There is a default on the tcp_router property. This should only happen when tcp_router is not deployed.
+end
+
 parse_ip(p('routing_api.debug_address'), 'routing_api.debug_address')
 -%>
 debug_address: <%= p("routing_api.debug_address") %>
 statsd_client_flush_interval: <%= p("routing_api.statsd_client_flush_interval") %>
 router_groups: <%= p("routing_api.router_groups").to_yaml.gsub("---","") %>
 reserved_system_component_ports: <%= p("routing_api.reserved_system_component_ports").map(&:to_i) %>
+fail_on_router_port_conflicts: <%= fail_on_router_port_conflicts %>
 uuid: <%= spec.id %>
 admin_port: <%= p("routing_api.admin_port") %>
 
