@@ -187,7 +187,7 @@ describe 'gorouter' do
           'per_request_metrics_reporting' => true,
           'send_http_start_stop_server_event' => true,
           'send_http_start_stop_client_event' => true,
-          'per_app_prometheus_http_metrics_reporting' => false,
+          'per_app_prometheus_http_metrics_reporting' => false
         },
         'golang' => {},
         'request_timeout_in_seconds' => 100,
@@ -470,14 +470,14 @@ describe 'gorouter' do
         context 'when prometheus is configured' do
           before do
             deployment_manifest_fragment['router']['per_app_prometheus_http_metrics_reporting'] = true
-            deployment_manifest_fragment['router']['prometheus'] = {'port' => 9090 }
+            deployment_manifest_fragment['router']['prometheus'] = { 'port' => 9090 }
           end
           it 'should set prometheus configuration' do
             expect(parsed_yaml['per_app_prometheus_http_metrics_reporting']).to be true
             expect(parsed_yaml['prometheus']['port']).to eq(9090)
-            expect(parsed_yaml['prometheus']['cert_path']).to eq("/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.crt")
-            expect(parsed_yaml['prometheus']['key_path']).to eq("/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.key")
-            expect(parsed_yaml['prometheus']['ca_path']).to eq("/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus_ca.crt")
+            expect(parsed_yaml['prometheus']['cert_path']).to eq('/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.crt')
+            expect(parsed_yaml['prometheus']['key_path']).to eq('/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.key')
+            expect(parsed_yaml['prometheus']['ca_path']).to eq('/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus_ca.crt')
           end
         end
         context 'when per app metrics is configured but prometheus port is not' do
@@ -1060,7 +1060,7 @@ describe 'gorouter' do
   end
 
   describe 'prom_scraper_config.yml' do
-    let(:deployment_manifest_fragment) { Hash.new }
+    let(:deployment_manifest_fragment) { {} }
     let(:template) { job.template('config/prom_scraper_config.yml') }
     let(:rendered_template) { template.render(deployment_manifest_fragment) }
     subject(:parsed_yaml) { YAML.safe_load(rendered_template) }

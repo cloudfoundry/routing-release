@@ -51,6 +51,11 @@ provides:
   - routing_api.sqldb
   - release_level_backup
 
+consumes:
+  - name: tcp_router
+    type: tcp-router
+    optional: true
+
 properties:
   routing_api.max_ttl:
     description: "String representing the maximum TTL a client can request for route registration."
@@ -181,6 +186,9 @@ properties:
       Users will not be able to create router_groups with ports that overlap
       with this value. Please see docs for more information about these ports.
     default: [2822,2825,3457,3458,3459,3460,3461,8853,9100,14726,14727,14821,14822,14823,14824,14829,14830,14920,14922,15821,17002,53035,53080]
+
+  routing_api.fail_on_router_port_conflicts:
+    description: "This should come via a bosh link from the tcp_routing job. This property is here in case it needs to be overwritten."
 
   routing_api.lock_ttl:
     description: "TTL for service lock"

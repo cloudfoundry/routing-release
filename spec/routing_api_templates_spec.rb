@@ -98,9 +98,10 @@ describe 'routing_api' do
 
   describe 'routing-api.yml' do
     let(:template) { job.template('config/routing-api.yml') }
+    let(:links) { [] }
 
     subject(:rendered_config) do
-      YAML.safe_load(template.render(merged_manifest_properties))
+      YAML.safe_load(template.render(merged_manifest_properties, consumes: links))
     end
 
     context 'when ips have leading 0s' do
@@ -137,6 +138,7 @@ describe 'routing_api' do
                                     'lock_ttl' => '10s',
                                     'retry_interval' => '5s',
                                     'debug_address' => '127.0.0.1:17002',
+                                    'fail_on_router_port_conflicts' => false,
                                     'locket' => {
                                       'locket_address' => 'locket_server',
                                       'locket_ca_cert_file' => '/var/vcap/jobs/routing-api/config/certs/locket/ca.crt',
@@ -250,9 +252,7 @@ describe 'routing_api' do
           expect(rendered_config['reserved_system_component_ports']).to eq [1000, 2000, 3000]
         end
       end
-    end
 
-    context 'reserved_system_component_ports' do
       describe 'when an array of strings is provided' do
         before do
           merged_manifest_properties['routing_api']['reserved_system_component_ports'] = %w[1000 2000 3000]
@@ -260,6 +260,88 @@ describe 'routing_api' do
 
         it 'should render the yml accordingly' do
           expect(rendered_config['reserved_system_component_ports']).to eq [1000, 2000, 3000]
+        end
+      end
+    end
+
+    context 'fail_on_router_port_conflicts' do
+      context 'when the link is defined' do
+        context 'when the link is false' do
+          let(:links) do
+            [
+              Bosh::Template::Test::Link.new(
+                name: 'tcp_router',
+                properties: {
+                  'tcp_router' => {
+                    'fail_on_router_port_conflicts' => false
+                  }
+                }
+              )
+            ]
+          end
+
+          describe 'when the property is defined' do
+            before do
+              merged_manifest_properties['routing_api']['fail_on_router_port_conflicts'] = true
+            end
+
+            it 'prefers the property' do
+              expect(rendered_config['fail_on_router_port_conflicts']).to eq(true)
+            end
+          end
+
+          describe 'when no property is defined' do
+            it 'prefers the link' do
+              expect(rendered_config['fail_on_router_port_conflicts']).to eq(false)
+            end
+          end
+        end
+
+        context 'when the link is true' do
+          let(:links) do
+            [
+              Bosh::Template::Test::Link.new(
+                name: 'tcp_router',
+                properties: {
+                  'tcp_router' => {
+                    'fail_on_router_port_conflicts' => true
+                  }
+                }
+              )
+            ]
+          end
+
+          describe 'when no property is defined' do
+            it 'prefers the link' do
+              expect(rendered_config['fail_on_router_port_conflicts']).to eq(true)
+            end
+          end
+        end
+      end
+
+      describe 'when property is defined and no link is defined' do
+        before do
+          merged_manifest_properties['routing_api']['fail_on_router_port_conflicts'] = true
+        end
+
+        it 'prefers the property' do
+          expect(rendered_config['fail_on_router_port_conflicts']).to eq(true)
+        end
+      end
+
+      describe 'when no property and no link is defined' do
+        let(:links) do
+          [
+            Bosh::Template::Test::Link.new(
+              name: 'tcp_router',
+              properties: {
+                'tcp_router' => {}
+              }
+            )
+          ]
+        end
+        it 'defaults to false' do
+          expect(rendered_config['fail_on_router_port_conflicts']).to eq(false)
         end
       end
     end
