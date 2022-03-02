@@ -72,10 +72,11 @@ These fixes are available in routing release XYZ+ (will update when released). I
 | --- | ----------- | ----------- |
 | routing_api.reserved_system_component_ports |   Array of ports that are reserved for system components. Users will not be able to create router_groups with ports that overlap with this value. See Appendix A in this document to see what system components use these ports. If you run anything else on your TCP Router VM you must add its port to this list, or else you run the risk of still running into this bug.  | See Appendix A |
 | tcp_router.fail_on_router_port_conflicts | Fail the TCP Router if routing_api.reserved_system_component_ports conflict with ports in existing router groups. We suggest giving your users a chance to update their router groups before turning it to true. | false |
+| routing_api.fail_on_router_port_conflicts | By default this is set to the same value as `tcp_router.fail_on_router_port_conflicts`. If true, then API calls to create or update router groups will fail if the reserved_ports conflict with the `routing_api.reserved_system_component_ports`. | false |
 
 ### Runtime Check Details
 
-When a user tries to create or update a router group to include a port in `routing_api.reserved_system_component_ports` then they will get a status code 400 and the following error: 
+If `routing_api.fail_on_router_port_conflicts` is true, then when a user tries to create or update a router group to include a port in `routing_api.reserved_system_component_ports` they will get a status code 400 and the following error: 
 ```
 {"name":"ProcessRequestError","message":"Cannot process request: Invalid ports. Reservable ports must not include the following reserved system component ports: [2822 2825 3458 3459 3460 3461 8853 9100 14726 14727 14821 14822 14823 14824 14829 15821 17002 35095 39873 40177 42393 46567 53035 53080]."}
 ```
@@ -117,6 +118,23 @@ You will see the following in the TCP Router logs...
     "error": "The reserved ports for router group 'group-1' contains the following reserved system component port(s): '14726, 14727, 14821, 14822, 14823, 14824, 14829, 15821, 17002'. Please update your router group accordingly.\nThe reserved ports for router group 'group-2' contains the following reserved system component port(s): '40177'. Please update your router group accordingly."
   }
 }
+```
+
+**If the seeded router groups in `routing_api.router_groups` are invalid and `routing_api.fail_on_router_port_conflicts` is true**
+1. The routing-api job will cause the deployment to fail.
+2. You will see the following log in `routing-api.stdout.log`
+
+```
+{
+  "timestamp": "2021-05-03T21:04:02.507129979Z",
+  "source": "routing-api",
+  "message": "routing-api.failed-load-config",
+  "log_level": 2,
+  "data": {
+    "error": "Invalid ports. Reservable ports must not include the following reserved system component ports: [2822 2825 3457 3458 3459 3460 3461 8853 9100 14726 14727 14821 14822 14823 14824 14829 14830 14920 14922 15821 17002 53035 53080]."
+  }
+}
+
 ```
 
 **If there are no invalid router groups**
@@ -164,6 +182,8 @@ To see if there is a system component using that port run `netstat -tlpn | grep 
 <a name="how-to-manually-fix"></a> **❓ I can't upgrade yet. Is there another way I could check to see if there are invalid router groups?**
 
 Yes! You don't need our fancy automation, you can do it yourself. First grab all of the ports from the TCP Router VM (see instructions [here](#how-to-check)). Then grab all of your router groups (see docs [here](https://github.com/cloudfoundry/routing-api/blob/main/docs/api_docs.md#list-router-groups)). Then check all of the router groups to make sure they don't include any of the system component ports.
+
+You will also need to check the router groups seeded in the `routing_api.router_groups` property. Even though this property is only used to seed router groups on the very first deploy, it cannot contain invalid router groups. Either delete these seeded router groups from the manifest (this will have no affect on the current created router groups) or fix the router groups to contain valid ports only.
 
 **❓ Why can't you detect what is running on the VM and see what ports are used? Why is there a deploy time configured list?**
 
