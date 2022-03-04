@@ -424,20 +424,9 @@ describe 'gorouter' do
             expect { raise parsed_yaml }.to raise_error(RuntimeError, 'must provide cert_chain and private_key with tls_pem')
           end
         end
-
-        context 'when a tls_pem does not have a SAN and ignoreX509CN is enabled' do
+        context 'when a tls_pem does not have a SAN' do
           before do
             deployment_manifest_fragment['router']['tls_pem'][1]['cert_chain'] = CERT_WITHOUT_CN
-            deployment_manifest_fragment['golang']['x509ignoreCN'] = true
-          end
-          it 'should not error' do
-            expect { raise parsed_yaml }.to_not raise_error(RuntimeError)
-          end
-        end
-        context 'when a tls_pem does not have a SAN and ignoreX509CN is not enabled' do
-          before do
-            deployment_manifest_fragment['router']['tls_pem'][1]['cert_chain'] = CERT_WITHOUT_CN
-            deployment_manifest_fragment['golang']['x509ignoreCN'] = false
           end
           it 'should error' do
             expect { raise parsed_yaml }.to raise_error(RuntimeError, 'tls_pem[1].cert_chain must include a subjectAltName extension')

@@ -27,9 +27,5 @@ if p('routing_api.auth_disabled') == true
   bpm['processes'][0]['args'] << "-devMode"
 end
 
-if p('golang.x509ignoreCN') == true
-  bpm['processes'][0]['env'].merge!({"GODEBUG" => "x509ignoreCN=0"})
-end
-
 YAML.dump(bpm)
 %>

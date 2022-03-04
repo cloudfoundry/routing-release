@@ -5,7 +5,7 @@ ROUTING_RELEASE_DIR="${BASEDIR}/.."
 
 IMAGE="cloudfoundry/cf-routing-pipeline"
 MOUNT_DIR="/routing-release"
-PREPARE_CONTAINER="cd ${MOUNT_DIR}; source .envrc; scripts/template-tests"
+PREPARE_CONTAINER="cd ${MOUNT_DIR}; source .envrc; scripts/template-tests; echo 'done'"
 
 docker pull "${IMAGE}"
 docker run -it \

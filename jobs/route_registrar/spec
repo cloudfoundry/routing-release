@@ -58,10 +58,6 @@ properties:
     description: (string, optional) By default, route_registrar will detect the IP of the VM and use it, in combination with port as the backend destination for each uri being registered. This property enables overriding the destination hostname or IP.
     example: 192.168.60.25
 
-  golang.x509ignoreCN:
-    description: "Environment Flag to temporarily ignore golang's strict checking for at least one SAN in a TLS certificate. See: https://github.com/cloudfoundry/routing-release/blob/develop/docs/golang1.15-remove-x509ignoreCN%3D0-flag-certificates-now-require-SANs.md for more info."
-    default: true
-
   route_registrar.logging_level:
     description: "Log level for route_registrar"
     default: "info"
