@@ -2,4 +2,4 @@
 name: haproxy
 
 files:
-  - haproxy/haproxy-1.8.13.tar.gz
+  - haproxy/haproxy-2.5.4.tar.gz
