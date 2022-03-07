@@ -24,9 +24,5 @@ bpm = {
   ]
 }
 
-if p('golang.x509ignoreCN') == true
-      bpm['processes'][0]['env']['GODEBUG'] = 'netdns=cgo,x509ignoreCN=0'
-end
-
 YAML.dump(bpm)
 %>

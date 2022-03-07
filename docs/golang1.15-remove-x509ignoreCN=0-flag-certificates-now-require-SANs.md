@@ -4,13 +4,10 @@ This doc helps operators understand why certificates used by network Load
 Balancers and the gorouter to serve TLS traffic must contain at least one
 Subject Alternative Name (SAN).
 
-## 🔥 Version
-This deprecation is observed in [0.220.0](https://github.com/cloudfoundry/routing-release/releases/tag/0.220.0).
 
 ## 📑 Context
 
-When golang 1.15 was released, the authors added a deprecation along with an
-environment variable to temporarily bypass the feature deprecation around the
+When golang 1.15 was released, the authors added a deprecation around the
 use of `CommonName` in x.509 Certificates:
 
   > The deprecated, legacy behavior of treating the CommonName field on X.509 certificates as a host name when no Subject Alternative Names are present is now disabled by default. It can be temporarily re-enabled by adding the value x509ignoreCN=0 to the GODEBUG environment variable.
@@ -20,14 +17,7 @@ use of `CommonName` in x.509 Certificates:
 Source: [Go 1.15 Release Notes](https://golang.org/doc/go1.15#commonname).
 
 
-In [routing-release
-0.209.0](https://github.com/cloudfoundry/routing-release/releases/tag/0.209.0),
-the team bumped the version of golang used to `1.15.6` with the
-`x509ignoreCN=0` flag to get the golang upgrade started.
-
-Now, with [routing-release
-0.220.0](https://github.com/cloudfoundry/routing-release/releases/tag/0.215.0),
-we have add a [bosh property, `golang.x509ignoreCN`,](https://github.com/cloudfoundry/routing-release/blob/a2b53e96f05dc870558d782dae514f999a62323e/jobs/gorouter/spec#L429-L431) that allows end users to toggle the option to temporarily ignore golang's strict checking for at least one SAN in a TLS certificate by running with the `GODEBUG=x509ignoreCN=0` environment variable. By default, this property is `true`, meaning that by default there is no strict checking of the certificates for a SAN.
+This deprecation is reflected in routing-release [0.220.0](https://github.com/cloudfoundry/routing-release/releases/tag/0.220.0).
 
 ## 🤔 What does this mean for operators?
 ### 1️⃣ Gorouter TLS Certificates
