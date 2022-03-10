@@ -339,6 +339,20 @@ describe 'route_registrar' do
             expect(rendered_hash['routing_api']['api_url']).to eq('https://other-routing-api.service.cf.internal:3001')
           end
         end
+
+        context 'when max_ttl is not provided in the link' do
+          it 'renders with the default' do
+            rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+            expect(rendered_hash['routing_api']['max_ttl']).to eq('120s')
+          end
+        end
+        context 'when max_ttl is provided in the link' do
+          it 'uses the link value' do
+            links[0].properties['routing_api']['max_ttl'] = '100s'
+            rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+            expect(rendered_hash['routing_api']['max_ttl']).to eq('100s')
+          end
+        end
       end
     end
 
@@ -367,7 +381,8 @@ describe 'route_registrar' do
             'skip_ssl_validation' => false,
             'client_cert_path' => '/var/vcap/jobs/route_registrar/config/routing_api/certs/client.crt',
             'client_private_key_path' => '/var/vcap/jobs/route_registrar/config/routing_api/keys/client_private.key',
-            'server_ca_cert_path' => '/var/vcap/jobs/route_registrar/config/routing_api/certs/server_ca.crt'
+            'server_ca_cert_path' => '/var/vcap/jobs/route_registrar/config/routing_api/certs/server_ca.crt',
+            'max_ttl' => '120s'
           },
           'nats_mtls_config' => {
             'enabled' => false,
