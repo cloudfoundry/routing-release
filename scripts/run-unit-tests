@@ -3,6 +3,7 @@ set -ex -o pipefail
 
 BASEDIR="$(dirname "$0")"
 PACKAGE="$1"
+SUB_PACKAGE="$2"
 
 function printStatus {
   local last_exit_status=$?
@@ -16,5 +17,5 @@ function printStatus {
 trap printStatus EXIT
 
 ${BASEDIR}/setup-test-environment.sh
-${BASEDIR}/run-all-component-tests.sh "$PACKAGE"
+${BASEDIR}/run-all-component-tests.sh "$PACKAGE" "$SUB_PACKAGE"
 
