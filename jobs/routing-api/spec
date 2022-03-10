@@ -43,6 +43,7 @@ provides:
   - routing_api.mtls_client_key
   - routing_api.reserved_system_component_ports
   - routing_api.enabled_api_endpoints
+  - routing_api.max_ttl
   - uaa.ca_cert
   - skip_ssl_validation
 - name: routing_api_db

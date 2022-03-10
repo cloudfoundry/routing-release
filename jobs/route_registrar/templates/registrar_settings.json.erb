@@ -94,8 +94,15 @@
     ca_certs: '/var/vcap/jobs/route_registrar/config/certs/ca.crt',
     client_cert_path: '/var/vcap/jobs/route_registrar/config/routing_api/certs/client.crt',
     client_private_key_path: '/var/vcap/jobs/route_registrar/config/routing_api/keys/client_private.key',
-    server_ca_cert_path: '/var/vcap/jobs/route_registrar/config/routing_api/certs/server_ca.crt'
+    server_ca_cert_path: '/var/vcap/jobs/route_registrar/config/routing_api/certs/server_ca.crt',
+    max_ttl: '120s',
   }
+  if_link('routing_api') do |link|
+    link.if_p('routing_api.max_ttl') do |prop|
+      routing_api[:max_ttl] = prop
+    end
+  end
+
   if_p('route_registrar.routing_api.api_url') do |prop|
     if_link('routing_api') do |link|
       if link.p('routing_api.enabled_api_endpoints') == "mtls" and not prop.start_with?('https')
