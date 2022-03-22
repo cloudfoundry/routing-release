@@ -32,15 +32,15 @@ provides:
     type: http-router
 
 consumes:
-  - name: nats
-    type: nats
-    optional: true
-  - name: nats-tls
-    type: nats-tls
-    optional: true
-  - name: routing_api
-    type: routing_api
-    optional: true
+- name: nats
+  type: nats
+  optional: true
+- name: nats-tls
+  type: nats-tls
+  optional: true
+- name: routing_api
+  type: routing_api
+  optional: true
 
 properties:
   router.port:
@@ -90,7 +90,7 @@ properties:
     default: false
   router.sticky_session_cookie_names:
     description: "The names of the cookies to use for handling sticky sessions"
-    default: ["JSESSIONID"]
+    default: [ "JSESSIONID" ]
   router.drain_wait:
     description: |
       Delay in seconds after shut down is initiated before server stops listening.
@@ -135,8 +135,8 @@ properties:
       Warning: Setting this to TLSv1.3 will cause things to fail with any Java clients using versions of Java without a fix for the following issue: https://bugs.openjdk.java.net/browse/JDK-8236039
     default: TLSv1.2
   router.dns_health_check_host:
-    description: "Host to ping for confirmation of DNS resolution, only used when Routing API is enabled"
-    default: "uaa.service.cf.internal"
+      description: "Host to ping for confirmation of DNS resolution, only used when Routing API is enabled"
+      default: "uaa.service.cf.internal"
   router.tls_pem:
     description: "Array of private keys and certificates for serving TLS requests. Each element in the array is an object containing fields 'private_key' and 'cert_chain', each of which supports a PEM block. Required if router.enable_ssl is true."
     example: |
@@ -243,16 +243,16 @@ properties:
     description: |
       (optional, array pairs name-value) If set, gorouter will add the given headers into the response if they are not already present.
     example:
-      - name: "Strict-Transport-Security"
-        value: "max-age=31536000; includeSubDomains; preload"
-      - name: "Cache-Control"
-        value: "no-cache"
+    - name: "Strict-Transport-Security"
+      value: "max-age=31536000; includeSubDomains; preload"
+    - name: "Cache-Control"
+      value: "no-cache"
   router.http_rewrite.responses.remove_headers:
     description: |
       (optional, array pairs name-value) List of HTTP headers that will be stripped from responses.
     example:
-      - name: X-Vcap-Request-Id
-      - name: Accept-Ranges
+    - name: X-Vcap-Request-Id
+    - name: Accept-Ranges
   router.frontend_idle_timeout:
     description: |
       (optional, integer) Duration in seconds to maintain an open connection when client supports keep-alive.
@@ -348,7 +348,8 @@ properties:
     description:
     default: 0
   router.trace_key:
-    description: If the X-Vcap-Trace request header is set and has this value,
+    description:
+      If the X-Vcap-Trace request header is set and has this value,
       trace headers are added to the response.
     default: 22
   request_timeout_in_seconds:
@@ -440,7 +441,7 @@ properties:
   for_backwards_compatibility_only.empty_pool_timeout:
     description: |
       This property depends on empty_pool_response_code_503. if empty_pool_response_code_503 is set to true, then gorouter will consider empty_pool_timout parameter.
-      If set to 0, gorouter will remove empty pools after pruning their endpoints. The gorouter will respond with 404 code. 
+      If set to 0, gorouter will remove empty pools after pruning their endpoints. The gorouter will respond with 404 code.
       If set to different value, gorouter will wait until this timeout is reached then will delete the empty pools. Before pool deletion, gorouter will continue to respond with 503 code.
     default: 10
 
