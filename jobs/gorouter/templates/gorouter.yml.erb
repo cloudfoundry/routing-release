@@ -20,7 +20,7 @@ end
 def parse_ip (ip, var_name)
   unless ip.empty?
     ip = ip.split(":")[0]
-      begin 
+      begin
         parsed = IPAddr.new ip
       rescue  => e
         raise "Invalid #{var_name} '#{ip}': #{e}"
@@ -93,6 +93,7 @@ params = {
   'per_app_prometheus_http_metrics_reporting' => p('router.per_app_prometheus_http_metrics_reporting'),
   'send_http_start_stop_server_event' => p('router.send_http_start_stop_server_event'),
   'send_http_start_stop_client_event' => p("router.send_http_start_stop_client_event"),
+  'empty_pool_timeout' => p('for_backwards_compatibility_only.empty_pool_timeout'),
 }
 
 if_p('router.prometheus.port') do |port|
