@@ -440,10 +440,11 @@ properties:
 
   for_backwards_compatibility_only.empty_pool_timeout:
     description: |
-      This property depends on empty_pool_response_code_503. if empty_pool_response_code_503 is set to true, then gorouter will consider empty_pool_timout parameter.
+      This property depends on empty_pool_response_code_503. If empty_pool_response_code_503 is set to true, then gorouter will consider empty_pool_timout parameter.
       If set to 0, gorouter will remove empty pools after pruning their endpoints. The gorouter will respond with 404 code.
       If set to different value, gorouter will wait until this timeout is reached then will delete the empty pools. Before pool deletion, gorouter will continue to respond with 503 code.
-    default: 10
+      The type of empty_pool_timeout is time.Duration. We have to specify the unit of time. For example, a value "10s" means 10 seconds.
+    default: "0s"
 
   router.per_app_prometheus_http_metrics_reporting:
     description: "Reports the http latency in a prometheus histogram for each application"
