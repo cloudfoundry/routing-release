@@ -226,7 +226,8 @@ describe 'gorouter' do
           'port' => 3745
         },
         'for_backwards_compatibility_only' => {
-          'empty_pool_response_code_503' => true
+          'empty_pool_response_code_503' => true,
+          'empty_pool_timeout' => 10
         }
       }
     end
@@ -1018,6 +1019,7 @@ describe 'gorouter' do
             end
             it 'is set to true' do
               expect(parsed_yaml['empty_pool_response_code_503']).to eq(true)
+              expect(parsed_yaml['empty_pool_timeout']).to eq(10)
             end
           end
 
