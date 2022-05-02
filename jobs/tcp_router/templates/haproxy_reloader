@@ -30,7 +30,7 @@ while ! mkdir "${RELOADER_LOCK_DIR}"; do
       echo "Timed out waiting for lock" >&2
       exit 1
   fi
-  ((i++))
+  i=$(( i+1 ))
 done
 
 echo "Locking succeeded" >&2
