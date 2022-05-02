@@ -9,11 +9,32 @@ DAEMON="$(which haproxy)"
 CONFIG=/var/vcap/data/tcp_router/config/haproxy.conf
 HAPROXY_PID_FILE=/var/vcap/data/tcp_router/config/haproxy.pid
 HAPROXY_SOCKET_FILE=/var/vcap/data/tcp_router/config/haproxy.sock
+RELOADER_LOCK_DIR=/var/vcap/data/tcp_router/tmp/reloader_lock
 
 test -x "${DAEMON}"
 test -f "${CONFIG}"
 
+cleanup() {
+    rm -rf "${RELOADER_LOCK_DIR}"
+}
+
 echo "$(date --rfc-3339=ns) starting haproxy_reloader" >> "${LOGFILE}"
+
+i=0
+# use RELOADER_LOCK_DIR as a mutex. mkdir will fail if the dir already exists (something claimed the lock)
+# do *NOT* add `-p` to the mkdir or this will stop working.
+while ! mkdir "${RELOADER_LOCK_DIR}"; do
+  echo "Lock failed - will try again in 1s" >&2
+  sleep 1
+  if (( i >= 30 )); then
+      echo "Timed out waiting for lock" >&2
+      exit 1
+  fi
+  ((i++))
+done
+
+echo "Locking succeeded" >&2
+trap cleanup EXIT INT TERM
 
 "${DAEMON}" -f "${CONFIG}" -p "${HAPROXY_PID_FILE}" -x "${HAPROXY_SOCKET_FILE}" -D -sf "$(cat ${HAPROXY_PID_FILE})" 0<&- &>> "${LOGFILE}"
 
