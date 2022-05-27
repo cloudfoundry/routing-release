@@ -56,7 +56,7 @@ cat > "${CATS_INTEGRATION_CONFIG}" <<EOF
   "include_privileged_container_support": false,
   "include_route_services": true,
   "include_routing": true,
-  "include_security_groups": true,
+  "include_security_groups": ${ENABLE_DYNAMIC_ASG_TESTS},
   "include_services": true,
   "include_ssh": false,
   "include_sso": false,
