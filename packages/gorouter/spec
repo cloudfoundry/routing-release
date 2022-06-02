@@ -70,6 +70,7 @@ files:
   - code.cloudfoundry.org/gorouter/test_util/rss/common/*.go # gosub
   - code.cloudfoundry.org/gorouter/varz/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/lager/*.go # gosub
+  - code.cloudfoundry.org/vendor/code.cloudfoundry.org/lager/internal/truncate/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/localip/*.go # gosub
   - code.cloudfoundry.org/routing-api/*.go # gosub
   - code.cloudfoundry.org/routing-api/models/*.go # gosub

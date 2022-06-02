@@ -43,9 +43,10 @@ code.cloudfoundry.org/go-metric-registry
 code.cloudfoundry.org/go-metric-registry/testhelpers
 # code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5
 ## explicit
-# code.cloudfoundry.org/lager v2.0.0+incompatible
-## explicit
+# code.cloudfoundry.org/lager v1.1.1-0.20210922154813-2c3a201cafc6
+## explicit; go 1.17
 code.cloudfoundry.org/lager
+code.cloudfoundry.org/lager/internal/truncate
 code.cloudfoundry.org/lager/lagerctx
 code.cloudfoundry.org/lager/lagerflags
 code.cloudfoundry.org/lager/lagertest

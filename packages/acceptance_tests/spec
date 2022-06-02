@@ -18,6 +18,7 @@ files:
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/cfhttp/v2/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/clock/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/lager/*.go # gosub
+  - code.cloudfoundry.org/vendor/code.cloudfoundry.org/lager/internal/truncate/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/lager/lagerctx/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/lager/lagertest/*.go # gosub
   - code.cloudfoundry.org/routing-acceptance-tests/helpers/*.go # gosub
