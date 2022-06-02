@@ -27,6 +27,8 @@ code.cloudfoundry.org/go-metric-registry v0.0.0-20220203232021-f2ac4dfd60ec/go.m
 code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 h1:XVhLtnvbIlLQh7L0KADVFjd2dfgXVcOpqPLpMtg/IZA=
 code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5/go.mod h1:1ZB1JCh2FAp+SqX79ve6dc8YREvbsziULEOncAilX4Q=
 code.cloudfoundry.org/lager v1.1.1-0.20210513163233-569157d2803b/go.mod h1:SF6BAZkl2+itWGVny2ILQCY9UNXIRwgi/m181VkHfrI=
+code.cloudfoundry.org/lager v1.1.1-0.20210922154813-2c3a201cafc6 h1:UgzXGTcp+Hi9qxZhqr0BF0IZEax6K/QPV60KRZOSTz0=
+code.cloudfoundry.org/lager v1.1.1-0.20210922154813-2c3a201cafc6/go.mod h1:0xN6bpO6rPnZcRia3JPEKyEEyGGj2SvLHbUXY82PWMc=
 code.cloudfoundry.org/lager v2.0.0+incompatible h1:WZwDKDB2PLd/oL+USK4b4aEjUymIej9My2nUQ9oWEwQ=
 code.cloudfoundry.org/lager v2.0.0+incompatible/go.mod h1:O2sS7gKP3HM2iemG+EnwvyNQK7pTSC6Foi4QiMp9sSk=
 code.cloudfoundry.org/localip v0.0.0-20210608161955-43c3ec713c20 h1:wUuKExmeHyMJ0m9g9HKjJjHn3US4j4kWrDxqUsSQmRg=

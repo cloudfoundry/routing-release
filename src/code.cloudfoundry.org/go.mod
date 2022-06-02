@@ -21,7 +21,7 @@ require (
 	code.cloudfoundry.org/debugserver v0.0.0-20210608171006-d7658ce493f4
 	code.cloudfoundry.org/eventhub v0.0.0-20210615172938-0b896ce72257
 	code.cloudfoundry.org/go-metric-registry v0.0.0-20220203232021-f2ac4dfd60ec
-	code.cloudfoundry.org/lager v2.0.0+incompatible
+	code.cloudfoundry.org/lager v1.1.1-0.20210922154813-2c3a201cafc6
 	code.cloudfoundry.org/localip v0.0.0-20210608161955-43c3ec713c20
 	code.cloudfoundry.org/locket v0.0.0-20211014150347-5712a0767913
 	code.cloudfoundry.org/tlsconfig v0.0.0-20210615191307-5d92ef3894a7
