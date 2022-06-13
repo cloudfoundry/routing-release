@@ -21,10 +21,9 @@ root_dir="${PWD}"
 # Inputs
 OUTPUT_DIR="${root_dir}/${OUTPUT_DIR:?"OUTPUT_DIR must be provided"}"
 
-FIRST_ROUTER_IP=$(bosh2 -d cf vms | grep ^router/ | awk '{print $4}' | head -n1)
+FIRST_ROUTER_IP=$(bosh -d cf vms | grep ^router/ | awk '{print $4}' | head -n1)
 
 main() {
-
   echo "instance_groups:
 - azs:
   - z1
