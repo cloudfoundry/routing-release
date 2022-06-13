@@ -6,7 +6,7 @@ bosh_login_toolsmiths toolsmiths-metadata-dir
 
 mkdir -p drats-config
 
-ssh_proxy_host=$(python2 -c "from urlparse import urlparse; print(urlparse('$BOSH_ALL_PROXY').hostname)")
+ssh_proxy_host=$(echo $BOSH_ALL_PROXY | sed "s|ssh+socks5\:\/\/ubuntu\@||g" | sed "s|\:.*$||g")
 
 jq -n \
   --arg cf_api_url "https://$(jq -r '.cf.api_url' < toolsmiths-metadata-dir/metadata)" \
