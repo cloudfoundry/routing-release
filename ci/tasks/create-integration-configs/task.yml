@@ -5,6 +5,8 @@ image_resource:
   type: docker-image
   source:
     repository: c2cnetworking/tas-runtime-deploy
+
+inputs:
   - name: routing-release-ci
   - name: networking-oss-deployments
     optional: true
