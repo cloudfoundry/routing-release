@@ -32,9 +32,9 @@ require (
 	github.com/cloudfoundry/dropsonde v1.0.0
 	github.com/cloudfoundry/sonde-go v0.0.0-20200416163440-a42463ba266b
 	github.com/codegangsta/cli v0.0.0-00010101000000-000000000000
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gogo/protobuf v1.3.2
+	github.com/golang-jwt/jwt/v4 v4.4.1
 	github.com/honeycombio/libhoney-go v1.15.3
 	github.com/jinzhu/gorm v1.9.16
 	github.com/kisielk/errcheck v1.6.0
