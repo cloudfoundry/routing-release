@@ -19,3 +19,11 @@ LOGFILE="/var/vcap/sys/log/gorouter/restart-gorouter.log"
 echo "$(date) - pid: $BASHPID - Monit triggered restart" >> "$LOGFILE"
 
 /var/vcap/bosh/bin/monit restart gorouter
+sleep 1
+echo "$(date) - pid: $BASHPID - Waiting for gorouter to be restarted" >> "$LOGFILE"
+
+until /var/vcap/bosh/bin/monit summary | grep gorouter | grep -v healthchecker | grep running; do
+  sleep 1
+done
+
+echo "$(date) - pid: $BASHPID - Gorouter was restarted" >> "$LOGFILE"
