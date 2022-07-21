@@ -363,6 +363,11 @@ if p('router.ca_certs')
     raise 'ca_certs must be provided as a single string block'
   end
 
+  cert = OpenSSL::X509::Certificate.new ca_certs
+  if cert.signature_algorithm.include? 'sha1'
+    raise "foobarbear"
+  end
+
   params['ca_certs'] = ca_certs
 end
 

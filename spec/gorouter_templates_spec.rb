@@ -598,9 +598,70 @@ describe 'gorouter' do
         end
 
         context 'ca_certs' do
+          context 'when a SHA1 cert is provided' do
+            let(:sha1_cert) do  %{
+-----BEGIN CERTIFICATE-----
+MIIFWzCCA0OgAwIBAgIUOeRI1hzjbqnRtqZWwxrnM2xkQ9UwDQYJKoZIhvcNAQEF
+BQAwPTELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAkNBMSEwHwYDVQQKDBhJbnRlcm5l
+dCBXaWRnaXRzIFB0eSBMdGQwHhcNMjIwNzE0MjMyODM1WhcNMjMwNzE0MjMyODM1
+WjA9MQswCQYDVQQGEwJVUzELMAkGA1UECAwCQ0ExITAfBgNVBAoMGEludGVybmV0
+IFdpZGdpdHMgUHR5IEx0ZDCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIB
+ALUMXZwNrwy1FllGyR8VomzpwZUov47g+tEZrFyuq2KHMX2SZ26XrT1sSnQHNPDd
+Ksn8OJGYBHB1kW24UtBg+FvEjGUFqgYOTz2UNWPAhmi2gdESkjTJNq6t+gMwwqoD
+POxjqoKqa+nh+3G3ZYWpuFYeSUVAcCN7cJAKII8h0agXUF7cyW+ElcVVcDgyRCud
+Z+ft9ZKp3YLKsvWlNk03sV2YvQJYAoaMQ5e1+28jq3dLVFFiLvLQvnFZsD8yQbV8
+MB8Za2rq0T9KYucG+0F82PktflFok9ByrAlb+cjMGbfJ/5bvQJOGyYvjpwvQzejl
+9p5/dm+nJgIjOBX4PCB9M5cQE59liQbmEkmXGFZ3eeYggbh1P1lVjjLFxOxMJDHD
+1631kePZmYeY1FlGWKk0jXl99QVq6KuFgUaxsmtRaDrv7kbtOb50d/2vHwF67NeD
+YF+hqSOYvDK0DPqQDA8jqbrQ91WV8lh6yQIbijSt1IZUbjVv+3ffDaAH7goZq+Rh
+KtN9KinOL7Tp/Nzlymxyr+YAsLpMy75vQ+pRd5w7e/NycIAhkikFQ0k87/g66VhB
+hnhqvFJo2wODkuTVQtbVvsI/T03JoGMEbPIz6Wu3lLxsZrqnN3J4HGTsu7Eo6Qav
+6VrRx8a9X3rJdZ8uwieXRYCOqnnLdSiF591mHW85T7btAgMBAAGjUzBRMB0GA1Ud
+DgQWBBTsgnO912dQRXWGBmVA+OL9/iM9EjAfBgNVHSMEGDAWgBTsgnO912dQRXWG
+BmVA+OL9/iM9EjAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBBQUAA4ICAQAM
+7xtUCNx2r2gvKxn/mbrMX2ks1AOjCSSpxbEKlcJJboyqbwwFk6tyx19cbe4oUv/n
+u2XlEyHFfxPMnyMYj0/4eC0wahYlYjsL3ElmOq0bqmQPM2WNB/fyLKpj1OoqYPOL
+RO8Aq2dSe/2yWR4iSpwUgSOkLLLb0PbI6YaWmdoRCtA4xrpLe2xYbNN9nsXVqJJA
+r7mIh7fio0F3P4suZpz3PCfxxZA5Uff/F0OtcOTxwAKJYGA/vkPItxdeyjYe0z97
+glDyKxVA3CMhFCR+KlYjJ0zFuJxlIjBrFtN4aHTeanyBQ6+XlPZA/PBpWkgUwCS9
+iGrNdktQ7llRdByof7JAatZTJ3fKASsxngrPuLJC2m1XibpNTBVuE57n6lS3mBPf
+PfFCyUsUKLvDTU2aP1W8tN5D9I2/yVxDxZ6270FvlFa3k16KPo09LEDhbU0gFvaD
+4HYcZni9GyXbt+AVzh5IxH8vFMq70dxgWGTqFDFPyoDSm1TZCMBHD+td+bkwsuyH
+Myq7FdaIwMM/wwuYwUNUXwm5EqrsdJsnBZTiqTc+g3lkoMKFfWOGiipNmk+qPztE
+VxYlABfdlS6g6fceqwv3/iAXj/PhPcH/eodrdHV1bcMnMOz3+PDLYTEl/Xok6tpP
+8ImdmCb8HCnbpSjw43AlPcQJO6t8ykY4xUIxVYYrTg==
+-----END CERTIFICATE-----
+}
+            end
+            before do
+              puts sha1_cert
+              certificate = OpenSSL::X509::Certificate.new sha1_cert
+              expect(certificate.signature_algorithm).to eq('sha1WithRSAEncryption')
+              deployment_manifest_fragment['router']['ca_certs'] = sha1_cert
+            end
+            it 'should reject the cert', focus: true  do
+              puts "\n"
+              puts 'Hiiiii'
+              expect { parsed_yaml }.to raise_error(/'SHA1-signed certs not supported except in the case of self-signed root CAs'/)
+            end
+          end
+
+          context 'when there is one correct cert and one SHA1 cert ' do
+            it 'should reject the certs' do
+              # expect(parsed_yaml['ca_certs']).to eq('test-certs')
+            end
+          end
+
           context 'when correct ca_certs is provided' do
             it 'should configure the property' do
-              expect(parsed_yaml['ca_certs']).to eq('test-certs')
+              # expect(parsed_yaml['ca_certs']).to eq('test-certs')
+              expect { parsed_yaml }.to raise_error(/Can\'t find property \'\[\"router.ca_certs\"\]\'/)
+            end
+          end
+          
+          context 'when there is one correct cert and one SHA1 cert' do
+            it 'should reject the certs' do
+              # expect(parsed_yaml['ca_certs']).to eq('test-certs')
             end
           end
 

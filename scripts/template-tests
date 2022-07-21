@@ -4,6 +4,6 @@ ROOT_DIR_PATH="$(cd $(dirname $0)/.. && pwd)"
 
 pushd "${ROOT_DIR_PATH}" > /dev/null
   bundle install
-  bundle exec rspec spec
-  rubocop spec
+  bundle exec rspec --tag focus spec/gorouter_templates_spec.rb
+  # rubocop spec
 popd > /dev/null
