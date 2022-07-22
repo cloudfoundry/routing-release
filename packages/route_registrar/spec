@@ -33,7 +33,7 @@ files:
   - code.cloudfoundry.org/uaa-go-client/config/*.go # gosub
   - code.cloudfoundry.org/uaa-go-client/schema/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/bmizerany/pat/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/dgrijalva/jwt-go/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/golang-jwt/jwt/v4/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/encoders/builtin/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/util/*.go # gosub

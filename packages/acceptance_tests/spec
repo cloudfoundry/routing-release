@@ -44,9 +44,9 @@ files:
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry-incubator/cf-test-helpers/silentcommandstarter/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry-incubator/cf-test-helpers/workflowhelpers/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry-incubator/cf-test-helpers/workflowhelpers/internal/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/dgrijalva/jwt-go/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/fsnotify/fsnotify/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/go-task/slim-sprig/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/golang-jwt/jwt/v4/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nu7hatch/gouuid/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nxadm/tail/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nxadm/tail/ratelimiter/*.go # gosub
