@@ -23,7 +23,7 @@ files:
   - code.cloudfoundry.org/uaa-go-client/schema/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/bmizerany/pat/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/codegangsta/cli/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/dgrijalva/jwt-go/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/golang-jwt/jwt/v4/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nu7hatch/gouuid/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/tedsuo/rata/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/vito/go-sse/sse/*.go # gosub
