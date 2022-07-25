@@ -13,6 +13,7 @@ inputs:
   - name: routing-release
   - name: routing-release-ci
   - name: ops-files
+    optional: true
 
 outputs:
   - name: cipher-manifest
