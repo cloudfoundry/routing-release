@@ -55,7 +55,20 @@ update:
   canary_watch_time: 5000-120000
   max_in_flight: 1
   serial: false
-  update_watch_time: 5000-120000" > "$OUTPUT_DIR/cipher.yml"
+  update_watch_time: 5000-120000" > "/tmp/cipher.yml"
+
+  local arguments
+  arguments=""
+  for op in ${OPS_FILES}
+  do
+    arguments="${arguments} -o ops-files/${op}"
+  done
+
+  bosh \
+    -n \
+    interpolate ${arguments} \
+    /tmp/cipher.yml \
+    > "$OUTPUT_DIR/cipher.yml"
 }
 
 main
