@@ -2,7 +2,7 @@
 name: routing_utils
 
 dependencies:
-- golang-1.17-linux
+- golang-1.18-linux
 
 files:
   - routing_utils/pid_utils.sh
