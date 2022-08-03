@@ -11,7 +11,7 @@ chown -R mysql:mysql /var/lib/mysql /var/log/mysql /var/run/mysqld
 chown -R postgres:postgres /var/lib/postgresql /var/log/postgresql /var/run/postgresql /etc/postgresql
 chown -R root:ssl-cert /etc/ssl/private
 
-kill -HUP $(pidof rsyslogd)
+kill -s HUP $(pidof rsyslogd)
 service mariadb restart
 service postgresql restart
 
