@@ -1,5 +1,7 @@
-# rubocop: disable LineLength
-# rubocop:disable BlockLength
+# frozen_string_literal: true
+
+# rubocop: disable Layout/LineLength
+# rubocop:disable Metrics/BlockLength
 require 'rspec'
 require 'bosh/template/test'
 
@@ -127,3 +129,5 @@ shared_examples 'overridable_link' do |link_config|
     end
   end
 end
+# rubocop: enable Layout/LineLength
+# rubocop: enable Metrics/BlockLength

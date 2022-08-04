@@ -5,5 +5,5 @@ group :test do
   gem 'rspec', '~> 3.0'
 end
 gem 'rake', '>= 12.3.3'
-gem 'rubocop', '~> 0.49.0'
+gem 'rubocop', '~> 1.19.0'
 gem 'semi_semantic', '~> 1.2'

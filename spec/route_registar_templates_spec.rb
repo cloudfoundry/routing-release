@@ -1,5 +1,7 @@
-# rubocop: disable LineLength
-# rubocop: disable BlockLength
+# frozen_string_literal: true
+
+# rubocop: disable Layout/LineLength
+# rubocop: disable Metrics/BlockLength
 require 'rspec'
 require 'bosh/template/test'
 require 'yaml'
@@ -439,3 +441,6 @@ describe 'route_registrar' do
     end
   end
 end
+
+# rubocop: enable Layout/LineLength
+# rubocop: enable Metrics/BlockLength

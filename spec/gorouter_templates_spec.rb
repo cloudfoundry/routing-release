@@ -1,5 +1,7 @@
-# rubocop:disable LineLength
-# rubocop:disable BlockLength
+# frozen_string_literal: true
+
+# rubocop:disable Layout/LineLength
+# rubocop:disable Metrics/BlockLength
 
 require 'rspec'
 require 'yaml'
@@ -33,7 +35,7 @@ jizmjv8waQlFgZbLKZBDYht3+x45k9+IWViLl5IPM4I4cVj9kYRUr0GOlPxBYRkW
 A1xXeONZVuGuarQmcRN9gCC3FUbnkh1lUO4qgFE8iIKnOtFeUnMdiBcWPmRaOJRI
 BdgLIJDrTJStUc4OcZSE6gBkHAt0SAtST7BcLyholehyvheFw4nWUOEvEs1p/bkY
 NexOrpDV8Ump01u0IPyZZv/LNNaWX1wpxbjusVYZCxCfTO2d7s/VQSdRsyH5Hg==
------END CERTIFICATE-----'.freeze
+-----END CERTIFICATE-----'
 
 TEST_CERT2 = '-----BEGIN CERTIFICATE-----
 MIIESzCCAjOgAwIBAgIQDnaPUSkJl2T+TaMLHUlWqzANBgkqhkiG9w0BAQsFADAS
@@ -59,12 +61,12 @@ m5tSO2hX/BIkj160bikWbi3oqU8+91+jeW9fQnRLApkPwLWXSViF1Q7K8c6+/H/p
 oyX7VxkqnU43+nzL+Egc9ibYRF22XMkCBICZFrPu3rZbz8zHTw43ldqHezvx+O/J
 R5DG1U9dcbt9urELWUBEWlrDudlyC1p6ZvMYQIHP2e27pUaU6wFy7xnIrTxYbDM6
 HTngE/Gz+qIUe7OkPXPPkFeoSfR1poQ3yNz4bim9Vx+w50l6m+h6SZOYJTxEUds=
------END CERTIFICATE-----'.freeze
+-----END CERTIFICATE-----'
 
 TEST_KEY = 'some
 
 
-multi line key'.freeze
+multi line key'
 
 CERT_WITHOUT_CN = '-----BEGIN CERTIFICATE-----
 MIIEITCCAgmgAwIBAgIRAMGCNmHhXZnK1fSdCinKK9owDQYJKoZIhvcNAQELBQAw
@@ -90,17 +92,17 @@ UUXAXr6ve5DcdkKevLoNypq2kCh7hySjrjDp/gnCMhuc0ch8oV2RV2ZlA+QOD+J4
 VAgYLhy03ZZaUFvmGhCx+FEkkzq/d2GGWuNd1T2MMkTBplf+pK+3l+jHxYuSc8DR
 gPYhs8i50bWlTVu/yJgJGBzAmWcybfi7NmUkQyYHmpLP3GRbtdI+eESF9vAJpKSs
 ONppgXo=
------END CERTIFICATE----- '.freeze
+-----END CERTIFICATE----- '
 
 ROUTE_SERVICES_CLIENT_TEST_CERT = 'route services
 
 multiline
 
-cert'.freeze
+cert'
 
 ROUTE_SERVICES_CLIENT_TEST_KEY = 'route services
 
-multi line key'.freeze
+multi line key'
 
 describe 'gorouter' do
   let(:release_path) { File.join(File.dirname(__FILE__), '..') }
@@ -609,7 +611,7 @@ describe 'gorouter' do
               deployment_manifest_fragment['router']['ca_certs'] = nil
             end
             it 'returns a helpful error message' do
-              expect { parsed_yaml }.to raise_error(/Can\'t find property \'\[\"router.ca_certs\"\]\'/)
+              expect { parsed_yaml }.to raise_error(/Can't find property '\["router.ca_certs"\]'/)
             end
           end
 
@@ -1105,3 +1107,6 @@ describe 'gorouter' do
     end
   end
 end
+
+# rubocop:enable Layout/LineLength
+# rubocop:enable Metrics/BlockLength
