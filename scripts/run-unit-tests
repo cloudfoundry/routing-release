@@ -13,6 +13,8 @@ function printStatus {
   else
     echo -e '\\nSUITE FAILURE'
   fi
+  service mariadb stop
+  service postgresql stop
 }
 trap printStatus EXIT
 
