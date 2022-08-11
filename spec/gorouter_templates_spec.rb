@@ -374,6 +374,22 @@ describe 'gorouter' do
         end
       end
 
+      context 'route_services_internal_lookup_allowlist' do
+        it 'defaults to empty array' do
+          expect(parsed_yaml['route_services_hairpinning_allowlist']).to eq([])
+        end
+
+        context 'when set to a list' do
+          before do
+            deployment_manifest_fragment['router']['route_services_internal_lookup_allowlist'] = ['route-service.com', '*.example.com']
+          end
+
+          it 'parses to the same list' do
+            expect(parsed_yaml['route_services_hairpinning_allowlist']).to eq(['route-service.com', '*.example.com'])
+          end
+        end
+      end
+
       context 'html_error_template' do
         it 'is not set by default' do
           expect(parsed_yaml['html_error_template_file']).to be_nil
