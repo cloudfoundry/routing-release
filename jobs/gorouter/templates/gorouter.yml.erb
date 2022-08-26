@@ -64,6 +64,7 @@ params = {
   'healthcheck_user_agent' => p('router.healthcheck_user_agent'),
   'endpoint_timeout' => "#{p('request_timeout_in_seconds')}s",
   'endpoint_dial_timeout' => "#{p('endpoint_dial_timeout_in_seconds')}s",
+  'websocket_dial_timeout' => "#{p('websocket_dial_timeout_in_seconds') != "endpoint_dial_timeout_in_seconds" ? p('websocket_dial_timeout_in_seconds') : p('endpoint_dial_timeout_in_seconds')}s",
   'tls_handshake_timeout' => "#{p('tls_handshake_timeout_in_seconds')}s",
   'start_response_delay_interval' => "#{p('router.requested_route_registration_interval_in_seconds')}s",
   'load_balancer_healthy_threshold' => "#{p('router.load_balancer_healthy_threshold')}s",

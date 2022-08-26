@@ -194,6 +194,7 @@ describe 'gorouter' do
         'golang' => {},
         'request_timeout_in_seconds' => 100,
         'endpoint_dial_timeout_in_seconds' => 6,
+        # the websocket_dial_timeout_in_seconds will default to the value of endpoint_dial_timeout_in_seconds if not set
         'tls_handshake_timeout_in_seconds' => 9,
         'routing_api' => {
           'enabled' => false,
@@ -463,8 +464,19 @@ describe 'gorouter' do
       describe 'connection and request timeouts' do
         it 'should configure properly' do
           expect(parsed_yaml['endpoint_dial_timeout']).to eq('6s')
+          expect(parsed_yaml['websocket_dial_timeout']).to eq('6s')
           expect(parsed_yaml['tls_handshake_timeout']).to eq('9s')
           expect(parsed_yaml['endpoint_timeout']).to eq('100s')
+        end
+      end
+
+      describe 'explicitly set websocket_dial_timeout' do
+        before do
+          deployment_manifest_fragment['websocket_dial_timeout_in_seconds'] = 8
+        end
+        it 'should configure properly' do
+          expect(parsed_yaml['endpoint_dial_timeout']).to eq('6s')
+          expect(parsed_yaml['websocket_dial_timeout']).to eq('8s')
         end
       end
 
