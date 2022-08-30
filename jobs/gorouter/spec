@@ -366,8 +366,13 @@ properties:
   endpoint_dial_timeout_in_seconds:
     description: |
       Maximum time in seconds for gorouter to establish a TCP connection with a backend. This timeout comes before `tls_handshake_timeout_in_seconds`
-      and `request_timeout_in_seconds`. This timeout also applies as a read timeout for websocket requests.
+      and `request_timeout_in_seconds`.
     default: 5
+  websocket_dial_timeout_in_seconds:
+    description: |
+      Maximum time in seconds for gorouter to establish a websocket upgrade for the websocket ForwardIO connection with a backend. 
+      This timeout comes before `tls_handshake_timeout_in_seconds` and `request_timeout_in_seconds`. When not set, defaults to `endpoint_dial_timeout_in_seconds`.
+    default: endpoint_dial_timeout_in_seconds
   tls_handshake_timeout_in_seconds:
     description: |
       Maximum time in seconds for gorouter to establish a TLS connection with a backend container. This timeout is for establishing
