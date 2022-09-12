@@ -91,6 +91,10 @@ github.com/cactus/go-statsd-client/statsd
 # github.com/cespare/xxhash/v2 v2.1.1
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
+# github.com/cloudfoundry-community/go-uaa v0.3.1 => github.com/mariash/go-uaa v0.3.2
+## explicit; go 1.12
+github.com/cloudfoundry-community/go-uaa
+github.com/cloudfoundry-community/go-uaa/passwordcredentials
 # github.com/cloudfoundry-incubator/bbs v0.0.0-20210615140220-2942e7d25726
 ## explicit
 # github.com/cloudfoundry-incubator/cf-test-helpers v1.0.0
@@ -415,6 +419,7 @@ golang.org/x/mod/semver
 # golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2
 ## explicit; go 1.17
 golang.org/x/net/context
+golang.org/x/net/context/ctxhttp
 golang.org/x/net/html
 golang.org/x/net/html/atom
 golang.org/x/net/html/charset
@@ -424,6 +429,11 @@ golang.org/x/net/http2/hpack
 golang.org/x/net/idna
 golang.org/x/net/internal/timeseries
 golang.org/x/net/trace
+# golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
+## explicit; go 1.11
+golang.org/x/oauth2
+golang.org/x/oauth2/clientcredentials
+golang.org/x/oauth2/internal
 # golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e
 ## explicit; go 1.17
 golang.org/x/sys/cpu
@@ -510,6 +520,8 @@ google.golang.org/appengine/internal/datastore
 google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/modules
 google.golang.org/appengine/internal/remote_api
+google.golang.org/appengine/internal/urlfetch
+google.golang.org/appengine/urlfetch
 # google.golang.org/genproto v0.0.0-20210701191553-46259e63a0a9
 ## explicit; go 1.11
 google.golang.org/genproto/googleapis/rpc/status
@@ -609,3 +621,4 @@ gopkg.in/yaml.v2
 # github.com/hashicorp/consul => github.com/hashicorp/consul v0.7.0
 # github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
 # github.com/cloudfoundry/dropsonde => github.com/cloudfoundry/dropsonde v1.0.1-0.20180504154030-a5c24343b09d
+# github.com/cloudfoundry-community/go-uaa => github.com/mariash/go-uaa v0.3.2
