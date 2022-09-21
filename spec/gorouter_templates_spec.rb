@@ -169,6 +169,7 @@ describe 'gorouter' do
           'route_services_secret_decrypt_only' => 'secret',
           'route_services_recommend_https' => false,
           'extra_headers_to_log' => 'test-header',
+          'max_header_bytes' => 1_048_576,
           'enable_proxy' => false,
           'force_forwarded_proto_https' => false,
           'sanitize_forwarded_proto' => false,
@@ -246,6 +247,12 @@ describe 'gorouter' do
           expect do
             rendered_template
           end.to raise_error(/Invalid router.debug_address/)
+        end
+      end
+
+      describe 'max_header_bytes' do
+        it 'should set max_header_bytes' do
+          expect(parsed_yaml['max_header_bytes']).to eq(1_048_576)
         end
       end
 
