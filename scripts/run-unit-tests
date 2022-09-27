@@ -5,6 +5,8 @@ BASEDIR="$(dirname "$0")"
 PACKAGE="$1"
 SUB_PACKAGE="$2"
 
+go version # so we see the version tested in CI
+
 function printStatus {
   local last_exit_status=$?
   set +x
