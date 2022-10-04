@@ -1070,6 +1070,26 @@ describe 'gorouter' do
           end
         end
       end
+
+      context 'max_header_bytes' do
+        context 'less than 1' do
+          before do
+            deployment_manifest_fragment['router']['max_header_bytes'] = 0
+          end
+          it 'throws an error' do
+            expect { parsed_yaml }.to raise_error(/Invalid router.max_header_bytes/)
+          end
+        end
+
+        context 'greater than 1mb' do
+          before do
+            deployment_manifest_fragment['router']['max_header_bytes'] = 1024 * 1024 + 1
+          end
+          it 'throws an error' do
+            expect { parsed_yaml }.to raise_error(/Invalid router.max_header_bytes/)
+          end
+        end
+      end
     end
   end
 
