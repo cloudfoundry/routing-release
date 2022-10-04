@@ -423,10 +423,8 @@ properties:
   router.suspend_pruning_if_nats_unavailable:
     description: |
       Suspend pruning of routes when NATs is unavailable and maintain the
-      current routing table. WARNING: This strategy favors availability over
-      consistency and there is a possibility of routing to an incorrect
-      endpoint in the case of port re-use. To be used with caution.
-    default: false
+      current routing table. Note: only non-TLS routes are ever pruned.
+    default: true
 
   uaa.ca_cert:
     description: "Certificate authority for communication between clients and uaa."
