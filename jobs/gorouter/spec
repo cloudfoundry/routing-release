@@ -207,14 +207,13 @@ properties:
   router.route_services_timeout:
     description: "Expiry time of a route service signature in seconds"
     default: 60
-  router.max_header_bytes:
+  router.max_header_kb:
     description: |
-        This value controls the maximum number of bytes the gorouter will read
+        This value controls the maximum number of bytes (in KB) the gorouter will read
         parsing the request header's keys and values, including the request
-        line. It does not limit the size of the request body. An additional
-        padding of 4096 bytes is added to this value by go. Requests with
-        larger headers will result in a 431 status code.
-    default: 1048576 # 1Mb
+        line. It does not limit the size of the request body. Requests with
+        larger headers will result in a 431 status code. Must be between 1 and 1024kb.
+    default: 1024 # 1Mb
   router.extra_headers_to_log:
     description: "An array of headers that access log events will be annotated with. This only applies to headers on requests."
     default: []
