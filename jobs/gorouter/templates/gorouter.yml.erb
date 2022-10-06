@@ -28,11 +28,11 @@ def parse_ip (ip, var_name)
   end
 end
 
-def validate_max_header_bytes (bytes)
-  if bytes < 1 or bytes > 1024 * 1024
-    raise "Invalid router.max_header_bytes value. Must be between 1 and 1,048,576 bytes"
+def validate_max_header_kb (kb)
+  if kb < 1 or kb > 1024
+    raise "Invalid router.max_header_kb value. Must be between 1 and 1,024 kb"
   end
-  bytes
+  kb * 1024
 end
 
 parse_ip(p('router.debug_address'), 'router.debug_address')
@@ -89,7 +89,7 @@ params = {
   'route_services_hairpinning' => p('router.route_services_internal_lookup'),
   'route_services_hairpinning_allowlist' => p('router.route_services_internal_lookup_allowlist'),
   'extra_headers_to_log' => p('router.extra_headers_to_log'),
-  'max_header_bytes' => validate_max_header_bytes(p('router.max_header_bytes')),
+  'max_header_bytes' => validate_max_header_kb(p('router.max_header_kb')),
   'token_fetcher_max_retries' => 3,
   'token_fetcher_retry_interval' => '5s',
   'token_fetcher_expiration_buffer_time' => 30,
