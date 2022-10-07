@@ -169,7 +169,7 @@ describe 'gorouter' do
           'route_services_secret_decrypt_only' => 'secret',
           'route_services_recommend_https' => false,
           'extra_headers_to_log' => 'test-header',
-          'max_header_bytes' => 1_048_576,
+          'max_header_kb' => 1_024,
           'enable_proxy' => false,
           'force_forwarded_proto_https' => false,
           'sanitize_forwarded_proto' => false,
@@ -250,8 +250,8 @@ describe 'gorouter' do
         end
       end
 
-      describe 'max_header_bytes' do
-        it 'should set max_header_bytes' do
+      describe 'max_header_kb' do
+        it 'should set max_header_kb' do
           expect(parsed_yaml['max_header_bytes']).to eq(1_048_576)
         end
       end
@@ -1067,6 +1067,26 @@ describe 'gorouter' do
             it 'is set to false' do
               expect(parsed_yaml['empty_pool_response_code_503']).to eq(false)
             end
+          end
+        end
+      end
+
+      context 'max_header_kb' do
+        context 'less than 1' do
+          before do
+            deployment_manifest_fragment['router']['max_header_kb'] = 0
+          end
+          it 'throws an error' do
+            expect { parsed_yaml }.to raise_error(/Invalid router.max_header_kb/)
+          end
+        end
+
+        context 'greater than 1mb' do
+          before do
+            deployment_manifest_fragment['router']['max_header_kb'] = 1024 + 1
+          end
+          it 'throws an error' do
+            expect { parsed_yaml }.to raise_error(/Invalid router.max_header_kb/)
           end
         end
       end
