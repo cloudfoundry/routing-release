@@ -6,9 +6,52 @@ source /var/vcap/packages/routing_utils/syslog_utils.sh
 
 tee_output_to_sys_log "${LOG_DIR}" "pre-start" <%= p("router.logging.format.timestamp") %>
 
+<%
+    ports = []
+
+    # the following ports are not available via bosh links and are fragile
+    # or they are available via a link, but they are in an addon, so links don't work
+    bosh_agent_port = 2825
+    bosh_dns_ports = [8853, 53080]
+    forwarder_agent_port = 3458
+    loggregator_agent_port = 3459
+    metrics_agent_port = 3461
+    monit_port = 2822
+    syslog_agent_port = 3460
+
+    ports.append(bosh_agent_port)
+    ports.concat(bosh_dns_ports)
+    ports.append(forwarder_agent_port)
+    ports.append(loggregator_agent_port)
+    ports.append(monit_port)
+    ports.append(syslog_agent_port)
+    ports.append(metrics_agent_port)
+
+    # the following ports are set in this release
+    ports.append(p("router.port")) # has default. will always exist.
+    ports.append(p("router.status.port")) # has default. will always exist.
+    ports.append(p("router.tls_port")) # has default. will always exist.
+
+    if_p('router.prometheus.port') do |port|
+        ports.append(port)
+    end
+
+    # ipv4 only. This makes me sad. I couldn't find a ruby package that takes an IP
+    # with a port and returns just the port.
+    debug_address = p("router.debug_address").split(":").last.to_i
+    if debug_address > 0
+        ports.append(debug_address)
+    end
+
+    ports.sort!
+%>
+
 <% if p('router.set_kernel_parameters') %>
     # Ephemeral port range
     echo "<%= p("router.ip_local_port_range") %>" > /proc/sys/net/ipv4/ip_local_port_range
+
+    # Reserved Ports, not ephemeral
+    echo "<%= ports.join(",") %>" > /proc/sys/net/ipv4/ip_local_reserved_ports
 
     # TCP_FIN_TIMEOUT
     # This setting determines the time that must elapse before TCP/IP can release a closed connection and reuse

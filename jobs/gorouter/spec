@@ -434,6 +434,7 @@ properties:
       Optimize kernel networking settings for GoRouter. If you deploy GoRouter in a container set this to false.
       This configures the following kernel parameters:
         * Increases the number of allowed IP local port ranges specified by the `router.ip_local_port_range` value.
+        * Reserves ports configured for gorouter and other bosh components via /proc/sys/net/ipv4/ip_local_reserved_ports.
         * Reduces the timeout of TCP_FIN_TIMEOUT, so that TCP/IP can release closed connections faster, making more
           resources available for new connections.
         * Disables TCP_TW_RECYCLE to enable fast recycling of TIME_WAIT sockets.

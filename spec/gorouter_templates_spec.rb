@@ -1161,6 +1161,45 @@ describe 'gorouter' do
       end
     end
   end
+
+  describe 'pre-start' do
+    let(:template) { job.template('bin/pre-start') }
+    let(:properties) do
+      { 'router' => {
+        'port' => 81,
+        'status' => { 'port' => 8081 },
+        'prometheus' => { 'port' => 7070 },
+        'tls_port' => 442,
+        'debug_address' => '127.0.0.1:17003'
+      } }
+    end
+
+    context 'ip_local_reserved_ports' do
+      it 'contains reserved ports in order' do
+        rendered_template = template.render(properties)
+        ports = '81,442,2822,2825,3458,3459,3460,3461,7070,8081,8853,17003,53080'
+        expect(rendered_template).to include("\"#{ports}\" > /proc/sys/net/ipv4/ip_local_reserved_ports")
+      end
+
+      context 'when prometheus port is not set' do
+        it 'skips that port' do
+          properties['router'].delete('prometheus')
+          rendered_template = template.render(properties)
+          ports = '81,442,2822,2825,3458,3459,3460,3461,8081,8853,17003,53080'
+          expect(rendered_template).to include("\"#{ports}\" > /proc/sys/net/ipv4/ip_local_reserved_ports")
+        end
+      end
+
+      context 'when debug_address does not contain a port' do
+        it 'skips that port' do
+          properties['router']['debug_address'] = 'meow'
+          rendered_template = template.render(properties)
+          ports = '81,442,2822,2825,3458,3459,3460,3461,7070,8081,8853,53080'
+          expect(rendered_template).to include("\"#{ports}\" > /proc/sys/net/ipv4/ip_local_reserved_ports")
+        end
+      end
+    end
+  end
 end
 
 # rubocop:enable Layout/LineLength
