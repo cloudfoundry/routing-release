@@ -16,9 +16,6 @@
 	path = src/code.cloudfoundry.org/routing-api-cli
 	url = https://github.com/cloudfoundry-incubator/routing-api-cli
 	branch = with-go-mod
-[submodule "src/code.cloudfoundry.org/uaa-go-client"]
-	path = src/code.cloudfoundry.org/uaa-go-client
-	url = https://github.com/cloudfoundry-incubator/uaa-go-client
 [submodule "src/code.cloudfoundry.org/cf-routing-test-helpers"]
 	path = src/code.cloudfoundry.org/cf-routing-test-helpers
 	url = https://github.com/cloudfoundry/cf-routing-test-helpers

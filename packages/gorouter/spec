@@ -74,16 +74,16 @@ files:
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/localip/*.go # gosub
   - code.cloudfoundry.org/routing-api/*.go # gosub
   - code.cloudfoundry.org/routing-api/models/*.go # gosub
+  - code.cloudfoundry.org/routing-api/uaaclient/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/tlsconfig/*.go # gosub
   - code.cloudfoundry.org/trace-logger/*.go # gosub
-  - code.cloudfoundry.org/uaa-go-client/*.go # gosub
-  - code.cloudfoundry.org/uaa-go-client/config/*.go # gosub
-  - code.cloudfoundry.org/uaa-go-client/schema/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/armon/go-proxyproto/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/beorn7/perks/quantile/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/bmizerany/pat/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/cespare/xxhash/v2/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/cespare/xxhash/v2/*.s # gosub
+  - code.cloudfoundry.org/vendor/github.com/cloudfoundry-community/go-uaa/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/cloudfoundry-community/go-uaa/passwordcredentials/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry/custom-cats-reporters/honeycomb/client/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry/dropsonde/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry/dropsonde/emitter/*.go # gosub
@@ -173,6 +173,7 @@ files:
   - code.cloudfoundry.org/vendor/github.com/openzipkin/zipkin-go/model/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/openzipkin/zipkin-go/propagation/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/openzipkin/zipkin-go/propagation/b3/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/pkg/errors/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/prometheus/client_golang/prometheus/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/prometheus/client_golang/prometheus/internal/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/prometheus/client_golang/prometheus/promhttp/*.go # gosub
@@ -200,9 +201,13 @@ files:
   - code.cloudfoundry.org/vendor/github.com/vmihailenco/tagparser/internal/parser/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/ed25519/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/pbkdf2/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/net/context/ctxhttp/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/html/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/html/atom/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/html/charset/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/oauth2/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/oauth2/clientcredentials/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/oauth2/internal/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/sys/internal/unsafeheader/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/sys/unix/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/sys/unix/*.s # gosub
