@@ -14,6 +14,8 @@ replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client
 
 replace github.com/cloudfoundry/dropsonde => github.com/cloudfoundry/dropsonde v1.0.1-0.20180504154030-a5c24343b09d
 
+replace github.com/cloudfoundry-community/go-uaa => github.com/mariash/go-uaa v0.3.2
+
 require (
 	code.cloudfoundry.org/bbs v0.0.0-20210615140220-2942e7d25726
 	code.cloudfoundry.org/cfhttp/v2 v2.0.1-0.20210513172332-4c5ee488a657
@@ -27,6 +29,7 @@ require (
 	code.cloudfoundry.org/tlsconfig v0.0.0-20210615191307-5d92ef3894a7
 	github.com/armon/go-proxyproto v0.0.0-20210323213023-7e956b284f0a
 	github.com/cactus/go-statsd-client v0.0.0-00010101000000-000000000000
+	github.com/cloudfoundry-community/go-uaa v0.3.1
 	github.com/cloudfoundry-incubator/cf-test-helpers v1.0.0
 	github.com/cloudfoundry/custom-cats-reporters v0.0.2
 	github.com/cloudfoundry/dropsonde v1.0.0
@@ -54,6 +57,7 @@ require (
 	github.com/vito/go-sse v1.0.0
 	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
 	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2
+	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/tools v0.1.7
 	google.golang.org/grpc v1.41.0
 	gopkg.in/yaml.v2 v2.4.0
