@@ -18,7 +18,7 @@ name: zero-downtime
 addons:
 - include:
     stemcell:
-    - os: ubuntu-bionic
+    - os: ubuntu-jammy
   jobs:
   - name: bpm
     release: bpm
@@ -137,7 +137,7 @@ releases:
   version: latest
 stemcells:
 - alias: default
-  os: ubuntu-bionic
+  os: ubuntu-jammy
   version: latest
 EOF
 
