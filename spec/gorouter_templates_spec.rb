@@ -159,7 +159,7 @@ describe 'gorouter' do
           'min_tls_version' => 'TLSv1.2',
           'max_tls_version' => 'TLSv1.2',
           'disable_http' => false,
-          'ca_certs' => 'test-certs',
+          'ca_certs' => ['test-certs'],
           'cipher_suites' => 'test-suites',
           'forwarded_client_cert' => ['test-cert'],
           'isolation_segments' => '[is1]',
@@ -602,7 +602,7 @@ describe 'gorouter' do
             context 'when only_trust_client_ca_certs is true' do
               before do
                 deployment_manifest_fragment['router']['client_ca_certs'] = 'cool potato'
-                deployment_manifest_fragment['router']['ca_certs'] = 'lame rhutabega'
+                deployment_manifest_fragment['router']['ca_certs'] = ['lame rhutabega']
                 deployment_manifest_fragment['router']['only_trust_client_ca_certs'] = true
               end
 
@@ -618,13 +618,14 @@ describe 'gorouter' do
             context 'when only_trust_client_ca_certs is false' do
               before do
                 deployment_manifest_fragment['router']['client_ca_certs'] = 'cool potato'
-                deployment_manifest_fragment['router']['ca_certs'] = 'lame rhutabega'
+                deployment_manifest_fragment['router']['ca_certs'] = ['lame rhutabega']
                 deployment_manifest_fragment['router']['only_trust_client_ca_certs'] = false
               end
 
               it 'client_ca_certs do contain ca_certs' do
                 expect(parsed_yaml['client_ca_certs']).to include('cool potato')
                 expect(parsed_yaml['client_ca_certs']).to include('lame rhutabega')
+                expect(parsed_yaml['client_ca_certs']).to include("cool potato\nlame rhutabega")
               end
 
               it 'sets only_trust_client_ca_certs to false' do
@@ -637,7 +638,7 @@ describe 'gorouter' do
         context 'ca_certs' do
           context 'when correct ca_certs is provided' do
             it 'should configure the property' do
-              expect(parsed_yaml['ca_certs']).to eq('test-certs')
+              expect(parsed_yaml['ca_certs']).to eq(['test-certs'])
             end
           end
 
@@ -650,21 +651,21 @@ describe 'gorouter' do
             end
           end
 
-          context 'when a simple array is provided' do
+          context 'when a string is provided' do
             before do
-              deployment_manifest_fragment['router']['ca_certs'] = ['some-tls-cert']
+              deployment_manifest_fragment['router']['ca_certs'] = 'some-tls-cert'
             end
             it 'raises error' do
-              expect { parsed_yaml }.to raise_error(RuntimeError, 'ca_certs must be provided as a single string block')
+              expect { parsed_yaml }.to raise_error(RuntimeError, 'ca_certs must be provided as an array of strings containing one or more certificates in PEM encoding')
             end
           end
 
-          context 'when an empty array is provided' do
+          context 'when an empty string is provided' do
             before do
-              deployment_manifest_fragment['router']['ca_certs'] = []
+              deployment_manifest_fragment['router']['ca_certs'] = ""
             end
             it 'raises error' do
-              expect { parsed_yaml }.to raise_error(RuntimeError, 'ca_certs must be provided as a single string block')
+              expect { parsed_yaml }.to raise_error(RuntimeError, 'ca_certs must be provided as an array of strings containing one or more certificates in PEM encoding')
             end
           end
 
@@ -686,10 +687,10 @@ describe 'gorouter' do
             end
 
             before do
-              deployment_manifest_fragment['router']['ca_certs'] = test_certs
+              deployment_manifest_fragment['router']['ca_certs'] = [test_certs]
             end
             it 'successfully configures the property' do
-              expect(parsed_yaml['ca_certs']).to eq(test_certs)
+              expect(parsed_yaml['ca_certs']).to eq([test_certs])
             end
           end
         end
