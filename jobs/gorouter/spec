@@ -149,7 +149,7 @@ properties:
           -----BEGIN RSA PRIVATE KEY-----
           -----END RSA PRIVATE KEY-----
   router.ca_certs:
-    description: "Required. String of concatenated certificate authorities in PEM format, used to validate server certificates provided by remote systems. Gorouter also trust certificates signed by well-known CAs and by CA certificates installed on the filesystem. These CA certificates are also used to validate client certificates when router.only_trust_client_ca_certs is false."
+    description: "Required. List of Strings of concatenated certificate authorities in PEM format, used to validate server certificates provided by remote systems. Gorouter also trust certificates signed by well-known CAs and by CA certificates installed on the filesystem. These CA certificates are also used to validate client certificates when router.only_trust_client_ca_certs is false."
   router.client_ca_certs:
     description: "Required. String of concatenated certificate authorities in PEM format, used to validate certificates provided by remote systems. By default, Gorouter will trust certificates signed by well-known CAs and by CA certificates installed on the filesystem."
     default: ""
