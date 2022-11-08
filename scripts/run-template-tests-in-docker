@@ -3,7 +3,7 @@
 BASEDIR="$(cd $(dirname "$0") && pwd)"
 ROUTING_RELEASE_DIR="${BASEDIR}/.."
 
-IMAGE="cloudfoundry/cf-routing-pipeline"
+IMAGE="ruby:3"
 MOUNT_DIR="/routing-release"
 PREPARE_CONTAINER="cd ${MOUNT_DIR}; source .envrc; scripts/template-tests; echo 'done'"
 
@@ -12,4 +12,3 @@ docker run -it \
   -v "${ROUTING_RELEASE_DIR}:${MOUNT_DIR}" \
   "${IMAGE}" \
   /bin/bash -c "${PREPARE_CONTAINER}"
-
