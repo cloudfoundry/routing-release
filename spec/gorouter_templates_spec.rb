@@ -662,7 +662,7 @@ describe 'gorouter' do
 
           context 'when an empty string is provided' do
             before do
-              deployment_manifest_fragment['router']['ca_certs'] = ""
+              deployment_manifest_fragment['router']['ca_certs'] = ''
             end
             it 'raises error' do
               expect { parsed_yaml }.to raise_error(RuntimeError, 'ca_certs must be provided as an array of strings containing one or more certificates in PEM encoding')
