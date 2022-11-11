@@ -30,6 +30,8 @@ packages:
 provides:
   - name: gorouter
     type: http-router
+    properties:
+    - router.backends.ca
 
 consumes:
 - name: nats
@@ -156,6 +158,8 @@ properties:
   router.only_trust_client_ca_certs:
     description: "When router.only_trust_client_ca_certs is true, router.client_ca_certs are the only trusted CA certs for client requests. When router.only_trust_client_ca_certs is false, router.client_ca_certs are trusted in addition to router.ca_certs and the CA certificates installed on the filesystem. This will have no affect if the `router.client_cert_validation` property is set to none."
     default: false
+  router.backends.ca:
+    description: Certificate authority that was used to sign certificates for TLS-registered backends. In PEM format.
   router.backends.cert_chain:
     description: Certificate chain used for client authentication to TLS-registered backends.  In PEM format.
   router.backends.private_key:
