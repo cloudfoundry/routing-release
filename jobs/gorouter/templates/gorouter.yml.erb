@@ -217,7 +217,15 @@ if (backend_cert_chain != '') ^ (backend_private_key != '')
   raise 'backends.cert_chain and backends.private_key must be both provided or not at all'
 end
 
+backend_retries = 3
+if_p('router.backends.max_retries') { |val| backend_retries = val }
+
+if (backend_retries < 0 )
+  raise 'router.backends.max_retries cannot be negative'
+end
+
 backends = {
+  'max_retries' => backend_retries,
   'max_conns' => p('router.backends.max_conns'),
   'cert_chain' => backend_cert_chain,
   'private_key' => backend_private_key,
@@ -234,7 +242,15 @@ if (route_services_cert_chain != '') ^ (route_services_private_key != '')
   raise 'route_services.cert_chain and route_services.private_key must be both provided or not at all'
 end
 
+route_service_retries = 3
+if_p('router.route_services.max_retries') { |val| route_service_retries = val }
+
+if (route_service_retries < 1 )
+  raise 'router.route_services.max_retries must maintain a minimum value of 1'
+end
+
 route_services = {
+  'max_retries' => route_service_retries,
   'cert_chain' => route_services_cert_chain,
   'private_key' => route_services_private_key,
 }
