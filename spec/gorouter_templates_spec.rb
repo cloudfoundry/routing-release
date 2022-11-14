@@ -669,6 +669,15 @@ describe 'gorouter' do
             end
           end
 
+          context 'when one of the certs is empty' do
+            before do
+              deployment_manifest_fragment['router']['ca_certs'] = [' ', 'test-certs']
+            end
+            it 'only keeps non-empty certs' do
+              expect(parsed_yaml['ca_certs']).to eq(['test-certs'])
+            end
+          end
+
           context 'when set to a multi-line string' do
             let(:test_certs) do
               '
