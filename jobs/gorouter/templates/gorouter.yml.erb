@@ -373,7 +373,7 @@ if p('router.ca_certs')
     raise 'ca_certs must be provided as an array of strings containing one or more certificates in PEM encoding'
   end
 
-  params['ca_certs'] = ca_certs.select{ |v| !v.strip.empty? }
+  params['ca_certs'] = ca_certs.select{ |v| !v.nil? && !v.strip.empty? }
 end
 
 if p('router.client_ca_certs')
