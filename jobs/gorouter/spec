@@ -10,6 +10,7 @@ templates:
   dns_health_check.erb: bin/dns_health_check
   nats_client.erb: bin/nats_client
   gorouter.yml.erb: config/gorouter.yml
+  healthchecker.yml.erb: config/healthchecker.yml
   prom_scraper_config.yml.erb: config/prom_scraper_config.yml
   prometheus.crt.erb: config/certs/prometheus/prometheus.crt
   prometheus.key.erb: config/certs/prometheus/prometheus.key
