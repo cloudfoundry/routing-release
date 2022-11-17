@@ -1112,6 +1112,43 @@ describe 'gorouter' do
     end
   end
 
+  describe 'healthchecker.yml' do
+    let(:template) { job.template('config/healthchecker.yml') }
+    let(:rendered_template) do
+      template.render(
+        {
+          'router' =>
+            {
+              'logging_level' => 'debug',
+              'status' => { 'port' => 8090, 'user' => 'some-user', 'password' => 'some-password' }
+            }
+        }
+      )
+    end
+
+    subject(:parsed_yaml) { YAML.safe_load(rendered_template) }
+
+    it 'populates component name' do
+      expect(parsed_yaml['component_name']).to eq('gorouter-healthchecker')
+    end
+
+    it 'sets the log level' do
+      expect(parsed_yaml['log_level']).to eq('debug')
+    end
+
+    it 'sets the healthcheck endpoint' do
+      expect(parsed_yaml['healthcheck_endpoint']).to eq(
+        {
+          'host' => '0.0.0.0',
+          'port' => 8090,
+          'user' => 'some-user',
+          'password' => 'some-password',
+          'path' => '/healthz'
+        }
+      )
+    end
+  end
+
   describe 'indicators.yml' do
     let(:template) { job.template('config/indicators.yml') }
     let(:rendered_template) { template.render({}) }

@@ -34,7 +34,6 @@ files:
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/clock/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/debugserver/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/lager/*.go # gosub
-  - code.cloudfoundry.org/vendor/code.cloudfoundry.org/lager/internal/truncate/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/lager/lagerflags/*.go # gosub
   - code.cloudfoundry.org/routing-api/*.go # gosub
   - code.cloudfoundry.org/routing-api/models/*.go # gosub
@@ -63,6 +62,11 @@ files:
   - code.cloudfoundry.org/vendor/github.com/gogo/protobuf/proto/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/gogo/protobuf/protoc-gen-gogo/descriptor/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/golang-jwt/jwt/v4/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/google/go-cmp/cmp/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/google/go-cmp/cmp/internal/diff/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/google/go-cmp/cmp/internal/flags/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/google/go-cmp/cmp/internal/function/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/google/go-cmp/cmp/internal/value/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/josharian/intern/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/mailru/easyjson/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/mailru/easyjson/buffer/*.go # gosub
@@ -98,6 +102,7 @@ files:
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/gbytes/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/gexec/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/gutil/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/support/goraph/bipartitegraph/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/support/goraph/edge/*.go # gosub
@@ -119,7 +124,6 @@ files:
   - code.cloudfoundry.org/vendor/golang.org/x/oauth2/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/oauth2/clientcredentials/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/oauth2/internal/*.go # gosub
-  - code.cloudfoundry.org/vendor/golang.org/x/sys/internal/unsafeheader/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/sys/unix/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/sys/unix/*.s # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/text/encoding/*.go # gosub
@@ -141,3 +145,4 @@ files:
   - code.cloudfoundry.org/vendor/golang.org/x/text/transform/*.go # gosub
   - code.cloudfoundry.org/vendor/gopkg.in/tomb.v1/*.go # gosub
   - code.cloudfoundry.org/vendor/gopkg.in/yaml.v2/*.go # gosub
+  - code.cloudfoundry.org/vendor/gopkg.in/yaml.v3/*.go # gosub

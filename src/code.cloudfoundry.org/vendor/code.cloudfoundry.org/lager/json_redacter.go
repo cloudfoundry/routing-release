@@ -22,7 +22,7 @@ func NewJSONRedacter(keyPatterns []string, valuePatterns []string) (*JSONRedacte
 		keyPatterns = []string{"[Pp]wd", "[Pp]ass"}
 	}
 	if valuePatterns == nil {
-		valuePatterns = DefaultValuePatterns()
+		valuePatterns = []string{awsAccessKeyIDPattern, awsSecretAccessKeyPattern, cryptMD5Pattern, cryptSHA256Pattern, cryptSHA512Pattern, privateKeyHeaderPattern}
 	}
 	ret := &JSONRedacter{}
 	for _, v := range keyPatterns {
@@ -108,8 +108,4 @@ func handleError(err error) []byte {
 		panic(err)
 	}
 	return content
-}
-
-func DefaultValuePatterns() []string {
-	return []string{awsAccessKeyIDPattern, awsSecretAccessKeyPattern, cryptMD5Pattern, cryptSHA256Pattern, cryptSHA512Pattern, privateKeyHeaderPattern}
 }

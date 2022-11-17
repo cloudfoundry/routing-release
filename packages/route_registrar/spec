@@ -10,7 +10,6 @@ files:
   - code.cloudfoundry.org/vendor/modules.txt
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/cfhttp/v2/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/lager/*.go # gosub
-  - code.cloudfoundry.org/vendor/code.cloudfoundry.org/lager/internal/truncate/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/lager/lagerflags/*.go # gosub
   - code.cloudfoundry.org/multierror/*.go # gosub
   - code.cloudfoundry.org/route-registrar/*.go # gosub
