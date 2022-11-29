@@ -96,26 +96,6 @@ describe 'routing_api' do
         expect(client_ca.strip).to eq('a ca cert')
       end
     end
-    describe 'when the link is present' do
-      let(:links) do
-        [
-          Bosh::Template::Test::Link.new(
-            name: 'gorouter',
-            properties: {
-              'router' => {
-                'backends' => {
-                  'ca' => 'gorouter backends ca cert'
-                }
-              }
-            }
-          )
-        ]
-      end
-      it 'renders the client ca cert' do
-        client_ca = template.render(merged_manifest_properties, consumes: links)
-        expect(client_ca.strip).to eq("a ca cert\n\ngorouter backends ca cert")
-      end
-    end
   end
 
   describe 'config/certs/routing-api/server.crt' do
