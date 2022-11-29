@@ -56,6 +56,8 @@ consumes:
   - name: tcp_router
     type: tcp-router
     optional: true
+  - name: gorouter
+    type: http-router
 
 properties:
   routing_api.max_ttl:

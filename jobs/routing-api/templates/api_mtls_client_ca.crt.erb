@@ -1,1 +1,6 @@
 <%= p("routing_api.mtls_ca") -%>
+<%if_link("gorouter") do |link| %>
+<%link.if_p("router.backends.ca") do |cert| %>
+<%=cert %>
+<% end %>
+<% end %>
