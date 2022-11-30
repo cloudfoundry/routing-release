@@ -9,16 +9,16 @@ if [[ -n "${PACKAGE}" ]]; then
   pushd "./src/code.cloudfoundry.org/${PACKAGE}"
     echo "Testing component: ${PACKAGE}"
     if [[ -n "${SUB_PACKAGE}" ]]; then
-      ./bin/test -v -flakeAttempts 3 ${SUB_PACKAGE}
+      ./bin/test -flakeAttempts 3 ${SUB_PACKAGE}
     else
-      ./bin/test -v -flakeAttempts 3 
+      ./bin/test -flakeAttempts 3
     fi
   popd
 else
   for component in gorouter cf-tcp-router multierror route-registrar routing-api routing-api-cli ; do
     pushd src/code.cloudfoundry.org/${component}
       echo "Testing component: ${component}..."
-      ./bin/test --flakeAttempts=3 -v
+      ./bin/test --flakeAttempts=3
     popd
   done
 fi
