@@ -369,11 +369,11 @@ params['enable_http2'] = p('router.enable_http2')
 
 if p('router.ca_certs')
   ca_certs = p('router.ca_certs')
-  if !ca_certs.is_a?(String)
-    raise 'ca_certs must be provided as a single string block'
+  if !ca_certs.is_a?(Array)
+    raise 'ca_certs must be provided as an array of strings containing one or more certificates in PEM encoding'
   end
 
-  params['ca_certs'] = ca_certs
+  params['ca_certs'] = ca_certs.select{ |v| !v.nil? && !v.strip.empty? }
 end
 
 if p('router.client_ca_certs')
@@ -382,8 +382,8 @@ if p('router.client_ca_certs')
     raise 'client_ca_certs must be provided as a single string block'
   end
 
-  if p('router.only_trust_client_ca_certs') == false
-    client_ca_certs += ca_certs
+  if p('router.only_trust_client_ca_certs') == false && ca_certs
+    client_ca_certs += "\n" + ca_certs.join("\n")
   end
 
   params['client_ca_certs'] = client_ca_certs

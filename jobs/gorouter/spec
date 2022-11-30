@@ -10,6 +10,7 @@ templates:
   dns_health_check.erb: bin/dns_health_check
   nats_client.erb: bin/nats_client
   gorouter.yml.erb: config/gorouter.yml
+  healthchecker.yml.erb: config/healthchecker.yml
   prom_scraper_config.yml.erb: config/prom_scraper_config.yml
   prometheus.crt.erb: config/certs/prometheus/prometheus.crt
   prometheus.key.erb: config/certs/prometheus/prometheus.key
@@ -151,7 +152,7 @@ properties:
           -----BEGIN RSA PRIVATE KEY-----
           -----END RSA PRIVATE KEY-----
   router.ca_certs:
-    description: "Required. String of concatenated certificate authorities in PEM format, used to validate server certificates provided by remote systems. Gorouter also trust certificates signed by well-known CAs and by CA certificates installed on the filesystem. These CA certificates are also used to validate client certificates when router.only_trust_client_ca_certs is false."
+    description: "Required. List of Strings of concatenated certificate authorities in PEM format, used to validate server certificates provided by remote systems. Gorouter also trust certificates signed by well-known CAs and by CA certificates installed on the filesystem. These CA certificates are also used to validate client certificates when router.only_trust_client_ca_certs is false."
   router.client_ca_certs:
     description: "Required. String of concatenated certificate authorities in PEM format, used to validate certificates provided by remote systems. By default, Gorouter will trust certificates signed by well-known CAs and by CA certificates installed on the filesystem."
     default: ""

@@ -15,7 +15,7 @@ pushd src/code.cloudfoundry.org
   go install code.cloudfoundry.org/gorouter
 popd
 
-pushd ${GOPATH}/src/code.cloudfoundry.org/gorouter/healthchecker
+pushd ${GOPATH}/src/code.cloudfoundry.org/vendor/code.cloudfoundry.org/cf-networking-helpers/healthchecker/cmd/healthchecker
   go build -o "${BOSH_INSTALL_TARGET}/bin/healthchecker" .
 popd
 

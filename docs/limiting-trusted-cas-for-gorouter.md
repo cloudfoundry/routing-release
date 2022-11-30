@@ -27,8 +27,8 @@ With `only_trust_client_ca_certs: false`, all the certs in `router.ca_certs`, `r
 
 ```
 router:
-  ca_certs: |
-   a-cert-named-apple
+  ca_certs:
+    - a-cert-named-apple
   client_ca_certs: |
    a-cert-named-cucumber
   only_trust_client_ca_certs: false
@@ -59,8 +59,8 @@ With `only_trust_client_ca_certs: true`, _only_ the certs configured in `router.
 
 ```
 router:
-  ca_certs: |
-   a-cert-named-apple
+  ca_certs:
+   - a-cert-named-apple
   client_ca_certs: |
    a-cert-named-cucumber
   only_trust_client_ca_certs: true
