@@ -18,7 +18,7 @@ replace github.com/cloudfoundry-community/go-uaa => github.com/mariash/go-uaa v0
 
 require (
 	code.cloudfoundry.org/bbs v0.0.0-20210615140220-2942e7d25726
-	code.cloudfoundry.org/cf-networking-helpers v0.0.0-20221117171434-3d123025a8c3
+	code.cloudfoundry.org/cf-networking-helpers v0.0.0-20221205130414-742bd12bf674
 	code.cloudfoundry.org/cfhttp/v2 v2.0.1-0.20210513172332-4c5ee488a657
 	code.cloudfoundry.org/clock v1.0.0
 	code.cloudfoundry.org/debugserver v0.0.0-20210608171006-d7658ce493f4
@@ -36,7 +36,7 @@ require (
 	github.com/cloudfoundry/dropsonde v1.0.0
 	github.com/cloudfoundry/sonde-go v0.0.0-20200416163440-a42463ba266b
 	github.com/codegangsta/cli v0.0.0-00010101000000-000000000000
-	github.com/go-sql-driver/mysql v1.6.0
+	github.com/go-sql-driver/mysql v1.7.0
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang-jwt/jwt/v4 v4.4.1
 	github.com/honeycombio/libhoney-go v1.15.3

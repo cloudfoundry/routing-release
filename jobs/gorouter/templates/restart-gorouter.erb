@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 PIDFILE="/var/vcap/sys/run/gorouter/restart-gorouter.pid"
+FAILURE_COUNTER_FILE="<%= p("healthchecker.failure_counter_file") %>"
 
 # As this script might run longer than a monit cycle (10s) and thus might be
 # triggered several times, it must be ensured that it runs only once.
 [[ -s "$PIDFILE" ]] && exit
 
 function on_exit {
-    /var/vcap/bosh/bin/monit reload gorouter-healthchecker
     rm -f $PIDFILE
 }
 
@@ -18,12 +18,19 @@ echo "$BASHPID" > "$PIDFILE"
 LOGFILE="/var/vcap/sys/log/gorouter/restart-gorouter.log"
 echo "$(date) - pid: $BASHPID - Monit triggered restart" >> "$LOGFILE"
 
-/var/vcap/bosh/bin/monit restart gorouter
-sleep 1
-echo "$(date) - pid: $BASHPID - Waiting for gorouter to be restarted" >> "$LOGFILE"
+failure_counter="$(cat ${FAILURE_COUNTER_FILE})"
 
-until /var/vcap/bosh/bin/monit summary | grep gorouter | grep -v healthchecker | grep running; do
+if (( failure_counter < 10 )); then
+  /var/vcap/bosh/bin/monit restart gorouter
   sleep 1
-done
+  echo "$(date) - pid: $BASHPID - Waiting for gorouter to be restarted" >> "$LOGFILE"
 
-echo "$(date) - pid: $BASHPID - Gorouter was restarted" >> "$LOGFILE"
+  until /var/vcap/bosh/bin/monit summary | grep gorouter | grep -v healthchecker | grep running; do
+    sleep 1
+  done
+  /var/vcap/bosh/bin/monit reload gorouter-healthchecker
+  echo "$(date) - pid: $BASHPID - gorouter was restarted" >> "$LOGFILE"
+else
+  echo "$(date) - pid: $BASHPID - 10 consecutive failures in a row. Stopping healthcheck to avoid constantly bringing down the main service." >> "${LOGFILE}"
+  /var/vcap/bosh/bin/monit unmonitor gorouter-healthchecker
+fi

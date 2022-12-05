@@ -9,6 +9,7 @@ import (
 )
 
 type HealthCheckEndpoint struct {
+	Socket   string `yaml:"socket"`
 	Host     string `yaml:"host"`
 	Port     int    `yaml:"port"`
 	Path     string `yaml:"path"`
@@ -26,6 +27,7 @@ var DefaultConfig = Config{
 
 type Config struct {
 	ComponentName              string              `yaml:"component_name"`
+	FailureCounterFile           string              `yaml:"failure_counter_file"`
 	HealthCheckEndpoint        HealthCheckEndpoint `yaml:"healthcheck_endpoint"`
 	HealthCheckPollInterval    time.Duration       `yaml:"healthcheck_poll_interval"`
 	HealthCheckTimeout         time.Duration       `yaml:"healthcheck_timeout"`
@@ -81,11 +83,25 @@ func (c *Config) Validate() error {
 	if c.ComponentName == "" {
 		return fmt.Errorf("Missing component_name")
 	}
-	if c.HealthCheckEndpoint.Host == "" {
-		return fmt.Errorf("Missing healthcheck endpoint host")
+
+	if c.HealthCheckEndpoint.Socket == "" {
+		if c.HealthCheckEndpoint.Host == "" {
+			return fmt.Errorf("Missing healthcheck endpoint host or socket")
+		}
+		if c.HealthCheckEndpoint.Port == 0 {
+			return fmt.Errorf("Missing healthcheck endpoint port or socket")
+		}
+	} else {
+		if c.HealthCheckEndpoint.Host != "" {
+			return fmt.Errorf("Cannot specify both healthcheck endpoint host and socket")
+		}
+		if c.HealthCheckEndpoint.Port != 0 {
+			return fmt.Errorf("Cannot specify both healthcheck endpoint port and socket")
+		}
 	}
-	if c.HealthCheckEndpoint.Port == 0 {
-		return fmt.Errorf("Missing healthcheck endpoint port")
+
+	if c.FailureCounterFile == "" {
+		return fmt.Errorf("Missing failure_counter_file")
 	}
 	return nil
 }
