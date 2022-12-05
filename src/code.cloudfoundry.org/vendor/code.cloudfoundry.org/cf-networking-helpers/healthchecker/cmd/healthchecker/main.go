@@ -47,9 +47,12 @@ func main() {
 		User:   url.UserPassword(c.HealthCheckEndpoint.User, c.HealthCheckEndpoint.Password),
 		Path:   c.HealthCheckEndpoint.Path,
 	}
-	host := u.String()
+	if c.HealthCheckEndpoint.Socket != "" {
+		u.Opaque = c.HealthCheckEndpoint.Path
+		u.Host = fmt.Sprintf("unix%s", c.HealthCheckEndpoint.Socket)
+	}
 
-	w := watchdog.NewWatchdog(host, c.ComponentName, c.HealthCheckPollInterval, c.HealthCheckTimeout, logger)
+	w := watchdog.NewWatchdog(u, c.ComponentName, c.FailureCounterFile, c.HealthCheckPollInterval, c.HealthCheckTimeout, logger)
 	signals := make(chan os.Signal, SIGNAL_BUFFER_SIZE)
 	signal.Notify(signals, syscall.SIGUSR1)
 
