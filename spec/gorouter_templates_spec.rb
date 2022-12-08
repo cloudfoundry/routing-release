@@ -159,7 +159,7 @@ describe 'gorouter' do
           'min_tls_version' => 'TLSv1.2',
           'max_tls_version' => 'TLSv1.2',
           'disable_http' => false,
-          'ca_certs' => ['test-certs'],
+          'ca_certs' => [TEST_CERT],
           'cipher_suites' => 'test-suites',
           'forwarded_client_cert' => ['test-cert'],
           'isolation_segments' => '[is1]',
@@ -617,15 +617,14 @@ describe 'gorouter' do
 
             context 'when only_trust_client_ca_certs is false' do
               before do
-                deployment_manifest_fragment['router']['client_ca_certs'] = 'cool potato'
-                deployment_manifest_fragment['router']['ca_certs'] = ['lame rhutabega']
+                deployment_manifest_fragment['router']['client_ca_certs'] = TEST_CERT
+                deployment_manifest_fragment['router']['ca_certs'] = [TEST_CERT2, 'cert-too-short']
                 deployment_manifest_fragment['router']['only_trust_client_ca_certs'] = false
               end
 
-              it 'client_ca_certs do contain ca_certs' do
-                expect(parsed_yaml['client_ca_certs']).to include('cool potato')
-                expect(parsed_yaml['client_ca_certs']).to include('lame rhutabega')
-                expect(parsed_yaml['client_ca_certs']).to include("cool potato\nlame rhutabega")
+              it 'client_ca_certs contain only valid ca_certs' do
+                expect(parsed_yaml['client_ca_certs']).to_not include('cert-too-short')
+                expect(parsed_yaml['client_ca_certs']).to eq("#{TEST_CERT}\n#{TEST_CERT2}")
               end
 
               it 'sets only_trust_client_ca_certs to false' do
@@ -638,7 +637,7 @@ describe 'gorouter' do
         context 'ca_certs' do
           context 'when correct ca_certs is provided' do
             it 'should configure the property' do
-              expect(parsed_yaml['ca_certs']).to eq(['test-certs'])
+              expect(parsed_yaml['ca_certs']).to eq([TEST_CERT])
             end
           end
 
@@ -671,19 +670,28 @@ describe 'gorouter' do
 
           context 'when one of the certs is empty' do
             before do
-              deployment_manifest_fragment['router']['ca_certs'] = [' ', 'test-certs']
+              deployment_manifest_fragment['router']['ca_certs'] = [' ', TEST_CERT]
             end
             it 'only keeps non-empty certs' do
-              expect(parsed_yaml['ca_certs']).to eq(['test-certs'])
+              expect(parsed_yaml['ca_certs']).to eq([TEST_CERT])
             end
           end
 
           context 'when one of the certs is nil' do
             before do
-              deployment_manifest_fragment['router']['ca_certs'] = [nil, 'test-certs']
+              deployment_manifest_fragment['router']['ca_certs'] = [nil, TEST_CERT]
             end
             it 'only keeps non-empty certs' do
-              expect(parsed_yaml['ca_certs']).to eq(['test-certs'])
+              expect(parsed_yaml['ca_certs']).to eq([TEST_CERT])
+            end
+          end
+
+          context 'when one of the certs is less than 50 char' do
+            before do
+              deployment_manifest_fragment['router']['ca_certs'] = ['meow-meow-meow-meow', TEST_CERT]
+            end
+            it 'only keeps longer value certs' do
+              expect(parsed_yaml['ca_certs']).to eq([TEST_CERT])
             end
           end
 
