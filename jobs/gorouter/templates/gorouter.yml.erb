@@ -35,6 +35,16 @@ def validate_max_header_kb (kb)
   kb * 1024
 end
 
+def get_valid_ca_certs
+  ca_certs = p('router.ca_certs')
+
+  if !ca_certs.is_a?(Array)
+    raise 'ca_certs must be provided as an array of strings containing one or more certificates in PEM encoding'
+  end
+
+  ca_certs.select{ |v| !v.nil? && !v.strip.empty? && v.length > 50 }
+end
+
 parse_ip(p('router.debug_address'), 'router.debug_address')
 
 access_log_file = p('router.write_access_logs_locally') ? '/var/vcap/sys/log/gorouter/access.log' : ''
@@ -368,12 +378,7 @@ params['disable_http'] = p('router.disable_http')
 params['enable_http2'] = p('router.enable_http2')
 
 if p('router.ca_certs')
-  ca_certs = p('router.ca_certs')
-  if !ca_certs.is_a?(Array)
-    raise 'ca_certs must be provided as an array of strings containing one or more certificates in PEM encoding'
-  end
-
-  params['ca_certs'] = ca_certs.select{ |v| !v.nil? && !v.strip.empty? }
+  params['ca_certs'] = get_valid_ca_certs
 end
 
 if p('router.client_ca_certs')
@@ -381,6 +386,8 @@ if p('router.client_ca_certs')
   if !client_ca_certs.is_a?(String)
     raise 'client_ca_certs must be provided as a single string block'
   end
+
+  ca_certs = get_valid_ca_certs
 
   if p('router.only_trust_client_ca_certs') == false && ca_certs
     client_ca_certs += "\n" + ca_certs.join("\n")
