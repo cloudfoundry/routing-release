@@ -156,9 +156,9 @@ properties:
   router.only_trust_client_ca_certs:
     description: "When router.only_trust_client_ca_certs is true, router.client_ca_certs are the only trusted CA certs for client requests. When router.only_trust_client_ca_certs is false, router.client_ca_certs are trusted in addition to router.ca_certs and the CA certificates installed on the filesystem. This will have no affect if the `router.client_cert_validation` property is set to none."
     default: false
-  router.backends.max_retries:
+  router.backends.max_attempts:
     description: |
-      Maximum number of retries on failing requests against backend routes.
+      Maximum number of attempts on failing requests against backend routes.
       This includes CF apps and route-registrar endpoints.
       A value of 0 implies indefinite retries, i.e. retry until success or endpoint list is exhausted.
     default: 3
@@ -191,9 +191,9 @@ properties:
         Values will be base64 encoded PEM. Use this value when Gorouter is the first component to terminate TLS.
         Requires `client_cert_validation: request` or `require`.
     default: always_forward
-  router.route_services.max_retries:
+  router.route_services.max_attempts:
     description: |
-      Maximum number of retries on failing requests against route service URLs.
+      Maximum number of attempts on failing requests against route service URLs.
       The minimum value for this setting is 1. This prevents gorouter from getting blocked by indefinite retries.
     default: 3
   router.route_services.cert_chain:
