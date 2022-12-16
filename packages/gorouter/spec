@@ -12,6 +12,9 @@ files:
   - code.cloudfoundry.org/gorouter/**/*.{go,golden,proto,c,h,}
   - code.cloudfoundry.org/gorouter/LICENSE
   - code.cloudfoundry.org/gorouter/NOTICE
+  - code.cloudfoundry.org/vendor/code.cloudfoundry.org/lager/lagerflags/**/*.go
+  - code.cloudfoundry.org/vendor/code.cloudfoundry.org/cf-networking-helpers/healthchecker/config/*.go # gosub
+  - code.cloudfoundry.org/vendor/code.cloudfoundry.org/cf-networking-helpers/healthchecker/watchdog/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/cfhttp/v2/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/clock/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/debugserver/*.go # gosub
@@ -34,8 +37,6 @@ files:
   - code.cloudfoundry.org/gorouter/errorwriter/*.go # gosub
   - code.cloudfoundry.org/gorouter/fakes/*.go # gosub
   - code.cloudfoundry.org/gorouter/handlers/*.go # gosub
-  - code.cloudfoundry.org/gorouter/healthchecker/*.go # gosub
-  - code.cloudfoundry.org/gorouter/healthchecker/watchdog/*.go # gosub
   - code.cloudfoundry.org/gorouter/integration/*.go # gosub
   - code.cloudfoundry.org/gorouter/logger/*.go # gosub
   - code.cloudfoundry.org/gorouter/logger/fakes/*.go # gosub
@@ -70,13 +71,14 @@ files:
   - code.cloudfoundry.org/gorouter/test_util/rss/common/*.go # gosub
   - code.cloudfoundry.org/gorouter/varz/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/lager/*.go # gosub
-  - code.cloudfoundry.org/vendor/code.cloudfoundry.org/lager/internal/truncate/*.go # gosub
+  - code.cloudfoundry.org/vendor/code.cloudfoundry.org/lager/lagerflags/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/localip/*.go # gosub
   - code.cloudfoundry.org/routing-api/*.go # gosub
   - code.cloudfoundry.org/routing-api/models/*.go # gosub
   - code.cloudfoundry.org/routing-api/uaaclient/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/tlsconfig/*.go # gosub
   - code.cloudfoundry.org/trace-logger/*.go # gosub
+  - code.cloudfoundry.org/vendor/code.cloudfoundry.org/cf-networking-helpers/healthchecker/cmd/healthchecker/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/armon/go-proxyproto/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/beorn7/perks/quantile/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/bmizerany/pat/*.go # gosub
@@ -113,6 +115,11 @@ files:
   - code.cloudfoundry.org/vendor/github.com/golang/protobuf/ptypes/any/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/golang/protobuf/ptypes/duration/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/golang/protobuf/ptypes/timestamp/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/google/go-cmp/cmp/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/google/go-cmp/cmp/internal/diff/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/google/go-cmp/cmp/internal/flags/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/google/go-cmp/cmp/internal/function/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/google/go-cmp/cmp/internal/value/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/honeycombio/libhoney-go/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/honeycombio/libhoney-go/transmission/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/josharian/intern/*.go # gosub
@@ -163,6 +170,7 @@ files:
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/gbytes/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/gexec/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/gutil/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/support/goraph/bipartitegraph/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/support/goraph/edge/*.go # gosub
@@ -264,3 +272,4 @@ files:
   - code.cloudfoundry.org/vendor/gopkg.in/alexcesaro/statsd.v2/*.go # gosub
   - code.cloudfoundry.org/vendor/gopkg.in/tomb.v1/*.go # gosub
   - code.cloudfoundry.org/vendor/gopkg.in/yaml.v2/*.go # gosub
+  - code.cloudfoundry.org/vendor/gopkg.in/yaml.v3/*.go # gosub

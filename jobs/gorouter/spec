@@ -10,6 +10,7 @@ templates:
   dns_health_check.erb: bin/dns_health_check
   nats_client.erb: bin/nats_client
   gorouter.yml.erb: config/gorouter.yml
+  healthchecker.yml.erb: config/healthchecker.yml
   prom_scraper_config.yml.erb: config/prom_scraper_config.yml
   prometheus.crt.erb: config/certs/prometheus/prometheus.crt
   prometheus.key.erb: config/certs/prometheus/prometheus.key
@@ -490,3 +491,7 @@ properties:
   router.max_open_files:
     description: "The number of file descriptors a router can have open at one time"
     default: 100000
+
+  healthchecker.failure_counter_file:
+    description: "File used by the healthchecker to monitor consecutive failures."
+    default: /var/vcap/data/gorouter/counters/consecutive_healthchecker_failures.count

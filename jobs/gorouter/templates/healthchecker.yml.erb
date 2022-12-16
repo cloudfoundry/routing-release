@@ -1,0 +1,16 @@
+<%=
+config = {
+  'component_name' => "gorouter-healthchecker",
+  'failure_counter_file' => p('healthchecker.failure_counter_file'),
+  'log_level' => p('router.logging_level'),
+  'healthcheck_endpoint' => {
+    'host' => '0.0.0.0',
+    'port' => p('router.status.port'),
+    'user' => p('router.status.user'),
+    'password' => p('router.status.password'),
+    'path' => '/healthz',
+  },
+}
+
+config.to_yaml
+%>
