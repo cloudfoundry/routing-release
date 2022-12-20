@@ -177,11 +177,13 @@ describe 'gorouter' do
           'max_idle_connections' => 100,
           'keep_alive_probe_interval' => '1s',
           'backends' => {
+            'max_attempts' => 3,
             'max_conns' => 100,
             'cert_chain' => TEST_CERT,
             'private_key' => TEST_KEY
           },
           'route_services' => {
+            'max_attempts' => 3,
             'cert_chain' => ROUTE_SERVICES_CLIENT_TEST_CERT,
             'private_key' => ROUTE_SERVICES_CLIENT_TEST_KEY
           },
@@ -518,6 +520,27 @@ describe 'gorouter' do
       end
 
       describe 'route_services' do
+        context 'when max_attempts is set correctly' do
+          it 'should configure the property' do
+            expect(parsed_yaml['route_services']['max_attempts']).to eq(3)
+          end
+        end
+        context 'when max_attempts is set to 0' do
+          before do
+            deployment_manifest_fragment['router']['route_services']['max_attempts'] = 0
+          end
+          it 'should error' do
+            expect { raise parsed_yaml }.to raise_error(RuntimeError, 'router.route_services.max_attempts must maintain a minimum value of 1')
+          end
+        end
+        context 'when max_attempts is negative' do
+          before do
+            deployment_manifest_fragment['router']['route_services']['max_attempts'] = -1
+          end
+          it 'should error' do
+            expect { raise parsed_yaml }.to raise_error(RuntimeError, 'router.route_services.max_attempts must maintain a minimum value of 1')
+          end
+        end
         context 'when both cert_chain and private_key are provided' do
           it 'should configure the property' do
             expect(parsed_yaml['route_services']['cert_chain']).to eq(ROUTE_SERVICES_CLIENT_TEST_CERT)
@@ -553,6 +576,27 @@ describe 'gorouter' do
       end
 
       describe 'backends' do
+        context 'when max_attempts is set correctly' do
+          it 'should configure the property' do
+            expect(parsed_yaml['backends']['max_attempts']).to eq(3)
+          end
+        end
+        context 'when max_attempts is set to 0' do
+          before do
+            deployment_manifest_fragment['router']['backends']['max_attempts'] = 0
+          end
+          it 'should configure the property with indefinite retries' do
+            expect(parsed_yaml['backends']['max_attempts']).to eq(0)
+          end
+        end
+        context 'when max_attempts is negative' do
+          before do
+            deployment_manifest_fragment['router']['backends']['max_attempts'] = -1
+          end
+          it 'should error' do
+            expect { raise parsed_yaml }.to raise_error(RuntimeError, 'router.backends.max_attempts cannot be negative')
+          end
+        end
         context 'when both cert_chain and private_key are provided' do
           it 'should configure the property' do
             expect(parsed_yaml['backends']['cert_chain']).to eq(TEST_CERT)
