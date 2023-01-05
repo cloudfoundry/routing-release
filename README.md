@@ -10,11 +10,20 @@ and on our [GitHub Releases page](https://github.com/cloudfoundry/routing-releas
 
 ## Getting Help
 
-If you have a concrete issue to report or a change to request, please create a [Github issue on routing-release](https://github.com/cloudfoundry/routing-release/issues/new/choose).
+If you have a concrete issue to report or a change to request, please create a
+[Github issue on
+routing-release](https://github.com/cloudfoundry/routing-release/issues/new/choose).
 
-Issues with any related submodules ([Gorouter](https://github.com/cloudfoundry/gorouter), [Routing API](https://github.com/cloudfoundry/routing-api), [Route Registrar](https://github.com/cloudfoundry/route-registrar), [CF TCP Router](https://github.com/cloudfoundry/cf-tcp-router)) should be created here instead.
+Issues with any related submodules
+([Gorouter](https://github.com/cloudfoundry/gorouter), [Routing
+API](https://github.com/cloudfoundry/routing-api), [Route
+Registrar](https://github.com/cloudfoundry/route-registrar), [CF TCP
+Router](https://github.com/cloudfoundry/cf-tcp-router)) should be created here
+instead.
 
-You can also reach us on Slack at [cloudfoundry.slack.com](https://cloudfoundry.slack.com) in the [`#cf-for-vms-networking`](https://cloudfoundry.slack.com/app_redirect?channel=C01ABMVNE9E).
+You can also reach us on Slack at
+[cloudfoundry.slack.com](https://cloudfoundry.slack.com) in the
+[`#cf-for-vms-networking`](https://cloudfoundry.slack.com/app_redirect?channel=C01ABMVNE9E).
 channel.
 
 ## Contributing
