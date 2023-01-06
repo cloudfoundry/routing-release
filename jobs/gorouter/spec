@@ -31,6 +31,8 @@ packages:
 provides:
   - name: gorouter
     type: http-router
+    properties:
+    - router.backends.ca
 
 consumes:
 - name: nats
@@ -163,6 +165,8 @@ properties:
       This includes CF apps and route-registrar endpoints.
       A value of 0 implies indefinite retries, i.e. retry until success or endpoint list is exhausted.
     default: 3
+  router.backends.ca:
+    description: Certificate authority that was used to sign certificates for TLS-registered backends. In PEM format.
   router.backends.cert_chain:
     description: Certificate chain used for client authentication to TLS-registered backends.  In PEM format.
   router.backends.private_key:

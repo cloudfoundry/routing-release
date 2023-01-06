@@ -15,7 +15,7 @@ describe 'routing_api' do
   let(:merged_manifest_properties) do
     {
       'routing_api' => {
-        'mtls_ca' => 'the ca cert',
+        'mtls_ca' => 'a ca cert',
         'mtls_server_key' => 'the server key',
         'mtls_server_cert' => 'the server cert',
         'mtls_client_cert' => 'the client cert',
@@ -44,10 +44,9 @@ describe 'routing_api' do
 
   describe 'config/certs/routing-api/client_ca.crt' do
     let(:template) { job.template('config/certs/routing-api/client_ca.crt') }
-
     it 'renders the client ca cert' do
       client_ca = template.render(merged_manifest_properties)
-      expect(client_ca).to eq('the ca cert')
+      expect(client_ca.strip).to eq('a ca cert')
     end
 
     describe 'when the client ca is not provided' do
@@ -57,6 +56,44 @@ describe 'routing_api' do
 
       it 'should err' do
         expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
+      end
+    end
+
+    describe 'when the gorouter link is present and includes the backends ca' do
+      let(:links) do
+        [
+          Bosh::Template::Test::Link.new(
+            name: 'gorouter',
+            properties: {
+              'router' => {
+                'backends' => {
+                  'ca' => 'gorouter backends ca cert'
+                }
+              }
+            }
+          )
+        ]
+      end
+      it 'renders the gorouter backends ca cert' do
+        client_ca = template.render(merged_manifest_properties, consumes: links)
+        expect(client_ca.strip).to eq("a ca cert\n\ngorouter backends ca cert")
+      end
+    end
+
+    describe 'when the link is present and does not include the backends ca cert' do
+      let(:links) do
+        [
+          Bosh::Template::Test::Link.new(
+            name: 'gorouter',
+            properties: {
+              'router' => {}
+            }
+          )
+        ]
+      end
+      it 'does not render the gorouter backends ca cert' do
+        client_ca = template.render(merged_manifest_properties, consumes: links)
+        expect(client_ca.strip).to eq('a ca cert')
       end
     end
   end
