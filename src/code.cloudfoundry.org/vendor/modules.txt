@@ -6,11 +6,6 @@ code.cloudfoundry.org/bbs/encryption
 code.cloudfoundry.org/bbs/format
 code.cloudfoundry.org/bbs/guidprovider
 code.cloudfoundry.org/bbs/models
-# code.cloudfoundry.org/cf-networking-helpers v0.0.0-20221205130414-742bd12bf674
-## explicit; go 1.19
-code.cloudfoundry.org/cf-networking-helpers/healthchecker/cmd/healthchecker
-code.cloudfoundry.org/cf-networking-helpers/healthchecker/config
-code.cloudfoundry.org/cf-networking-helpers/healthchecker/watchdog
 # code.cloudfoundry.org/cfhttp/v2 v2.0.1-0.20210513172332-4c5ee488a657
 ## explicit
 code.cloudfoundry.org/cfhttp/v2

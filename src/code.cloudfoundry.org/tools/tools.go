@@ -4,7 +4,6 @@
 package tools
 
 import (
-	_ "code.cloudfoundry.org/cf-networking-helpers/healthchecker/cmd/healthchecker"
 	_ "code.cloudfoundry.org/locket/cmd/locket"
 	_ "github.com/kisielk/errcheck"
 	_ "github.com/nats-io/nats-server/v2"

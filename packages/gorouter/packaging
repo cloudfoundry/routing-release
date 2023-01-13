@@ -15,10 +15,6 @@ pushd src/code.cloudfoundry.org
   go install code.cloudfoundry.org/gorouter
 popd
 
-pushd ${GOPATH}/src/code.cloudfoundry.org/vendor/code.cloudfoundry.org/cf-networking-helpers/healthchecker/cmd/healthchecker
-  go build -o "${BOSH_INSTALL_TARGET}/bin/healthchecker" .
-popd
-
 # install jq
 tar -xzf src/jq/jq-*.tgz -C ${BOSH_INSTALL_TARGET}/bin jq
 
