@@ -1,4 +1,4 @@
 name: healthchecker
-fingerprint: 5a4339e0775d6fc4a08148187f8376e10682fd7719698b169ed12853a78f9683
+fingerprint: 11fec354b909c9d6463e9edd3c92bb7c01423eb0df21c2f7ebe742c5d6f34e28
 dependencies:
 - golang-1-linux
