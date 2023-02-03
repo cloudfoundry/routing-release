@@ -26,7 +26,7 @@ templates:
 packages:
   - routing_utils
   - gorouter
-  - healthchecker
+  - routing-healthchecker
 
 provides:
   - name: gorouter

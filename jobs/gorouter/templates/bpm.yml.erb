@@ -18,7 +18,7 @@ bpm = {
       "capabilities" => ["NET_BIND_SERVICE"]
     },
     { "name" => "gorouter-healthchecker",
-      "executable" => "/var/vcap/packages/healthchecker/bin/healthchecker",
+      "executable" => "/var/vcap/packages/routing-healthchecker/bin/healthchecker",
       "args" => [ "-c", "/var/vcap/jobs/gorouter/config/healthchecker.yml"],
       "additional_volumes" => [
         { "path" => File.dirname(p('healthchecker.failure_counter_file')), "writable" => true}],

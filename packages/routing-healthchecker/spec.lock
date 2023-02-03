@@ -1,4 +1,4 @@
-name: healthchecker
+name: routing-healthchecker
 fingerprint: d823a8fec682820aa8e56d115e3d0aa15c309e2120dc183854b80e5e69fb3dcf
 dependencies:
-- golang-1-linux
+- routing-golang-1-linux

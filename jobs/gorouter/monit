@@ -10,6 +10,6 @@ check process gorouter-healthchecker
   start program "/var/vcap/jobs/bpm/bin/bpm start gorouter -p gorouter-healthchecker"
     with timeout 65 seconds
   stop program "/var/vcap/jobs/bpm/bin/bpm stop gorouter -p gorouter-healthchecker"
-  if 1 restarts within 1 cycles then exec "/var/vcap/packages/healthchecker/bin/restart-monit-job gorouter  <%= p('healthchecker.failure_counter_file') %>"
+  if 1 restarts within 1 cycles then exec "/var/vcap/packages/routing-healthchecker/bin/restart-monit-job gorouter  <%= p('healthchecker.failure_counter_file') %>"
   depends on gorouter
   group vcap
