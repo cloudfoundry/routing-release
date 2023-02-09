@@ -2,7 +2,7 @@
 image_resource:
   type: docker-image
   source:
-    repository: c2cnetworking/tas-runtime-thin
+    repository: cloudfoundry/tas-runtime-thin
 
 platform: linux
 
