@@ -348,6 +348,7 @@ func loadRoutes(natsConn *nats.Conn, filename string) error {
 				Tags:                    route.Tags,
 				App:                     route.Tags["app_id"],
 				StaleThresholdInSeconds: route.TTL,
+				RouteServiceURL:         route.RouteServiceUrl,
 				PrivateInstanceID:       route.PrivateInstanceId,
 				IsolationSegment:        route.IsolationSegment,
 				ServerCertDomainSAN:     route.ServerCertDomainSAN,
