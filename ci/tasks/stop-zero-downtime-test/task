@@ -1,9 +1,0 @@
-#!/bin/bash
-set -ex
-
-echo "Stopping zero downtime test..."
-
-source routing-release-ci/ci/tasks/shared-functions
-set_env_vars
-
-curl "${APP_URL}/stop" -d '{}'
