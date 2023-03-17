@@ -1,8 +1,0 @@
-#!/bin/bash
-set -eu -o pipefail
-
-source networking-oss-deployments/scripts/script_helpers.sh
-
-bosh_login "${ENVIRONMENT}"
-
-credhub set -n "${NAME}" -t password -w "${VALUE}" &> /dev/null
