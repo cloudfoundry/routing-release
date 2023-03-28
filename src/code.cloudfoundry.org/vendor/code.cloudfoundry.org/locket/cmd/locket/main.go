@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"net"
 	"os"
 	"time"
 
@@ -11,7 +10,6 @@ import (
 	"code.cloudfoundry.org/bbs/db/sqldb/helpers/monitor"
 	"code.cloudfoundry.org/bbs/guidprovider"
 	"code.cloudfoundry.org/clock"
-	"code.cloudfoundry.org/consuladapter"
 	"code.cloudfoundry.org/debugserver"
 	loggingclient "code.cloudfoundry.org/diego-logging-client"
 	"code.cloudfoundry.org/go-loggregator/v8/runtimeemitter"
@@ -26,7 +24,6 @@ import (
 	"code.cloudfoundry.org/locket/metrics"
 	metrics_helpers "code.cloudfoundry.org/locket/metrics/helpers"
 	"code.cloudfoundry.org/tlsconfig"
-	"github.com/hashicorp/consul/api"
 	"github.com/tedsuo/ifrit"
 	"github.com/tedsuo/ifrit/grouper"
 	"github.com/tedsuo/ifrit/sigmon"
@@ -92,16 +89,6 @@ func main() {
 		logger.Fatal("failed-to-create-lock-table", err)
 	}
 
-	_, portString, err := net.SplitHostPort(cfg.ListenAddress)
-	if err != nil {
-		logger.Fatal("failed-invalid-listen-address", err)
-	}
-
-	portNum, err := net.LookupPort("tcp", portString)
-	if err != nil {
-		logger.Fatal("failed-invalid-listen-port", err)
-	}
-
 	tlsConfig, err := tlsconfig.Build(
 		tlsconfig.WithInternalServiceDefaults(),
 		tlsconfig.WithIdentityFromFile(cfg.CertFile, cfg.KeyFile),
@@ -125,15 +112,6 @@ func main() {
 		{"lock-metrics-notifier", lockMetricsNotifier},
 		{"db-metrics-notifier", dbMetricsNotifier},
 		{"request-metrics-notifier", requestNotifier},
-	}
-
-	if cfg.EnableConsulServiceRegistration {
-		consulClient, err := consuladapter.NewClientFromUrl(cfg.ConsulCluster)
-		if err != nil {
-			logger.Fatal("new-consul-client-failed", err)
-		}
-		registrationRunner := initializeRegistrationRunner(logger, consulClient, portNum, clock)
-		members = append(members, grouper.Member{"registration-runner", registrationRunner})
 	}
 
 	if cfg.DebugAddress != "" {
@@ -172,20 +150,4 @@ func initializeMetron(logger lager.Logger, locketConfig config.LocketConfig) (lo
 	}
 
 	return client, nil
-}
-
-func initializeRegistrationRunner(
-	logger lager.Logger,
-	consulClient consuladapter.Client,
-	port int,
-	clock clock.Clock,
-) ifrit.Runner {
-	registration := &api.AgentServiceRegistration{
-		Name: "locket",
-		Port: port,
-		Check: &api.AgentServiceCheck{
-			TTL: "20s",
-		},
-	}
-	return locket.NewRegistrationRunner(logger, registration, consulClient, locket.RetryInterval, clock)
 }

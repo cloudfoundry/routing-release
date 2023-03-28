@@ -13,8 +13,6 @@ import (
 type LocketConfig struct {
 	CaFile                          string                `json:"ca_file"`
 	CertFile                        string                `json:"cert_file"`
-	ConsulCluster                   string                `json:"consul_cluster,omitempty"`
-	EnableConsulServiceRegistration bool                  `json:"enable_consul_service_registration,omitempty"`
 	DatabaseConnectionString        string                `json:"database_connection_string"`
 	MaxOpenDatabaseConnections      int                   `json:"max_open_database_connections,omitempty"`
 	MaxDatabaseConnectionLifetime   durationjson.Duration `json:"max_database_connection_lifetime,omitempty"`

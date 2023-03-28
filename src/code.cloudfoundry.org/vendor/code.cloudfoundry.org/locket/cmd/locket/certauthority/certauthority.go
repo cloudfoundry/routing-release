@@ -130,7 +130,7 @@ func generateCAAndKey(depotDir, commonName string) (string, string, error) {
 	}
 
 	caLock.Lock()
-	ca, err := pkix.CreateCertificateAuthority(caKey, "", time.Now().AddDate(1, 0, 0), "", "", "", "", commonName)
+	ca, err := pkix.CreateCertificateAuthority(caKey, "", time.Now().AddDate(1, 0, 0), "", "", "", "", commonName, []string{})
 	if err != nil {
 		caLock.Unlock()
 		return handleError(err)

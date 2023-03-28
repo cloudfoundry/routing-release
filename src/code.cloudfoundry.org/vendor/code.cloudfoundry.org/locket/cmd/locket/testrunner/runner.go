@@ -15,7 +15,7 @@ import (
 	"code.cloudfoundry.org/locket/cmd/locket/config"
 	"code.cloudfoundry.org/tlsconfig"
 	. "github.com/onsi/gomega"
-	"github.com/tedsuo/ifrit/ginkgomon"
+	ginkgomon "github.com/tedsuo/ifrit/ginkgomon_v2"
 )
 
 var (
