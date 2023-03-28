@@ -6,12 +6,15 @@ templates:
   uaa_ca.crt.erb: config/certs/uaa/ca.crt
 
   routing-api.yml.erb: config/routing-api.yml
+  routing_api_health_check.erb: bin/routing_api_health_check
 
   locket_ca.crt.erb: config/certs/locket/ca.crt
   locket_client.crt.erb: config/certs/locket/client.crt
   locket_client.key.erb: config/certs/locket/client.key
 
   api_mtls_client_ca.crt.erb: config/certs/routing-api/client_ca.crt
+  api_mtls_client.crt.erb: config/certs/routing-api/client.crt
+  api_mtls_client.key.erb: config/certs/routing-api/client.key
   api_mtls_server.crt.erb: config/certs/routing-api/server.crt
   api_mtls_server.key.erb: config/certs/routing-api/server.key
 
@@ -106,6 +109,13 @@ properties:
     description: "Routing API client cert (provided to clients by bosh link)"
   routing_api.mtls_client_key:
     description: "Routing API client key (provided to clients by bosh link)"
+
+  routing_api.health_check_timeout_per_retry:
+    default: 2
+    description: "Maximum health check timeout (in seconds) for each retry attempt in the Routing API's route registration health check"
+  routing_api.health_check_total_timeout:
+    default: 6
+    description: "Maximum health check timeout (in seconds). Health checks will be retried until this time limit is reached. This should be less than or equal to your route_registrar.routes.api.health_check.timeout"
 
   metron.port:
     description: "The port used to emit dropsonde messages to the Metron agent."

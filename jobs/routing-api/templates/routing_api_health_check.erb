@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# this script is ran by the route-registrar
+
+PORT=<%= p("routing_api.mtls_port") %>
+URL="https://localhost:${PORT}/routing/v1/routes"
+
+echo $(date --rfc-3339=ns) "routing_api_health_check: route-registrar about to curl $URL"
+curl \
+  -s \
+  --max-time <%= p('routing_api.health_check_timeout_per_retry') %> \
+  --retry-max-time <%= p('routing_api.health_check_total_timeout') %> \
+  --cert /var/vcap/jobs/routing-api/config/certs/routing-api/client.crt \
+  --key /var/vcap/jobs/routing-api/config/certs/routing-api/client.key \
+  --retry 100000 \
+  --retry-delay 1 \
+  -k \
+  "${URL}"
+status=$?
+if [[ $status > 0 ]] ; then
+  echo $(date --rfc-3339=ns) "Failed to hit ${URL}"
+  exit $status
+fi
