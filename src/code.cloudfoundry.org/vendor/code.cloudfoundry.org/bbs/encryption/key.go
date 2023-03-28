@@ -7,7 +7,7 @@ import (
 	"errors"
 )
 
-//go:generate counterfeiter . Key
+//counterfeiter:generate . Key
 
 type Key interface {
 	Label() string

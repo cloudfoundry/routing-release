@@ -1,8 +1,10 @@
 package guidprovider
 
-import "github.com/nu7hatch/gouuid"
+import uuid "github.com/nu7hatch/gouuid"
 
-//go:generate counterfeiter . GUIDProvider
+//go:generate counterfeiter -generate
+
+//counterfeiter:generate . GUIDProvider
 
 type GUIDProvider interface {
 	NextGUID() (string, error)

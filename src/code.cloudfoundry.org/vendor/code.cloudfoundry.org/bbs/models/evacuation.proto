@@ -24,6 +24,8 @@ message EvacuateRunningActualLRPRequest {
   ActualLRPKey actual_lrp_key = 1;
   ActualLRPInstanceKey actual_lrp_instance_key = 2;
   ActualLRPNetInfo actual_lrp_net_info = 3;
+  repeated ActualLRPInternalRoute actual_lrp_internal_routes = 5;
+  map<string, string> metric_tags = 6;
 }
 
 message EvacuateStoppedActualLRPRequest {

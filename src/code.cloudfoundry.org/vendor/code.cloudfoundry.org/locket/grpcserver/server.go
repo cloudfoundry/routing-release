@@ -5,7 +5,7 @@ import (
 	"net"
 	"os"
 
-	"code.cloudfoundry.org/lager"
+	"code.cloudfoundry.org/lager/v3"
 	"code.cloudfoundry.org/locket/models"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"

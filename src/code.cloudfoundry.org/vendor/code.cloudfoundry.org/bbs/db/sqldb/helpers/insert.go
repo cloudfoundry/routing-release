@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"code.cloudfoundry.org/lager"
+	"code.cloudfoundry.org/lager/v3"
 )
 
 // INSERT INTO <table> (...) VALUES ...

@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-sql-driver/mysql"
 
-	"code.cloudfoundry.org/lager"
+	"code.cloudfoundry.org/lager/v3"
 )
 
 // BEGIN TRANSACTION; f ... ; COMMIT; or

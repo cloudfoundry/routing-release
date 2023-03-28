@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"code.cloudfoundry.org/clock"
-	"code.cloudfoundry.org/lager"
+	"code.cloudfoundry.org/lager/v3"
 	"code.cloudfoundry.org/locket/models"
 	uuid "github.com/nu7hatch/gouuid"
 	"github.com/pkg/errors"

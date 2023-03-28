@@ -13,8 +13,8 @@ import (
 	"code.cloudfoundry.org/debugserver"
 	loggingclient "code.cloudfoundry.org/diego-logging-client"
 	"code.cloudfoundry.org/go-loggregator/v8/runtimeemitter"
-	"code.cloudfoundry.org/lager"
-	"code.cloudfoundry.org/lager/lagerflags"
+	"code.cloudfoundry.org/lager/v3"
+	"code.cloudfoundry.org/lager/v3/lagerflags"
 	"code.cloudfoundry.org/locket"
 	"code.cloudfoundry.org/locket/cmd/locket/config"
 	"code.cloudfoundry.org/locket/db"
@@ -107,16 +107,16 @@ func main() {
 	server := grpcserver.NewGRPCServer(logger, cfg.ListenAddress, tlsConfig, handler)
 
 	members := grouper.Members{
-		{"server", server},
-		{"burglar", burglar},
-		{"lock-metrics-notifier", lockMetricsNotifier},
-		{"db-metrics-notifier", dbMetricsNotifier},
-		{"request-metrics-notifier", requestNotifier},
+		{Name: "server", Runner: server},
+		{Name: "burglar", Runner: burglar},
+		{Name: "lock-metrics-notifier", Runner: lockMetricsNotifier},
+		{Name: "db-metrics-notifier", Runner: dbMetricsNotifier},
+		{Name: "request-metrics-notifier", Runner: requestNotifier},
 	}
 
 	if cfg.DebugAddress != "" {
 		members = append(grouper.Members{
-			{"debug-server", debugserver.Runner(cfg.DebugAddress, reconfigurableSink)},
+			{Name: "debug-server", Runner: debugserver.Runner(cfg.DebugAddress, reconfigurableSink)},
 		}, members...)
 	}
 

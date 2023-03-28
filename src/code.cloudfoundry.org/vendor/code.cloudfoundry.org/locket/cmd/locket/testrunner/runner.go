@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"code.cloudfoundry.org/durationjson"
-	"code.cloudfoundry.org/lager/lagerflags"
+	"code.cloudfoundry.org/lager/v3/lagerflags"
 	"code.cloudfoundry.org/locket"
 	"code.cloudfoundry.org/locket/cmd/locket/certauthority"
 	"code.cloudfoundry.org/locket/cmd/locket/config"

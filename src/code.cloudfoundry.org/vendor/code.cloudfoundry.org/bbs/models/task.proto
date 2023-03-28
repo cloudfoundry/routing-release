@@ -11,6 +11,7 @@ import "volume_mount.proto";
 import "network.proto";
 import "certificate_properties.proto";
 import "image_layer.proto";
+import "log_rate_limit.proto";
 
 option (gogoproto.goproto_enum_prefix_all) = true;
 
@@ -40,6 +41,7 @@ message TaskDefinition {
   string image_username = 23 [(gogoproto.jsontag) =  "image_username"];
   string image_password = 24 [(gogoproto.jsontag) =  "image_password"];
   repeated ImageLayer image_layers = 25;
+  LogRateLimit log_rate_limit = 26;
 }
 
 message Task {

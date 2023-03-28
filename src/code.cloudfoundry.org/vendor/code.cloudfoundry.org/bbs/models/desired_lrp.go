@@ -1,6 +1,7 @@
 package models
 
 import (
+	bytes "bytes"
 	"encoding/json"
 	"net/url"
 	"regexp"
@@ -78,6 +79,7 @@ func NewDesiredLRP(schedInfo DesiredLRPSchedulingInfo, runInfo DesiredLRPRunInfo
 		ImageLayers:                   runInfo.ImageLayers,
 		MetricTags:                    runInfo.MetricTags,
 		Sidecars:                      runInfo.Sidecars,
+		LogRateLimit:                  runInfo.LogRateLimit,
 	}
 }
 
@@ -275,16 +277,13 @@ func (d *DesiredLRP) DesiredLRPRunInfo(createdAt time.Time) DesiredLRPRunInfo {
 		d.ImageLayers,
 		d.MetricTags,
 		d.Sidecars,
+		d.LogRateLimit,
 	)
 }
 
 func (d *DesiredLRP) Copy() *DesiredLRP {
 	newDesired := *d
 	return &newDesired
-}
-
-func (d *DesiredLRP) CreateComponents(createdAt time.Time) (DesiredLRPSchedulingInfo, DesiredLRPRunInfo) {
-	return d.DesiredLRPSchedulingInfo(), d.DesiredLRPRunInfo(createdAt)
 }
 
 func (desired DesiredLRP) Validate() error {
@@ -313,6 +312,12 @@ func (desired DesiredLRP) Validate() error {
 
 	if desired.GetDiskMb() < 0 {
 		validationError = validationError.Append(ErrInvalidField{"disk_mb"})
+	}
+
+	if limit := desired.GetLogRateLimit(); limit != nil {
+		if limit.GetBytesPerSecond() < -1 {
+			validationError = validationError.Append(ErrInvalidField{"log_rate_limit_bytes_per_second"})
+		}
 	}
 
 	if len(desired.GetAnnotation()) > maximumAnnotationLength {
@@ -364,6 +369,12 @@ func (desired *DesiredLRPUpdate) Validate() error {
 		}
 	}
 
+	err := validateMetricTags(desired.MetricTags, "")
+	if err != nil {
+		validationError = validationError.Append(ErrInvalidField{"metric_tags"})
+		validationError = validationError.Append(err)
+	}
+
 	return validationError.ToError()
 }
 
@@ -389,10 +400,52 @@ func (desired DesiredLRPUpdate) AnnotationExists() bool {
 	return ok
 }
 
+func (desired DesiredLRPUpdate) IsRoutesGroupUpdated(routes *Routes, routerGroup string) bool {
+	if desired.Routes == nil {
+		return false
+	}
+
+	if routes == nil {
+		return true
+	}
+
+	desiredRoutes, desiredRoutesPresent := (*desired.Routes)[routerGroup]
+	requestRoutes, requestRoutesPresent := (*routes)[routerGroup]
+	if desiredRoutesPresent != requestRoutesPresent {
+		return true
+	}
+
+	if desiredRoutesPresent && requestRoutesPresent {
+		return !bytes.Equal(*desiredRoutes, *requestRoutes)
+	}
+
+	return true
+}
+
+func (desired DesiredLRPUpdate) IsMetricTagsUpdated(existingTags map[string]*MetricTagValue) bool {
+	if desired.MetricTags == nil {
+		return false
+	}
+	if len(desired.MetricTags) != len(existingTags) {
+		return true
+	}
+	for k, v := range existingTags {
+		updateTag, ok := desired.MetricTags[k]
+		if !ok {
+			return true
+		}
+		if updateTag.Static != v.Static || updateTag.Dynamic != v.Dynamic {
+			return true
+		}
+	}
+	return false
+}
+
 type internalDesiredLRPUpdate struct {
-	Instances  *int32  `json:"instances,omitempty"`
-	Routes     *Routes `json:"routes,omitempty"`
-	Annotation *string `json:"annotation,omitempty"`
+	Instances  *int32                     `json:"instances,omitempty"`
+	Routes     *Routes                    `json:"routes,omitempty"`
+	Annotation *string                    `json:"annotation,omitempty"`
+	MetricTags map[string]*MetricTagValue `json:"metric_tags,omitempty"`
 }
 
 func (desired *DesiredLRPUpdate) UnmarshalJSON(data []byte) error {
@@ -408,6 +461,7 @@ func (desired *DesiredLRPUpdate) UnmarshalJSON(data []byte) error {
 	if update.Annotation != nil {
 		desired.SetAnnotation(*update.Annotation)
 	}
+	desired.MetricTags = update.MetricTags
 
 	return nil
 }
@@ -423,6 +477,7 @@ func (desired DesiredLRPUpdate) MarshalJSON() ([]byte, error) {
 		a := desired.GetAnnotation()
 		update.Annotation = &a
 	}
+	update.MetricTags = desired.MetricTags
 	return json.Marshal(update)
 }
 
@@ -559,6 +614,7 @@ func NewDesiredLRPRunInfo(
 	imageLayers []*ImageLayer,
 	metricTags map[string]*MetricTagValue,
 	sidecars []*Sidecar,
+	logRateLimit *LogRateLimit,
 ) DesiredLRPRunInfo {
 	return DesiredLRPRunInfo{
 		DesiredLRPKey:                 key,
@@ -586,6 +642,7 @@ func NewDesiredLRPRunInfo(
 		ImageLayers:                   imageLayers,
 		MetricTags:                    metricTags,
 		Sidecars:                      sidecars,
+		LogRateLimit:                  logRateLimit,
 	}
 }
 
@@ -641,6 +698,10 @@ func (runInfo DesiredLRPRunInfo) Validate() error {
 		validationError = validationError.Append(err)
 	}
 
+	if runInfo.MetricTags == nil {
+		validationError = validationError.Append(ErrInvalidField{"metric_tags"})
+	}
+
 	err = validateMetricTags(runInfo.MetricTags, runInfo.GetMetricsGuid())
 	if err != nil {
 		validationError = validationError.Append(ErrInvalidField{"metric_tags"})
@@ -669,6 +730,12 @@ func (runInfo DesiredLRPRunInfo) Validate() error {
 		if err := runInfo.CheckDefinition.Validate(); err != nil {
 			validationError = validationError.Append(ErrInvalidField{"check_definition"})
 			validationError = validationError.Append(err)
+		}
+	}
+
+	if limit := runInfo.LogRateLimit; limit != nil {
+		if limit.BytesPerSecond < -1 {
+			validationError = validationError.Append(ErrInvalidField{"log_rate_limit"})
 		}
 	}
 

@@ -45,6 +45,10 @@ message ActualLRPNetInfo {
   PreferredAddress preferred_address = 4 [(gogoproto.jsontag) = "preferred_address"];
 }
 
+message ActualLRPInternalRoute {
+  string hostname = 1 [(gogoproto.jsontag) = "hostname"];
+}
+
 message ActualLRP {
   enum Presence {
     ORDINARY   = 0 [(gogoproto.enumvalue_customname) = "Ordinary"];
@@ -62,4 +66,6 @@ message ActualLRP {
   int64 since = 8 [(gogoproto.jsontag) = "since"];
   ModificationTag modification_tag = 9 [(gogoproto.nullable) = false,(gogoproto.jsontag) = "modification_tag"];
   Presence presence = 10 [(gogoproto.jsontag) = "presence"];
+  repeated ActualLRPInternalRoute actual_lrp_internal_routes = 11;
+  map<string, string> metric_tags = 12;
 }
