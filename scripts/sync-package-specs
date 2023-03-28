@@ -47,7 +47,7 @@ sync_package gorouter \
 sync_package route_registrar   -app code.cloudfoundry.org/route-registrar/... &
 sync_package acceptance_tests \
   -test code.cloudfoundry.org/routing-acceptance-tests/... \
-  -app github.com/onsi/ginkgo/ginkgo &
+  -app github.com/onsi/ginkgo/v2/ginkgo &
 
 wait
 

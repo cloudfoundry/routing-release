@@ -9,7 +9,7 @@ export PATH="$GOBIN:$PATH"
 mkdir -p $GOBIN
 
 pushd routing-release/src/code.cloudfoundry.org
-  go build -o "$GOBIN/ginkgo" github.com/onsi/ginkgo/ginkgo
+  go build -o "$GOBIN/ginkgo" github.com/onsi/ginkgo/v2/ginkgo
 
   packages=("http_routes" "tcp_routing" "smoke_tests")
   for i in "${packages[@]}"
