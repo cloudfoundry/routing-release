@@ -16,10 +16,10 @@ nodes=<%= properties.acceptance_tests.nodes %>
 verbose=<%= properties.acceptance_tests.verbose ? "-v" : "" %>
 
 "${ACCEPTANCE_BIN}/ginkgo" "${ACCEPTANCE_BIN}/http-routes.test" \
-  -randomizeAllSpecs $verbose -slowSpecThreshold=120 -nodes=$nodes -keepGoing || EXITSTATUS=$?
+  -randomize-all $verbose -nodes=$nodes -keep-going || EXITSTATUS=$?
 
 "${ACCEPTANCE_BIN}/ginkgo" "${ACCEPTANCE_BIN}/tcp-routing.test" \
-  -randomizeAllSpecs $verbose -slowSpecThreshold=120 -nodes=$nodes -keepGoing || EXITSTATUS=$?
+  -randomize-all $verbose -nodes=$nodes -keep-going || EXITSTATUS=$?
 
 echo "Acceptance Tests Complete; exit status: $EXITSTATUS"
 

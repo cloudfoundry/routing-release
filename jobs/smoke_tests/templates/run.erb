@@ -13,7 +13,7 @@ EXITSTATUS=0
 verbose=<%= properties.acceptance_tests.verbose ? "-v" : "" %>
 
 "${ACCEPTANCE_BIN}/ginkgo" "${ACCEPTANCE_BIN}/smoke.test" \
-  -randomizeAllSpecs $verbose -slowSpecThreshold=120 -keepGoing || EXITSTATUS=$?
+  -randomize-all $verbose -keep-going || EXITSTATUS=$?
 
 echo "Smoke Tests Complete; exit status: $EXITSTATUS"
 

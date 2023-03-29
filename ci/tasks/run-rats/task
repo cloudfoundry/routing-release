@@ -16,10 +16,9 @@ pushd routing-release/src/code.cloudfoundry.org
   do
     ginkgo \
       -r "routing-acceptance-tests/$i" "$GINKGO_ARGS" \
-      -keepGoing \
-      -randomizeAllSpecs \
-      -skipPackage=helpers \
-      -slowSpecThreshold=120 \
+      -keep-going \
+      -randomize-all \
+      -skip-package=helpers \
       -nodes="${NODES}"
   done
 popd
