@@ -115,7 +115,7 @@ properties:
     description: "Maximum health check timeout (in seconds) for each retry attempt in the Routing API's route registration health check"
   routing_api.health_check_total_timeout:
     default: 6
-    description: "Maximum health check timeout (in seconds). Health checks will be retried until this time limit is reached. This should be less than or equal to your route_registrar.routes.api.health_check.timeout"
+    description: "Maximum health check timeout (in seconds). Health checks will be retried until this time limit is reached. This should be less than or equal to your route_registrar.routes.routing-api.health_check.timeout"
 
   metron.port:
     description: "The port used to emit dropsonde messages to the Metron agent."
