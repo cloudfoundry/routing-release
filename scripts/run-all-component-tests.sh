@@ -5,6 +5,8 @@ set -e
 PACKAGE="$1"
 SUB_PACKAGE="$2"
 
+export GOFLAGS="-buildvcs=false"
+
 if [[ -n "${PACKAGE}" ]]; then
   pushd "./src/code.cloudfoundry.org/${PACKAGE}"
     echo "Testing component: ${PACKAGE}"
