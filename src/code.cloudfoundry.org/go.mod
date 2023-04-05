@@ -18,12 +18,12 @@ require (
 	code.cloudfoundry.org/bbs v0.0.0-20230329134718-1250973e826c
 	code.cloudfoundry.org/cfhttp/v2 v2.0.1-0.20210513172332-4c5ee488a657
 	code.cloudfoundry.org/clock v1.0.0
-	code.cloudfoundry.org/debugserver v0.0.0-20230328160250-c4f3fe4b289a
+	code.cloudfoundry.org/debugserver v0.0.0-20230329140605-8c21649a9a42
 	code.cloudfoundry.org/eventhub v0.0.0-20210615172938-0b896ce72257
 	code.cloudfoundry.org/go-metric-registry v0.0.0-20220203232021-f2ac4dfd60ec
 	code.cloudfoundry.org/lager/v3 v3.0.1
 	code.cloudfoundry.org/localip v0.0.0-20210608161955-43c3ec713c20
-	code.cloudfoundry.org/locket v0.0.0-20230328162909-cc07d33c630d
+	code.cloudfoundry.org/locket v0.0.0-20230329155605-9586d8160de6
 	code.cloudfoundry.org/tlsconfig v0.0.0-20230320190829-8f91c367795b
 	github.com/armon/go-proxyproto v0.0.0-20210323213023-7e956b284f0a
 	github.com/cactus/go-statsd-client v0.0.0-00010101000000-000000000000
@@ -48,7 +48,7 @@ require (
 	github.com/onsi/gomega v1.27.5
 	github.com/openzipkin/zipkin-go v0.4.1
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
-	github.com/tedsuo/ifrit v0.0.0-20220120221754-dd274de71113
+	github.com/tedsuo/ifrit v0.0.0-20230330192023-5cba443a66c4
 	github.com/tedsuo/rata v1.0.0
 	github.com/uber-go/zap v0.0.0-00010101000000-000000000000
 	github.com/urfave/negroni v1.0.0
@@ -84,7 +84,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/google/pprof v0.0.0-20230323073829-e72429f035bd // indirect
+	github.com/google/pprof v0.0.0-20230405160723-4a4c7d95572b // indirect
 	github.com/jackc/fake v0.0.0-20150926172116-812a484cc733 // indirect
 	github.com/jackc/pgx v3.6.2+incompatible // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
@@ -107,11 +107,11 @@ require (
 	go.step.sm/crypto v0.16.2 // indirect
 	go.uber.org/atomic v1.8.0 // indirect
 	golang.org/x/mod v0.9.0 // indirect
-	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/sys v0.7.0 // indirect
 	golang.org/x/text v0.8.0 // indirect
 	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/genproto v0.0.0-20230327215041-6ac7f18bb9d5 // indirect
+	google.golang.org/genproto v0.0.0-20230403163135-c38d8f061ccd // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

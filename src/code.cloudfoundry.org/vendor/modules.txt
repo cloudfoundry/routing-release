@@ -13,7 +13,7 @@ code.cloudfoundry.org/cfhttp/v2
 ## explicit
 code.cloudfoundry.org/clock
 code.cloudfoundry.org/clock/fakeclock
-# code.cloudfoundry.org/debugserver v0.0.0-20230328160250-c4f3fe4b289a
+# code.cloudfoundry.org/debugserver v0.0.0-20230329140605-8c21649a9a42
 ## explicit; go 1.19
 code.cloudfoundry.org/debugserver
 # code.cloudfoundry.org/diego-logging-client v0.0.0-20210622170659-8861ae5ba2ed
@@ -54,7 +54,7 @@ code.cloudfoundry.org/lager/v3/lagertest
 # code.cloudfoundry.org/localip v0.0.0-20210608161955-43c3ec713c20
 ## explicit; go 1.16
 code.cloudfoundry.org/localip
-# code.cloudfoundry.org/locket v0.0.0-20230328162909-cc07d33c630d
+# code.cloudfoundry.org/locket v0.0.0-20230329155605-9586d8160de6
 ## explicit
 code.cloudfoundry.org/locket
 code.cloudfoundry.org/locket/cmd/locket
@@ -186,7 +186,7 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
-# github.com/google/pprof v0.0.0-20230323073829-e72429f035bd
+# github.com/google/pprof v0.0.0-20230405160723-4a4c7d95572b
 ## explicit; go 1.19
 github.com/google/pprof/profile
 # github.com/honeycombio/libhoney-go v1.15.3
@@ -343,7 +343,7 @@ github.com/rcrowley/go-metrics
 # github.com/square/certstrap v1.3.0
 ## explicit; go 1.18
 github.com/square/certstrap/pkix
-# github.com/tedsuo/ifrit v0.0.0-20220120221754-dd274de71113
+# github.com/tedsuo/ifrit v0.0.0-20230330192023-5cba443a66c4
 ## explicit
 github.com/tedsuo/ifrit
 github.com/tedsuo/ifrit/ginkgomon_v2
@@ -423,7 +423,7 @@ golang.org/x/net/trace
 golang.org/x/oauth2
 golang.org/x/oauth2/clientcredentials
 golang.org/x/oauth2/internal
-# golang.org/x/sys v0.6.0
+# golang.org/x/sys v0.7.0
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
@@ -508,7 +508,7 @@ google.golang.org/appengine/internal/modules
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20230327215041-6ac7f18bb9d5
+# google.golang.org/genproto v0.0.0-20230403163135-c38d8f061ccd
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.54.0
