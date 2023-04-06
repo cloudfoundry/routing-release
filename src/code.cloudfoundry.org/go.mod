@@ -15,7 +15,7 @@ replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client
 replace github.com/cloudfoundry-community/go-uaa => github.com/mariash/go-uaa v0.3.2
 
 require (
-	code.cloudfoundry.org/bbs v0.0.0-20230329134718-1250973e826c
+	code.cloudfoundry.org/bbs v0.0.0-20230329145323-970bd2fbac5a
 	code.cloudfoundry.org/cfhttp/v2 v2.0.1-0.20210513172332-4c5ee488a657
 	code.cloudfoundry.org/clock v1.0.0
 	code.cloudfoundry.org/debugserver v0.0.0-20230329140605-8c21649a9a42
@@ -68,7 +68,6 @@ require (
 	code.cloudfoundry.org/go-diodes v0.0.0-20190809170250-f77fb823c7ee // indirect
 	code.cloudfoundry.org/go-loggregator/v8 v8.0.5 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
-	code.cloudfoundry.org/lager v1.1.1-0.20230321195817-3d52f427a2d2 // indirect
 	filippo.io/edwards25519 v1.0.0-rc.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect

@@ -7,7 +7,7 @@ import (
 	"regexp"
 
 	"code.cloudfoundry.org/bbs/format"
-	"code.cloudfoundry.org/lager"
+	"code.cloudfoundry.org/lager/v3"
 )
 
 var taskGuidPattern = regexp.MustCompile(`^[a-zA-Z0-9_-]+$`)

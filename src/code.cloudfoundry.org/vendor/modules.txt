@@ -1,4 +1,4 @@
-# code.cloudfoundry.org/bbs v0.0.0-20230329134718-1250973e826c
+# code.cloudfoundry.org/bbs v0.0.0-20230329145323-970bd2fbac5a
 ## explicit
 code.cloudfoundry.org/bbs/db/sqldb/helpers
 code.cloudfoundry.org/bbs/db/sqldb/helpers/monitor
@@ -40,10 +40,6 @@ code.cloudfoundry.org/go-metric-registry
 code.cloudfoundry.org/go-metric-registry/testhelpers
 # code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5
 ## explicit
-# code.cloudfoundry.org/lager v1.1.1-0.20230321195817-3d52f427a2d2
-## explicit; go 1.19
-code.cloudfoundry.org/lager
-code.cloudfoundry.org/lager/internal/truncate
 # code.cloudfoundry.org/lager/v3 v3.0.1
 ## explicit; go 1.19
 code.cloudfoundry.org/lager/v3

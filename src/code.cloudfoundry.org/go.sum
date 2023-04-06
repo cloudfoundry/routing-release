@@ -1,7 +1,7 @@
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
-code.cloudfoundry.org/bbs v0.0.0-20230329134718-1250973e826c h1:CXaZcjIaTqQntSnnD7WPD4utBQHQg6qmSGaLUCeRIoE=
-code.cloudfoundry.org/bbs v0.0.0-20230329134718-1250973e826c/go.mod h1:XKlGVVXFi5EcHHMPzw3xgONK9PeEZuUbIC43XNwxD10=
+code.cloudfoundry.org/bbs v0.0.0-20230329145323-970bd2fbac5a h1:4HIP65pgKhXxaIv19Z6znrX0qiWHZC8b7Qgn20WdaoU=
+code.cloudfoundry.org/bbs v0.0.0-20230329145323-970bd2fbac5a/go.mod h1:XKlGVVXFi5EcHHMPzw3xgONK9PeEZuUbIC43XNwxD10=
 code.cloudfoundry.org/cfhttp/v2 v2.0.1-0.20210513172332-4c5ee488a657 h1:8rnhkeAe8Bnx+8r3unO++S3syBw8P22qPbw3LLFWEoc=
 code.cloudfoundry.org/cfhttp/v2 v2.0.1-0.20210513172332-4c5ee488a657/go.mod h1:Fwt0o/haXfwgOHMom4AM96pXCVw9EAiIcSsPb8hWK9s=
 code.cloudfoundry.org/clock v1.0.0 h1:kFXWQM4bxYvdBw2X8BbBeXwQNgfoWv1vqAk2ZZyBN2o=
@@ -23,8 +23,6 @@ code.cloudfoundry.org/go-metric-registry v0.0.0-20220203232021-f2ac4dfd60ec h1:j
 code.cloudfoundry.org/go-metric-registry v0.0.0-20220203232021-f2ac4dfd60ec/go.mod h1:cjL7/hjRgOnMy/FbPsGZG9qmR6oSPKG/FwKLLlh2j2U=
 code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 h1:XVhLtnvbIlLQh7L0KADVFjd2dfgXVcOpqPLpMtg/IZA=
 code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5/go.mod h1:1ZB1JCh2FAp+SqX79ve6dc8YREvbsziULEOncAilX4Q=
-code.cloudfoundry.org/lager v1.1.1-0.20230321195817-3d52f427a2d2 h1:/XzZDmyGGMbVARg2I8/gooQHUZrnbFjLN6blLWxdcXU=
-code.cloudfoundry.org/lager v1.1.1-0.20230321195817-3d52f427a2d2/go.mod h1:4//yL08XH9xro2/KMV6cQ0INl8E+5+XFIVcXJrwrGao=
 code.cloudfoundry.org/lager/v3 v3.0.1 h1:AI7h0EgCa4bJCCq0N8JV8EBP+tbJUIovqKc4hB4wZsA=
 code.cloudfoundry.org/lager/v3 v3.0.1/go.mod h1:zA6tOIWhr5uZUez+PGpdfBHDWQOfhOrr0cgKDagZPwk=
 code.cloudfoundry.org/localip v0.0.0-20210608161955-43c3ec713c20 h1:wUuKExmeHyMJ0m9g9HKjJjHn3US4j4kWrDxqUsSQmRg=
