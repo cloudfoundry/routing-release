@@ -3,7 +3,7 @@ package helpers
 import (
 	"context"
 
-	"code.cloudfoundry.org/lager"
+	"code.cloudfoundry.org/lager/v3"
 )
 
 // Upsert insert a record if it doesn't exist or update the record if one

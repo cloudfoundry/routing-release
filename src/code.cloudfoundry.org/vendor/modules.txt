@@ -1,4 +1,4 @@
-# code.cloudfoundry.org/bbs v0.0.0-20210615140220-2942e7d25726
+# code.cloudfoundry.org/bbs v0.0.0-20230329145323-970bd2fbac5a
 ## explicit
 code.cloudfoundry.org/bbs/db/sqldb/helpers
 code.cloudfoundry.org/bbs/db/sqldb/helpers/monitor
@@ -13,11 +13,8 @@ code.cloudfoundry.org/cfhttp/v2
 ## explicit
 code.cloudfoundry.org/clock
 code.cloudfoundry.org/clock/fakeclock
-# code.cloudfoundry.org/consuladapter v0.0.0-20210615194356-31457193d2fd
-## explicit; go 1.16
-code.cloudfoundry.org/consuladapter
-# code.cloudfoundry.org/debugserver v0.0.0-20210608171006-d7658ce493f4
-## explicit; go 1.16
+# code.cloudfoundry.org/debugserver v0.0.0-20230329140605-8c21649a9a42
+## explicit; go 1.19
 code.cloudfoundry.org/debugserver
 # code.cloudfoundry.org/diego-logging-client v0.0.0-20210622170659-8861ae5ba2ed
 ## explicit; go 1.16
@@ -43,16 +40,17 @@ code.cloudfoundry.org/go-metric-registry
 code.cloudfoundry.org/go-metric-registry/testhelpers
 # code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5
 ## explicit
-# code.cloudfoundry.org/lager v2.0.0+incompatible
-## explicit
-code.cloudfoundry.org/lager
-code.cloudfoundry.org/lager/lagerctx
-code.cloudfoundry.org/lager/lagerflags
-code.cloudfoundry.org/lager/lagertest
+# code.cloudfoundry.org/lager/v3 v3.0.1
+## explicit; go 1.19
+code.cloudfoundry.org/lager/v3
+code.cloudfoundry.org/lager/v3/internal/truncate
+code.cloudfoundry.org/lager/v3/lagerctx
+code.cloudfoundry.org/lager/v3/lagerflags
+code.cloudfoundry.org/lager/v3/lagertest
 # code.cloudfoundry.org/localip v0.0.0-20210608161955-43c3ec713c20
 ## explicit; go 1.16
 code.cloudfoundry.org/localip
-# code.cloudfoundry.org/locket v0.0.0-20211014150347-5712a0767913
+# code.cloudfoundry.org/locket v0.0.0-20230329155605-9586d8160de6
 ## explicit
 code.cloudfoundry.org/locket
 code.cloudfoundry.org/locket/cmd/locket
@@ -67,14 +65,13 @@ code.cloudfoundry.org/locket/lock
 code.cloudfoundry.org/locket/metrics
 code.cloudfoundry.org/locket/metrics/helpers
 code.cloudfoundry.org/locket/models
-# code.cloudfoundry.org/rep v0.1441.2
-## explicit
-# code.cloudfoundry.org/tlsconfig v0.0.0-20210615191307-5d92ef3894a7
-## explicit; go 1.16
+# code.cloudfoundry.org/tlsconfig v0.0.0-20230320190829-8f91c367795b
+## explicit; go 1.19
 code.cloudfoundry.org/tlsconfig
-# github.com/armon/go-metrics v0.3.9
-## explicit; go 1.12
-github.com/armon/go-metrics
+# filippo.io/edwards25519 v1.0.0-rc.1
+## explicit; go 1.17
+filippo.io/edwards25519
+filippo.io/edwards25519/field
 # github.com/armon/go-proxyproto v0.0.0-20210323213023-7e956b284f0a
 ## explicit
 github.com/armon/go-proxyproto
@@ -87,35 +84,34 @@ github.com/bmizerany/pat
 # github.com/cactus/go-statsd-client v0.0.0-00010101000000-000000000000 => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
 ## explicit
 github.com/cactus/go-statsd-client/statsd
-# github.com/cespare/xxhash/v2 v2.1.1
+# github.com/cespare/xxhash/v2 v2.2.0
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
 # github.com/cloudfoundry-community/go-uaa v0.3.1 => github.com/mariash/go-uaa v0.3.2
 ## explicit; go 1.12
 github.com/cloudfoundry-community/go-uaa
 github.com/cloudfoundry-community/go-uaa/passwordcredentials
-# github.com/cloudfoundry-incubator/bbs v0.0.0-20210615140220-2942e7d25726
+# github.com/cloudfoundry/cf-routing-test-helpers v0.0.0-20200827173955-6ac4653025b4
 ## explicit
-# github.com/cloudfoundry-incubator/cf-test-helpers v1.0.0
-## explicit
-github.com/cloudfoundry-incubator/cf-test-helpers/cf
-github.com/cloudfoundry-incubator/cf-test-helpers/commandreporter
-github.com/cloudfoundry-incubator/cf-test-helpers/commandstarter
-github.com/cloudfoundry-incubator/cf-test-helpers/config
-github.com/cloudfoundry-incubator/cf-test-helpers/generator
-github.com/cloudfoundry-incubator/cf-test-helpers/helpers
-github.com/cloudfoundry-incubator/cf-test-helpers/helpers/internal
-github.com/cloudfoundry-incubator/cf-test-helpers/internal
-github.com/cloudfoundry-incubator/cf-test-helpers/silentcommandstarter
-github.com/cloudfoundry-incubator/cf-test-helpers/workflowhelpers
-github.com/cloudfoundry-incubator/cf-test-helpers/workflowhelpers/internal
-# github.com/cloudfoundry-incubator/executor v0.0.0-20210615140407-a538c11377aa
-## explicit
+github.com/cloudfoundry/cf-routing-test-helpers/schema
+# github.com/cloudfoundry/cf-test-helpers/v2 v2.5.0
+## explicit; go 1.18
+github.com/cloudfoundry/cf-test-helpers/v2/cf
+github.com/cloudfoundry/cf-test-helpers/v2/commandreporter
+github.com/cloudfoundry/cf-test-helpers/v2/commandstarter
+github.com/cloudfoundry/cf-test-helpers/v2/config
+github.com/cloudfoundry/cf-test-helpers/v2/generator
+github.com/cloudfoundry/cf-test-helpers/v2/helpers
+github.com/cloudfoundry/cf-test-helpers/v2/helpers/internal
+github.com/cloudfoundry/cf-test-helpers/v2/internal
+github.com/cloudfoundry/cf-test-helpers/v2/silentcommandstarter
+github.com/cloudfoundry/cf-test-helpers/v2/workflowhelpers
+github.com/cloudfoundry/cf-test-helpers/v2/workflowhelpers/internal
 # github.com/cloudfoundry/custom-cats-reporters v0.0.2
 ## explicit
 github.com/cloudfoundry/custom-cats-reporters/honeycomb/client
-# github.com/cloudfoundry/dropsonde v1.0.0 => github.com/cloudfoundry/dropsonde v1.0.1-0.20180504154030-a5c24343b09d
-## explicit
+# github.com/cloudfoundry/dropsonde v1.0.1-0.20230324134055-c6dd7c5e990e
+## explicit; go 1.18
 github.com/cloudfoundry/dropsonde
 github.com/cloudfoundry/dropsonde/emitter
 github.com/cloudfoundry/dropsonde/emitter/fake
@@ -131,8 +127,8 @@ github.com/cloudfoundry/dropsonde/metric_sender/fake
 github.com/cloudfoundry/dropsonde/metricbatcher
 github.com/cloudfoundry/dropsonde/metrics
 github.com/cloudfoundry/dropsonde/runtime_stats
-# github.com/cloudfoundry/sonde-go v0.0.0-20200416163440-a42463ba266b
-## explicit
+# github.com/cloudfoundry/sonde-go v0.0.0-20230323202738-86a2a74b11b0
+## explicit; go 1.17
 github.com/cloudfoundry/sonde-go/events
 # github.com/cockroachdb/apd v1.1.0
 ## explicit
@@ -148,13 +144,14 @@ github.com/facebookgo/limitgroup
 # github.com/facebookgo/muster v0.0.0-20150708232844-fd3d7953fd52
 ## explicit
 github.com/facebookgo/muster
-# github.com/fsnotify/fsnotify v1.4.9
-## explicit; go 1.13
-github.com/fsnotify/fsnotify
+# github.com/go-logr/logr v1.2.3
+## explicit; go 1.16
+github.com/go-logr/logr
+github.com/go-logr/logr/funcr
 # github.com/go-sql-driver/mysql v1.7.0
 ## explicit; go 1.13
 github.com/go-sql-driver/mysql
-# github.com/go-task/slim-sprig v0.0.0-20210107165309-348f09dbbbc0
+# github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572
 ## explicit; go 1.13
 github.com/go-task/slim-sprig
 # github.com/go-test/deep v1.0.7
@@ -170,7 +167,7 @@ github.com/gogo/protobuf/sortkeys
 # github.com/golang-jwt/jwt/v4 v4.4.1
 ## explicit; go 1.16
 github.com/golang-jwt/jwt/v4
-# github.com/golang/protobuf v1.5.2
+# github.com/golang/protobuf v1.5.3
 ## explicit; go 1.9
 github.com/golang/protobuf/jsonpb
 github.com/golang/protobuf/proto
@@ -185,21 +182,9 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
-# github.com/hashicorp/consul v1.10.0 => github.com/hashicorp/consul v0.7.0
-## explicit
-github.com/hashicorp/consul/api
-# github.com/hashicorp/go-cleanhttp v0.5.2
-## explicit; go 1.13
-github.com/hashicorp/go-cleanhttp
-# github.com/hashicorp/go-immutable-radix v1.3.1
-## explicit
-github.com/hashicorp/go-immutable-radix
-# github.com/hashicorp/golang-lru v0.5.4
-## explicit; go 1.12
-github.com/hashicorp/golang-lru/simplelru
-# github.com/hashicorp/serf v0.9.5
-## explicit; go 1.12
-github.com/hashicorp/serf/coordinate
+# github.com/google/pprof v0.0.0-20230405160723-4a4c7d95572b
+## explicit; go 1.19
+github.com/google/pprof/profile
 # github.com/honeycombio/libhoney-go v1.15.3
 ## explicit; go 1.14
 github.com/honeycombio/libhoney-go
@@ -230,11 +215,12 @@ github.com/josharian/intern
 ## explicit; go 1.14
 github.com/kisielk/errcheck
 github.com/kisielk/errcheck/errcheck
-# github.com/klauspost/compress v1.13.6
-## explicit; go 1.15
+# github.com/klauspost/compress v1.15.11
+## explicit; go 1.17
 github.com/klauspost/compress
 github.com/klauspost/compress/fse
 github.com/klauspost/compress/huff0
+github.com/klauspost/compress/internal/cpuinfo
 github.com/klauspost/compress/internal/snapref
 github.com/klauspost/compress/s2
 github.com/klauspost/compress/zstd
@@ -283,45 +269,29 @@ github.com/nats-io/nuid
 # github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 ## explicit
 github.com/nu7hatch/gouuid
-# github.com/nxadm/tail v1.4.8
-## explicit; go 1.13
-github.com/nxadm/tail
-github.com/nxadm/tail/ratelimiter
-github.com/nxadm/tail/util
-github.com/nxadm/tail/watch
-github.com/nxadm/tail/winfile
-# github.com/onsi/ginkgo v1.16.5
-## explicit; go 1.16
-github.com/onsi/ginkgo
-github.com/onsi/ginkgo/config
-github.com/onsi/ginkgo/extensions/table
-github.com/onsi/ginkgo/formatter
-github.com/onsi/ginkgo/ginkgo
-github.com/onsi/ginkgo/ginkgo/convert
-github.com/onsi/ginkgo/ginkgo/interrupthandler
-github.com/onsi/ginkgo/ginkgo/nodot
-github.com/onsi/ginkgo/ginkgo/outline
-github.com/onsi/ginkgo/ginkgo/testrunner
-github.com/onsi/ginkgo/ginkgo/testsuite
-github.com/onsi/ginkgo/ginkgo/watch
-github.com/onsi/ginkgo/internal/codelocation
-github.com/onsi/ginkgo/internal/containernode
-github.com/onsi/ginkgo/internal/failer
-github.com/onsi/ginkgo/internal/global
-github.com/onsi/ginkgo/internal/leafnodes
-github.com/onsi/ginkgo/internal/remote
-github.com/onsi/ginkgo/internal/spec
-github.com/onsi/ginkgo/internal/spec_iterator
-github.com/onsi/ginkgo/internal/specrunner
-github.com/onsi/ginkgo/internal/suite
-github.com/onsi/ginkgo/internal/testingtproxy
-github.com/onsi/ginkgo/internal/writer
-github.com/onsi/ginkgo/reporters
-github.com/onsi/ginkgo/reporters/stenographer
-github.com/onsi/ginkgo/reporters/stenographer/support/go-colorable
-github.com/onsi/ginkgo/reporters/stenographer/support/go-isatty
-github.com/onsi/ginkgo/types
-# github.com/onsi/gomega v1.24.1
+# github.com/onsi/ginkgo/v2 v2.9.2
+## explicit; go 1.18
+github.com/onsi/ginkgo/v2
+github.com/onsi/ginkgo/v2/config
+github.com/onsi/ginkgo/v2/formatter
+github.com/onsi/ginkgo/v2/ginkgo
+github.com/onsi/ginkgo/v2/ginkgo/build
+github.com/onsi/ginkgo/v2/ginkgo/command
+github.com/onsi/ginkgo/v2/ginkgo/generators
+github.com/onsi/ginkgo/v2/ginkgo/internal
+github.com/onsi/ginkgo/v2/ginkgo/labels
+github.com/onsi/ginkgo/v2/ginkgo/outline
+github.com/onsi/ginkgo/v2/ginkgo/run
+github.com/onsi/ginkgo/v2/ginkgo/unfocus
+github.com/onsi/ginkgo/v2/ginkgo/watch
+github.com/onsi/ginkgo/v2/internal
+github.com/onsi/ginkgo/v2/internal/global
+github.com/onsi/ginkgo/v2/internal/interrupt_handler
+github.com/onsi/ginkgo/v2/internal/parallel_support
+github.com/onsi/ginkgo/v2/internal/testingtproxy
+github.com/onsi/ginkgo/v2/reporters
+github.com/onsi/ginkgo/v2/types
+# github.com/onsi/gomega v1.27.5
 ## explicit; go 1.18
 github.com/onsi/gomega
 github.com/onsi/gomega/format
@@ -336,16 +306,12 @@ github.com/onsi/gomega/matchers/support/goraph/edge
 github.com/onsi/gomega/matchers/support/goraph/node
 github.com/onsi/gomega/matchers/support/goraph/util
 github.com/onsi/gomega/types
-# github.com/openzipkin/zipkin-go v0.3.0
-## explicit; go 1.14
+# github.com/openzipkin/zipkin-go v0.4.1
+## explicit; go 1.18
 github.com/openzipkin/zipkin-go/idgenerator
 github.com/openzipkin/zipkin-go/model
 github.com/openzipkin/zipkin-go/propagation
 github.com/openzipkin/zipkin-go/propagation/b3
-# github.com/pivotal-golang/clock v1.0.0
-## explicit
-# github.com/pivotal-golang/lager v2.0.0+incompatible
-## explicit
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
@@ -370,15 +336,13 @@ github.com/prometheus/procfs/internal/util
 # github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
 ## explicit
 github.com/rcrowley/go-metrics
-# github.com/shopspring/decimal v1.2.0
-## explicit; go 1.13
-# github.com/square/certstrap v1.2.0
-## explicit
+# github.com/square/certstrap v1.3.0
+## explicit; go 1.18
 github.com/square/certstrap/pkix
-# github.com/tedsuo/ifrit v0.0.0-20191009134036-9a97d0632f00
+# github.com/tedsuo/ifrit v0.0.0-20230330192023-5cba443a66c4
 ## explicit
 github.com/tedsuo/ifrit
-github.com/tedsuo/ifrit/ginkgomon
+github.com/tedsuo/ifrit/ginkgomon_v2
 github.com/tedsuo/ifrit/grouper
 github.com/tedsuo/ifrit/http_server
 github.com/tedsuo/ifrit/sigmon
@@ -406,24 +370,38 @@ github.com/vmihailenco/msgpack/v4/codes
 github.com/vmihailenco/tagparser
 github.com/vmihailenco/tagparser/internal
 github.com/vmihailenco/tagparser/internal/parser
+# go.step.sm/crypto v0.16.2
+## explicit; go 1.16
+go.step.sm/crypto/internal/bcrypt_pbkdf
+go.step.sm/crypto/internal/utils
+go.step.sm/crypto/keyutil
+go.step.sm/crypto/pemutil
+go.step.sm/crypto/randutil
+go.step.sm/crypto/x25519
 # go.uber.org/atomic v1.8.0
 ## explicit; go 1.13
-# golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
+# golang.org/x/crypto v0.1.0
 ## explicit; go 1.17
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/chacha20
 golang.org/x/crypto/chacha20poly1305
+golang.org/x/crypto/curve25519
+golang.org/x/crypto/curve25519/internal/field
 golang.org/x/crypto/ed25519
-golang.org/x/crypto/ed25519/internal/edwards25519
+golang.org/x/crypto/internal/alias
 golang.org/x/crypto/internal/poly1305
-golang.org/x/crypto/internal/subtle
+golang.org/x/crypto/nacl/secretbox
 golang.org/x/crypto/ocsp
 golang.org/x/crypto/pbkdf2
-# golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4
+golang.org/x/crypto/salsa20/salsa
+golang.org/x/crypto/scrypt
+golang.org/x/crypto/ssh
+golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
+# golang.org/x/mod v0.9.0
 ## explicit; go 1.17
 golang.org/x/mod/semver
-# golang.org/x/net v0.2.0
+# golang.org/x/net v0.8.0
 ## explicit; go 1.17
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
@@ -436,12 +414,12 @@ golang.org/x/net/http2/hpack
 golang.org/x/net/idna
 golang.org/x/net/internal/timeseries
 golang.org/x/net/trace
-# golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-## explicit; go 1.11
+# golang.org/x/oauth2 v0.4.0
+## explicit; go 1.17
 golang.org/x/oauth2
 golang.org/x/oauth2/clientcredentials
 golang.org/x/oauth2/internal
-# golang.org/x/sys v0.2.0
+# golang.org/x/sys v0.7.0
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
@@ -452,7 +430,7 @@ golang.org/x/sys/windows/registry
 golang.org/x/sys/windows/svc
 golang.org/x/sys/windows/svc/eventlog
 golang.org/x/sys/windows/svc/mgr
-# golang.org/x/text v0.4.0
+# golang.org/x/text v0.8.0
 ## explicit; go 1.17
 golang.org/x/text/cases
 golang.org/x/text/encoding
@@ -481,12 +459,11 @@ golang.org/x/text/width
 # golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1
 ## explicit
 golang.org/x/time/rate
-# golang.org/x/tools v0.1.12
+# golang.org/x/tools v0.7.0
 ## explicit; go 1.18
 golang.org/x/tools/go/analysis
 golang.org/x/tools/go/analysis/internal/analysisflags
 golang.org/x/tools/go/analysis/internal/checker
-golang.org/x/tools/go/analysis/internal/facts
 golang.org/x/tools/go/analysis/passes/inspect
 golang.org/x/tools/go/analysis/passes/shadow
 golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow
@@ -494,23 +471,25 @@ golang.org/x/tools/go/analysis/singlechecker
 golang.org/x/tools/go/analysis/unitchecker
 golang.org/x/tools/go/ast/inspector
 golang.org/x/tools/go/gcexportdata
-golang.org/x/tools/go/internal/gcimporter
 golang.org/x/tools/go/internal/packagesdriver
-golang.org/x/tools/go/internal/pkgbits
 golang.org/x/tools/go/packages
 golang.org/x/tools/go/types/objectpath
-golang.org/x/tools/internal/analysisinternal
+golang.org/x/tools/internal/diff
+golang.org/x/tools/internal/diff/lcs
 golang.org/x/tools/internal/event
 golang.org/x/tools/internal/event/core
 golang.org/x/tools/internal/event/keys
 golang.org/x/tools/internal/event/label
+golang.org/x/tools/internal/facts
+golang.org/x/tools/internal/gcimporter
 golang.org/x/tools/internal/gocommand
-golang.org/x/tools/internal/lsp/bug
 golang.org/x/tools/internal/packagesinternal
-golang.org/x/tools/internal/span
+golang.org/x/tools/internal/pkgbits
+golang.org/x/tools/internal/robustio
+golang.org/x/tools/internal/tokeninternal
 golang.org/x/tools/internal/typeparams
 golang.org/x/tools/internal/typesinternal
-# google.golang.org/appengine v1.6.5
+# google.golang.org/appengine v1.6.7
 ## explicit; go 1.11
 google.golang.org/appengine
 google.golang.org/appengine/datastore
@@ -525,11 +504,11 @@ google.golang.org/appengine/internal/modules
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20210701191553-46259e63a0a9
-## explicit; go 1.11
+# google.golang.org/genproto v0.0.0-20230403163135-c38d8f061ccd
+## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.41.0
-## explicit; go 1.14
+# google.golang.org/grpc v1.54.0
+## explicit; go 1.17
 google.golang.org/grpc
 google.golang.org/grpc/attributes
 google.golang.org/grpc/backoff
@@ -538,14 +517,17 @@ google.golang.org/grpc/balancer/base
 google.golang.org/grpc/balancer/grpclb/state
 google.golang.org/grpc/balancer/roundrobin
 google.golang.org/grpc/binarylog/grpc_binarylog_v1
+google.golang.org/grpc/channelz
 google.golang.org/grpc/codes
 google.golang.org/grpc/connectivity
 google.golang.org/grpc/credentials
+google.golang.org/grpc/credentials/insecure
 google.golang.org/grpc/encoding
 google.golang.org/grpc/encoding/proto
 google.golang.org/grpc/grpclog
 google.golang.org/grpc/internal
 google.golang.org/grpc/internal/backoff
+google.golang.org/grpc/internal/balancer/gracefulswitch
 google.golang.org/grpc/internal/balancerload
 google.golang.org/grpc/internal/binarylog
 google.golang.org/grpc/internal/buffer
@@ -557,6 +539,7 @@ google.golang.org/grpc/internal/grpcrand
 google.golang.org/grpc/internal/grpcsync
 google.golang.org/grpc/internal/grpcutil
 google.golang.org/grpc/internal/metadata
+google.golang.org/grpc/internal/pretty
 google.golang.org/grpc/internal/resolver
 google.golang.org/grpc/internal/resolver/dns
 google.golang.org/grpc/internal/resolver/passthrough
@@ -566,7 +549,6 @@ google.golang.org/grpc/internal/status
 google.golang.org/grpc/internal/syscall
 google.golang.org/grpc/internal/transport
 google.golang.org/grpc/internal/transport/networktype
-google.golang.org/grpc/internal/xds/env
 google.golang.org/grpc/keepalive
 google.golang.org/grpc/metadata
 google.golang.org/grpc/peer
@@ -575,7 +557,7 @@ google.golang.org/grpc/serviceconfig
 google.golang.org/grpc/stats
 google.golang.org/grpc/status
 google.golang.org/grpc/tap
-# google.golang.org/protobuf v1.28.0
+# google.golang.org/protobuf v1.30.0
 ## explicit; go 1.11
 google.golang.org/protobuf/encoding/protojson
 google.golang.org/protobuf/encoding/prototext
@@ -612,9 +594,6 @@ google.golang.org/protobuf/types/known/timestamppb
 # gopkg.in/alexcesaro/statsd.v2 v2.0.0
 ## explicit
 gopkg.in/alexcesaro/statsd.v2
-# gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7
-## explicit
-gopkg.in/tomb.v1
 # gopkg.in/yaml.v2 v2.4.0
 ## explicit; go 1.15
 gopkg.in/yaml.v2
@@ -626,5 +605,4 @@ gopkg.in/yaml.v3
 # github.com/codegangsta/cli => github.com/codegangsta/cli v1.6.0
 # github.com/hashicorp/consul => github.com/hashicorp/consul v0.7.0
 # github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
-# github.com/cloudfoundry/dropsonde => github.com/cloudfoundry/dropsonde v1.0.1-0.20180504154030-a5c24343b09d
 # github.com/cloudfoundry-community/go-uaa => github.com/mariash/go-uaa v0.3.2

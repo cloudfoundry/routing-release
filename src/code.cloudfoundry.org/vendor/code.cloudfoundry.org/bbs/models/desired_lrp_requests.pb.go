@@ -3,15 +3,16 @@
 
 package models
 
-import proto "github.com/gogo/protobuf/proto"
-import fmt "fmt"
-import math "math"
-import _ "github.com/gogo/protobuf/gogoproto"
-
-import strings "strings"
-import reflect "reflect"
-
-import io "io"
+import (
+	fmt "fmt"
+	_ "github.com/gogo/protobuf/gogoproto"
+	proto "github.com/gogo/protobuf/proto"
+	io "io"
+	math "math"
+	math_bits "math/bits"
+	reflect "reflect"
+	strings "strings"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -22,7 +23,7 @@ var _ = math.Inf
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
+const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type DesiredLRPLifecycleResponse struct {
 	Error *Error `protobuf:"bytes,1,opt,name=error,proto3" json:"error,omitempty"`
@@ -31,7 +32,7 @@ type DesiredLRPLifecycleResponse struct {
 func (m *DesiredLRPLifecycleResponse) Reset()      { *m = DesiredLRPLifecycleResponse{} }
 func (*DesiredLRPLifecycleResponse) ProtoMessage() {}
 func (*DesiredLRPLifecycleResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_desired_lrp_requests_80ba5198f7214838, []int{0}
+	return fileDescriptor_7235cc1a84e38c85, []int{0}
 }
 func (m *DesiredLRPLifecycleResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -41,15 +42,15 @@ func (m *DesiredLRPLifecycleResponse) XXX_Marshal(b []byte, deterministic bool) 
 		return xxx_messageInfo_DesiredLRPLifecycleResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *DesiredLRPLifecycleResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DesiredLRPLifecycleResponse.Merge(dst, src)
+func (m *DesiredLRPLifecycleResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DesiredLRPLifecycleResponse.Merge(m, src)
 }
 func (m *DesiredLRPLifecycleResponse) XXX_Size() int {
 	return m.Size()
@@ -75,7 +76,7 @@ type DesiredLRPsResponse struct {
 func (m *DesiredLRPsResponse) Reset()      { *m = DesiredLRPsResponse{} }
 func (*DesiredLRPsResponse) ProtoMessage() {}
 func (*DesiredLRPsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_desired_lrp_requests_80ba5198f7214838, []int{1}
+	return fileDescriptor_7235cc1a84e38c85, []int{1}
 }
 func (m *DesiredLRPsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -85,15 +86,15 @@ func (m *DesiredLRPsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return xxx_messageInfo_DesiredLRPsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *DesiredLRPsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DesiredLRPsResponse.Merge(dst, src)
+func (m *DesiredLRPsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DesiredLRPsResponse.Merge(m, src)
 }
 func (m *DesiredLRPsResponse) XXX_Size() int {
 	return m.Size()
@@ -126,7 +127,7 @@ type DesiredLRPsRequest struct {
 func (m *DesiredLRPsRequest) Reset()      { *m = DesiredLRPsRequest{} }
 func (*DesiredLRPsRequest) ProtoMessage() {}
 func (*DesiredLRPsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_desired_lrp_requests_80ba5198f7214838, []int{2}
+	return fileDescriptor_7235cc1a84e38c85, []int{2}
 }
 func (m *DesiredLRPsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -136,15 +137,15 @@ func (m *DesiredLRPsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 		return xxx_messageInfo_DesiredLRPsRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *DesiredLRPsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DesiredLRPsRequest.Merge(dst, src)
+func (m *DesiredLRPsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DesiredLRPsRequest.Merge(m, src)
 }
 func (m *DesiredLRPsRequest) XXX_Size() int {
 	return m.Size()
@@ -177,7 +178,7 @@ type DesiredLRPResponse struct {
 func (m *DesiredLRPResponse) Reset()      { *m = DesiredLRPResponse{} }
 func (*DesiredLRPResponse) ProtoMessage() {}
 func (*DesiredLRPResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_desired_lrp_requests_80ba5198f7214838, []int{3}
+	return fileDescriptor_7235cc1a84e38c85, []int{3}
 }
 func (m *DesiredLRPResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -187,15 +188,15 @@ func (m *DesiredLRPResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 		return xxx_messageInfo_DesiredLRPResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *DesiredLRPResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DesiredLRPResponse.Merge(dst, src)
+func (m *DesiredLRPResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DesiredLRPResponse.Merge(m, src)
 }
 func (m *DesiredLRPResponse) XXX_Size() int {
 	return m.Size()
@@ -228,7 +229,7 @@ type DesiredLRPSchedulingInfosResponse struct {
 func (m *DesiredLRPSchedulingInfosResponse) Reset()      { *m = DesiredLRPSchedulingInfosResponse{} }
 func (*DesiredLRPSchedulingInfosResponse) ProtoMessage() {}
 func (*DesiredLRPSchedulingInfosResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_desired_lrp_requests_80ba5198f7214838, []int{4}
+	return fileDescriptor_7235cc1a84e38c85, []int{4}
 }
 func (m *DesiredLRPSchedulingInfosResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -238,15 +239,15 @@ func (m *DesiredLRPSchedulingInfosResponse) XXX_Marshal(b []byte, deterministic 
 		return xxx_messageInfo_DesiredLRPSchedulingInfosResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *DesiredLRPSchedulingInfosResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DesiredLRPSchedulingInfosResponse.Merge(dst, src)
+func (m *DesiredLRPSchedulingInfosResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DesiredLRPSchedulingInfosResponse.Merge(m, src)
 }
 func (m *DesiredLRPSchedulingInfosResponse) XXX_Size() int {
 	return m.Size()
@@ -278,7 +279,7 @@ type DesiredLRPByProcessGuidRequest struct {
 func (m *DesiredLRPByProcessGuidRequest) Reset()      { *m = DesiredLRPByProcessGuidRequest{} }
 func (*DesiredLRPByProcessGuidRequest) ProtoMessage() {}
 func (*DesiredLRPByProcessGuidRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_desired_lrp_requests_80ba5198f7214838, []int{5}
+	return fileDescriptor_7235cc1a84e38c85, []int{5}
 }
 func (m *DesiredLRPByProcessGuidRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -288,15 +289,15 @@ func (m *DesiredLRPByProcessGuidRequest) XXX_Marshal(b []byte, deterministic boo
 		return xxx_messageInfo_DesiredLRPByProcessGuidRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *DesiredLRPByProcessGuidRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DesiredLRPByProcessGuidRequest.Merge(dst, src)
+func (m *DesiredLRPByProcessGuidRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DesiredLRPByProcessGuidRequest.Merge(m, src)
 }
 func (m *DesiredLRPByProcessGuidRequest) XXX_Size() int {
 	return m.Size()
@@ -321,7 +322,7 @@ type DesireLRPRequest struct {
 func (m *DesireLRPRequest) Reset()      { *m = DesireLRPRequest{} }
 func (*DesireLRPRequest) ProtoMessage() {}
 func (*DesireLRPRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_desired_lrp_requests_80ba5198f7214838, []int{6}
+	return fileDescriptor_7235cc1a84e38c85, []int{6}
 }
 func (m *DesireLRPRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -331,15 +332,15 @@ func (m *DesireLRPRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, er
 		return xxx_messageInfo_DesireLRPRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *DesireLRPRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DesireLRPRequest.Merge(dst, src)
+func (m *DesireLRPRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DesireLRPRequest.Merge(m, src)
 }
 func (m *DesireLRPRequest) XXX_Size() int {
 	return m.Size()
@@ -365,7 +366,7 @@ type UpdateDesiredLRPRequest struct {
 func (m *UpdateDesiredLRPRequest) Reset()      { *m = UpdateDesiredLRPRequest{} }
 func (*UpdateDesiredLRPRequest) ProtoMessage() {}
 func (*UpdateDesiredLRPRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_desired_lrp_requests_80ba5198f7214838, []int{7}
+	return fileDescriptor_7235cc1a84e38c85, []int{7}
 }
 func (m *UpdateDesiredLRPRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -375,15 +376,15 @@ func (m *UpdateDesiredLRPRequest) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return xxx_messageInfo_UpdateDesiredLRPRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *UpdateDesiredLRPRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateDesiredLRPRequest.Merge(dst, src)
+func (m *UpdateDesiredLRPRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateDesiredLRPRequest.Merge(m, src)
 }
 func (m *UpdateDesiredLRPRequest) XXX_Size() int {
 	return m.Size()
@@ -415,7 +416,7 @@ type RemoveDesiredLRPRequest struct {
 func (m *RemoveDesiredLRPRequest) Reset()      { *m = RemoveDesiredLRPRequest{} }
 func (*RemoveDesiredLRPRequest) ProtoMessage() {}
 func (*RemoveDesiredLRPRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_desired_lrp_requests_80ba5198f7214838, []int{8}
+	return fileDescriptor_7235cc1a84e38c85, []int{8}
 }
 func (m *RemoveDesiredLRPRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -425,15 +426,15 @@ func (m *RemoveDesiredLRPRequest) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return xxx_messageInfo_RemoveDesiredLRPRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *RemoveDesiredLRPRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RemoveDesiredLRPRequest.Merge(dst, src)
+func (m *RemoveDesiredLRPRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RemoveDesiredLRPRequest.Merge(m, src)
 }
 func (m *RemoveDesiredLRPRequest) XXX_Size() int {
 	return m.Size()
@@ -462,6 +463,43 @@ func init() {
 	proto.RegisterType((*UpdateDesiredLRPRequest)(nil), "models.UpdateDesiredLRPRequest")
 	proto.RegisterType((*RemoveDesiredLRPRequest)(nil), "models.RemoveDesiredLRPRequest")
 }
+
+func init() { proto.RegisterFile("desired_lrp_requests.proto", fileDescriptor_7235cc1a84e38c85) }
+
+var fileDescriptor_7235cc1a84e38c85 = []byte{
+	// 467 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x53, 0xc1, 0x6e, 0xd3, 0x30,
+	0x18, 0x8e, 0x87, 0xa8, 0xb4, 0x3f, 0x9d, 0x34, 0xcc, 0x61, 0xa5, 0x20, 0xaf, 0x78, 0x97, 0x5d,
+	0xe8, 0xd0, 0x0a, 0x2f, 0x50, 0x81, 0x26, 0xa4, 0x0a, 0x4d, 0x46, 0x3b, 0xa2, 0xaa, 0x4d, 0xdc,
+	0x2c, 0x52, 0x12, 0x67, 0x76, 0x82, 0xb4, 0xdb, 0x1e, 0x81, 0xc7, 0x40, 0xe2, 0x45, 0x38, 0xf6,
+	0xb8, 0xd3, 0x44, 0xd3, 0x0b, 0xda, 0x69, 0x8f, 0x80, 0x6a, 0xbb, 0xc4, 0x61, 0x1c, 0x28, 0xe2,
+	0x94, 0xf8, 0xf3, 0xf7, 0x7f, 0xff, 0xf7, 0x7f, 0x7f, 0x02, 0xdd, 0x90, 0xab, 0x58, 0xf2, 0x70,
+	0x9c, 0xc8, 0x7c, 0x2c, 0xf9, 0x45, 0xc9, 0x55, 0xa1, 0xfa, 0xb9, 0x14, 0x85, 0xc0, 0xad, 0x54,
+	0x84, 0x3c, 0x51, 0xdd, 0x17, 0x51, 0x5c, 0x9c, 0x97, 0xd3, 0x7e, 0x20, 0xd2, 0xa3, 0x48, 0x44,
+	0xe2, 0x48, 0x5f, 0x4f, 0xcb, 0x99, 0x3e, 0xe9, 0x83, 0x7e, 0x33, 0x65, 0xdd, 0x47, 0x8e, 0xa4,
+	0x85, 0x7c, 0x2e, 0xa5, 0x90, 0xe6, 0x40, 0x87, 0xf0, 0xf4, 0x8d, 0x61, 0x8c, 0xd8, 0xe9, 0x28,
+	0x9e, 0xf1, 0xe0, 0x32, 0x48, 0x38, 0xe3, 0x2a, 0x17, 0x99, 0xe2, 0xf8, 0x00, 0x1e, 0x6a, 0x76,
+	0x07, 0xf5, 0xd0, 0xa1, 0x7f, 0xbc, 0xd3, 0x37, 0x2e, 0xfa, 0x6f, 0x57, 0x20, 0x33, 0x77, 0xf4,
+	0x02, 0x1e, 0xd7, 0x1a, 0x6a, 0xa3, 0x5a, 0xfc, 0x1a, 0xda, 0x8e, 0x43, 0xd5, 0xd9, 0xea, 0x3d,
+	0x38, 0xf4, 0x8f, 0xf1, 0x9a, 0x5b, 0xeb, 0x32, 0xdf, 0xf2, 0x46, 0x32, 0x57, 0xf4, 0x23, 0xe0,
+	0x46, 0x4b, 0x1d, 0x15, 0xa6, 0xd0, 0x0a, 0x45, 0x3a, 0x89, 0x33, 0xdd, 0x72, 0x7b, 0x08, 0xb7,
+	0x37, 0xfb, 0x16, 0x61, 0xf6, 0x89, 0x0f, 0x60, 0x27, 0x97, 0x22, 0xe0, 0x4a, 0x8d, 0xa3, 0x32,
+	0x0e, 0x4d, 0xc7, 0x6d, 0xd6, 0xb6, 0xe0, 0xc9, 0x0a, 0xa3, 0x99, 0x2b, 0xbf, 0xd9, 0x40, 0x03,
+	0xf0, 0x9d, 0x81, 0x3a, 0x5b, 0x9a, 0xfa, 0xa7, 0x79, 0xa0, 0x9e, 0x87, 0x7e, 0x45, 0xf0, 0xbc,
+	0xbe, 0xfa, 0x10, 0x9c, 0xf3, 0xb0, 0x4c, 0xe2, 0x2c, 0x7a, 0x97, 0xcd, 0xc4, 0x86, 0x81, 0x4e,
+	0xe0, 0x99, 0xfb, 0x15, 0xa9, 0x5f, 0x5a, 0xe3, 0x78, 0x25, 0x66, 0x03, 0xee, 0xdd, 0x37, 0xd4,
+	0xec, 0xca, 0x9e, 0xd4, 0xf6, 0x7e, 0xf3, 0x43, 0xcf, 0x80, 0xd4, 0x65, 0xc3, 0xcb, 0xd3, 0x3a,
+	0xb9, 0xf5, 0x22, 0x06, 0xd0, 0x76, 0x43, 0xb6, 0xeb, 0xd8, 0xbd, 0xbd, 0xd9, 0x6f, 0xe0, 0xcc,
+	0x77, 0x52, 0xa7, 0x27, 0xb0, 0x6b, 0x64, 0x75, 0xe6, 0x6b, 0xa1, 0x46, 0x9a, 0xe8, 0xaf, 0xd2,
+	0xbc, 0x42, 0xb0, 0x77, 0x96, 0x87, 0x93, 0x82, 0xbb, 0x4b, 0xfc, 0x77, 0x67, 0xf8, 0x25, 0xb4,
+	0x4a, 0xad, 0x67, 0xd7, 0xd9, 0xb9, 0x6f, 0xc0, 0xf4, 0x63, 0x96, 0x47, 0xdf, 0xc3, 0x1e, 0xe3,
+	0xa9, 0xf8, 0xf4, 0x9f, 0x1c, 0x0c, 0x5f, 0xcd, 0x17, 0xc4, 0xbb, 0x5e, 0x10, 0xef, 0x6e, 0x41,
+	0xd0, 0x55, 0x45, 0xd0, 0x97, 0x8a, 0xa0, 0x6f, 0x15, 0x41, 0xf3, 0x8a, 0xa0, 0xef, 0x15, 0x41,
+	0x3f, 0x2a, 0xe2, 0xdd, 0x55, 0x04, 0x7d, 0x5e, 0x12, 0x6f, 0xbe, 0x24, 0xde, 0xf5, 0x92, 0x78,
+	0xd3, 0x96, 0xfe, 0xc7, 0x07, 0x3f, 0x03, 0x00, 0x00, 0xff, 0xff, 0x9b, 0xf1, 0x73, 0xee, 0x58,
+	0x04, 0x00, 0x00,
+}
+
 func (this *DesiredLRPLifecycleResponse) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
@@ -832,7 +870,7 @@ func valueToGoStringDesiredLrpRequests(v interface{}, typ string) string {
 func (m *DesiredLRPLifecycleResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -840,27 +878,34 @@ func (m *DesiredLRPLifecycleResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *DesiredLRPLifecycleResponse) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *DesiredLRPLifecycleResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	if m.Error != nil {
-		dAtA[i] = 0xa
-		i++
-		i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(m.Error.Size()))
-		n1, err := m.Error.MarshalTo(dAtA[i:])
-		if err != nil {
-			return 0, err
+		{
+			size, err := m.Error.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(size))
 		}
-		i += n1
+		i--
+		dAtA[i] = 0xa
 	}
-	return i, nil
+	return len(dAtA) - i, nil
 }
 
 func (m *DesiredLRPsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -868,39 +913,48 @@ func (m *DesiredLRPsResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *DesiredLRPsResponse) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *DesiredLRPsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.Error != nil {
-		dAtA[i] = 0xa
-		i++
-		i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(m.Error.Size()))
-		n2, err := m.Error.MarshalTo(dAtA[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n2
-	}
 	if len(m.DesiredLrps) > 0 {
-		for _, msg := range m.DesiredLrps {
+		for iNdEx := len(m.DesiredLrps) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.DesiredLrps[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(size))
+			}
+			i--
 			dAtA[i] = 0x12
-			i++
-			i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(dAtA[i:])
+		}
+	}
+	if m.Error != nil {
+		{
+			size, err := m.Error.MarshalToSizedBuffer(dAtA[:i])
 			if err != nil {
 				return 0, err
 			}
-			i += n
+			i -= size
+			i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(size))
 		}
+		i--
+		dAtA[i] = 0xa
 	}
-	return i, nil
+	return len(dAtA) - i, nil
 }
 
 func (m *DesiredLRPsRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -908,38 +962,38 @@ func (m *DesiredLRPsRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *DesiredLRPsRequest) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *DesiredLRPsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Domain) > 0 {
-		dAtA[i] = 0xa
-		i++
-		i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(len(m.Domain)))
-		i += copy(dAtA[i:], m.Domain)
-	}
 	if len(m.ProcessGuids) > 0 {
-		for _, s := range m.ProcessGuids {
+		for iNdEx := len(m.ProcessGuids) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.ProcessGuids[iNdEx])
+			copy(dAtA[i:], m.ProcessGuids[iNdEx])
+			i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(len(m.ProcessGuids[iNdEx])))
+			i--
 			dAtA[i] = 0x12
-			i++
-			l = len(s)
-			for l >= 1<<7 {
-				dAtA[i] = uint8(uint64(l)&0x7f | 0x80)
-				l >>= 7
-				i++
-			}
-			dAtA[i] = uint8(l)
-			i++
-			i += copy(dAtA[i:], s)
 		}
 	}
-	return i, nil
+	if len(m.Domain) > 0 {
+		i -= len(m.Domain)
+		copy(dAtA[i:], m.Domain)
+		i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(len(m.Domain)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
 }
 
 func (m *DesiredLRPResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -947,37 +1001,46 @@ func (m *DesiredLRPResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *DesiredLRPResponse) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *DesiredLRPResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.Error != nil {
-		dAtA[i] = 0xa
-		i++
-		i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(m.Error.Size()))
-		n3, err := m.Error.MarshalTo(dAtA[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n3
-	}
 	if m.DesiredLrp != nil {
-		dAtA[i] = 0x12
-		i++
-		i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(m.DesiredLrp.Size()))
-		n4, err := m.DesiredLrp.MarshalTo(dAtA[i:])
-		if err != nil {
-			return 0, err
+		{
+			size, err := m.DesiredLrp.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(size))
 		}
-		i += n4
+		i--
+		dAtA[i] = 0x12
 	}
-	return i, nil
+	if m.Error != nil {
+		{
+			size, err := m.Error.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
 }
 
 func (m *DesiredLRPSchedulingInfosResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -985,39 +1048,48 @@ func (m *DesiredLRPSchedulingInfosResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *DesiredLRPSchedulingInfosResponse) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *DesiredLRPSchedulingInfosResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.Error != nil {
-		dAtA[i] = 0xa
-		i++
-		i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(m.Error.Size()))
-		n5, err := m.Error.MarshalTo(dAtA[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n5
-	}
 	if len(m.DesiredLrpSchedulingInfos) > 0 {
-		for _, msg := range m.DesiredLrpSchedulingInfos {
+		for iNdEx := len(m.DesiredLrpSchedulingInfos) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.DesiredLrpSchedulingInfos[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(size))
+			}
+			i--
 			dAtA[i] = 0x12
-			i++
-			i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(dAtA[i:])
+		}
+	}
+	if m.Error != nil {
+		{
+			size, err := m.Error.MarshalToSizedBuffer(dAtA[:i])
 			if err != nil {
 				return 0, err
 			}
-			i += n
+			i -= size
+			i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(size))
 		}
+		i--
+		dAtA[i] = 0xa
 	}
-	return i, nil
+	return len(dAtA) - i, nil
 }
 
 func (m *DesiredLRPByProcessGuidRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -1025,23 +1097,29 @@ func (m *DesiredLRPByProcessGuidRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *DesiredLRPByProcessGuidRequest) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *DesiredLRPByProcessGuidRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	if len(m.ProcessGuid) > 0 {
-		dAtA[i] = 0xa
-		i++
+		i -= len(m.ProcessGuid)
+		copy(dAtA[i:], m.ProcessGuid)
 		i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(len(m.ProcessGuid)))
-		i += copy(dAtA[i:], m.ProcessGuid)
+		i--
+		dAtA[i] = 0xa
 	}
-	return i, nil
+	return len(dAtA) - i, nil
 }
 
 func (m *DesireLRPRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -1049,27 +1127,34 @@ func (m *DesireLRPRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *DesireLRPRequest) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *DesireLRPRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	if m.DesiredLrp != nil {
-		dAtA[i] = 0xa
-		i++
-		i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(m.DesiredLrp.Size()))
-		n6, err := m.DesiredLrp.MarshalTo(dAtA[i:])
-		if err != nil {
-			return 0, err
+		{
+			size, err := m.DesiredLrp.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(size))
 		}
-		i += n6
+		i--
+		dAtA[i] = 0xa
 	}
-	return i, nil
+	return len(dAtA) - i, nil
 }
 
 func (m *UpdateDesiredLRPRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -1077,33 +1162,41 @@ func (m *UpdateDesiredLRPRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *UpdateDesiredLRPRequest) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *UpdateDesiredLRPRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.ProcessGuid) > 0 {
-		dAtA[i] = 0xa
-		i++
-		i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(len(m.ProcessGuid)))
-		i += copy(dAtA[i:], m.ProcessGuid)
-	}
 	if m.Update != nil {
-		dAtA[i] = 0x12
-		i++
-		i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(m.Update.Size()))
-		n7, err := m.Update.MarshalTo(dAtA[i:])
-		if err != nil {
-			return 0, err
+		{
+			size, err := m.Update.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(size))
 		}
-		i += n7
+		i--
+		dAtA[i] = 0x12
 	}
-	return i, nil
+	if len(m.ProcessGuid) > 0 {
+		i -= len(m.ProcessGuid)
+		copy(dAtA[i:], m.ProcessGuid)
+		i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(len(m.ProcessGuid)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
 }
 
 func (m *RemoveDesiredLRPRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -1111,27 +1204,35 @@ func (m *RemoveDesiredLRPRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *RemoveDesiredLRPRequest) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *RemoveDesiredLRPRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	if len(m.ProcessGuid) > 0 {
-		dAtA[i] = 0xa
-		i++
+		i -= len(m.ProcessGuid)
+		copy(dAtA[i:], m.ProcessGuid)
 		i = encodeVarintDesiredLrpRequests(dAtA, i, uint64(len(m.ProcessGuid)))
-		i += copy(dAtA[i:], m.ProcessGuid)
+		i--
+		dAtA[i] = 0xa
 	}
-	return i, nil
+	return len(dAtA) - i, nil
 }
 
 func encodeVarintDesiredLrpRequests(dAtA []byte, offset int, v uint64) int {
+	offset -= sovDesiredLrpRequests(v)
+	base := offset
 	for v >= 1<<7 {
 		dAtA[offset] = uint8(v&0x7f | 0x80)
 		v >>= 7
 		offset++
 	}
 	dAtA[offset] = uint8(v)
-	return offset + 1
+	return base
 }
 func (m *DesiredLRPLifecycleResponse) Size() (n int) {
 	if m == nil {
@@ -1277,14 +1378,7 @@ func (m *RemoveDesiredLRPRequest) Size() (n int) {
 }
 
 func sovDesiredLrpRequests(x uint64) (n int) {
-	for {
-		n++
-		x >>= 7
-		if x == 0 {
-			break
-		}
-	}
-	return n
+	return (math_bits.Len64(x|1) + 6) / 7
 }
 func sozDesiredLrpRequests(x uint64) (n int) {
 	return sovDesiredLrpRequests(uint64((x << 1) ^ uint64((int64(x) >> 63))))
@@ -1303,9 +1397,14 @@ func (this *DesiredLRPsResponse) String() string {
 	if this == nil {
 		return "nil"
 	}
+	repeatedStringForDesiredLrps := "[]*DesiredLRP{"
+	for _, f := range this.DesiredLrps {
+		repeatedStringForDesiredLrps += strings.Replace(fmt.Sprintf("%v", f), "DesiredLRP", "DesiredLRP", 1) + ","
+	}
+	repeatedStringForDesiredLrps += "}"
 	s := strings.Join([]string{`&DesiredLRPsResponse{`,
 		`Error:` + strings.Replace(fmt.Sprintf("%v", this.Error), "Error", "Error", 1) + `,`,
-		`DesiredLrps:` + strings.Replace(fmt.Sprintf("%v", this.DesiredLrps), "DesiredLRP", "DesiredLRP", 1) + `,`,
+		`DesiredLrps:` + repeatedStringForDesiredLrps + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1336,9 +1435,14 @@ func (this *DesiredLRPSchedulingInfosResponse) String() string {
 	if this == nil {
 		return "nil"
 	}
+	repeatedStringForDesiredLrpSchedulingInfos := "[]*DesiredLRPSchedulingInfo{"
+	for _, f := range this.DesiredLrpSchedulingInfos {
+		repeatedStringForDesiredLrpSchedulingInfos += strings.Replace(fmt.Sprintf("%v", f), "DesiredLRPSchedulingInfo", "DesiredLRPSchedulingInfo", 1) + ","
+	}
+	repeatedStringForDesiredLrpSchedulingInfos += "}"
 	s := strings.Join([]string{`&DesiredLRPSchedulingInfosResponse{`,
 		`Error:` + strings.Replace(fmt.Sprintf("%v", this.Error), "Error", "Error", 1) + `,`,
-		`DesiredLrpSchedulingInfos:` + strings.Replace(fmt.Sprintf("%v", this.DesiredLrpSchedulingInfos), "DesiredLRPSchedulingInfo", "DesiredLRPSchedulingInfo", 1) + `,`,
+		`DesiredLrpSchedulingInfos:` + repeatedStringForDesiredLrpSchedulingInfos + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1407,7 +1511,7 @@ func (m *DesiredLRPLifecycleResponse) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -1435,7 +1539,7 @@ func (m *DesiredLRPLifecycleResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1444,6 +1548,9 @@ func (m *DesiredLRPLifecycleResponse) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthDesiredLrpRequests
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -1460,7 +1567,7 @@ func (m *DesiredLRPLifecycleResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			if (iNdEx + skippy) > l {
@@ -1490,7 +1597,7 @@ func (m *DesiredLRPsResponse) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -1518,7 +1625,7 @@ func (m *DesiredLRPsResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1527,6 +1634,9 @@ func (m *DesiredLRPsResponse) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthDesiredLrpRequests
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -1551,7 +1661,7 @@ func (m *DesiredLRPsResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1560,6 +1670,9 @@ func (m *DesiredLRPsResponse) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthDesiredLrpRequests
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -1574,7 +1687,7 @@ func (m *DesiredLRPsResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			if (iNdEx + skippy) > l {
@@ -1604,7 +1717,7 @@ func (m *DesiredLRPsRequest) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -1632,7 +1745,7 @@ func (m *DesiredLRPsRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1642,6 +1755,9 @@ func (m *DesiredLRPsRequest) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthDesiredLrpRequests
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -1661,7 +1777,7 @@ func (m *DesiredLRPsRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1671,6 +1787,9 @@ func (m *DesiredLRPsRequest) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthDesiredLrpRequests
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -1682,7 +1801,7 @@ func (m *DesiredLRPsRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			if (iNdEx + skippy) > l {
@@ -1712,7 +1831,7 @@ func (m *DesiredLRPResponse) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -1740,7 +1859,7 @@ func (m *DesiredLRPResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1749,6 +1868,9 @@ func (m *DesiredLRPResponse) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthDesiredLrpRequests
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -1773,7 +1895,7 @@ func (m *DesiredLRPResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1782,6 +1904,9 @@ func (m *DesiredLRPResponse) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthDesiredLrpRequests
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -1798,7 +1923,7 @@ func (m *DesiredLRPResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			if (iNdEx + skippy) > l {
@@ -1828,7 +1953,7 @@ func (m *DesiredLRPSchedulingInfosResponse) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -1856,7 +1981,7 @@ func (m *DesiredLRPSchedulingInfosResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1865,6 +1990,9 @@ func (m *DesiredLRPSchedulingInfosResponse) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthDesiredLrpRequests
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -1889,7 +2017,7 @@ func (m *DesiredLRPSchedulingInfosResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1898,6 +2026,9 @@ func (m *DesiredLRPSchedulingInfosResponse) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthDesiredLrpRequests
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -1912,7 +2043,7 @@ func (m *DesiredLRPSchedulingInfosResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			if (iNdEx + skippy) > l {
@@ -1942,7 +2073,7 @@ func (m *DesiredLRPByProcessGuidRequest) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -1970,7 +2101,7 @@ func (m *DesiredLRPByProcessGuidRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1980,6 +2111,9 @@ func (m *DesiredLRPByProcessGuidRequest) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthDesiredLrpRequests
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -1991,7 +2125,7 @@ func (m *DesiredLRPByProcessGuidRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			if (iNdEx + skippy) > l {
@@ -2021,7 +2155,7 @@ func (m *DesireLRPRequest) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -2049,7 +2183,7 @@ func (m *DesireLRPRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2058,6 +2192,9 @@ func (m *DesireLRPRequest) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthDesiredLrpRequests
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -2074,7 +2211,7 @@ func (m *DesireLRPRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			if (iNdEx + skippy) > l {
@@ -2104,7 +2241,7 @@ func (m *UpdateDesiredLRPRequest) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -2132,7 +2269,7 @@ func (m *UpdateDesiredLRPRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2142,6 +2279,9 @@ func (m *UpdateDesiredLRPRequest) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthDesiredLrpRequests
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -2161,7 +2301,7 @@ func (m *UpdateDesiredLRPRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2170,6 +2310,9 @@ func (m *UpdateDesiredLRPRequest) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthDesiredLrpRequests
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -2186,7 +2329,7 @@ func (m *UpdateDesiredLRPRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			if (iNdEx + skippy) > l {
@@ -2216,7 +2359,7 @@ func (m *RemoveDesiredLRPRequest) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -2244,7 +2387,7 @@ func (m *RemoveDesiredLRPRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2254,6 +2397,9 @@ func (m *RemoveDesiredLRPRequest) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthDesiredLrpRequests
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -2265,7 +2411,7 @@ func (m *RemoveDesiredLRPRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthDesiredLrpRequests
 			}
 			if (iNdEx + skippy) > l {
@@ -2283,6 +2429,7 @@ func (m *RemoveDesiredLRPRequest) Unmarshal(dAtA []byte) error {
 func skipDesiredLrpRequests(dAtA []byte) (n int, err error) {
 	l := len(dAtA)
 	iNdEx := 0
+	depth := 0
 	for iNdEx < l {
 		var wire uint64
 		for shift := uint(0); ; shift += 7 {
@@ -2314,10 +2461,8 @@ func skipDesiredLrpRequests(dAtA []byte) (n int, err error) {
 					break
 				}
 			}
-			return iNdEx, nil
 		case 1:
 			iNdEx += 8
-			return iNdEx, nil
 		case 2:
 			var length int
 			for shift := uint(0); ; shift += 7 {
@@ -2334,91 +2479,34 @@ func skipDesiredLrpRequests(dAtA []byte) (n int, err error) {
 					break
 				}
 			}
-			iNdEx += length
 			if length < 0 {
 				return 0, ErrInvalidLengthDesiredLrpRequests
 			}
-			return iNdEx, nil
+			iNdEx += length
 		case 3:
-			for {
-				var innerWire uint64
-				var start int = iNdEx
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return 0, ErrIntOverflowDesiredLrpRequests
-					}
-					if iNdEx >= l {
-						return 0, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					innerWire |= (uint64(b) & 0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				innerWireType := int(innerWire & 0x7)
-				if innerWireType == 4 {
-					break
-				}
-				next, err := skipDesiredLrpRequests(dAtA[start:])
-				if err != nil {
-					return 0, err
-				}
-				iNdEx = start + next
-			}
-			return iNdEx, nil
+			depth++
 		case 4:
-			return iNdEx, nil
+			if depth == 0 {
+				return 0, ErrUnexpectedEndOfGroupDesiredLrpRequests
+			}
+			depth--
 		case 5:
 			iNdEx += 4
-			return iNdEx, nil
 		default:
 			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
 		}
+		if iNdEx < 0 {
+			return 0, ErrInvalidLengthDesiredLrpRequests
+		}
+		if depth == 0 {
+			return iNdEx, nil
+		}
 	}
-	panic("unreachable")
+	return 0, io.ErrUnexpectedEOF
 }
 
 var (
-	ErrInvalidLengthDesiredLrpRequests = fmt.Errorf("proto: negative length found during unmarshaling")
-	ErrIntOverflowDesiredLrpRequests   = fmt.Errorf("proto: integer overflow")
+	ErrInvalidLengthDesiredLrpRequests        = fmt.Errorf("proto: negative length found during unmarshaling")
+	ErrIntOverflowDesiredLrpRequests          = fmt.Errorf("proto: integer overflow")
+	ErrUnexpectedEndOfGroupDesiredLrpRequests = fmt.Errorf("proto: unexpected end of group")
 )
-
-func init() {
-	proto.RegisterFile("desired_lrp_requests.proto", fileDescriptor_desired_lrp_requests_80ba5198f7214838)
-}
-
-var fileDescriptor_desired_lrp_requests_80ba5198f7214838 = []byte{
-	// 467 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x53, 0xc1, 0x6e, 0xd3, 0x30,
-	0x18, 0x8e, 0x87, 0xa8, 0xb4, 0x3f, 0x9d, 0x34, 0xcc, 0x61, 0xa5, 0x20, 0xaf, 0x78, 0x97, 0x5d,
-	0xe8, 0xd0, 0x0a, 0x2f, 0x50, 0x81, 0x26, 0xa4, 0x0a, 0x4d, 0x46, 0x3b, 0xa2, 0xaa, 0x4d, 0xdc,
-	0x2c, 0x52, 0x12, 0x67, 0x76, 0x82, 0xb4, 0xdb, 0x1e, 0x81, 0xc7, 0x40, 0xe2, 0x45, 0x38, 0xf6,
-	0xb8, 0xd3, 0x44, 0xd3, 0x0b, 0xda, 0x69, 0x8f, 0x80, 0x6a, 0xbb, 0xc4, 0x61, 0x1c, 0x28, 0xe2,
-	0x94, 0xf8, 0xf3, 0xf7, 0x7f, 0xff, 0xf7, 0x7f, 0x7f, 0x02, 0xdd, 0x90, 0xab, 0x58, 0xf2, 0x70,
-	0x9c, 0xc8, 0x7c, 0x2c, 0xf9, 0x45, 0xc9, 0x55, 0xa1, 0xfa, 0xb9, 0x14, 0x85, 0xc0, 0xad, 0x54,
-	0x84, 0x3c, 0x51, 0xdd, 0x17, 0x51, 0x5c, 0x9c, 0x97, 0xd3, 0x7e, 0x20, 0xd2, 0xa3, 0x48, 0x44,
-	0xe2, 0x48, 0x5f, 0x4f, 0xcb, 0x99, 0x3e, 0xe9, 0x83, 0x7e, 0x33, 0x65, 0xdd, 0x47, 0x8e, 0xa4,
-	0x85, 0x7c, 0x2e, 0xa5, 0x90, 0xe6, 0x40, 0x87, 0xf0, 0xf4, 0x8d, 0x61, 0x8c, 0xd8, 0xe9, 0x28,
-	0x9e, 0xf1, 0xe0, 0x32, 0x48, 0x38, 0xe3, 0x2a, 0x17, 0x99, 0xe2, 0xf8, 0x00, 0x1e, 0x6a, 0x76,
-	0x07, 0xf5, 0xd0, 0xa1, 0x7f, 0xbc, 0xd3, 0x37, 0x2e, 0xfa, 0x6f, 0x57, 0x20, 0x33, 0x77, 0xf4,
-	0x02, 0x1e, 0xd7, 0x1a, 0x6a, 0xa3, 0x5a, 0xfc, 0x1a, 0xda, 0x8e, 0x43, 0xd5, 0xd9, 0xea, 0x3d,
-	0x38, 0xf4, 0x8f, 0xf1, 0x9a, 0x5b, 0xeb, 0x32, 0xdf, 0xf2, 0x46, 0x32, 0x57, 0xf4, 0x23, 0xe0,
-	0x46, 0x4b, 0x1d, 0x15, 0xa6, 0xd0, 0x0a, 0x45, 0x3a, 0x89, 0x33, 0xdd, 0x72, 0x7b, 0x08, 0xb7,
-	0x37, 0xfb, 0x16, 0x61, 0xf6, 0x89, 0x0f, 0x60, 0x27, 0x97, 0x22, 0xe0, 0x4a, 0x8d, 0xa3, 0x32,
-	0x0e, 0x4d, 0xc7, 0x6d, 0xd6, 0xb6, 0xe0, 0xc9, 0x0a, 0xa3, 0x99, 0x2b, 0xbf, 0xd9, 0x40, 0x03,
-	0xf0, 0x9d, 0x81, 0x3a, 0x5b, 0x9a, 0xfa, 0xa7, 0x79, 0xa0, 0x9e, 0x87, 0x7e, 0x45, 0xf0, 0xbc,
-	0xbe, 0xfa, 0x10, 0x9c, 0xf3, 0xb0, 0x4c, 0xe2, 0x2c, 0x7a, 0x97, 0xcd, 0xc4, 0x86, 0x81, 0x4e,
-	0xe0, 0x99, 0xfb, 0x15, 0xa9, 0x5f, 0x5a, 0xe3, 0x78, 0x25, 0x66, 0x03, 0xee, 0xdd, 0x37, 0xd4,
-	0xec, 0xca, 0x9e, 0xd4, 0xf6, 0x7e, 0xf3, 0x43, 0xcf, 0x80, 0xd4, 0x65, 0xc3, 0xcb, 0xd3, 0x3a,
-	0xb9, 0xf5, 0x22, 0x06, 0xd0, 0x76, 0x43, 0xb6, 0xeb, 0xd8, 0xbd, 0xbd, 0xd9, 0x6f, 0xe0, 0xcc,
-	0x77, 0x52, 0xa7, 0x27, 0xb0, 0x6b, 0x64, 0x75, 0xe6, 0x6b, 0xa1, 0x46, 0x9a, 0xe8, 0xaf, 0xd2,
-	0xbc, 0x42, 0xb0, 0x77, 0x96, 0x87, 0x93, 0x82, 0xbb, 0x4b, 0xfc, 0x77, 0x67, 0xf8, 0x25, 0xb4,
-	0x4a, 0xad, 0x67, 0xd7, 0xd9, 0xb9, 0x6f, 0xc0, 0xf4, 0x63, 0x96, 0x47, 0xdf, 0xc3, 0x1e, 0xe3,
-	0xa9, 0xf8, 0xf4, 0x9f, 0x1c, 0x0c, 0x5f, 0xcd, 0x17, 0xc4, 0xbb, 0x5e, 0x10, 0xef, 0x6e, 0x41,
-	0xd0, 0x55, 0x45, 0xd0, 0x97, 0x8a, 0xa0, 0x6f, 0x15, 0x41, 0xf3, 0x8a, 0xa0, 0xef, 0x15, 0x41,
-	0x3f, 0x2a, 0xe2, 0xdd, 0x55, 0x04, 0x7d, 0x5e, 0x12, 0x6f, 0xbe, 0x24, 0xde, 0xf5, 0x92, 0x78,
-	0xd3, 0x96, 0xfe, 0xc7, 0x07, 0x3f, 0x03, 0x00, 0x00, 0xff, 0xff, 0x9b, 0xf1, 0x73, 0xee, 0x58,
-	0x04, 0x00, 0x00,
-}

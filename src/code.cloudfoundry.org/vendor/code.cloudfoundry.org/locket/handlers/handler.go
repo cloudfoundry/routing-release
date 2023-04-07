@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"code.cloudfoundry.org/bbs/db/sqldb/helpers"
-	"code.cloudfoundry.org/lager"
+	"code.cloudfoundry.org/lager/v3"
 	"code.cloudfoundry.org/locket/db"
 	"code.cloudfoundry.org/locket/expiration"
 	metrics_helpers "code.cloudfoundry.org/locket/metrics/helpers"

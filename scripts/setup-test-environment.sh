@@ -32,7 +32,7 @@ export PATH=$PATH:$BIN_DIR
 
 pushd src/code.cloudfoundry.org
 go build -o "$BIN_DIR/nats-server" github.com/nats-io/nats-server/v2
-go build -o "$BIN_DIR/ginkgo" github.com/onsi/ginkgo/ginkgo
+go build -o "$BIN_DIR/ginkgo" github.com/onsi/ginkgo/v2/ginkgo
 popd
 
 echo "Done setting up for tests"

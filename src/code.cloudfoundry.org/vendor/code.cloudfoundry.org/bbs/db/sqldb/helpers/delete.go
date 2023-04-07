@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"code.cloudfoundry.org/lager"
+	"code.cloudfoundry.org/lager/v3"
 )
 
 // DELETE FROM <table> WHERE ...

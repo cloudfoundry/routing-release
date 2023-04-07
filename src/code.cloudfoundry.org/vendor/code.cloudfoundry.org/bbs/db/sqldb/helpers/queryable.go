@@ -19,7 +19,9 @@ type Queryable interface {
 	QueryRowContext(ctx context.Context, query string, args ...interface{}) RowScanner
 }
 
-//go:generate counterfeiter . QueryableDB
+//go:generate counterfeiter -generate
+
+//counterfeiter:generate . QueryableDB
 type QueryableDB interface {
 	Queryable
 	BeginTx(ctx context.Context, opts *sql.TxOptions) (Tx, error)

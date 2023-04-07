@@ -3,17 +3,17 @@
 
 package models
 
-import proto "github.com/gogo/protobuf/proto"
-import fmt "fmt"
-import math "math"
-import _ "github.com/gogo/protobuf/gogoproto"
-
-import strconv "strconv"
-
-import strings "strings"
-import reflect "reflect"
-
-import io "io"
+import (
+	fmt "fmt"
+	_ "github.com/gogo/protobuf/gogoproto"
+	proto "github.com/gogo/protobuf/proto"
+	io "io"
+	math "math"
+	math_bits "math/bits"
+	reflect "reflect"
+	strconv "strconv"
+	strings "strings"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -24,7 +24,7 @@ var _ = math.Inf
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
+const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type MetricTagValue_DynamicValue int32
 
@@ -39,6 +39,7 @@ var MetricTagValue_DynamicValue_name = map[int32]string{
 	1: "INDEX",
 	2: "INSTANCE_GUID",
 }
+
 var MetricTagValue_DynamicValue_value = map[string]int32{
 	"DynamicValueInvalid": 0,
 	"INDEX":               1,
@@ -46,7 +47,7 @@ var MetricTagValue_DynamicValue_value = map[string]int32{
 }
 
 func (MetricTagValue_DynamicValue) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_metric_tags_dd0f8b0400bb507b, []int{0, 0}
+	return fileDescriptor_6fa2ee0541447d5e, []int{0, 0}
 }
 
 type MetricTagValue struct {
@@ -59,7 +60,7 @@ type MetricTagValue struct {
 func (m *MetricTagValue) Reset()      { *m = MetricTagValue{} }
 func (*MetricTagValue) ProtoMessage() {}
 func (*MetricTagValue) Descriptor() ([]byte, []int) {
-	return fileDescriptor_metric_tags_dd0f8b0400bb507b, []int{0}
+	return fileDescriptor_6fa2ee0541447d5e, []int{0}
 }
 func (m *MetricTagValue) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -69,15 +70,15 @@ func (m *MetricTagValue) XXX_Marshal(b []byte, deterministic bool) ([]byte, erro
 		return xxx_messageInfo_MetricTagValue.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *MetricTagValue) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MetricTagValue.Merge(dst, src)
+func (m *MetricTagValue) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MetricTagValue.Merge(m, src)
 }
 func (m *MetricTagValue) XXX_Size() int {
 	return m.Size()
@@ -103,9 +104,35 @@ func (m *MetricTagValue) GetDynamic() MetricTagValue_DynamicValue {
 }
 
 func init() {
-	proto.RegisterType((*MetricTagValue)(nil), "models.MetricTagValue")
 	proto.RegisterEnum("models.MetricTagValue_DynamicValue", MetricTagValue_DynamicValue_name, MetricTagValue_DynamicValue_value)
+	proto.RegisterType((*MetricTagValue)(nil), "models.MetricTagValue")
 }
+
+func init() { proto.RegisterFile("metric_tags.proto", fileDescriptor_6fa2ee0541447d5e) }
+
+var fileDescriptor_6fa2ee0541447d5e = []byte{
+	// 296 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0xcc, 0x4d, 0x2d, 0x29,
+	0xca, 0x4c, 0x8e, 0x2f, 0x49, 0x4c, 0x2f, 0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0xcb,
+	0xcd, 0x4f, 0x49, 0xcd, 0x29, 0x96, 0xd2, 0x4d, 0xcf, 0x2c, 0xc9, 0x28, 0x4d, 0xd2, 0x4b, 0xce,
+	0xcf, 0xd5, 0x4f, 0xcf, 0x4f, 0xcf, 0xd7, 0x07, 0x4b, 0x27, 0x95, 0xa6, 0x81, 0x79, 0x60, 0x0e,
+	0x98, 0x05, 0xd1, 0xa6, 0xf4, 0x8d, 0x91, 0x8b, 0xcf, 0x17, 0x6c, 0x58, 0x48, 0x62, 0x7a, 0x58,
+	0x62, 0x4e, 0x69, 0xaa, 0x90, 0x18, 0x17, 0x5b, 0x71, 0x49, 0x62, 0x49, 0x66, 0xb2, 0x04, 0xa3,
+	0x02, 0xa3, 0x06, 0x67, 0x10, 0x94, 0x27, 0x64, 0xcb, 0xc5, 0x9e, 0x52, 0x99, 0x97, 0x98, 0x9b,
+	0x99, 0x2c, 0xc1, 0xa4, 0xc0, 0xa8, 0xc1, 0x67, 0xa4, 0xac, 0x07, 0xb1, 0x53, 0x0f, 0xd5, 0x00,
+	0x3d, 0x17, 0x88, 0x2a, 0x30, 0x27, 0x08, 0xa6, 0x47, 0xa9, 0x87, 0x91, 0x8b, 0x07, 0x59, 0x46,
+	0x48, 0x9c, 0x4b, 0x18, 0x99, 0xef, 0x99, 0x57, 0x96, 0x98, 0x93, 0x99, 0x22, 0xc0, 0x20, 0xa4,
+	0xc9, 0xc5, 0xea, 0xe9, 0xe7, 0xe2, 0x1a, 0x21, 0xc0, 0x28, 0x25, 0xd7, 0x35, 0x57, 0x41, 0x0a,
+	0x6e, 0x3c, 0xaa, 0xf2, 0x94, 0xd4, 0x0a, 0x21, 0x0b, 0x2e, 0x5e, 0x4f, 0xbf, 0xe0, 0x10, 0x47,
+	0x3f, 0x67, 0xd7, 0x78, 0xf7, 0x50, 0x4f, 0x17, 0x01, 0x26, 0x29, 0xd5, 0xae, 0xb9, 0x0a, 0x8a,
+	0x38, 0xb4, 0x14, 0x97, 0x24, 0xe6, 0x25, 0xa7, 0xba, 0x97, 0x66, 0xa6, 0x38, 0x99, 0x5c, 0x78,
+	0x28, 0xc7, 0x70, 0xe3, 0xa1, 0x1c, 0xc3, 0x87, 0x87, 0x72, 0x8c, 0x0d, 0x8f, 0xe4, 0x18, 0x57,
+	0x3c, 0x92, 0x63, 0x3c, 0xf1, 0x48, 0x8e, 0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18,
+	0x5f, 0x3c, 0x92, 0x63, 0xf8, 0xf0, 0x48, 0x8e, 0x71, 0xc2, 0x63, 0x39, 0x86, 0x0b, 0x8f, 0xe5,
+	0x18, 0x6e, 0x3c, 0x96, 0x63, 0x48, 0x62, 0x03, 0x87, 0x9a, 0x31, 0x20, 0x00, 0x00, 0xff, 0xff,
+	0x9b, 0x83, 0x77, 0xc8, 0x81, 0x01, 0x00, 0x00,
+}
+
 func (x MetricTagValue_DynamicValue) String() string {
 	s, ok := MetricTagValue_DynamicValue_name[int32(x)]
 	if ok {
@@ -162,7 +189,7 @@ func valueToGoStringMetricTags(v interface{}, typ string) string {
 func (m *MetricTagValue) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -170,32 +197,40 @@ func (m *MetricTagValue) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *MetricTagValue) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MetricTagValue) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Static) > 0 {
-		dAtA[i] = 0xa
-		i++
-		i = encodeVarintMetricTags(dAtA, i, uint64(len(m.Static)))
-		i += copy(dAtA[i:], m.Static)
-	}
 	if m.Dynamic != 0 {
-		dAtA[i] = 0x10
-		i++
 		i = encodeVarintMetricTags(dAtA, i, uint64(m.Dynamic))
+		i--
+		dAtA[i] = 0x10
 	}
-	return i, nil
+	if len(m.Static) > 0 {
+		i -= len(m.Static)
+		copy(dAtA[i:], m.Static)
+		i = encodeVarintMetricTags(dAtA, i, uint64(len(m.Static)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
 }
 
 func encodeVarintMetricTags(dAtA []byte, offset int, v uint64) int {
+	offset -= sovMetricTags(v)
+	base := offset
 	for v >= 1<<7 {
 		dAtA[offset] = uint8(v&0x7f | 0x80)
 		v >>= 7
 		offset++
 	}
 	dAtA[offset] = uint8(v)
-	return offset + 1
+	return base
 }
 func (m *MetricTagValue) Size() (n int) {
 	if m == nil {
@@ -214,14 +249,7 @@ func (m *MetricTagValue) Size() (n int) {
 }
 
 func sovMetricTags(x uint64) (n int) {
-	for {
-		n++
-		x >>= 7
-		if x == 0 {
-			break
-		}
-	}
-	return n
+	return (math_bits.Len64(x|1) + 6) / 7
 }
 func sozMetricTags(x uint64) (n int) {
 	return sovMetricTags(uint64((x << 1) ^ uint64((int64(x) >> 63))))
@@ -260,7 +288,7 @@ func (m *MetricTagValue) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -288,7 +316,7 @@ func (m *MetricTagValue) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -298,6 +326,9 @@ func (m *MetricTagValue) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthMetricTags
 			}
 			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMetricTags
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -317,7 +348,7 @@ func (m *MetricTagValue) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Dynamic |= (MetricTagValue_DynamicValue(b) & 0x7F) << shift
+				m.Dynamic |= MetricTagValue_DynamicValue(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -328,7 +359,7 @@ func (m *MetricTagValue) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthMetricTags
 			}
 			if (iNdEx + skippy) > l {
@@ -346,6 +377,7 @@ func (m *MetricTagValue) Unmarshal(dAtA []byte) error {
 func skipMetricTags(dAtA []byte) (n int, err error) {
 	l := len(dAtA)
 	iNdEx := 0
+	depth := 0
 	for iNdEx < l {
 		var wire uint64
 		for shift := uint(0); ; shift += 7 {
@@ -377,10 +409,8 @@ func skipMetricTags(dAtA []byte) (n int, err error) {
 					break
 				}
 			}
-			return iNdEx, nil
 		case 1:
 			iNdEx += 8
-			return iNdEx, nil
 		case 2:
 			var length int
 			for shift := uint(0); ; shift += 7 {
@@ -397,78 +427,34 @@ func skipMetricTags(dAtA []byte) (n int, err error) {
 					break
 				}
 			}
-			iNdEx += length
 			if length < 0 {
 				return 0, ErrInvalidLengthMetricTags
 			}
-			return iNdEx, nil
+			iNdEx += length
 		case 3:
-			for {
-				var innerWire uint64
-				var start int = iNdEx
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return 0, ErrIntOverflowMetricTags
-					}
-					if iNdEx >= l {
-						return 0, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					innerWire |= (uint64(b) & 0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				innerWireType := int(innerWire & 0x7)
-				if innerWireType == 4 {
-					break
-				}
-				next, err := skipMetricTags(dAtA[start:])
-				if err != nil {
-					return 0, err
-				}
-				iNdEx = start + next
-			}
-			return iNdEx, nil
+			depth++
 		case 4:
-			return iNdEx, nil
+			if depth == 0 {
+				return 0, ErrUnexpectedEndOfGroupMetricTags
+			}
+			depth--
 		case 5:
 			iNdEx += 4
-			return iNdEx, nil
 		default:
 			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
 		}
+		if iNdEx < 0 {
+			return 0, ErrInvalidLengthMetricTags
+		}
+		if depth == 0 {
+			return iNdEx, nil
+		}
 	}
-	panic("unreachable")
+	return 0, io.ErrUnexpectedEOF
 }
 
 var (
-	ErrInvalidLengthMetricTags = fmt.Errorf("proto: negative length found during unmarshaling")
-	ErrIntOverflowMetricTags   = fmt.Errorf("proto: integer overflow")
+	ErrInvalidLengthMetricTags        = fmt.Errorf("proto: negative length found during unmarshaling")
+	ErrIntOverflowMetricTags          = fmt.Errorf("proto: integer overflow")
+	ErrUnexpectedEndOfGroupMetricTags = fmt.Errorf("proto: unexpected end of group")
 )
-
-func init() { proto.RegisterFile("metric_tags.proto", fileDescriptor_metric_tags_dd0f8b0400bb507b) }
-
-var fileDescriptor_metric_tags_dd0f8b0400bb507b = []byte{
-	// 296 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0xcc, 0x4d, 0x2d, 0x29,
-	0xca, 0x4c, 0x8e, 0x2f, 0x49, 0x4c, 0x2f, 0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0xcb,
-	0xcd, 0x4f, 0x49, 0xcd, 0x29, 0x96, 0xd2, 0x4d, 0xcf, 0x2c, 0xc9, 0x28, 0x4d, 0xd2, 0x4b, 0xce,
-	0xcf, 0xd5, 0x4f, 0xcf, 0x4f, 0xcf, 0xd7, 0x07, 0x4b, 0x27, 0x95, 0xa6, 0x81, 0x79, 0x60, 0x0e,
-	0x98, 0x05, 0xd1, 0xa6, 0xf4, 0x8d, 0x91, 0x8b, 0xcf, 0x17, 0x6c, 0x58, 0x48, 0x62, 0x7a, 0x58,
-	0x62, 0x4e, 0x69, 0xaa, 0x90, 0x18, 0x17, 0x5b, 0x71, 0x49, 0x62, 0x49, 0x66, 0xb2, 0x04, 0xa3,
-	0x02, 0xa3, 0x06, 0x67, 0x10, 0x94, 0x27, 0x64, 0xcb, 0xc5, 0x9e, 0x52, 0x99, 0x97, 0x98, 0x9b,
-	0x99, 0x2c, 0xc1, 0xa4, 0xc0, 0xa8, 0xc1, 0x67, 0xa4, 0xac, 0x07, 0xb1, 0x53, 0x0f, 0xd5, 0x00,
-	0x3d, 0x17, 0x88, 0x2a, 0x30, 0x27, 0x08, 0xa6, 0x47, 0xa9, 0x87, 0x91, 0x8b, 0x07, 0x59, 0x46,
-	0x48, 0x9c, 0x4b, 0x18, 0x99, 0xef, 0x99, 0x57, 0x96, 0x98, 0x93, 0x99, 0x22, 0xc0, 0x20, 0xa4,
-	0xc9, 0xc5, 0xea, 0xe9, 0xe7, 0xe2, 0x1a, 0x21, 0xc0, 0x28, 0x25, 0xd7, 0x35, 0x57, 0x41, 0x0a,
-	0x6e, 0x3c, 0xaa, 0xf2, 0x94, 0xd4, 0x0a, 0x21, 0x0b, 0x2e, 0x5e, 0x4f, 0xbf, 0xe0, 0x10, 0x47,
-	0x3f, 0x67, 0xd7, 0x78, 0xf7, 0x50, 0x4f, 0x17, 0x01, 0x26, 0x29, 0xd5, 0xae, 0xb9, 0x0a, 0x8a,
-	0x38, 0xb4, 0x14, 0x97, 0x24, 0xe6, 0x25, 0xa7, 0xba, 0x97, 0x66, 0xa6, 0x38, 0x99, 0x5c, 0x78,
-	0x28, 0xc7, 0x70, 0xe3, 0xa1, 0x1c, 0xc3, 0x87, 0x87, 0x72, 0x8c, 0x0d, 0x8f, 0xe4, 0x18, 0x57,
-	0x3c, 0x92, 0x63, 0x3c, 0xf1, 0x48, 0x8e, 0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18,
-	0x5f, 0x3c, 0x92, 0x63, 0xf8, 0xf0, 0x48, 0x8e, 0x71, 0xc2, 0x63, 0x39, 0x86, 0x0b, 0x8f, 0xe5,
-	0x18, 0x6e, 0x3c, 0x96, 0x63, 0x48, 0x62, 0x03, 0x87, 0x9a, 0x31, 0x20, 0x00, 0x00, 0xff, 0xff,
-	0x9b, 0x83, 0x77, 0xc8, 0x81, 0x01, 0x00, 0x00,
-}

@@ -7,7 +7,9 @@ import (
 	"time"
 )
 
-//go:generate counterfeiter . Monitor
+//go:generate counterfeiter -generate
+
+//counterfeiter:generate . Monitor
 type Monitor interface {
 	Monitor(func() error) error
 

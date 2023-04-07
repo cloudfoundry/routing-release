@@ -14,10 +14,8 @@ Diego Client for Setting/Fetching Locks and Presence
 
 ### Client
 
-There are currently two clients:
-
-1. the [locket client](https://godoc.org/code.cloudfoundry.org/locket/lock#NewLockRunner) which can be used with the locket service
-2. the [consul client](https://godoc.org/code.cloudfoundry.org/locket#NewLock) which can be used with a consul cluster
+There is currently one valid client
+1. the [locket client](https://godoc.org/code.cloudfoundry.org/locket/lock#NewLockRunner) which can be used with the locket service.
 
 A general overview of the Locket API can be found [here](doc).
 You can learn more about Diego and its components at [diego-design-notes](https://github.com/cloudfoundry/diego-design-notes).

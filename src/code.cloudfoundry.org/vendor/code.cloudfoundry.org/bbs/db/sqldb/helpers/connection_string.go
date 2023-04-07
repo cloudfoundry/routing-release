@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"code.cloudfoundry.org/lager"
+	"code.cloudfoundry.org/lager/v3"
 	"github.com/go-sql-driver/mysql"
 	"github.com/jackc/pgx"
 	"github.com/jackc/pgx/stdlib"

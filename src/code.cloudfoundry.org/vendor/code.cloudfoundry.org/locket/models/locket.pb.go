@@ -3,21 +3,20 @@
 
 package models
 
-import proto "github.com/gogo/protobuf/proto"
-import fmt "fmt"
-import math "math"
-
-import strconv "strconv"
-
-import strings "strings"
-import reflect "reflect"
-
 import (
-	context "golang.org/x/net/context"
+	context "context"
+	fmt "fmt"
+	proto "github.com/gogo/protobuf/proto"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
+	io "io"
+	math "math"
+	math_bits "math/bits"
+	reflect "reflect"
+	strconv "strconv"
+	strings "strings"
 )
-
-import io "io"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -28,7 +27,7 @@ var _ = math.Inf
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
+const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type TypeCode int32
 
@@ -43,6 +42,7 @@ var TypeCode_name = map[int32]string{
 	1: "LOCK",
 	2: "PRESENCE",
 }
+
 var TypeCode_value = map[string]int32{
 	"UNKNOWN":  0,
 	"LOCK":     1,
@@ -50,7 +50,7 @@ var TypeCode_value = map[string]int32{
 }
 
 func (TypeCode) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_locket_ce986258ea781726, []int{0}
+	return fileDescriptor_5f2d92f834ce8fa9, []int{0}
 }
 
 type Resource struct {
@@ -64,7 +64,7 @@ type Resource struct {
 func (m *Resource) Reset()      { *m = Resource{} }
 func (*Resource) ProtoMessage() {}
 func (*Resource) Descriptor() ([]byte, []int) {
-	return fileDescriptor_locket_ce986258ea781726, []int{0}
+	return fileDescriptor_5f2d92f834ce8fa9, []int{0}
 }
 func (m *Resource) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -74,15 +74,15 @@ func (m *Resource) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return xxx_messageInfo_Resource.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *Resource) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Resource.Merge(dst, src)
+func (m *Resource) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Resource.Merge(m, src)
 }
 func (m *Resource) XXX_Size() int {
 	return m.Size()
@@ -137,7 +137,7 @@ type LockRequest struct {
 func (m *LockRequest) Reset()      { *m = LockRequest{} }
 func (*LockRequest) ProtoMessage() {}
 func (*LockRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_locket_ce986258ea781726, []int{1}
+	return fileDescriptor_5f2d92f834ce8fa9, []int{1}
 }
 func (m *LockRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -147,15 +147,15 @@ func (m *LockRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) 
 		return xxx_messageInfo_LockRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *LockRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_LockRequest.Merge(dst, src)
+func (m *LockRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LockRequest.Merge(m, src)
 }
 func (m *LockRequest) XXX_Size() int {
 	return m.Size()
@@ -186,7 +186,7 @@ type LockResponse struct {
 func (m *LockResponse) Reset()      { *m = LockResponse{} }
 func (*LockResponse) ProtoMessage() {}
 func (*LockResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_locket_ce986258ea781726, []int{2}
+	return fileDescriptor_5f2d92f834ce8fa9, []int{2}
 }
 func (m *LockResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -196,15 +196,15 @@ func (m *LockResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error)
 		return xxx_messageInfo_LockResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *LockResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_LockResponse.Merge(dst, src)
+func (m *LockResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LockResponse.Merge(m, src)
 }
 func (m *LockResponse) XXX_Size() int {
 	return m.Size()
@@ -222,7 +222,7 @@ type ReleaseRequest struct {
 func (m *ReleaseRequest) Reset()      { *m = ReleaseRequest{} }
 func (*ReleaseRequest) ProtoMessage() {}
 func (*ReleaseRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_locket_ce986258ea781726, []int{3}
+	return fileDescriptor_5f2d92f834ce8fa9, []int{3}
 }
 func (m *ReleaseRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -232,15 +232,15 @@ func (m *ReleaseRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, erro
 		return xxx_messageInfo_ReleaseRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *ReleaseRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReleaseRequest.Merge(dst, src)
+func (m *ReleaseRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReleaseRequest.Merge(m, src)
 }
 func (m *ReleaseRequest) XXX_Size() int {
 	return m.Size()
@@ -264,7 +264,7 @@ type ReleaseResponse struct {
 func (m *ReleaseResponse) Reset()      { *m = ReleaseResponse{} }
 func (*ReleaseResponse) ProtoMessage() {}
 func (*ReleaseResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_locket_ce986258ea781726, []int{4}
+	return fileDescriptor_5f2d92f834ce8fa9, []int{4}
 }
 func (m *ReleaseResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -274,15 +274,15 @@ func (m *ReleaseResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, err
 		return xxx_messageInfo_ReleaseResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *ReleaseResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReleaseResponse.Merge(dst, src)
+func (m *ReleaseResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReleaseResponse.Merge(m, src)
 }
 func (m *ReleaseResponse) XXX_Size() int {
 	return m.Size()
@@ -300,7 +300,7 @@ type FetchRequest struct {
 func (m *FetchRequest) Reset()      { *m = FetchRequest{} }
 func (*FetchRequest) ProtoMessage() {}
 func (*FetchRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_locket_ce986258ea781726, []int{5}
+	return fileDescriptor_5f2d92f834ce8fa9, []int{5}
 }
 func (m *FetchRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -310,15 +310,15 @@ func (m *FetchRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error)
 		return xxx_messageInfo_FetchRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *FetchRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FetchRequest.Merge(dst, src)
+func (m *FetchRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FetchRequest.Merge(m, src)
 }
 func (m *FetchRequest) XXX_Size() int {
 	return m.Size()
@@ -343,7 +343,7 @@ type FetchResponse struct {
 func (m *FetchResponse) Reset()      { *m = FetchResponse{} }
 func (*FetchResponse) ProtoMessage() {}
 func (*FetchResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_locket_ce986258ea781726, []int{6}
+	return fileDescriptor_5f2d92f834ce8fa9, []int{6}
 }
 func (m *FetchResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -353,15 +353,15 @@ func (m *FetchResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error
 		return xxx_messageInfo_FetchResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *FetchResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FetchResponse.Merge(dst, src)
+func (m *FetchResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FetchResponse.Merge(m, src)
 }
 func (m *FetchResponse) XXX_Size() int {
 	return m.Size()
@@ -387,7 +387,7 @@ type FetchAllRequest struct {
 func (m *FetchAllRequest) Reset()      { *m = FetchAllRequest{} }
 func (*FetchAllRequest) ProtoMessage() {}
 func (*FetchAllRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_locket_ce986258ea781726, []int{7}
+	return fileDescriptor_5f2d92f834ce8fa9, []int{7}
 }
 func (m *FetchAllRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -397,15 +397,15 @@ func (m *FetchAllRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, err
 		return xxx_messageInfo_FetchAllRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *FetchAllRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FetchAllRequest.Merge(dst, src)
+func (m *FetchAllRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FetchAllRequest.Merge(m, src)
 }
 func (m *FetchAllRequest) XXX_Size() int {
 	return m.Size()
@@ -438,7 +438,7 @@ type FetchAllResponse struct {
 func (m *FetchAllResponse) Reset()      { *m = FetchAllResponse{} }
 func (*FetchAllResponse) ProtoMessage() {}
 func (*FetchAllResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_locket_ce986258ea781726, []int{8}
+	return fileDescriptor_5f2d92f834ce8fa9, []int{8}
 }
 func (m *FetchAllResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -448,15 +448,15 @@ func (m *FetchAllResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, er
 		return xxx_messageInfo_FetchAllResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *FetchAllResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FetchAllResponse.Merge(dst, src)
+func (m *FetchAllResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FetchAllResponse.Merge(m, src)
 }
 func (m *FetchAllResponse) XXX_Size() int {
 	return m.Size()
@@ -475,6 +475,7 @@ func (m *FetchAllResponse) GetResources() []*Resource {
 }
 
 func init() {
+	proto.RegisterEnum("models.TypeCode", TypeCode_name, TypeCode_value)
 	proto.RegisterType((*Resource)(nil), "models.Resource")
 	proto.RegisterType((*LockRequest)(nil), "models.LockRequest")
 	proto.RegisterType((*LockResponse)(nil), "models.LockResponse")
@@ -484,8 +485,45 @@ func init() {
 	proto.RegisterType((*FetchResponse)(nil), "models.FetchResponse")
 	proto.RegisterType((*FetchAllRequest)(nil), "models.FetchAllRequest")
 	proto.RegisterType((*FetchAllResponse)(nil), "models.FetchAllResponse")
-	proto.RegisterEnum("models.TypeCode", TypeCode_name, TypeCode_value)
 }
+
+func init() { proto.RegisterFile("locket.proto", fileDescriptor_5f2d92f834ce8fa9) }
+
+var fileDescriptor_5f2d92f834ce8fa9 = []byte{
+	// 490 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x53, 0xcd, 0x6e, 0xd3, 0x40,
+	0x10, 0xf6, 0xe6, 0xaf, 0xce, 0xc4, 0xa4, 0x66, 0x29, 0xad, 0x95, 0xc3, 0x2a, 0xb2, 0x38, 0x54,
+	0x08, 0x82, 0xd4, 0x22, 0x4e, 0xfc, 0x88, 0x44, 0x41, 0x42, 0x8d, 0x52, 0xe4, 0x82, 0xe0, 0x16,
+	0x05, 0x67, 0x24, 0x50, 0x8c, 0x37, 0x64, 0x37, 0xa0, 0xdc, 0x78, 0x03, 0x78, 0x0c, 0x1e, 0x85,
+	0x63, 0x8e, 0x3d, 0x12, 0xe7, 0xc2, 0xb1, 0x07, 0x1e, 0x00, 0x79, 0xed, 0xb5, 0x13, 0x82, 0x40,
+	0xf4, 0xe4, 0x99, 0xcf, 0xf3, 0xcd, 0xf7, 0x79, 0x66, 0x0c, 0x56, 0xc0, 0xfd, 0x31, 0xca, 0xd6,
+	0x64, 0xca, 0x25, 0xa7, 0x95, 0x77, 0x7c, 0x84, 0x81, 0x70, 0x3f, 0x13, 0x30, 0x3d, 0x14, 0x7c,
+	0x36, 0xf5, 0x91, 0xda, 0x50, 0x1c, 0xe3, 0xdc, 0x21, 0x4d, 0x72, 0x58, 0xf5, 0xe2, 0x90, 0xee,
+	0x41, 0x99, 0x7f, 0x0c, 0x71, 0xea, 0x14, 0x14, 0x96, 0x24, 0x31, 0xfa, 0x61, 0x18, 0xcc, 0xd0,
+	0x29, 0x26, 0xa8, 0x4a, 0xe8, 0x3e, 0x94, 0xe4, 0x7c, 0x82, 0x4e, 0x29, 0x06, 0xdb, 0x05, 0x87,
+	0x78, 0x2a, 0xa7, 0xb7, 0xa1, 0x1a, 0x3f, 0x07, 0x3e, 0x1f, 0xa1, 0x53, 0x6e, 0x92, 0xc3, 0xfa,
+	0x91, 0xdd, 0x4a, 0xe4, 0x5b, 0xcf, 0xe7, 0x13, 0xec, 0xf0, 0x11, 0x7a, 0xa6, 0x4c, 0x23, 0x77,
+	0x08, 0xb5, 0x1e, 0xf7, 0xc7, 0x1e, 0xbe, 0x9f, 0xa1, 0x90, 0xf4, 0x16, 0x98, 0xd3, 0xd4, 0x9f,
+	0x32, 0x56, 0xcb, 0xc9, 0xda, 0xb7, 0x97, 0x55, 0xd0, 0x1b, 0x50, 0x97, 0x32, 0x18, 0xbc, 0x0d,
+	0x07, 0x02, 0x7d, 0x1e, 0x8e, 0x84, 0x32, 0x5e, 0xf4, 0x2c, 0x29, 0x83, 0xa7, 0xe1, 0x59, 0x82,
+	0xb9, 0x75, 0xb0, 0x12, 0x09, 0x31, 0xe1, 0xa1, 0x40, 0xf7, 0x21, 0xd4, 0x3d, 0x0c, 0x70, 0x28,
+	0xf0, 0x52, 0xaa, 0xee, 0x55, 0xd8, 0xcd, 0xf8, 0x69, 0xcb, 0x26, 0x58, 0x4f, 0x50, 0xfa, 0x6f,
+	0x74, 0xc3, 0xad, 0xd1, 0xba, 0x0f, 0xe0, 0x4a, 0x5a, 0x91, 0x50, 0xfe, 0x53, 0xf3, 0x15, 0xec,
+	0x2a, 0xfa, 0xe3, 0x20, 0xd0, 0x1a, 0x7a, 0x01, 0xe4, 0x6f, 0x0b, 0x28, 0xfc, 0x73, 0x01, 0x6d,
+	0xb0, 0xf3, 0xce, 0xa9, 0xb7, 0x16, 0x54, 0xb5, 0xb2, 0x70, 0x48, 0xb3, 0xf8, 0x47, 0x73, 0x79,
+	0xc9, 0xcd, 0x3b, 0x60, 0xea, 0xce, 0xb4, 0x06, 0x3b, 0x2f, 0xfa, 0x27, 0xfd, 0xd3, 0x97, 0x7d,
+	0xdb, 0xa0, 0x26, 0x94, 0x7a, 0xa7, 0x9d, 0x13, 0x9b, 0x50, 0x0b, 0xcc, 0x67, 0x5e, 0xf7, 0xac,
+	0xdb, 0xef, 0x74, 0xed, 0xc2, 0xd1, 0x4f, 0x02, 0x95, 0x9e, 0x3a, 0x50, 0x7a, 0x0c, 0xa5, 0x38,
+	0xa2, 0xd7, 0xb4, 0xc0, 0xda, 0x39, 0x34, 0xf6, 0x36, 0xc1, 0x74, 0xda, 0x06, 0xbd, 0x07, 0x65,
+	0x65, 0x9a, 0x66, 0x05, 0xeb, 0xe3, 0x6f, 0x5c, 0xff, 0x0d, 0xcd, 0x78, 0xf7, 0x61, 0x27, 0x5d,
+	0x1d, 0xdd, 0xcf, 0x3f, 0x68, 0xfd, 0x16, 0x1a, 0x07, 0x5b, 0x78, 0xc6, 0x7e, 0x04, 0xa6, 0x1e,
+	0x15, 0x3d, 0xd8, 0x90, 0xc8, 0xd7, 0xd2, 0x70, 0xb6, 0x5f, 0xe8, 0x06, 0xed, 0xbb, 0x8b, 0x25,
+	0x33, 0xce, 0x97, 0xcc, 0xb8, 0x58, 0x32, 0xf2, 0x29, 0x62, 0xe4, 0x6b, 0xc4, 0xc8, 0xb7, 0x88,
+	0x91, 0x45, 0xc4, 0xc8, 0xf7, 0x88, 0x91, 0x1f, 0x11, 0x33, 0x2e, 0x22, 0x46, 0xbe, 0xac, 0x98,
+	0xb1, 0x58, 0x31, 0xe3, 0x7c, 0xc5, 0x8c, 0xd7, 0x15, 0xf5, 0x0f, 0x1f, 0xff, 0x0a, 0x00, 0x00,
+	0xff, 0xff, 0x40, 0xe5, 0x0d, 0xd7, 0xd3, 0x03, 0x00, 0x00,
+}
+
 func (x TypeCode) String() string {
 	s, ok := TypeCode_name[int32(x)]
 	if ok {
@@ -907,6 +945,23 @@ type LocketServer interface {
 	FetchAll(context.Context, *FetchAllRequest) (*FetchAllResponse, error)
 }
 
+// UnimplementedLocketServer can be embedded to have forward compatible implementations.
+type UnimplementedLocketServer struct {
+}
+
+func (*UnimplementedLocketServer) Lock(ctx context.Context, req *LockRequest) (*LockResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Lock not implemented")
+}
+func (*UnimplementedLocketServer) Fetch(ctx context.Context, req *FetchRequest) (*FetchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Fetch not implemented")
+}
+func (*UnimplementedLocketServer) Release(ctx context.Context, req *ReleaseRequest) (*ReleaseResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Release not implemented")
+}
+func (*UnimplementedLocketServer) FetchAll(ctx context.Context, req *FetchAllRequest) (*FetchAllResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchAll not implemented")
+}
+
 func RegisterLocketServer(s *grpc.Server, srv LocketServer) {
 	s.RegisterService(&_Locket_serviceDesc, srv)
 }
@@ -1011,7 +1066,7 @@ var _Locket_serviceDesc = grpc.ServiceDesc{
 func (m *Resource) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -1019,46 +1074,55 @@ func (m *Resource) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Resource) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Resource) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Key) > 0 {
-		dAtA[i] = 0xa
-		i++
-		i = encodeVarintLocket(dAtA, i, uint64(len(m.Key)))
-		i += copy(dAtA[i:], m.Key)
-	}
-	if len(m.Owner) > 0 {
-		dAtA[i] = 0x12
-		i++
-		i = encodeVarintLocket(dAtA, i, uint64(len(m.Owner)))
-		i += copy(dAtA[i:], m.Owner)
-	}
-	if len(m.Value) > 0 {
-		dAtA[i] = 0x1a
-		i++
-		i = encodeVarintLocket(dAtA, i, uint64(len(m.Value)))
-		i += copy(dAtA[i:], m.Value)
+	if m.TypeCode != 0 {
+		i = encodeVarintLocket(dAtA, i, uint64(m.TypeCode))
+		i--
+		dAtA[i] = 0x28
 	}
 	if len(m.Type) > 0 {
-		dAtA[i] = 0x22
-		i++
+		i -= len(m.Type)
+		copy(dAtA[i:], m.Type)
 		i = encodeVarintLocket(dAtA, i, uint64(len(m.Type)))
-		i += copy(dAtA[i:], m.Type)
+		i--
+		dAtA[i] = 0x22
 	}
-	if m.TypeCode != 0 {
-		dAtA[i] = 0x28
-		i++
-		i = encodeVarintLocket(dAtA, i, uint64(m.TypeCode))
+	if len(m.Value) > 0 {
+		i -= len(m.Value)
+		copy(dAtA[i:], m.Value)
+		i = encodeVarintLocket(dAtA, i, uint64(len(m.Value)))
+		i--
+		dAtA[i] = 0x1a
 	}
-	return i, nil
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintLocket(dAtA, i, uint64(len(m.Owner)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Key) > 0 {
+		i -= len(m.Key)
+		copy(dAtA[i:], m.Key)
+		i = encodeVarintLocket(dAtA, i, uint64(len(m.Key)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
 }
 
 func (m *LockRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -1066,32 +1130,39 @@ func (m *LockRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *LockRequest) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *LockRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.Resource != nil {
-		dAtA[i] = 0xa
-		i++
-		i = encodeVarintLocket(dAtA, i, uint64(m.Resource.Size()))
-		n1, err := m.Resource.MarshalTo(dAtA[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n1
-	}
 	if m.TtlInSeconds != 0 {
-		dAtA[i] = 0x10
-		i++
 		i = encodeVarintLocket(dAtA, i, uint64(m.TtlInSeconds))
+		i--
+		dAtA[i] = 0x10
 	}
-	return i, nil
+	if m.Resource != nil {
+		{
+			size, err := m.Resource.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintLocket(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
 }
 
 func (m *LockResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -1099,17 +1170,22 @@ func (m *LockResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *LockResponse) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *LockResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	return i, nil
+	return len(dAtA) - i, nil
 }
 
 func (m *ReleaseRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -1117,27 +1193,34 @@ func (m *ReleaseRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *ReleaseRequest) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ReleaseRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	if m.Resource != nil {
-		dAtA[i] = 0xa
-		i++
-		i = encodeVarintLocket(dAtA, i, uint64(m.Resource.Size()))
-		n2, err := m.Resource.MarshalTo(dAtA[i:])
-		if err != nil {
-			return 0, err
+		{
+			size, err := m.Resource.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintLocket(dAtA, i, uint64(size))
 		}
-		i += n2
+		i--
+		dAtA[i] = 0xa
 	}
-	return i, nil
+	return len(dAtA) - i, nil
 }
 
 func (m *ReleaseResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -1145,17 +1228,22 @@ func (m *ReleaseResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *ReleaseResponse) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ReleaseResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	return i, nil
+	return len(dAtA) - i, nil
 }
 
 func (m *FetchRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -1163,23 +1251,29 @@ func (m *FetchRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *FetchRequest) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *FetchRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	if len(m.Key) > 0 {
-		dAtA[i] = 0xa
-		i++
+		i -= len(m.Key)
+		copy(dAtA[i:], m.Key)
 		i = encodeVarintLocket(dAtA, i, uint64(len(m.Key)))
-		i += copy(dAtA[i:], m.Key)
+		i--
+		dAtA[i] = 0xa
 	}
-	return i, nil
+	return len(dAtA) - i, nil
 }
 
 func (m *FetchResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -1187,27 +1281,34 @@ func (m *FetchResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *FetchResponse) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *FetchResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	if m.Resource != nil {
-		dAtA[i] = 0xa
-		i++
-		i = encodeVarintLocket(dAtA, i, uint64(m.Resource.Size()))
-		n3, err := m.Resource.MarshalTo(dAtA[i:])
-		if err != nil {
-			return 0, err
+		{
+			size, err := m.Resource.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintLocket(dAtA, i, uint64(size))
 		}
-		i += n3
+		i--
+		dAtA[i] = 0xa
 	}
-	return i, nil
+	return len(dAtA) - i, nil
 }
 
 func (m *FetchAllRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -1215,28 +1316,34 @@ func (m *FetchAllRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *FetchAllRequest) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *FetchAllRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Type) > 0 {
-		dAtA[i] = 0xa
-		i++
-		i = encodeVarintLocket(dAtA, i, uint64(len(m.Type)))
-		i += copy(dAtA[i:], m.Type)
-	}
 	if m.TypeCode != 0 {
-		dAtA[i] = 0x10
-		i++
 		i = encodeVarintLocket(dAtA, i, uint64(m.TypeCode))
+		i--
+		dAtA[i] = 0x10
 	}
-	return i, nil
+	if len(m.Type) > 0 {
+		i -= len(m.Type)
+		copy(dAtA[i:], m.Type)
+		i = encodeVarintLocket(dAtA, i, uint64(len(m.Type)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
 }
 
 func (m *FetchAllResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -1244,33 +1351,42 @@ func (m *FetchAllResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *FetchAllResponse) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *FetchAllResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	if len(m.Resources) > 0 {
-		for _, msg := range m.Resources {
-			dAtA[i] = 0xa
-			i++
-			i = encodeVarintLocket(dAtA, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(dAtA[i:])
-			if err != nil {
-				return 0, err
+		for iNdEx := len(m.Resources) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Resources[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintLocket(dAtA, i, uint64(size))
 			}
-			i += n
+			i--
+			dAtA[i] = 0xa
 		}
 	}
-	return i, nil
+	return len(dAtA) - i, nil
 }
 
 func encodeVarintLocket(dAtA []byte, offset int, v uint64) int {
+	offset -= sovLocket(v)
+	base := offset
 	for v >= 1<<7 {
 		dAtA[offset] = uint8(v&0x7f | 0x80)
 		v >>= 7
 		offset++
 	}
 	dAtA[offset] = uint8(v)
-	return offset + 1
+	return base
 }
 func (m *Resource) Size() (n int) {
 	if m == nil {
@@ -1405,14 +1521,7 @@ func (m *FetchAllResponse) Size() (n int) {
 }
 
 func sovLocket(x uint64) (n int) {
-	for {
-		n++
-		x >>= 7
-		if x == 0 {
-			break
-		}
-	}
-	return n
+	return (math_bits.Len64(x|1) + 6) / 7
 }
 func sozLocket(x uint64) (n int) {
 	return sovLocket(uint64((x << 1) ^ uint64((int64(x) >> 63))))
@@ -1436,7 +1545,7 @@ func (this *LockRequest) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&LockRequest{`,
-		`Resource:` + strings.Replace(fmt.Sprintf("%v", this.Resource), "Resource", "Resource", 1) + `,`,
+		`Resource:` + strings.Replace(this.Resource.String(), "Resource", "Resource", 1) + `,`,
 		`TtlInSeconds:` + fmt.Sprintf("%v", this.TtlInSeconds) + `,`,
 		`}`,
 	}, "")
@@ -1456,7 +1565,7 @@ func (this *ReleaseRequest) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&ReleaseRequest{`,
-		`Resource:` + strings.Replace(fmt.Sprintf("%v", this.Resource), "Resource", "Resource", 1) + `,`,
+		`Resource:` + strings.Replace(this.Resource.String(), "Resource", "Resource", 1) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1485,7 +1594,7 @@ func (this *FetchResponse) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&FetchResponse{`,
-		`Resource:` + strings.Replace(fmt.Sprintf("%v", this.Resource), "Resource", "Resource", 1) + `,`,
+		`Resource:` + strings.Replace(this.Resource.String(), "Resource", "Resource", 1) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1505,8 +1614,13 @@ func (this *FetchAllResponse) String() string {
 	if this == nil {
 		return "nil"
 	}
+	repeatedStringForResources := "[]*Resource{"
+	for _, f := range this.Resources {
+		repeatedStringForResources += strings.Replace(f.String(), "Resource", "Resource", 1) + ","
+	}
+	repeatedStringForResources += "}"
 	s := strings.Join([]string{`&FetchAllResponse{`,
-		`Resources:` + strings.Replace(fmt.Sprintf("%v", this.Resources), "Resource", "Resource", 1) + `,`,
+		`Resources:` + repeatedStringForResources + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1534,7 +1648,7 @@ func (m *Resource) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -1562,7 +1676,7 @@ func (m *Resource) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1572,6 +1686,9 @@ func (m *Resource) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthLocket
 			}
 			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthLocket
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -1591,7 +1708,7 @@ func (m *Resource) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1601,6 +1718,9 @@ func (m *Resource) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthLocket
 			}
 			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthLocket
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -1620,7 +1740,7 @@ func (m *Resource) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1630,6 +1750,9 @@ func (m *Resource) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthLocket
 			}
 			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthLocket
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -1649,7 +1772,7 @@ func (m *Resource) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1659,6 +1782,9 @@ func (m *Resource) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthLocket
 			}
 			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthLocket
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -1678,7 +1804,7 @@ func (m *Resource) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.TypeCode |= (TypeCode(b) & 0x7F) << shift
+				m.TypeCode |= TypeCode(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1689,7 +1815,7 @@ func (m *Resource) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthLocket
 			}
 			if (iNdEx + skippy) > l {
@@ -1719,7 +1845,7 @@ func (m *LockRequest) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -1747,7 +1873,7 @@ func (m *LockRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1756,6 +1882,9 @@ func (m *LockRequest) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthLocket
 			}
 			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthLocket
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -1780,7 +1909,7 @@ func (m *LockRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.TtlInSeconds |= (int64(b) & 0x7F) << shift
+				m.TtlInSeconds |= int64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1791,7 +1920,7 @@ func (m *LockRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthLocket
 			}
 			if (iNdEx + skippy) > l {
@@ -1821,7 +1950,7 @@ func (m *LockResponse) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -1841,7 +1970,7 @@ func (m *LockResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthLocket
 			}
 			if (iNdEx + skippy) > l {
@@ -1871,7 +2000,7 @@ func (m *ReleaseRequest) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -1899,7 +2028,7 @@ func (m *ReleaseRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1908,6 +2037,9 @@ func (m *ReleaseRequest) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthLocket
 			}
 			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthLocket
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -1924,7 +2056,7 @@ func (m *ReleaseRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthLocket
 			}
 			if (iNdEx + skippy) > l {
@@ -1954,7 +2086,7 @@ func (m *ReleaseResponse) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -1974,7 +2106,7 @@ func (m *ReleaseResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthLocket
 			}
 			if (iNdEx + skippy) > l {
@@ -2004,7 +2136,7 @@ func (m *FetchRequest) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -2032,7 +2164,7 @@ func (m *FetchRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2042,6 +2174,9 @@ func (m *FetchRequest) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthLocket
 			}
 			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthLocket
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -2053,7 +2188,7 @@ func (m *FetchRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthLocket
 			}
 			if (iNdEx + skippy) > l {
@@ -2083,7 +2218,7 @@ func (m *FetchResponse) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -2111,7 +2246,7 @@ func (m *FetchResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2120,6 +2255,9 @@ func (m *FetchResponse) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthLocket
 			}
 			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthLocket
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -2136,7 +2274,7 @@ func (m *FetchResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthLocket
 			}
 			if (iNdEx + skippy) > l {
@@ -2166,7 +2304,7 @@ func (m *FetchAllRequest) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -2194,7 +2332,7 @@ func (m *FetchAllRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2204,6 +2342,9 @@ func (m *FetchAllRequest) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthLocket
 			}
 			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthLocket
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -2223,7 +2364,7 @@ func (m *FetchAllRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.TypeCode |= (TypeCode(b) & 0x7F) << shift
+				m.TypeCode |= TypeCode(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2234,7 +2375,7 @@ func (m *FetchAllRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthLocket
 			}
 			if (iNdEx + skippy) > l {
@@ -2264,7 +2405,7 @@ func (m *FetchAllResponse) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -2292,7 +2433,7 @@ func (m *FetchAllResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2301,6 +2442,9 @@ func (m *FetchAllResponse) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthLocket
 			}
 			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthLocket
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -2315,7 +2459,7 @@ func (m *FetchAllResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthLocket
 			}
 			if (iNdEx + skippy) > l {
@@ -2333,6 +2477,7 @@ func (m *FetchAllResponse) Unmarshal(dAtA []byte) error {
 func skipLocket(dAtA []byte) (n int, err error) {
 	l := len(dAtA)
 	iNdEx := 0
+	depth := 0
 	for iNdEx < l {
 		var wire uint64
 		for shift := uint(0); ; shift += 7 {
@@ -2364,10 +2509,8 @@ func skipLocket(dAtA []byte) (n int, err error) {
 					break
 				}
 			}
-			return iNdEx, nil
 		case 1:
 			iNdEx += 8
-			return iNdEx, nil
 		case 2:
 			var length int
 			for shift := uint(0); ; shift += 7 {
@@ -2384,90 +2527,34 @@ func skipLocket(dAtA []byte) (n int, err error) {
 					break
 				}
 			}
-			iNdEx += length
 			if length < 0 {
 				return 0, ErrInvalidLengthLocket
 			}
-			return iNdEx, nil
+			iNdEx += length
 		case 3:
-			for {
-				var innerWire uint64
-				var start int = iNdEx
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return 0, ErrIntOverflowLocket
-					}
-					if iNdEx >= l {
-						return 0, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					innerWire |= (uint64(b) & 0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				innerWireType := int(innerWire & 0x7)
-				if innerWireType == 4 {
-					break
-				}
-				next, err := skipLocket(dAtA[start:])
-				if err != nil {
-					return 0, err
-				}
-				iNdEx = start + next
-			}
-			return iNdEx, nil
+			depth++
 		case 4:
-			return iNdEx, nil
+			if depth == 0 {
+				return 0, ErrUnexpectedEndOfGroupLocket
+			}
+			depth--
 		case 5:
 			iNdEx += 4
-			return iNdEx, nil
 		default:
 			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
 		}
+		if iNdEx < 0 {
+			return 0, ErrInvalidLengthLocket
+		}
+		if depth == 0 {
+			return iNdEx, nil
+		}
 	}
-	panic("unreachable")
+	return 0, io.ErrUnexpectedEOF
 }
 
 var (
-	ErrInvalidLengthLocket = fmt.Errorf("proto: negative length found during unmarshaling")
-	ErrIntOverflowLocket   = fmt.Errorf("proto: integer overflow")
+	ErrInvalidLengthLocket        = fmt.Errorf("proto: negative length found during unmarshaling")
+	ErrIntOverflowLocket          = fmt.Errorf("proto: integer overflow")
+	ErrUnexpectedEndOfGroupLocket = fmt.Errorf("proto: unexpected end of group")
 )
-
-func init() { proto.RegisterFile("locket.proto", fileDescriptor_locket_ce986258ea781726) }
-
-var fileDescriptor_locket_ce986258ea781726 = []byte{
-	// 490 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x53, 0xcd, 0x6e, 0xd3, 0x40,
-	0x10, 0xf6, 0xe6, 0xaf, 0xce, 0xc4, 0xa4, 0x66, 0x29, 0xad, 0x95, 0xc3, 0x2a, 0xb2, 0x38, 0x54,
-	0x08, 0x82, 0xd4, 0x22, 0x4e, 0xfc, 0x88, 0x44, 0x41, 0x42, 0x8d, 0x52, 0xe4, 0x82, 0xe0, 0x16,
-	0x05, 0x67, 0x24, 0x50, 0x8c, 0x37, 0x64, 0x37, 0xa0, 0xdc, 0x78, 0x03, 0x78, 0x0c, 0x1e, 0x85,
-	0x63, 0x8e, 0x3d, 0x12, 0xe7, 0xc2, 0xb1, 0x07, 0x1e, 0x00, 0x79, 0xed, 0xb5, 0x13, 0x82, 0x40,
-	0xf4, 0xe4, 0x99, 0xcf, 0xf3, 0xcd, 0xf7, 0x79, 0x66, 0x0c, 0x56, 0xc0, 0xfd, 0x31, 0xca, 0xd6,
-	0x64, 0xca, 0x25, 0xa7, 0x95, 0x77, 0x7c, 0x84, 0x81, 0x70, 0x3f, 0x13, 0x30, 0x3d, 0x14, 0x7c,
-	0x36, 0xf5, 0x91, 0xda, 0x50, 0x1c, 0xe3, 0xdc, 0x21, 0x4d, 0x72, 0x58, 0xf5, 0xe2, 0x90, 0xee,
-	0x41, 0x99, 0x7f, 0x0c, 0x71, 0xea, 0x14, 0x14, 0x96, 0x24, 0x31, 0xfa, 0x61, 0x18, 0xcc, 0xd0,
-	0x29, 0x26, 0xa8, 0x4a, 0xe8, 0x3e, 0x94, 0xe4, 0x7c, 0x82, 0x4e, 0x29, 0x06, 0xdb, 0x05, 0x87,
-	0x78, 0x2a, 0xa7, 0xb7, 0xa1, 0x1a, 0x3f, 0x07, 0x3e, 0x1f, 0xa1, 0x53, 0x6e, 0x92, 0xc3, 0xfa,
-	0x91, 0xdd, 0x4a, 0xe4, 0x5b, 0xcf, 0xe7, 0x13, 0xec, 0xf0, 0x11, 0x7a, 0xa6, 0x4c, 0x23, 0x77,
-	0x08, 0xb5, 0x1e, 0xf7, 0xc7, 0x1e, 0xbe, 0x9f, 0xa1, 0x90, 0xf4, 0x16, 0x98, 0xd3, 0xd4, 0x9f,
-	0x32, 0x56, 0xcb, 0xc9, 0xda, 0xb7, 0x97, 0x55, 0xd0, 0x1b, 0x50, 0x97, 0x32, 0x18, 0xbc, 0x0d,
-	0x07, 0x02, 0x7d, 0x1e, 0x8e, 0x84, 0x32, 0x5e, 0xf4, 0x2c, 0x29, 0x83, 0xa7, 0xe1, 0x59, 0x82,
-	0xb9, 0x75, 0xb0, 0x12, 0x09, 0x31, 0xe1, 0xa1, 0x40, 0xf7, 0x21, 0xd4, 0x3d, 0x0c, 0x70, 0x28,
-	0xf0, 0x52, 0xaa, 0xee, 0x55, 0xd8, 0xcd, 0xf8, 0x69, 0xcb, 0x26, 0x58, 0x4f, 0x50, 0xfa, 0x6f,
-	0x74, 0xc3, 0xad, 0xd1, 0xba, 0x0f, 0xe0, 0x4a, 0x5a, 0x91, 0x50, 0xfe, 0x53, 0xf3, 0x15, 0xec,
-	0x2a, 0xfa, 0xe3, 0x20, 0xd0, 0x1a, 0x7a, 0x01, 0xe4, 0x6f, 0x0b, 0x28, 0xfc, 0x73, 0x01, 0x6d,
-	0xb0, 0xf3, 0xce, 0xa9, 0xb7, 0x16, 0x54, 0xb5, 0xb2, 0x70, 0x48, 0xb3, 0xf8, 0x47, 0x73, 0x79,
-	0xc9, 0xcd, 0x3b, 0x60, 0xea, 0xce, 0xb4, 0x06, 0x3b, 0x2f, 0xfa, 0x27, 0xfd, 0xd3, 0x97, 0x7d,
-	0xdb, 0xa0, 0x26, 0x94, 0x7a, 0xa7, 0x9d, 0x13, 0x9b, 0x50, 0x0b, 0xcc, 0x67, 0x5e, 0xf7, 0xac,
-	0xdb, 0xef, 0x74, 0xed, 0xc2, 0xd1, 0x4f, 0x02, 0x95, 0x9e, 0x3a, 0x50, 0x7a, 0x0c, 0xa5, 0x38,
-	0xa2, 0xd7, 0xb4, 0xc0, 0xda, 0x39, 0x34, 0xf6, 0x36, 0xc1, 0x74, 0xda, 0x06, 0xbd, 0x07, 0x65,
-	0x65, 0x9a, 0x66, 0x05, 0xeb, 0xe3, 0x6f, 0x5c, 0xff, 0x0d, 0xcd, 0x78, 0xf7, 0x61, 0x27, 0x5d,
-	0x1d, 0xdd, 0xcf, 0x3f, 0x68, 0xfd, 0x16, 0x1a, 0x07, 0x5b, 0x78, 0xc6, 0x7e, 0x04, 0xa6, 0x1e,
-	0x15, 0x3d, 0xd8, 0x90, 0xc8, 0xd7, 0xd2, 0x70, 0xb6, 0x5f, 0xe8, 0x06, 0xed, 0xbb, 0x8b, 0x25,
-	0x33, 0xce, 0x97, 0xcc, 0xb8, 0x58, 0x32, 0xf2, 0x29, 0x62, 0xe4, 0x6b, 0xc4, 0xc8, 0xb7, 0x88,
-	0x91, 0x45, 0xc4, 0xc8, 0xf7, 0x88, 0x91, 0x1f, 0x11, 0x33, 0x2e, 0x22, 0x46, 0xbe, 0xac, 0x98,
-	0xb1, 0x58, 0x31, 0xe3, 0x7c, 0xc5, 0x8c, 0xd7, 0x15, 0xf5, 0x0f, 0x1f, 0xff, 0x0a, 0x00, 0x00,
-	0xff, 0xff, 0x40, 0xe5, 0x0d, 0xd7, 0xd3, 0x03, 0x00, 0x00,
-}

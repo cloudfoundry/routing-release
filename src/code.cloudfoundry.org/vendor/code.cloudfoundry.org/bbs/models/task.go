@@ -7,7 +7,7 @@ import (
 	"regexp"
 
 	"code.cloudfoundry.org/bbs/format"
-	"code.cloudfoundry.org/lager"
+	"code.cloudfoundry.org/lager/v3"
 )
 
 var taskGuidPattern = regexp.MustCompile(`^[a-zA-Z0-9_-]+$`)
@@ -120,6 +120,12 @@ func (def *TaskDefinition) Validate() error {
 
 	if def.DiskMb < 0 {
 		validationError = validationError.Append(ErrInvalidField{"disk_mb"})
+	}
+
+	if limit := def.LogRateLimit; limit != nil {
+		if limit.BytesPerSecond < -1 {
+			validationError = validationError.Append(ErrInvalidField{"log_rate_limit"})
+		}
 	}
 
 	if def.MaxPids < 0 {

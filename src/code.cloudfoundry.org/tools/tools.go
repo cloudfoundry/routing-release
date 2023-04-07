@@ -7,7 +7,7 @@ import (
 	_ "code.cloudfoundry.org/locket/cmd/locket"
 	_ "github.com/kisielk/errcheck"
 	_ "github.com/nats-io/nats-server/v2"
-	_ "github.com/onsi/ginkgo/ginkgo"
+	_ "github.com/onsi/ginkgo/v2/ginkgo"
 	_ "golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow"
 )
 

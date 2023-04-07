@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"code.cloudfoundry.org/lager"
+	"code.cloudfoundry.org/lager/v3"
 )
 
 // SELECT COUNT(*) FROM <table> WHERE ...

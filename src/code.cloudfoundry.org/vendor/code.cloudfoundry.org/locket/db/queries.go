@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 
-	"code.cloudfoundry.org/lager"
+	"code.cloudfoundry.org/lager/v3"
 )
 
 func (db *SQLDB) CreateLockTable(ctx context.Context, logger lager.Logger) error {

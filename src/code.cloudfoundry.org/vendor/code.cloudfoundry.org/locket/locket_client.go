@@ -4,7 +4,7 @@ import (
 	"net"
 	"time"
 
-	"code.cloudfoundry.org/lager"
+	"code.cloudfoundry.org/lager/v3"
 	"code.cloudfoundry.org/locket/models"
 	"code.cloudfoundry.org/tlsconfig"
 	"google.golang.org/grpc"

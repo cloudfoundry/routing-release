@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"code.cloudfoundry.org/lager"
+	"code.cloudfoundry.org/lager/v3"
 )
 
 // SELECT <columns> FROM <table> WHERE ... LIMIT 1 [FOR UPDATE]

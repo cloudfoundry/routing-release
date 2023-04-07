@@ -3,15 +3,16 @@
 
 package models
 
-import proto "github.com/gogo/protobuf/proto"
-import fmt "fmt"
-import math "math"
-import _ "github.com/gogo/protobuf/gogoproto"
-
-import strings "strings"
-import reflect "reflect"
-
-import io "io"
+import (
+	fmt "fmt"
+	_ "github.com/gogo/protobuf/gogoproto"
+	proto "github.com/gogo/protobuf/proto"
+	io "io"
+	math "math"
+	math_bits "math/bits"
+	reflect "reflect"
+	strings "strings"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -22,7 +23,7 @@ var _ = math.Inf
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
+const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type Sidecar struct {
 	Action   *Action `protobuf:"bytes,1,opt,name=action,proto3" json:"action,omitempty"`
@@ -33,7 +34,7 @@ type Sidecar struct {
 func (m *Sidecar) Reset()      { *m = Sidecar{} }
 func (*Sidecar) ProtoMessage() {}
 func (*Sidecar) Descriptor() ([]byte, []int) {
-	return fileDescriptor_sidecar_a4981af66f85770e, []int{0}
+	return fileDescriptor_179ad3b13e6397ec, []int{0}
 }
 func (m *Sidecar) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -43,15 +44,15 @@ func (m *Sidecar) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return xxx_messageInfo_Sidecar.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *Sidecar) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Sidecar.Merge(dst, src)
+func (m *Sidecar) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Sidecar.Merge(m, src)
 }
 func (m *Sidecar) XXX_Size() int {
 	return m.Size()
@@ -86,6 +87,28 @@ func (m *Sidecar) GetMemoryMb() int32 {
 func init() {
 	proto.RegisterType((*Sidecar)(nil), "models.Sidecar")
 }
+
+func init() { proto.RegisterFile("sidecar.proto", fileDescriptor_179ad3b13e6397ec) }
+
+var fileDescriptor_179ad3b13e6397ec = []byte{
+	// 239 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x2d, 0xce, 0x4c, 0x49,
+	0x4d, 0x4e, 0x2c, 0xd2, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0xcb, 0xcd, 0x4f, 0x49, 0xcd,
+	0x29, 0x96, 0xd2, 0x4d, 0xcf, 0x2c, 0xc9, 0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x4f, 0xcf,
+	0x4f, 0xcf, 0xd7, 0x07, 0x4b, 0x27, 0x95, 0xa6, 0x81, 0x79, 0x60, 0x0e, 0x98, 0x05, 0xd1, 0x26,
+	0xc5, 0x9b, 0x98, 0x5c, 0x92, 0x99, 0x9f, 0x57, 0x0c, 0xe1, 0x2a, 0x35, 0x33, 0x72, 0xb1, 0x07,
+	0x43, 0xcc, 0x15, 0x52, 0xe3, 0x62, 0x83, 0x48, 0x4a, 0x30, 0x2a, 0x30, 0x6a, 0x70, 0x1b, 0xf1,
+	0xe9, 0x41, 0xac, 0xd0, 0x73, 0x04, 0x8b, 0x06, 0x41, 0x65, 0x85, 0x54, 0xb8, 0xd8, 0x53, 0x32,
+	0x8b, 0xb3, 0xe3, 0x73, 0x93, 0x24, 0x98, 0x14, 0x18, 0x35, 0x58, 0x9d, 0xb8, 0x5f, 0xdd, 0x93,
+	0x87, 0x09, 0x05, 0xb1, 0x81, 0x18, 0xbe, 0x49, 0x42, 0x5a, 0x5c, 0x9c, 0xb9, 0xa9, 0xb9, 0xf9,
+	0x45, 0x95, 0x20, 0x75, 0xcc, 0x60, 0x75, 0xbc, 0xaf, 0xee, 0xc9, 0x23, 0x04, 0x83, 0x38, 0x20,
+	0x4c, 0xdf, 0x24, 0x27, 0x93, 0x0b, 0x0f, 0xe5, 0x18, 0x6e, 0x3c, 0x94, 0x63, 0xf8, 0xf0, 0x50,
+	0x8e, 0xb1, 0xe1, 0x91, 0x1c, 0xe3, 0x8a, 0x47, 0x72, 0x8c, 0x27, 0x1e, 0xc9, 0x31, 0x5e, 0x78,
+	0x24, 0xc7, 0xf8, 0xe0, 0x91, 0x1c, 0xe3, 0x8b, 0x47, 0x72, 0x0c, 0x1f, 0x1e, 0xc9, 0x31, 0x4e,
+	0x78, 0x2c, 0xc7, 0x70, 0xe1, 0xb1, 0x1c, 0xc3, 0x8d, 0xc7, 0x72, 0x0c, 0x49, 0x6c, 0x60, 0x2f,
+	0x18, 0x03, 0x02, 0x00, 0x00, 0xff, 0xff, 0xf3, 0x28, 0x34, 0x4f, 0x19, 0x01, 0x00, 0x00,
+}
+
 func (this *Sidecar) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
@@ -141,7 +164,7 @@ func valueToGoStringSidecar(v interface{}, typ string) string {
 func (m *Sidecar) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -149,41 +172,50 @@ func (m *Sidecar) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Sidecar) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Sidecar) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.Action != nil {
-		dAtA[i] = 0xa
-		i++
-		i = encodeVarintSidecar(dAtA, i, uint64(m.Action.Size()))
-		n1, err := m.Action.MarshalTo(dAtA[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n1
+	if m.MemoryMb != 0 {
+		i = encodeVarintSidecar(dAtA, i, uint64(m.MemoryMb))
+		i--
+		dAtA[i] = 0x18
 	}
 	if m.DiskMb != 0 {
-		dAtA[i] = 0x10
-		i++
 		i = encodeVarintSidecar(dAtA, i, uint64(m.DiskMb))
+		i--
+		dAtA[i] = 0x10
 	}
-	if m.MemoryMb != 0 {
-		dAtA[i] = 0x18
-		i++
-		i = encodeVarintSidecar(dAtA, i, uint64(m.MemoryMb))
+	if m.Action != nil {
+		{
+			size, err := m.Action.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintSidecar(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
 	}
-	return i, nil
+	return len(dAtA) - i, nil
 }
 
 func encodeVarintSidecar(dAtA []byte, offset int, v uint64) int {
+	offset -= sovSidecar(v)
+	base := offset
 	for v >= 1<<7 {
 		dAtA[offset] = uint8(v&0x7f | 0x80)
 		v >>= 7
 		offset++
 	}
 	dAtA[offset] = uint8(v)
-	return offset + 1
+	return base
 }
 func (m *Sidecar) Size() (n int) {
 	if m == nil {
@@ -205,14 +237,7 @@ func (m *Sidecar) Size() (n int) {
 }
 
 func sovSidecar(x uint64) (n int) {
-	for {
-		n++
-		x >>= 7
-		if x == 0 {
-			break
-		}
-	}
-	return n
+	return (math_bits.Len64(x|1) + 6) / 7
 }
 func sozSidecar(x uint64) (n int) {
 	return sovSidecar(uint64((x << 1) ^ uint64((int64(x) >> 63))))
@@ -252,7 +277,7 @@ func (m *Sidecar) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -280,7 +305,7 @@ func (m *Sidecar) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -289,6 +314,9 @@ func (m *Sidecar) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthSidecar
 			}
 			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthSidecar
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -313,7 +341,7 @@ func (m *Sidecar) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.DiskMb |= (int32(b) & 0x7F) << shift
+				m.DiskMb |= int32(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -332,7 +360,7 @@ func (m *Sidecar) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.MemoryMb |= (int32(b) & 0x7F) << shift
+				m.MemoryMb |= int32(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -343,7 +371,7 @@ func (m *Sidecar) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthSidecar
 			}
 			if (iNdEx + skippy) > l {
@@ -361,6 +389,7 @@ func (m *Sidecar) Unmarshal(dAtA []byte) error {
 func skipSidecar(dAtA []byte) (n int, err error) {
 	l := len(dAtA)
 	iNdEx := 0
+	depth := 0
 	for iNdEx < l {
 		var wire uint64
 		for shift := uint(0); ; shift += 7 {
@@ -392,10 +421,8 @@ func skipSidecar(dAtA []byte) (n int, err error) {
 					break
 				}
 			}
-			return iNdEx, nil
 		case 1:
 			iNdEx += 8
-			return iNdEx, nil
 		case 2:
 			var length int
 			for shift := uint(0); ; shift += 7 {
@@ -412,74 +439,34 @@ func skipSidecar(dAtA []byte) (n int, err error) {
 					break
 				}
 			}
-			iNdEx += length
 			if length < 0 {
 				return 0, ErrInvalidLengthSidecar
 			}
-			return iNdEx, nil
+			iNdEx += length
 		case 3:
-			for {
-				var innerWire uint64
-				var start int = iNdEx
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return 0, ErrIntOverflowSidecar
-					}
-					if iNdEx >= l {
-						return 0, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					innerWire |= (uint64(b) & 0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				innerWireType := int(innerWire & 0x7)
-				if innerWireType == 4 {
-					break
-				}
-				next, err := skipSidecar(dAtA[start:])
-				if err != nil {
-					return 0, err
-				}
-				iNdEx = start + next
-			}
-			return iNdEx, nil
+			depth++
 		case 4:
-			return iNdEx, nil
+			if depth == 0 {
+				return 0, ErrUnexpectedEndOfGroupSidecar
+			}
+			depth--
 		case 5:
 			iNdEx += 4
-			return iNdEx, nil
 		default:
 			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
 		}
+		if iNdEx < 0 {
+			return 0, ErrInvalidLengthSidecar
+		}
+		if depth == 0 {
+			return iNdEx, nil
+		}
 	}
-	panic("unreachable")
+	return 0, io.ErrUnexpectedEOF
 }
 
 var (
-	ErrInvalidLengthSidecar = fmt.Errorf("proto: negative length found during unmarshaling")
-	ErrIntOverflowSidecar   = fmt.Errorf("proto: integer overflow")
+	ErrInvalidLengthSidecar        = fmt.Errorf("proto: negative length found during unmarshaling")
+	ErrIntOverflowSidecar          = fmt.Errorf("proto: integer overflow")
+	ErrUnexpectedEndOfGroupSidecar = fmt.Errorf("proto: unexpected end of group")
 )
-
-func init() { proto.RegisterFile("sidecar.proto", fileDescriptor_sidecar_a4981af66f85770e) }
-
-var fileDescriptor_sidecar_a4981af66f85770e = []byte{
-	// 239 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x2d, 0xce, 0x4c, 0x49,
-	0x4d, 0x4e, 0x2c, 0xd2, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0xcb, 0xcd, 0x4f, 0x49, 0xcd,
-	0x29, 0x96, 0xd2, 0x4d, 0xcf, 0x2c, 0xc9, 0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x4f, 0xcf,
-	0x4f, 0xcf, 0xd7, 0x07, 0x4b, 0x27, 0x95, 0xa6, 0x81, 0x79, 0x60, 0x0e, 0x98, 0x05, 0xd1, 0x26,
-	0xc5, 0x9b, 0x98, 0x5c, 0x92, 0x99, 0x9f, 0x57, 0x0c, 0xe1, 0x2a, 0x35, 0x33, 0x72, 0xb1, 0x07,
-	0x43, 0xcc, 0x15, 0x52, 0xe3, 0x62, 0x83, 0x48, 0x4a, 0x30, 0x2a, 0x30, 0x6a, 0x70, 0x1b, 0xf1,
-	0xe9, 0x41, 0xac, 0xd0, 0x73, 0x04, 0x8b, 0x06, 0x41, 0x65, 0x85, 0x54, 0xb8, 0xd8, 0x53, 0x32,
-	0x8b, 0xb3, 0xe3, 0x73, 0x93, 0x24, 0x98, 0x14, 0x18, 0x35, 0x58, 0x9d, 0xb8, 0x5f, 0xdd, 0x93,
-	0x87, 0x09, 0x05, 0xb1, 0x81, 0x18, 0xbe, 0x49, 0x42, 0x5a, 0x5c, 0x9c, 0xb9, 0xa9, 0xb9, 0xf9,
-	0x45, 0x95, 0x20, 0x75, 0xcc, 0x60, 0x75, 0xbc, 0xaf, 0xee, 0xc9, 0x23, 0x04, 0x83, 0x38, 0x20,
-	0x4c, 0xdf, 0x24, 0x27, 0x93, 0x0b, 0x0f, 0xe5, 0x18, 0x6e, 0x3c, 0x94, 0x63, 0xf8, 0xf0, 0x50,
-	0x8e, 0xb1, 0xe1, 0x91, 0x1c, 0xe3, 0x8a, 0x47, 0x72, 0x8c, 0x27, 0x1e, 0xc9, 0x31, 0x5e, 0x78,
-	0x24, 0xc7, 0xf8, 0xe0, 0x91, 0x1c, 0xe3, 0x8b, 0x47, 0x72, 0x0c, 0x1f, 0x1e, 0xc9, 0x31, 0x4e,
-	0x78, 0x2c, 0xc7, 0x70, 0xe1, 0xb1, 0x1c, 0xc3, 0x8d, 0xc7, 0x72, 0x0c, 0x49, 0x6c, 0x60, 0x2f,
-	0x18, 0x03, 0x02, 0x00, 0x00, 0xff, 0xff, 0xf3, 0x28, 0x34, 0x4f, 0x19, 0x01, 0x00, 0x00,
-}

@@ -3,15 +3,16 @@
 
 package models
 
-import proto "github.com/gogo/protobuf/proto"
-import fmt "fmt"
-import math "math"
-import _ "github.com/gogo/protobuf/gogoproto"
-
-import strings "strings"
-import reflect "reflect"
-
-import io "io"
+import (
+	fmt "fmt"
+	_ "github.com/gogo/protobuf/gogoproto"
+	proto "github.com/gogo/protobuf/proto"
+	io "io"
+	math "math"
+	math_bits "math/bits"
+	reflect "reflect"
+	strings "strings"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -22,7 +23,7 @@ var _ = math.Inf
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
+const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type SharedDevice struct {
 	VolumeId    string `protobuf:"bytes,1,opt,name=volume_id,json=volumeId,proto3" json:"volume_id"`
@@ -32,7 +33,7 @@ type SharedDevice struct {
 func (m *SharedDevice) Reset()      { *m = SharedDevice{} }
 func (*SharedDevice) ProtoMessage() {}
 func (*SharedDevice) Descriptor() ([]byte, []int) {
-	return fileDescriptor_volume_mount_13b32eee5c8c5956, []int{0}
+	return fileDescriptor_bbde336a4634d84f, []int{0}
 }
 func (m *SharedDevice) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -42,15 +43,15 @@ func (m *SharedDevice) XXX_Marshal(b []byte, deterministic bool) ([]byte, error)
 		return xxx_messageInfo_SharedDevice.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *SharedDevice) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SharedDevice.Merge(dst, src)
+func (m *SharedDevice) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SharedDevice.Merge(m, src)
 }
 func (m *SharedDevice) XXX_Size() int {
 	return m.Size()
@@ -86,7 +87,7 @@ type VolumeMount struct {
 func (m *VolumeMount) Reset()      { *m = VolumeMount{} }
 func (*VolumeMount) ProtoMessage() {}
 func (*VolumeMount) Descriptor() ([]byte, []int) {
-	return fileDescriptor_volume_mount_13b32eee5c8c5956, []int{1}
+	return fileDescriptor_bbde336a4634d84f, []int{1}
 }
 func (m *VolumeMount) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -96,15 +97,15 @@ func (m *VolumeMount) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) 
 		return xxx_messageInfo_VolumeMount.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *VolumeMount) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_VolumeMount.Merge(dst, src)
+func (m *VolumeMount) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_VolumeMount.Merge(m, src)
 }
 func (m *VolumeMount) XXX_Size() int {
 	return m.Size()
@@ -150,7 +151,7 @@ type VolumePlacement struct {
 func (m *VolumePlacement) Reset()      { *m = VolumePlacement{} }
 func (*VolumePlacement) ProtoMessage() {}
 func (*VolumePlacement) Descriptor() ([]byte, []int) {
-	return fileDescriptor_volume_mount_13b32eee5c8c5956, []int{2}
+	return fileDescriptor_bbde336a4634d84f, []int{2}
 }
 func (m *VolumePlacement) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -160,15 +161,15 @@ func (m *VolumePlacement) XXX_Marshal(b []byte, deterministic bool) ([]byte, err
 		return xxx_messageInfo_VolumePlacement.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *VolumePlacement) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_VolumePlacement.Merge(dst, src)
+func (m *VolumePlacement) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_VolumePlacement.Merge(m, src)
 }
 func (m *VolumePlacement) XXX_Size() int {
 	return m.Size()
@@ -191,6 +192,37 @@ func init() {
 	proto.RegisterType((*VolumeMount)(nil), "models.VolumeMount")
 	proto.RegisterType((*VolumePlacement)(nil), "models.VolumePlacement")
 }
+
+func init() { proto.RegisterFile("volume_mount.proto", fileDescriptor_bbde336a4634d84f) }
+
+var fileDescriptor_bbde336a4634d84f = []byte{
+	// 381 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x54, 0x91, 0xc1, 0x6a, 0xa3, 0x40,
+	0x18, 0xc7, 0x9d, 0xc4, 0xb8, 0x66, 0x4c, 0x58, 0x77, 0xd8, 0x83, 0x2c, 0xcb, 0x18, 0x3c, 0x85,
+	0x85, 0x35, 0xd0, 0x94, 0xd2, 0x73, 0x1a, 0x0a, 0x0d, 0xb4, 0x14, 0x0b, 0xbd, 0x8a, 0xd1, 0x89,
+	0x19, 0x88, 0x4e, 0x31, 0x9a, 0x73, 0x1f, 0xa1, 0x8f, 0xd1, 0x47, 0xe9, 0x31, 0xd0, 0x4b, 0x4e,
+	0xd2, 0x98, 0x4b, 0xf1, 0x94, 0x47, 0x28, 0xce, 0xd8, 0x36, 0xb9, 0x38, 0xf3, 0xfb, 0x7f, 0x7f,
+	0x3f, 0xbf, 0xef, 0x2f, 0x44, 0x2b, 0xb6, 0xc8, 0x22, 0xe2, 0x46, 0x2c, 0x8b, 0x53, 0xfb, 0x21,
+	0x61, 0x29, 0x43, 0x4a, 0xc4, 0x02, 0xb2, 0x58, 0xfe, 0xf9, 0x1f, 0xd2, 0x74, 0x9e, 0x4d, 0x6d,
+	0x9f, 0x45, 0x83, 0x90, 0x85, 0x6c, 0xc0, 0xcb, 0xd3, 0x6c, 0xc6, 0x89, 0x03, 0xbf, 0x89, 0xd7,
+	0x2c, 0x06, 0x3b, 0x77, 0x73, 0x2f, 0x21, 0xc1, 0x98, 0xac, 0xa8, 0x4f, 0xd0, 0x3f, 0xd8, 0xae,
+	0x9b, 0xd3, 0xc0, 0x00, 0x3d, 0xd0, 0x6f, 0x8f, 0xba, 0x65, 0x6e, 0x7e, 0x8b, 0x8e, 0x2a, 0xae,
+	0x57, 0x01, 0x1a, 0xc2, 0x0e, 0x9f, 0xc0, 0xf5, 0x59, 0x3c, 0xa3, 0xa1, 0xd1, 0xe0, 0x76, 0xbd,
+	0xcc, 0xcd, 0x23, 0xdd, 0xd1, 0x38, 0x5d, 0x70, 0xb0, 0x5e, 0x01, 0xd4, 0xee, 0x79, 0x87, 0xeb,
+	0x4a, 0x45, 0x16, 0x54, 0x82, 0x84, 0xae, 0x48, 0x52, 0x7f, 0x0d, 0x96, 0xb9, 0x59, 0x2b, 0x4e,
+	0x7d, 0xa2, 0x33, 0xd8, 0xf5, 0x59, 0x9c, 0x7a, 0x34, 0x26, 0x89, 0x1b, 0xd0, 0xc4, 0x68, 0x72,
+	0xeb, 0xaf, 0x32, 0x37, 0x8f, 0x0b, 0x4e, 0xe7, 0x0b, 0xc7, 0x34, 0x41, 0x7f, 0xa1, 0x5c, 0xa5,
+	0x62, 0x28, 0xdc, 0xae, 0x96, 0xb9, 0xc9, 0xd9, 0xe1, 0x4f, 0x74, 0x0e, 0x95, 0x25, 0x5f, 0xdd,
+	0xf8, 0xd1, 0x03, 0x7d, 0xed, 0xe4, 0xb7, 0x2d, 0x22, 0xb4, 0x0f, 0x03, 0x11, 0xf3, 0x08, 0x9f,
+	0x53, 0x9f, 0x13, 0x59, 0x6d, 0xe8, 0xcd, 0x89, 0xac, 0xca, 0x7a, 0x6b, 0x22, 0xab, 0x2d, 0x5d,
+	0xb1, 0x2e, 0xe1, 0x4f, 0xb1, 0xd4, 0xed, 0xc2, 0xf3, 0x49, 0x44, 0xe2, 0xb4, 0x4a, 0x47, 0x8c,
+	0xef, 0xc6, 0x5e, 0x44, 0x96, 0x06, 0xe8, 0x35, 0x3f, 0xd3, 0x39, 0xd4, 0x1d, 0x4d, 0xd0, 0x4d,
+	0x05, 0xa3, 0xd3, 0xf5, 0x16, 0x83, 0xcd, 0x16, 0x4b, 0xfb, 0x2d, 0x06, 0x8f, 0x05, 0x06, 0xcf,
+	0x05, 0x06, 0x2f, 0x05, 0x06, 0xeb, 0x02, 0x83, 0xb7, 0x02, 0x83, 0xf7, 0x02, 0x4b, 0xfb, 0x02,
+	0x83, 0xa7, 0x1d, 0x96, 0xd6, 0x3b, 0x2c, 0x6d, 0x76, 0x58, 0x9a, 0x2a, 0xfc, 0x5f, 0x0e, 0x3f,
+	0x02, 0x00, 0x00, 0xff, 0xff, 0x1a, 0x23, 0x60, 0xde, 0x18, 0x02, 0x00, 0x00,
+}
+
 func (this *SharedDevice) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
@@ -327,7 +359,7 @@ func valueToGoStringVolumeMount(v interface{}, typ string) string {
 func (m *SharedDevice) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -335,29 +367,36 @@ func (m *SharedDevice) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *SharedDevice) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *SharedDevice) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.VolumeId) > 0 {
-		dAtA[i] = 0xa
-		i++
-		i = encodeVarintVolumeMount(dAtA, i, uint64(len(m.VolumeId)))
-		i += copy(dAtA[i:], m.VolumeId)
-	}
 	if len(m.MountConfig) > 0 {
-		dAtA[i] = 0x12
-		i++
+		i -= len(m.MountConfig)
+		copy(dAtA[i:], m.MountConfig)
 		i = encodeVarintVolumeMount(dAtA, i, uint64(len(m.MountConfig)))
-		i += copy(dAtA[i:], m.MountConfig)
+		i--
+		dAtA[i] = 0x12
 	}
-	return i, nil
+	if len(m.VolumeId) > 0 {
+		i -= len(m.VolumeId)
+		copy(dAtA[i:], m.VolumeId)
+		i = encodeVarintVolumeMount(dAtA, i, uint64(len(m.VolumeId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
 }
 
 func (m *VolumeMount) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -365,45 +404,55 @@ func (m *VolumeMount) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *VolumeMount) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *VolumeMount) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Driver) > 0 {
-		dAtA[i] = 0xa
-		i++
-		i = encodeVarintVolumeMount(dAtA, i, uint64(len(m.Driver)))
-		i += copy(dAtA[i:], m.Driver)
-	}
-	if len(m.ContainerDir) > 0 {
-		dAtA[i] = 0x1a
-		i++
-		i = encodeVarintVolumeMount(dAtA, i, uint64(len(m.ContainerDir)))
-		i += copy(dAtA[i:], m.ContainerDir)
+	if m.Shared != nil {
+		{
+			size, err := m.Shared.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintVolumeMount(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x3a
 	}
 	if len(m.Mode) > 0 {
-		dAtA[i] = 0x32
-		i++
+		i -= len(m.Mode)
+		copy(dAtA[i:], m.Mode)
 		i = encodeVarintVolumeMount(dAtA, i, uint64(len(m.Mode)))
-		i += copy(dAtA[i:], m.Mode)
+		i--
+		dAtA[i] = 0x32
 	}
-	if m.Shared != nil {
-		dAtA[i] = 0x3a
-		i++
-		i = encodeVarintVolumeMount(dAtA, i, uint64(m.Shared.Size()))
-		n1, err := m.Shared.MarshalTo(dAtA[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n1
+	if len(m.ContainerDir) > 0 {
+		i -= len(m.ContainerDir)
+		copy(dAtA[i:], m.ContainerDir)
+		i = encodeVarintVolumeMount(dAtA, i, uint64(len(m.ContainerDir)))
+		i--
+		dAtA[i] = 0x1a
 	}
-	return i, nil
+	if len(m.Driver) > 0 {
+		i -= len(m.Driver)
+		copy(dAtA[i:], m.Driver)
+		i = encodeVarintVolumeMount(dAtA, i, uint64(len(m.Driver)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
 }
 
 func (m *VolumePlacement) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -411,36 +460,37 @@ func (m *VolumePlacement) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *VolumePlacement) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *VolumePlacement) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	if len(m.DriverNames) > 0 {
-		for _, s := range m.DriverNames {
+		for iNdEx := len(m.DriverNames) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.DriverNames[iNdEx])
+			copy(dAtA[i:], m.DriverNames[iNdEx])
+			i = encodeVarintVolumeMount(dAtA, i, uint64(len(m.DriverNames[iNdEx])))
+			i--
 			dAtA[i] = 0xa
-			i++
-			l = len(s)
-			for l >= 1<<7 {
-				dAtA[i] = uint8(uint64(l)&0x7f | 0x80)
-				l >>= 7
-				i++
-			}
-			dAtA[i] = uint8(l)
-			i++
-			i += copy(dAtA[i:], s)
 		}
 	}
-	return i, nil
+	return len(dAtA) - i, nil
 }
 
 func encodeVarintVolumeMount(dAtA []byte, offset int, v uint64) int {
+	offset -= sovVolumeMount(v)
+	base := offset
 	for v >= 1<<7 {
 		dAtA[offset] = uint8(v&0x7f | 0x80)
 		v >>= 7
 		offset++
 	}
 	dAtA[offset] = uint8(v)
-	return offset + 1
+	return base
 }
 func (m *SharedDevice) Size() (n int) {
 	if m == nil {
@@ -500,14 +550,7 @@ func (m *VolumePlacement) Size() (n int) {
 }
 
 func sovVolumeMount(x uint64) (n int) {
-	for {
-		n++
-		x >>= 7
-		if x == 0 {
-			break
-		}
-	}
-	return n
+	return (math_bits.Len64(x|1) + 6) / 7
 }
 func sozVolumeMount(x uint64) (n int) {
 	return sovVolumeMount(uint64((x << 1) ^ uint64((int64(x) >> 63))))
@@ -531,7 +574,7 @@ func (this *VolumeMount) String() string {
 		`Driver:` + fmt.Sprintf("%v", this.Driver) + `,`,
 		`ContainerDir:` + fmt.Sprintf("%v", this.ContainerDir) + `,`,
 		`Mode:` + fmt.Sprintf("%v", this.Mode) + `,`,
-		`Shared:` + strings.Replace(fmt.Sprintf("%v", this.Shared), "SharedDevice", "SharedDevice", 1) + `,`,
+		`Shared:` + strings.Replace(this.Shared.String(), "SharedDevice", "SharedDevice", 1) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -569,7 +612,7 @@ func (m *SharedDevice) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -597,7 +640,7 @@ func (m *SharedDevice) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -607,6 +650,9 @@ func (m *SharedDevice) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthVolumeMount
 			}
 			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthVolumeMount
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -626,7 +672,7 @@ func (m *SharedDevice) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -636,6 +682,9 @@ func (m *SharedDevice) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthVolumeMount
 			}
 			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthVolumeMount
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -647,7 +696,7 @@ func (m *SharedDevice) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthVolumeMount
 			}
 			if (iNdEx + skippy) > l {
@@ -677,7 +726,7 @@ func (m *VolumeMount) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -705,7 +754,7 @@ func (m *VolumeMount) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -715,6 +764,9 @@ func (m *VolumeMount) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthVolumeMount
 			}
 			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthVolumeMount
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -734,7 +786,7 @@ func (m *VolumeMount) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -744,6 +796,9 @@ func (m *VolumeMount) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthVolumeMount
 			}
 			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthVolumeMount
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -763,7 +818,7 @@ func (m *VolumeMount) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -773,6 +828,9 @@ func (m *VolumeMount) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthVolumeMount
 			}
 			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthVolumeMount
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -792,7 +850,7 @@ func (m *VolumeMount) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -801,6 +859,9 @@ func (m *VolumeMount) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthVolumeMount
 			}
 			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthVolumeMount
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -817,7 +878,7 @@ func (m *VolumeMount) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthVolumeMount
 			}
 			if (iNdEx + skippy) > l {
@@ -847,7 +908,7 @@ func (m *VolumePlacement) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -875,7 +936,7 @@ func (m *VolumePlacement) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -885,6 +946,9 @@ func (m *VolumePlacement) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthVolumeMount
 			}
 			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthVolumeMount
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -896,7 +960,7 @@ func (m *VolumePlacement) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthVolumeMount
 			}
 			if (iNdEx + skippy) > l {
@@ -914,6 +978,7 @@ func (m *VolumePlacement) Unmarshal(dAtA []byte) error {
 func skipVolumeMount(dAtA []byte) (n int, err error) {
 	l := len(dAtA)
 	iNdEx := 0
+	depth := 0
 	for iNdEx < l {
 		var wire uint64
 		for shift := uint(0); ; shift += 7 {
@@ -945,10 +1010,8 @@ func skipVolumeMount(dAtA []byte) (n int, err error) {
 					break
 				}
 			}
-			return iNdEx, nil
 		case 1:
 			iNdEx += 8
-			return iNdEx, nil
 		case 2:
 			var length int
 			for shift := uint(0); ; shift += 7 {
@@ -965,83 +1028,34 @@ func skipVolumeMount(dAtA []byte) (n int, err error) {
 					break
 				}
 			}
-			iNdEx += length
 			if length < 0 {
 				return 0, ErrInvalidLengthVolumeMount
 			}
-			return iNdEx, nil
+			iNdEx += length
 		case 3:
-			for {
-				var innerWire uint64
-				var start int = iNdEx
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return 0, ErrIntOverflowVolumeMount
-					}
-					if iNdEx >= l {
-						return 0, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					innerWire |= (uint64(b) & 0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				innerWireType := int(innerWire & 0x7)
-				if innerWireType == 4 {
-					break
-				}
-				next, err := skipVolumeMount(dAtA[start:])
-				if err != nil {
-					return 0, err
-				}
-				iNdEx = start + next
-			}
-			return iNdEx, nil
+			depth++
 		case 4:
-			return iNdEx, nil
+			if depth == 0 {
+				return 0, ErrUnexpectedEndOfGroupVolumeMount
+			}
+			depth--
 		case 5:
 			iNdEx += 4
-			return iNdEx, nil
 		default:
 			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
 		}
+		if iNdEx < 0 {
+			return 0, ErrInvalidLengthVolumeMount
+		}
+		if depth == 0 {
+			return iNdEx, nil
+		}
 	}
-	panic("unreachable")
+	return 0, io.ErrUnexpectedEOF
 }
 
 var (
-	ErrInvalidLengthVolumeMount = fmt.Errorf("proto: negative length found during unmarshaling")
-	ErrIntOverflowVolumeMount   = fmt.Errorf("proto: integer overflow")
+	ErrInvalidLengthVolumeMount        = fmt.Errorf("proto: negative length found during unmarshaling")
+	ErrIntOverflowVolumeMount          = fmt.Errorf("proto: integer overflow")
+	ErrUnexpectedEndOfGroupVolumeMount = fmt.Errorf("proto: unexpected end of group")
 )
-
-func init() { proto.RegisterFile("volume_mount.proto", fileDescriptor_volume_mount_13b32eee5c8c5956) }
-
-var fileDescriptor_volume_mount_13b32eee5c8c5956 = []byte{
-	// 381 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x54, 0x91, 0xc1, 0x6a, 0xa3, 0x40,
-	0x18, 0xc7, 0x9d, 0xc4, 0xb8, 0x66, 0x4c, 0x58, 0x77, 0xd8, 0x83, 0x2c, 0xcb, 0x18, 0x3c, 0x85,
-	0x85, 0x35, 0xd0, 0x94, 0xd2, 0x73, 0x1a, 0x0a, 0x0d, 0xb4, 0x14, 0x0b, 0xbd, 0x8a, 0xd1, 0x89,
-	0x19, 0x88, 0x4e, 0x31, 0x9a, 0x73, 0x1f, 0xa1, 0x8f, 0xd1, 0x47, 0xe9, 0x31, 0xd0, 0x4b, 0x4e,
-	0xd2, 0x98, 0x4b, 0xf1, 0x94, 0x47, 0x28, 0xce, 0xd8, 0x36, 0xb9, 0x38, 0xf3, 0xfb, 0x7f, 0x7f,
-	0x3f, 0xbf, 0xef, 0x2f, 0x44, 0x2b, 0xb6, 0xc8, 0x22, 0xe2, 0x46, 0x2c, 0x8b, 0x53, 0xfb, 0x21,
-	0x61, 0x29, 0x43, 0x4a, 0xc4, 0x02, 0xb2, 0x58, 0xfe, 0xf9, 0x1f, 0xd2, 0x74, 0x9e, 0x4d, 0x6d,
-	0x9f, 0x45, 0x83, 0x90, 0x85, 0x6c, 0xc0, 0xcb, 0xd3, 0x6c, 0xc6, 0x89, 0x03, 0xbf, 0x89, 0xd7,
-	0x2c, 0x06, 0x3b, 0x77, 0x73, 0x2f, 0x21, 0xc1, 0x98, 0xac, 0xa8, 0x4f, 0xd0, 0x3f, 0xd8, 0xae,
-	0x9b, 0xd3, 0xc0, 0x00, 0x3d, 0xd0, 0x6f, 0x8f, 0xba, 0x65, 0x6e, 0x7e, 0x8b, 0x8e, 0x2a, 0xae,
-	0x57, 0x01, 0x1a, 0xc2, 0x0e, 0x9f, 0xc0, 0xf5, 0x59, 0x3c, 0xa3, 0xa1, 0xd1, 0xe0, 0x76, 0xbd,
-	0xcc, 0xcd, 0x23, 0xdd, 0xd1, 0x38, 0x5d, 0x70, 0xb0, 0x5e, 0x01, 0xd4, 0xee, 0x79, 0x87, 0xeb,
-	0x4a, 0x45, 0x16, 0x54, 0x82, 0x84, 0xae, 0x48, 0x52, 0x7f, 0x0d, 0x96, 0xb9, 0x59, 0x2b, 0x4e,
-	0x7d, 0xa2, 0x33, 0xd8, 0xf5, 0x59, 0x9c, 0x7a, 0x34, 0x26, 0x89, 0x1b, 0xd0, 0xc4, 0x68, 0x72,
-	0xeb, 0xaf, 0x32, 0x37, 0x8f, 0x0b, 0x4e, 0xe7, 0x0b, 0xc7, 0x34, 0x41, 0x7f, 0xa1, 0x5c, 0xa5,
-	0x62, 0x28, 0xdc, 0xae, 0x96, 0xb9, 0xc9, 0xd9, 0xe1, 0x4f, 0x74, 0x0e, 0x95, 0x25, 0x5f, 0xdd,
-	0xf8, 0xd1, 0x03, 0x7d, 0xed, 0xe4, 0xb7, 0x2d, 0x22, 0xb4, 0x0f, 0x03, 0x11, 0xf3, 0x08, 0x9f,
-	0x53, 0x9f, 0x13, 0x59, 0x6d, 0xe8, 0xcd, 0x89, 0xac, 0xca, 0x7a, 0x6b, 0x22, 0xab, 0x2d, 0x5d,
-	0xb1, 0x2e, 0xe1, 0x4f, 0xb1, 0xd4, 0xed, 0xc2, 0xf3, 0x49, 0x44, 0xe2, 0xb4, 0x4a, 0x47, 0x8c,
-	0xef, 0xc6, 0x5e, 0x44, 0x96, 0x06, 0xe8, 0x35, 0x3f, 0xd3, 0x39, 0xd4, 0x1d, 0x4d, 0xd0, 0x4d,
-	0x05, 0xa3, 0xd3, 0xf5, 0x16, 0x83, 0xcd, 0x16, 0x4b, 0xfb, 0x2d, 0x06, 0x8f, 0x05, 0x06, 0xcf,
-	0x05, 0x06, 0x2f, 0x05, 0x06, 0xeb, 0x02, 0x83, 0xb7, 0x02, 0x83, 0xf7, 0x02, 0x4b, 0xfb, 0x02,
-	0x83, 0xa7, 0x1d, 0x96, 0xd6, 0x3b, 0x2c, 0x6d, 0x76, 0x58, 0x9a, 0x2a, 0xfc, 0x5f, 0x0e, 0x3f,
-	0x02, 0x00, 0x00, 0xff, 0xff, 0x1a, 0x23, 0x60, 0xde, 0x18, 0x02, 0x00, 0x00,
-}

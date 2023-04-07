@@ -22,7 +22,9 @@ type Decryptor interface {
 	Decrypt(encrypted Encrypted) ([]byte, error)
 }
 
-//go:generate counterfeiter . Cryptor
+//go:generate counterfeiter -generate
+
+//counterfeiter:generate . Cryptor
 
 type Cryptor interface {
 	Encryptor

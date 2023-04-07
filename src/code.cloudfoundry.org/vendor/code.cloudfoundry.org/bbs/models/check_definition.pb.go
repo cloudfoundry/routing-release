@@ -3,15 +3,16 @@
 
 package models
 
-import proto "github.com/gogo/protobuf/proto"
-import fmt "fmt"
-import math "math"
-import _ "github.com/gogo/protobuf/gogoproto"
-
-import strings "strings"
-import reflect "reflect"
-
-import io "io"
+import (
+	fmt "fmt"
+	_ "github.com/gogo/protobuf/gogoproto"
+	proto "github.com/gogo/protobuf/proto"
+	io "io"
+	math "math"
+	math_bits "math/bits"
+	reflect "reflect"
+	strings "strings"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -22,7 +23,7 @@ var _ = math.Inf
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
+const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type CheckDefinition struct {
 	Checks    []*Check `protobuf:"bytes,1,rep,name=checks,proto3" json:"checks,omitempty"`
@@ -32,7 +33,7 @@ type CheckDefinition struct {
 func (m *CheckDefinition) Reset()      { *m = CheckDefinition{} }
 func (*CheckDefinition) ProtoMessage() {}
 func (*CheckDefinition) Descriptor() ([]byte, []int) {
-	return fileDescriptor_check_definition_413963d2463bfea4, []int{0}
+	return fileDescriptor_048a62b88ce7913d, []int{0}
 }
 func (m *CheckDefinition) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -42,15 +43,15 @@ func (m *CheckDefinition) XXX_Marshal(b []byte, deterministic bool) ([]byte, err
 		return xxx_messageInfo_CheckDefinition.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *CheckDefinition) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CheckDefinition.Merge(dst, src)
+func (m *CheckDefinition) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CheckDefinition.Merge(m, src)
 }
 func (m *CheckDefinition) XXX_Size() int {
 	return m.Size()
@@ -85,7 +86,7 @@ type Check struct {
 func (m *Check) Reset()      { *m = Check{} }
 func (*Check) ProtoMessage() {}
 func (*Check) Descriptor() ([]byte, []int) {
-	return fileDescriptor_check_definition_413963d2463bfea4, []int{1}
+	return fileDescriptor_048a62b88ce7913d, []int{1}
 }
 func (m *Check) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -95,15 +96,15 @@ func (m *Check) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return xxx_messageInfo_Check.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *Check) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Check.Merge(dst, src)
+func (m *Check) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Check.Merge(m, src)
 }
 func (m *Check) XXX_Size() int {
 	return m.Size()
@@ -136,7 +137,7 @@ type TCPCheck struct {
 func (m *TCPCheck) Reset()      { *m = TCPCheck{} }
 func (*TCPCheck) ProtoMessage() {}
 func (*TCPCheck) Descriptor() ([]byte, []int) {
-	return fileDescriptor_check_definition_413963d2463bfea4, []int{2}
+	return fileDescriptor_048a62b88ce7913d, []int{2}
 }
 func (m *TCPCheck) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -146,15 +147,15 @@ func (m *TCPCheck) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return xxx_messageInfo_TCPCheck.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *TCPCheck) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_TCPCheck.Merge(dst, src)
+func (m *TCPCheck) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_TCPCheck.Merge(m, src)
 }
 func (m *TCPCheck) XXX_Size() int {
 	return m.Size()
@@ -188,7 +189,7 @@ type HTTPCheck struct {
 func (m *HTTPCheck) Reset()      { *m = HTTPCheck{} }
 func (*HTTPCheck) ProtoMessage() {}
 func (*HTTPCheck) Descriptor() ([]byte, []int) {
-	return fileDescriptor_check_definition_413963d2463bfea4, []int{3}
+	return fileDescriptor_048a62b88ce7913d, []int{3}
 }
 func (m *HTTPCheck) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -198,15 +199,15 @@ func (m *HTTPCheck) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return xxx_messageInfo_HTTPCheck.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (dst *HTTPCheck) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_HTTPCheck.Merge(dst, src)
+func (m *HTTPCheck) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_HTTPCheck.Merge(m, src)
 }
 func (m *HTTPCheck) XXX_Size() int {
 	return m.Size()
@@ -244,6 +245,36 @@ func init() {
 	proto.RegisterType((*TCPCheck)(nil), "models.TCPCheck")
 	proto.RegisterType((*HTTPCheck)(nil), "models.HTTPCheck")
 }
+
+func init() { proto.RegisterFile("check_definition.proto", fileDescriptor_048a62b88ce7913d) }
+
+var fileDescriptor_048a62b88ce7913d = []byte{
+	// 366 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x91, 0xc1, 0x6a, 0xea, 0x40,
+	0x14, 0x86, 0x33, 0xea, 0x15, 0x33, 0xe2, 0xbd, 0xde, 0x59, 0x94, 0x50, 0xca, 0x28, 0x81, 0x82,
+	0x8b, 0x1a, 0x8b, 0xed, 0x13, 0x68, 0x17, 0xdd, 0x14, 0x4a, 0x1a, 0xba, 0x0d, 0x3a, 0x8e, 0x49,
+	0xa8, 0xc9, 0xa4, 0xc9, 0x64, 0xdf, 0x47, 0xe8, 0x63, 0xf4, 0x51, 0xba, 0x74, 0xe9, 0x4a, 0xea,
+	0xb8, 0x29, 0xae, 0x7c, 0x84, 0xe2, 0x49, 0x22, 0x5d, 0x14, 0xba, 0x39, 0x9c, 0x93, 0xff, 0xff,
+	0xbf, 0x1f, 0x32, 0xf8, 0x84, 0xf9, 0x9c, 0x3d, 0xb9, 0x33, 0x3e, 0x0f, 0xa2, 0x40, 0x06, 0x22,
+	0xb2, 0xe2, 0x44, 0x48, 0x41, 0xea, 0xa1, 0x98, 0xf1, 0x45, 0x7a, 0xda, 0xf7, 0x02, 0xe9, 0x67,
+	0x53, 0x8b, 0x89, 0x70, 0xe0, 0x09, 0x4f, 0x0c, 0x40, 0x9e, 0x66, 0x73, 0xb8, 0xe0, 0x80, 0x2d,
+	0x8f, 0x99, 0x1e, 0xfe, 0x37, 0x3e, 0x00, 0x6f, 0x8e, 0x3c, 0x72, 0x8e, 0xeb, 0xd0, 0x91, 0x1a,
+	0xa8, 0x5b, 0xed, 0x35, 0x87, 0x2d, 0x2b, 0x47, 0x5b, 0x60, 0xb4, 0x0b, 0x91, 0xf4, 0x31, 0x5e,
+	0x08, 0xcf, 0x4d, 0x45, 0x96, 0x30, 0x6e, 0x54, 0xba, 0xa8, 0xa7, 0x8f, 0xfe, 0xee, 0xd6, 0x9d,
+	0x6f, 0x5f, 0x6d, 0x7d, 0x21, 0xbc, 0x07, 0x58, 0x4d, 0x1f, 0xff, 0x81, 0x3c, 0xe9, 0x63, 0x5d,
+	0xb2, 0xd8, 0x05, 0x8a, 0x81, 0xba, 0xa8, 0xd7, 0x1c, 0xb6, 0xcb, 0x06, 0x67, 0x7c, 0x9f, 0x97,
+	0x34, 0x24, 0x8b, 0x73, 0xfb, 0x25, 0xc6, 0xbe, 0x94, 0xa5, 0xbf, 0x02, 0xfe, 0xff, 0xa5, 0xff,
+	0xd6, 0x71, 0x8a, 0x80, 0x7e, 0x30, 0xc1, 0x6a, 0x3e, 0xe2, 0x46, 0xc9, 0x21, 0x67, 0xb8, 0x16,
+	0x8b, 0x44, 0x42, 0x4f, 0x6b, 0xd4, 0xd8, 0xad, 0x3b, 0x70, 0xdb, 0x30, 0xc9, 0x05, 0x26, 0x4c,
+	0x44, 0x11, 0x67, 0xd2, 0x95, 0x41, 0xc8, 0x45, 0x26, 0xdd, 0x30, 0x85, 0x8e, 0x9a, 0xdd, 0x2e,
+	0x14, 0x27, 0x17, 0xee, 0x52, 0x33, 0xc3, 0xfa, 0xb1, 0xef, 0x77, 0x70, 0xc2, 0x9f, 0x33, 0x9e,
+	0xfe, 0x04, 0x2e, 0x94, 0x23, 0x18, 0x58, 0x13, 0xe9, 0x1b, 0x55, 0xf8, 0x87, 0x39, 0x6b, 0x22,
+	0x7d, 0x1b, 0xe6, 0xe8, 0x7a, 0xb9, 0xa1, 0xda, 0x6a, 0x43, 0xb5, 0xfd, 0x86, 0xa2, 0x17, 0x45,
+	0xd1, 0x9b, 0xa2, 0xe8, 0x5d, 0x51, 0xb4, 0x54, 0x14, 0x7d, 0x28, 0x8a, 0x3e, 0x15, 0xd5, 0xf6,
+	0x8a, 0xa2, 0xd7, 0x2d, 0xd5, 0x96, 0x5b, 0xaa, 0xad, 0xb6, 0x54, 0x9b, 0xd6, 0xe1, 0x79, 0xaf,
+	0xbe, 0x02, 0x00, 0x00, 0xff, 0xff, 0xf9, 0x69, 0xc1, 0x97, 0x2f, 0x02, 0x00, 0x00,
+}
+
 func (this *CheckDefinition) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
@@ -422,7 +453,7 @@ func valueToGoStringCheckDefinition(v interface{}, typ string) string {
 func (m *CheckDefinition) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -430,35 +461,43 @@ func (m *CheckDefinition) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *CheckDefinition) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *CheckDefinition) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
+	if len(m.LogSource) > 0 {
+		i -= len(m.LogSource)
+		copy(dAtA[i:], m.LogSource)
+		i = encodeVarintCheckDefinition(dAtA, i, uint64(len(m.LogSource)))
+		i--
+		dAtA[i] = 0x12
+	}
 	if len(m.Checks) > 0 {
-		for _, msg := range m.Checks {
-			dAtA[i] = 0xa
-			i++
-			i = encodeVarintCheckDefinition(dAtA, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(dAtA[i:])
-			if err != nil {
-				return 0, err
+		for iNdEx := len(m.Checks) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Checks[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintCheckDefinition(dAtA, i, uint64(size))
 			}
-			i += n
+			i--
+			dAtA[i] = 0xa
 		}
 	}
-	if len(m.LogSource) > 0 {
-		dAtA[i] = 0x12
-		i++
-		i = encodeVarintCheckDefinition(dAtA, i, uint64(len(m.LogSource)))
-		i += copy(dAtA[i:], m.LogSource)
-	}
-	return i, nil
+	return len(dAtA) - i, nil
 }
 
 func (m *Check) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -466,37 +505,46 @@ func (m *Check) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Check) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Check) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.TcpCheck != nil {
-		dAtA[i] = 0xa
-		i++
-		i = encodeVarintCheckDefinition(dAtA, i, uint64(m.TcpCheck.Size()))
-		n1, err := m.TcpCheck.MarshalTo(dAtA[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n1
-	}
 	if m.HttpCheck != nil {
-		dAtA[i] = 0x12
-		i++
-		i = encodeVarintCheckDefinition(dAtA, i, uint64(m.HttpCheck.Size()))
-		n2, err := m.HttpCheck.MarshalTo(dAtA[i:])
-		if err != nil {
-			return 0, err
+		{
+			size, err := m.HttpCheck.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintCheckDefinition(dAtA, i, uint64(size))
 		}
-		i += n2
+		i--
+		dAtA[i] = 0x12
 	}
-	return i, nil
+	if m.TcpCheck != nil {
+		{
+			size, err := m.TcpCheck.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintCheckDefinition(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
 }
 
 func (m *TCPCheck) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -504,27 +552,32 @@ func (m *TCPCheck) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *TCPCheck) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *TCPCheck) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.Port != 0 {
-		dAtA[i] = 0x8
-		i++
-		i = encodeVarintCheckDefinition(dAtA, i, uint64(m.Port))
-	}
 	if m.ConnectTimeoutMs != 0 {
-		dAtA[i] = 0x10
-		i++
 		i = encodeVarintCheckDefinition(dAtA, i, uint64(m.ConnectTimeoutMs))
+		i--
+		dAtA[i] = 0x10
 	}
-	return i, nil
+	if m.Port != 0 {
+		i = encodeVarintCheckDefinition(dAtA, i, uint64(m.Port))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
 }
 
 func (m *HTTPCheck) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
@@ -532,37 +585,45 @@ func (m *HTTPCheck) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *HTTPCheck) MarshalTo(dAtA []byte) (int, error) {
-	var i int
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *HTTPCheck) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.Port != 0 {
-		dAtA[i] = 0x8
-		i++
-		i = encodeVarintCheckDefinition(dAtA, i, uint64(m.Port))
+	if len(m.Path) > 0 {
+		i -= len(m.Path)
+		copy(dAtA[i:], m.Path)
+		i = encodeVarintCheckDefinition(dAtA, i, uint64(len(m.Path)))
+		i--
+		dAtA[i] = 0x1a
 	}
 	if m.RequestTimeoutMs != 0 {
-		dAtA[i] = 0x10
-		i++
 		i = encodeVarintCheckDefinition(dAtA, i, uint64(m.RequestTimeoutMs))
+		i--
+		dAtA[i] = 0x10
 	}
-	if len(m.Path) > 0 {
-		dAtA[i] = 0x1a
-		i++
-		i = encodeVarintCheckDefinition(dAtA, i, uint64(len(m.Path)))
-		i += copy(dAtA[i:], m.Path)
+	if m.Port != 0 {
+		i = encodeVarintCheckDefinition(dAtA, i, uint64(m.Port))
+		i--
+		dAtA[i] = 0x8
 	}
-	return i, nil
+	return len(dAtA) - i, nil
 }
 
 func encodeVarintCheckDefinition(dAtA []byte, offset int, v uint64) int {
+	offset -= sovCheckDefinition(v)
+	base := offset
 	for v >= 1<<7 {
 		dAtA[offset] = uint8(v&0x7f | 0x80)
 		v >>= 7
 		offset++
 	}
 	dAtA[offset] = uint8(v)
-	return offset + 1
+	return base
 }
 func (m *CheckDefinition) Size() (n int) {
 	if m == nil {
@@ -635,14 +696,7 @@ func (m *HTTPCheck) Size() (n int) {
 }
 
 func sovCheckDefinition(x uint64) (n int) {
-	for {
-		n++
-		x >>= 7
-		if x == 0 {
-			break
-		}
-	}
-	return n
+	return (math_bits.Len64(x|1) + 6) / 7
 }
 func sozCheckDefinition(x uint64) (n int) {
 	return sovCheckDefinition(uint64((x << 1) ^ uint64((int64(x) >> 63))))
@@ -651,8 +705,13 @@ func (this *CheckDefinition) String() string {
 	if this == nil {
 		return "nil"
 	}
+	repeatedStringForChecks := "[]*Check{"
+	for _, f := range this.Checks {
+		repeatedStringForChecks += strings.Replace(f.String(), "Check", "Check", 1) + ","
+	}
+	repeatedStringForChecks += "}"
 	s := strings.Join([]string{`&CheckDefinition{`,
-		`Checks:` + strings.Replace(fmt.Sprintf("%v", this.Checks), "Check", "Check", 1) + `,`,
+		`Checks:` + repeatedStringForChecks + `,`,
 		`LogSource:` + fmt.Sprintf("%v", this.LogSource) + `,`,
 		`}`,
 	}, "")
@@ -663,8 +722,8 @@ func (this *Check) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&Check{`,
-		`TcpCheck:` + strings.Replace(fmt.Sprintf("%v", this.TcpCheck), "TCPCheck", "TCPCheck", 1) + `,`,
-		`HttpCheck:` + strings.Replace(fmt.Sprintf("%v", this.HttpCheck), "HTTPCheck", "HTTPCheck", 1) + `,`,
+		`TcpCheck:` + strings.Replace(this.TcpCheck.String(), "TCPCheck", "TCPCheck", 1) + `,`,
+		`HttpCheck:` + strings.Replace(this.HttpCheck.String(), "HTTPCheck", "HTTPCheck", 1) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -715,7 +774,7 @@ func (m *CheckDefinition) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -743,7 +802,7 @@ func (m *CheckDefinition) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -752,6 +811,9 @@ func (m *CheckDefinition) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthCheckDefinition
 			}
 			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthCheckDefinition
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -774,7 +836,7 @@ func (m *CheckDefinition) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -784,6 +846,9 @@ func (m *CheckDefinition) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthCheckDefinition
 			}
 			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthCheckDefinition
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -795,7 +860,7 @@ func (m *CheckDefinition) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthCheckDefinition
 			}
 			if (iNdEx + skippy) > l {
@@ -825,7 +890,7 @@ func (m *Check) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -853,7 +918,7 @@ func (m *Check) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -862,6 +927,9 @@ func (m *Check) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthCheckDefinition
 			}
 			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthCheckDefinition
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -886,7 +954,7 @@ func (m *Check) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -895,6 +963,9 @@ func (m *Check) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthCheckDefinition
 			}
 			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthCheckDefinition
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -911,7 +982,7 @@ func (m *Check) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthCheckDefinition
 			}
 			if (iNdEx + skippy) > l {
@@ -941,7 +1012,7 @@ func (m *TCPCheck) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -969,7 +1040,7 @@ func (m *TCPCheck) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Port |= (uint32(b) & 0x7F) << shift
+				m.Port |= uint32(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -988,7 +1059,7 @@ func (m *TCPCheck) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ConnectTimeoutMs |= (uint64(b) & 0x7F) << shift
+				m.ConnectTimeoutMs |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -999,7 +1070,7 @@ func (m *TCPCheck) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthCheckDefinition
 			}
 			if (iNdEx + skippy) > l {
@@ -1029,7 +1100,7 @@ func (m *HTTPCheck) Unmarshal(dAtA []byte) error {
 			}
 			b := dAtA[iNdEx]
 			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
+			wire |= uint64(b&0x7F) << shift
 			if b < 0x80 {
 				break
 			}
@@ -1057,7 +1128,7 @@ func (m *HTTPCheck) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Port |= (uint32(b) & 0x7F) << shift
+				m.Port |= uint32(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1076,7 +1147,7 @@ func (m *HTTPCheck) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.RequestTimeoutMs |= (uint64(b) & 0x7F) << shift
+				m.RequestTimeoutMs |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1095,7 +1166,7 @@ func (m *HTTPCheck) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1105,6 +1176,9 @@ func (m *HTTPCheck) Unmarshal(dAtA []byte) error {
 				return ErrInvalidLengthCheckDefinition
 			}
 			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthCheckDefinition
+			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
@@ -1116,7 +1190,7 @@ func (m *HTTPCheck) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthCheckDefinition
 			}
 			if (iNdEx + skippy) > l {
@@ -1134,6 +1208,7 @@ func (m *HTTPCheck) Unmarshal(dAtA []byte) error {
 func skipCheckDefinition(dAtA []byte) (n int, err error) {
 	l := len(dAtA)
 	iNdEx := 0
+	depth := 0
 	for iNdEx < l {
 		var wire uint64
 		for shift := uint(0); ; shift += 7 {
@@ -1165,10 +1240,8 @@ func skipCheckDefinition(dAtA []byte) (n int, err error) {
 					break
 				}
 			}
-			return iNdEx, nil
 		case 1:
 			iNdEx += 8
-			return iNdEx, nil
 		case 2:
 			var length int
 			for shift := uint(0); ; shift += 7 {
@@ -1185,84 +1258,34 @@ func skipCheckDefinition(dAtA []byte) (n int, err error) {
 					break
 				}
 			}
-			iNdEx += length
 			if length < 0 {
 				return 0, ErrInvalidLengthCheckDefinition
 			}
-			return iNdEx, nil
+			iNdEx += length
 		case 3:
-			for {
-				var innerWire uint64
-				var start int = iNdEx
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return 0, ErrIntOverflowCheckDefinition
-					}
-					if iNdEx >= l {
-						return 0, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					innerWire |= (uint64(b) & 0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				innerWireType := int(innerWire & 0x7)
-				if innerWireType == 4 {
-					break
-				}
-				next, err := skipCheckDefinition(dAtA[start:])
-				if err != nil {
-					return 0, err
-				}
-				iNdEx = start + next
-			}
-			return iNdEx, nil
+			depth++
 		case 4:
-			return iNdEx, nil
+			if depth == 0 {
+				return 0, ErrUnexpectedEndOfGroupCheckDefinition
+			}
+			depth--
 		case 5:
 			iNdEx += 4
-			return iNdEx, nil
 		default:
 			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
 		}
+		if iNdEx < 0 {
+			return 0, ErrInvalidLengthCheckDefinition
+		}
+		if depth == 0 {
+			return iNdEx, nil
+		}
 	}
-	panic("unreachable")
+	return 0, io.ErrUnexpectedEOF
 }
 
 var (
-	ErrInvalidLengthCheckDefinition = fmt.Errorf("proto: negative length found during unmarshaling")
-	ErrIntOverflowCheckDefinition   = fmt.Errorf("proto: integer overflow")
+	ErrInvalidLengthCheckDefinition        = fmt.Errorf("proto: negative length found during unmarshaling")
+	ErrIntOverflowCheckDefinition          = fmt.Errorf("proto: integer overflow")
+	ErrUnexpectedEndOfGroupCheckDefinition = fmt.Errorf("proto: unexpected end of group")
 )
-
-func init() {
-	proto.RegisterFile("check_definition.proto", fileDescriptor_check_definition_413963d2463bfea4)
-}
-
-var fileDescriptor_check_definition_413963d2463bfea4 = []byte{
-	// 366 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x91, 0xc1, 0x6a, 0xea, 0x40,
-	0x14, 0x86, 0x33, 0xea, 0x15, 0x33, 0xe2, 0xbd, 0xde, 0x59, 0x94, 0x50, 0xca, 0x28, 0x81, 0x82,
-	0x8b, 0x1a, 0x8b, 0xed, 0x13, 0x68, 0x17, 0xdd, 0x14, 0x4a, 0x1a, 0xba, 0x0d, 0x3a, 0x8e, 0x49,
-	0xa8, 0xc9, 0xa4, 0xc9, 0x64, 0xdf, 0x47, 0xe8, 0x63, 0xf4, 0x51, 0xba, 0x74, 0xe9, 0x4a, 0xea,
-	0xb8, 0x29, 0xae, 0x7c, 0x84, 0xe2, 0x49, 0x22, 0x5d, 0x14, 0xba, 0x39, 0x9c, 0x93, 0xff, 0xff,
-	0xbf, 0x1f, 0x32, 0xf8, 0x84, 0xf9, 0x9c, 0x3d, 0xb9, 0x33, 0x3e, 0x0f, 0xa2, 0x40, 0x06, 0x22,
-	0xb2, 0xe2, 0x44, 0x48, 0x41, 0xea, 0xa1, 0x98, 0xf1, 0x45, 0x7a, 0xda, 0xf7, 0x02, 0xe9, 0x67,
-	0x53, 0x8b, 0x89, 0x70, 0xe0, 0x09, 0x4f, 0x0c, 0x40, 0x9e, 0x66, 0x73, 0xb8, 0xe0, 0x80, 0x2d,
-	0x8f, 0x99, 0x1e, 0xfe, 0x37, 0x3e, 0x00, 0x6f, 0x8e, 0x3c, 0x72, 0x8e, 0xeb, 0xd0, 0x91, 0x1a,
-	0xa8, 0x5b, 0xed, 0x35, 0x87, 0x2d, 0x2b, 0x47, 0x5b, 0x60, 0xb4, 0x0b, 0x91, 0xf4, 0x31, 0x5e,
-	0x08, 0xcf, 0x4d, 0x45, 0x96, 0x30, 0x6e, 0x54, 0xba, 0xa8, 0xa7, 0x8f, 0xfe, 0xee, 0xd6, 0x9d,
-	0x6f, 0x5f, 0x6d, 0x7d, 0x21, 0xbc, 0x07, 0x58, 0x4d, 0x1f, 0xff, 0x81, 0x3c, 0xe9, 0x63, 0x5d,
-	0xb2, 0xd8, 0x05, 0x8a, 0x81, 0xba, 0xa8, 0xd7, 0x1c, 0xb6, 0xcb, 0x06, 0x67, 0x7c, 0x9f, 0x97,
-	0x34, 0x24, 0x8b, 0x73, 0xfb, 0x25, 0xc6, 0xbe, 0x94, 0xa5, 0xbf, 0x02, 0xfe, 0xff, 0xa5, 0xff,
-	0xd6, 0x71, 0x8a, 0x80, 0x7e, 0x30, 0xc1, 0x6a, 0x3e, 0xe2, 0x46, 0xc9, 0x21, 0x67, 0xb8, 0x16,
-	0x8b, 0x44, 0x42, 0x4f, 0x6b, 0xd4, 0xd8, 0xad, 0x3b, 0x70, 0xdb, 0x30, 0xc9, 0x05, 0x26, 0x4c,
-	0x44, 0x11, 0x67, 0xd2, 0x95, 0x41, 0xc8, 0x45, 0x26, 0xdd, 0x30, 0x85, 0x8e, 0x9a, 0xdd, 0x2e,
-	0x14, 0x27, 0x17, 0xee, 0x52, 0x33, 0xc3, 0xfa, 0xb1, 0xef, 0x77, 0x70, 0xc2, 0x9f, 0x33, 0x9e,
-	0xfe, 0x04, 0x2e, 0x94, 0x23, 0x18, 0x58, 0x13, 0xe9, 0x1b, 0x55, 0xf8, 0x87, 0x39, 0x6b, 0x22,
-	0x7d, 0x1b, 0xe6, 0xe8, 0x7a, 0xb9, 0xa1, 0xda, 0x6a, 0x43, 0xb5, 0xfd, 0x86, 0xa2, 0x17, 0x45,
-	0xd1, 0x9b, 0xa2, 0xe8, 0x5d, 0x51, 0xb4, 0x54, 0x14, 0x7d, 0x28, 0x8a, 0x3e, 0x15, 0xd5, 0xf6,
-	0x8a, 0xa2, 0xd7, 0x2d, 0xd5, 0x96, 0x5b, 0xaa, 0xad, 0xb6, 0x54, 0x9b, 0xd6, 0xe1, 0x79, 0xaf,
-	0xbe, 0x02, 0x00, 0x00, 0xff, 0xff, 0xf9, 0x69, 0xc1, 0x97, 0x2f, 0x02, 0x00, 0x00,
-}
