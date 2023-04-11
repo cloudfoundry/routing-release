@@ -12,7 +12,6 @@ files:
   - code.cloudfoundry.org/gorouter/**/*.{go,golden,proto,c,h,}
   - code.cloudfoundry.org/gorouter/LICENSE
   - code.cloudfoundry.org/gorouter/NOTICE
-  - code.cloudfoundry.org/vendor/code.cloudfoundry.org/lager/lagerflags/**/*.go
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/cfhttp/v2/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/clock/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/debugserver/*.go # gosub
