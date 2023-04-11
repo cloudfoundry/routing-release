@@ -31,7 +31,7 @@ require (
 	github.com/cloudfoundry/cf-routing-test-helpers v0.0.0-20200827173955-6ac4653025b4
 	github.com/cloudfoundry/cf-test-helpers/v2 v2.5.0
 	github.com/cloudfoundry/custom-cats-reporters v0.0.2
-	github.com/cloudfoundry/dropsonde v1.0.1-0.20230324134055-c6dd7c5e990e
+	github.com/cloudfoundry/dropsonde v1.0.1-0.20230410205101-cce4f49c37d1
 	github.com/cloudfoundry/sonde-go v0.0.0-20230323202738-86a2a74b11b0
 	github.com/codegangsta/cli v0.0.0-00010101000000-000000000000
 	github.com/go-sql-driver/mysql v1.7.0

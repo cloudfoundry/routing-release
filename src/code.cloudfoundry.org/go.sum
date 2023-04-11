@@ -71,8 +71,8 @@ github.com/cloudfoundry/cf-test-helpers/v2 v2.5.0/go.mod h1:+obqhEjTB5aVVSKJSmXl
 github.com/cloudfoundry/custom-cats-reporters v0.0.2 h1:ySBjBh6I2an5FvbJ2egszOyiOYJkKqeOtpOmnU2RKiI=
 github.com/cloudfoundry/custom-cats-reporters v0.0.2/go.mod h1:uxXHu50QB3u67C2PZlaFBlc9yTy9gQ4Nb+nL3J959bU=
 github.com/cloudfoundry/dropsonde v1.0.0/go.mod h1:6zwvrWK5TpxBVYi1cdkE5WDsIO8E0n7qAJg3wR9B67c=
-github.com/cloudfoundry/dropsonde v1.0.1-0.20230324134055-c6dd7c5e990e h1:BJfawMcuQU/ZDZtUAq3QTZ9Ume2y03df6a/nFKvbj7M=
-github.com/cloudfoundry/dropsonde v1.0.1-0.20230324134055-c6dd7c5e990e/go.mod h1:OrkxsBrAvM8X0Ve9vaSNKLR+/Jeohu3+J0M4JEaTmnM=
+github.com/cloudfoundry/dropsonde v1.0.1-0.20230410205101-cce4f49c37d1 h1:cmKi62bIoMbNw1awkibp7HlINvosnXsX29KdCLIWtds=
+github.com/cloudfoundry/dropsonde v1.0.1-0.20230410205101-cce4f49c37d1/go.mod h1:OrkxsBrAvM8X0Ve9vaSNKLR+/Jeohu3+J0M4JEaTmnM=
 github.com/cloudfoundry/gosteno v0.0.0-20150423193413-0c8581caea35/go.mod h1:3YBPUR85RIrvaUTdA1dL38YSp6s3OHu1xrWLkGt2Mog=
 github.com/cloudfoundry/loggregatorlib v0.0.0-20170823162133-36eddf15ef12/go.mod h1:ucj7+svyACshmxV3Zze2NAcEcdbBf9scZYR+QKCX9/w=
 github.com/cloudfoundry/sonde-go v0.0.0-20171206171820-b33733203bb4/go.mod h1:GS0pCHd7onIsewbw8Ue9qa9pZPv2V88cUZDttK6KzgI=

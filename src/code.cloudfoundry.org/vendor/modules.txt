@@ -110,7 +110,7 @@ github.com/cloudfoundry/cf-test-helpers/v2/workflowhelpers/internal
 # github.com/cloudfoundry/custom-cats-reporters v0.0.2
 ## explicit
 github.com/cloudfoundry/custom-cats-reporters/honeycomb/client
-# github.com/cloudfoundry/dropsonde v1.0.1-0.20230324134055-c6dd7c5e990e
+# github.com/cloudfoundry/dropsonde v1.0.1-0.20230410205101-cce4f49c37d1
 ## explicit; go 1.18
 github.com/cloudfoundry/dropsonde
 github.com/cloudfoundry/dropsonde/emitter
