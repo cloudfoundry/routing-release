@@ -1,6 +1,6 @@
 module code.cloudfoundry.org
 
-go 1.19
+go 1.20
 
 replace github.com/uber-go/zap => github.com/uber-go/zap v0.0.0-20161222040304-a5783ee4b216
 
