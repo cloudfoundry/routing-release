@@ -5,5 +5,5 @@ ROOT_DIR_PATH="$(cd $(dirname $0)/.. && pwd)"
 pushd "${ROOT_DIR_PATH}" > /dev/null
   bundle install
   bundle exec rspec spec
-  rubocop spec
+  rubocop spec # you can fix these errors by running 'rubocop -a spec' or adding an ignore directive
 popd > /dev/null

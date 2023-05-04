@@ -3,12 +3,12 @@
 BASEDIR="$(cd $(dirname "$0") && pwd)"
 ROUTING_RELEASE_DIR="${BASEDIR}/.."
 
-IMAGE="ruby:3"
+IMAGE="cloudfoundry/tas-runtime-build"
 MOUNT_DIR="/routing-release"
-PREPARE_CONTAINER="cd ${MOUNT_DIR}; source .envrc; scripts/template-tests; echo 'done'"
+RUN_TEMPLATE_TESTS="cd ${MOUNT_DIR}; source .envrc; scripts/template-tests; echo 'done'"
 
 docker pull "${IMAGE}"
 docker run -it \
   -v "${ROUTING_RELEASE_DIR}:${MOUNT_DIR}" \
   "${IMAGE}" \
-  /bin/bash -c "${PREPARE_CONTAINER}"
+  /bin/bash -c "${RUN_TEMPLATE_TESTS}"

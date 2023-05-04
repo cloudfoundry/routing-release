@@ -4,6 +4,7 @@ set -ex -o pipefail
 BASEDIR="$(dirname "$0")"
 PACKAGE="$1"
 SUB_PACKAGE="$2"
+DB="${DB:-"notset"}"
 
 go version # so we see the version tested in CI
 
@@ -15,11 +16,9 @@ function printStatus {
   else
     echo -e '\\nSUITE FAILURE'
   fi
-  service mariadb stop
-  service postgresql stop
 }
 trap printStatus EXIT
 
-${BASEDIR}/setup-test-environment.sh
-${BASEDIR}/run-all-component-tests.sh "$PACKAGE" "$SUB_PACKAGE"
+"${BASEDIR}/setup-test-environment.sh"
+"${BASEDIR}/run-all-component-tests.sh" "${PACKAGE}" "${SUB_PACKAGE}"
 
