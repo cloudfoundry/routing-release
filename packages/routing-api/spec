@@ -84,15 +84,10 @@ files:
   - code.cloudfoundry.org/vendor/github.com/jinzhu/gorm/dialects/mysql/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/jinzhu/gorm/dialects/postgres/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/jinzhu/inflection/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/josharian/intern/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/lib/pq/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/lib/pq/hstore/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/lib/pq/oid/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/lib/pq/scram/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/mailru/easyjson/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/mailru/easyjson/buffer/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/mailru/easyjson/jlexer/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/mailru/easyjson/jwriter/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nu7hatch/gouuid/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/v2/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/v2/config/*.go # gosub
@@ -127,7 +122,9 @@ files:
   - code.cloudfoundry.org/vendor/github.com/tedsuo/ifrit/sigmon/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/tedsuo/rata/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/vito/go-sse/sse/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.step.sm/crypto/fingerprint/*.go # gosub
   - code.cloudfoundry.org/vendor/go.step.sm/crypto/internal/bcrypt_pbkdf/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.step.sm/crypto/internal/emoji/*.go # gosub
   - code.cloudfoundry.org/vendor/go.step.sm/crypto/internal/utils/*.go # gosub
   - code.cloudfoundry.org/vendor/go.step.sm/crypto/keyutil/*.go # gosub
   - code.cloudfoundry.org/vendor/go.step.sm/crypto/pemutil/*.go # gosub
@@ -137,8 +134,6 @@ files:
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/chacha20/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/chacha20/*.s # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/curve25519/*.go # gosub
-  - code.cloudfoundry.org/vendor/golang.org/x/crypto/curve25519/internal/field/*.go # gosub
-  - code.cloudfoundry.org/vendor/golang.org/x/crypto/curve25519/internal/field/*.s # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/ed25519/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/internal/alias/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/internal/poly1305/*.go # gosub
@@ -151,7 +146,6 @@ files:
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/ssh/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/ssh/internal/bcrypt_pbkdf/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/context/*.go # gosub
-  - code.cloudfoundry.org/vendor/golang.org/x/net/context/ctxhttp/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/html/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/html/atom/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/html/charset/*.go # gosub

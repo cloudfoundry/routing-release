@@ -93,7 +93,6 @@ files:
   - code.cloudfoundry.org/vendor/github.com/tedsuo/rata/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/vito/go-sse/sse/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/context/*.go # gosub
-  - code.cloudfoundry.org/vendor/golang.org/x/net/context/ctxhttp/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/html/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/html/atom/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/html/charset/*.go # gosub
