@@ -8,8 +8,6 @@ replace github.com/uber-go/atomic => github.com/uber-go/atomic v1.1.0
 
 replace github.com/codegangsta/cli => github.com/codegangsta/cli v1.6.0
 
-replace github.com/hashicorp/consul => github.com/hashicorp/consul v0.7.0
-
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
 
 replace github.com/cloudfoundry-community/go-uaa => github.com/mariash/go-uaa v0.3.2
