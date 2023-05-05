@@ -13,6 +13,7 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
 	"reflect"
 	"sort"
@@ -26,14 +27,13 @@ import (
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
-	transmission.Version = version
 }
 
 const (
-	defaultSampleRate = 1
-	defaultAPIHost    = "https://api.honeycomb.io/"
-	defaultDataset    = "libhoney-go dataset"
-	version           = "1.15.3"
+	defaultSampleRate     = 1
+	defaultAPIHost        = "https://api.honeycomb.io/"
+	defaultClassicDataset = "libhoney-go dataset"
+	defaultDataset        = "unknown_dataset"
 
 	// DefaultMaxBatchSize how many events to collect in a batch
 	DefaultMaxBatchSize = 50
@@ -146,6 +146,28 @@ type Config struct {
 	Logger Logger
 }
 
+func (c *Config) getDataset() string {
+	if c.isClassic() {
+		if strings.TrimSpace(c.Dataset) == "" {
+			return defaultClassicDataset
+		}
+		return c.Dataset
+	}
+	trimmedDataset := strings.TrimSpace(c.Dataset)
+	if trimmedDataset == "" {
+		fmt.Fprintln(os.Stderr, "WARN: Dataset is empty or whitespace, using default:", defaultDataset)
+		return defaultDataset
+	}
+	if c.Dataset != trimmedDataset {
+		fmt.Fprintln(os.Stderr, "WARN: Dataset has unexpected whitespace, using trimmed version:", trimmedDataset)
+	}
+	return trimmedDataset
+}
+
+func (c *Config) isClassic() bool {
+	return c.APIKey == "" || len(c.APIKey) == 32
+}
+
 // Init is called on app initialization and passed a Config struct, which
 // configures default behavior. Use of package-level functions (e.g. SendNow())
 // require that WriteKey and Dataset are defined.
@@ -170,7 +192,7 @@ func Init(conf Config) error {
 	default:
 	}
 
-	clientConf.Dataset = conf.Dataset
+	clientConf.Dataset = conf.getDataset()
 	clientConf.SampleRate = conf.SampleRate
 	clientConf.APIHost = conf.APIHost
 
@@ -293,10 +315,31 @@ func VerifyWriteKey(config Config) (team string, err error) {
 // rejected.
 func VerifyAPIKey(config Config) (team string, err error) {
 	dc.ensureLogger()
-	defer func() { dc.logger.Printf("verify write key got back %s with err=%s", team, err) }()
+	auth, err := getAuth(config)
+	dc.logger.Printf("verify write key got back %s with err=%s", auth.Team.Slug, err)
+	if err != nil {
+		return "", err
+	}
+	return auth.Team.Slug, nil
+}
+
+// GetTeamAndEnvironment calls out to the Honeycomb API to validate the API key
+// and retrieve the associated team and environment names.
+func GetTeamAndEnvironment(config Config) (team string, environment string, err error) {
+	dc.ensureLogger()
+	auth, err := getAuth(config)
+	dc.logger.Printf("verify API key got back %s with err=%s", auth.Team.Slug, err)
+	if err != nil {
+		return "", "", err
+	}
+	return auth.Team.Slug, auth.Environment.Slug, nil
+}
+
+func getAuth(config Config) (authInfo, error) {
+	auth := authInfo{}
 	if config.APIKey == "" {
 		if config.WriteKey == "" {
-			return team, errors.New("config.APIKey and config.WriteKey are both empty; can't verify empty key")
+			return auth, errors.New("config.APIKey and config.WriteKey are both empty; can't verify empty key")
 		}
 		config.APIKey = config.WriteKey
 	}
@@ -305,35 +348,46 @@ func VerifyAPIKey(config Config) (team string, err error) {
 	}
 	u, err := url.Parse(config.APIHost)
 	if err != nil {
-		return team, fmt.Errorf("Error parsing API URL: %s", err)
+		return auth, fmt.Errorf("Error parsing API URL: %s", err)
 	}
-	u.Path = path.Join(u.Path, "1", "team_slug")
+	u.Path = path.Join(u.Path, "1", "auth")
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
-		return team, err
+		return auth, err
 	}
 	req.Header.Set("User-Agent", UserAgentAddition)
 	req.Header.Add("X-Honeycomb-Team", config.APIKey)
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return team, err
+		return auth, err
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode == http.StatusUnauthorized {
-		return team, errors.New("Write key provided is invalid")
+		return auth, errors.New("Write key provided is invalid")
 	}
 	body, _ := ioutil.ReadAll(resp.Body)
 	if resp.StatusCode != http.StatusOK {
-		return team, fmt.Errorf(`Abnormal non-200 response verifying Honeycomb write key: %d
+		return auth, fmt.Errorf(`Abnormal non-200 response verifying Honeycomb write/API key: %d
 Response body: %s`, resp.StatusCode, string(body))
 	}
-	ret := map[string]string{}
-	if err := json.Unmarshal(body, &ret); err != nil {
-		return team, err
+	if err := json.Unmarshal(body, &auth); err != nil {
+		return auth, fmt.Errorf("failed to JSON decode of AuthInfo response from Honeycomb API")
 	}
+	return auth, nil
+}
 
-	return ret["team_slug"], nil
+type teamInfo struct {
+	Slug string `json:"slug"`
+}
+
+type environmentInfo struct {
+	Slug string `json:"slug"`
+}
+
+type authInfo struct {
+	Team        teamInfo        `json:"team"`
+	Environment environmentInfo `json:"environment"`
 }
 
 // Deprecated: Response is deprecated; please use transmission.Response instead.
@@ -482,9 +536,10 @@ func Flush() {
 // Contrary to its name, SendNow does not block and send data
 // immediately, but only enqueues to be sent asynchronously.
 // It is equivalent to:
-//   ev := libhoney.NewEvent()
-//   ev.Add(data)
-//   ev.Send()
+//
+//	ev := libhoney.NewEvent()
+//	ev.Add(data)
+//	ev.Send()
 //
 // Deprecated: SendNow is deprecated and may be removed in a future major release.
 func SendNow(data interface{}) error {
@@ -788,8 +843,8 @@ func (e *Event) SendPresampled() (err error) {
 	e.sendLock.Lock()
 	defer e.sendLock.Unlock()
 
-	e.fieldHolder.lock.RLock()
-	defer e.fieldHolder.lock.RUnlock()
+	e.lock.RLock()
+	defer e.lock.RUnlock()
 	if len(e.data) == 0 {
 		return errors.New("No metrics added to event. Won't send empty event.")
 	}
@@ -866,9 +921,10 @@ func (b *Builder) AddDynamicField(name string, fn func() interface{}) error {
 // Contrary to its name, SendNow does not block and send data
 // immediately, but only enqueues to be sent asynchronously.
 // It is equivalent to:
-//   ev := builder.NewEvent()
-//   ev.Add(data)
-//   ev.Send()
+//
+//	ev := builder.NewEvent()
+//	ev.Add(data)
+//	ev.Send()
 //
 // Deprecated: SendNow is deprecated and may be removed in a future major release.
 func (b *Builder) SendNow(data interface{}) error {
@@ -891,18 +947,23 @@ func (b *Builder) NewEvent() *Event {
 		Timestamp:  time.Now(),
 		client:     b.client,
 	}
-	e.data = make(map[string]interface{})
-
+	// Set up locks
 	b.lock.RLock()
 	defer b.lock.RUnlock()
+	b.dynFieldsLock.RLock()
+	defer b.dynFieldsLock.RUnlock()
+	e.lock.Lock()
+	defer e.lock.Unlock()
+
+	e.data = make(map[string]interface{}, len(b.data)+len(b.dynFields))
 	for k, v := range b.data {
 		e.data[k] = v
 	}
-	// create dynamic metrics
-	b.dynFieldsLock.RLock()
-	defer b.dynFieldsLock.RUnlock()
+
+	// create dynamic metrics.
 	for _, dynField := range b.dynFields {
-		e.AddField(dynField.name, dynField.fn())
+		// Perform the data mutation while locked.
+		e.data[dynField.name] = dynField.fn()
 	}
 	return e
 }
@@ -917,12 +978,14 @@ func (b *Builder) Clone() *Builder {
 		APIHost:    b.APIHost,
 		client:     b.client,
 	}
-	newB.data = make(map[string]interface{})
+
 	b.lock.RLock()
 	defer b.lock.RUnlock()
+	newB.data = make(map[string]interface{}, len(b.data))
 	for k, v := range b.data {
 		newB.data[k] = v
 	}
+
 	// copy dynamic metric generators
 	b.dynFieldsLock.RLock()
 	defer b.dynFieldsLock.RUnlock()

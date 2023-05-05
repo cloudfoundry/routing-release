@@ -13,10 +13,12 @@ import (
 )
 
 type ClientLocketConfig struct {
-	LocketAddress        string `json:"locket_address,omitempty" yaml:"locket_address,omitempty"`
-	LocketCACertFile     string `json:"locket_ca_cert_file,omitempty" yaml:"locket_ca_cert_file,omitempty"`
-	LocketClientCertFile string `json:"locket_client_cert_file,omitempty" yaml:"locket_client_cert_file,omitempty"`
-	LocketClientKeyFile  string `json:"locket_client_key_file,omitempty" yaml:"locket_client_key_file,omitempty"`
+	LocketAddress                string `json:"locket_address,omitempty" yaml:"locket_address,omitempty"`
+	LocketCACertFile             string `json:"locket_ca_cert_file,omitempty" yaml:"locket_ca_cert_file,omitempty"`
+	LocketClientCertFile         string `json:"locket_client_cert_file,omitempty" yaml:"locket_client_cert_file,omitempty"`
+	LocketClientKeyFile          string `json:"locket_client_key_file,omitempty" yaml:"locket_client_key_file,omitempty"`
+	LocketClientKeepAliveTime    int    `json:"locket_client_keepalive_time,omitempty" yaml:"locket_client_keepalive_time,omitempty"`
+	LocketClientKeepAliveTimeout int    `json:"locket_client_keepalive_timeout,omitempty" yaml:"locket_client_keepalive_timeout,omitempty"`
 }
 
 func NewClientSkipCertVerify(logger lager.Logger, config ClientLocketConfig) (models.LocketClient, error) {
@@ -59,7 +61,8 @@ func newClientInternal(logger lager.Logger, config ClientLocketConfig, skipCertV
 		grpc.WithBlock(),
 		grpc.WithTimeout(10*time.Second), // ensure that grpc won't keep retrying forever
 		grpc.WithKeepaliveParams(keepalive.ClientParameters{
-			Time: 10 * time.Second,
+			Time:    time.Duration(config.LocketClientKeepAliveTime) * time.Second,
+			Timeout: time.Duration(config.LocketClientKeepAliveTimeout) * time.Second,
 		}),
 	)
 	if err != nil {

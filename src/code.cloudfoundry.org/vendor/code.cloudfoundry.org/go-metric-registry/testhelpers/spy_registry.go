@@ -10,14 +10,21 @@ import (
 )
 
 type SpyMetricsRegistry struct {
-	mu      sync.Mutex
-	Metrics map[string]*SpyMetric
+	mu           sync.Mutex
+	Metrics      map[string]*SpyMetric
+	debugMetrics bool
 }
 
 func NewMetricsRegistry() *SpyMetricsRegistry {
 	return &SpyMetricsRegistry{
 		Metrics: make(map[string]*SpyMetric),
 	}
+}
+
+func (s *SpyMetricsRegistry) RegisterDebugMetrics() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.debugMetrics = true
 }
 
 func (s *SpyMetricsRegistry) NewCounter(name, helpText string, opts ...metrics.MetricOption) metrics.Counter {
@@ -81,6 +88,12 @@ func (s *SpyMetricsRegistry) removeMetric(sm *SpyMetric) {
 	n := getMetricName(sm.name, sm.Opts.ConstLabels)
 
 	delete(s.Metrics, n)
+}
+
+func (s *SpyMetricsRegistry) GetDebugMetricsEnabled() bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.debugMetrics
 }
 
 func (s *SpyMetricsRegistry) GetMetric(name string, tags map[string]string) *SpyMetric {

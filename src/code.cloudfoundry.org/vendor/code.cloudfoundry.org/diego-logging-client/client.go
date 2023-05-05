@@ -49,6 +49,7 @@ type SpikeMetric struct {
 }
 
 // IngressClient is the shared contract between v1 and v2 clients.
+//
 //go:generate counterfeiter -o testhelpers/fake_ingress_client.go . IngressClient
 type IngressClient interface {
 	SendDuration(name string, value time.Duration, opts ...loggregator.EmitGaugeOption) error
@@ -61,6 +62,7 @@ type IngressClient interface {
 	SendAppLog(message, sourceType string, tags map[string]string) error
 	SendAppErrorLog(message, sourceType string, tags map[string]string) error
 	SendAppMetrics(metrics ContainerMetric) error
+	SendAppLogRate(rate, rateLimit float64, tags map[string]string) error
 	SendSpikeMetrics(metrics SpikeMetric) error
 	SendComponentMetric(name string, value float64, unit string) error
 }
@@ -120,6 +122,7 @@ func WrapClient(c logClient, s, i string) IngressClient {
 type logClient interface {
 	EmitLog(msg string, opts ...loggregator.EmitLogOption)
 	EmitGauge(opts ...loggregator.EmitGaugeOption)
+	EmitTimer(name string, start, stop time.Time, opts ...loggregator.EmitTimerOption)
 	EmitCounter(name string, opts ...loggregator.EmitCounterOption)
 }
 
@@ -241,11 +244,19 @@ func (c client) SendAppMetrics(m ContainerMetric) error {
 	return nil
 }
 
-func (c client) SendSpikeMetrics(m SpikeMetric) error {
+func (c client) SendAppLogRate(rate, rateLimit float64, tags map[string]string) error {
 	c.client.EmitGauge(
-		loggregator.WithGaugeSourceInfo(m.Tags["source_id"], m.Tags["instance_id"]),
-		loggregator.WithGaugeValue("spike_start", float64(m.Start.Unix()), "seconds"),
-		loggregator.WithGaugeValue("spike_end", float64(m.End.Unix()), "seconds"),
+		loggregator.WithGaugeSourceInfo(tags["source_id"], tags["instance_id"]),
+		loggregator.WithGaugeValue("log_rate", rate, "B/s"),
+		loggregator.WithGaugeValue("log_rate_limit", rateLimit, "B/s"),
+		loggregator.WithEnvelopeTags(tags),
+	)
+	return nil
+}
+
+func (c client) SendSpikeMetrics(m SpikeMetric) error {
+	c.client.EmitTimer("spike", m.Start, m.End,
+		loggregator.WithTimerSourceInfo(m.Tags["source_id"], m.Tags["instance_id"]),
 		loggregator.WithEnvelopeTags(m.Tags),
 	)
 

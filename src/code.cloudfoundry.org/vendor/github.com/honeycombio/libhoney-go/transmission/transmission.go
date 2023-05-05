@@ -20,30 +20,70 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/facebookgo/muster"
+	"github.com/honeycombio/libhoney-go/version"
 	"github.com/klauspost/compress/zstd"
-	"github.com/vmihailenco/msgpack/v4"
+	"github.com/vmihailenco/msgpack/v5"
 )
 
 const (
-	apiMaxBatchSize    int = 5000000 // 5MB
-	apiEventSizeMax    int = 100000  // 100KB
+	// Size limit for a serialized request body sent for a batch.
+	apiMaxBatchSize int = 5000000 // 5MB
+	// Size limit for a single serialized event within a batch.
+	apiEventSizeMax    int = 100000 // 100KB
 	maxOverflowBatches int = 10
+	// Default start-to-finish timeout for batch send HTTP requests.
+	defaultSendTimeout = time.Second * 60
 )
 
-// Version is the build version, set by libhoney
-var Version string
+var (
+	// Libhoney's portion of the User-Agent header, e.g. "libhoney/1.2.3"
+	baseUserAgent = fmt.Sprintf("libhoney-go/%s", version.Version)
+	// Information about the runtime environment for inclusion in User-Agent
+	runtimeInfo = fmt.Sprintf("%s (%s/%s)", strings.Replace(runtime.Version(), "go", "go/", 1), runtime.GOOS, runtime.GOARCH)
+	// The default User-Agent when no additions have been given
+	defaultUserAgent = fmt.Sprintf("%s %s", baseUserAgent, runtimeInfo)
+)
+
+// Return a user-agent value including any additions made in the configuration
+func fmtUserAgent(addition string) string {
+	if addition != "" {
+		return fmt.Sprintf("%s %s %s", baseUserAgent, strings.TrimSpace(addition), runtimeInfo)
+	} else {
+		return defaultUserAgent
+	}
+}
 
 type Honeycomb struct {
-	// how many events to collect into a batch before sending
+	// How many events to collect into a batch before sending. A
+	// batch could be sent before achieving this item limit if the
+	// BatchTimeout has elapsed since the last batch send. If set
+	// to zero, batches will only be sent upon reaching the
+	// BatchTimeout. It is an error for both this and
+	// the BatchTimeout to be zero.
+	// Default: 50 (from Config.MaxBatchSize)
 	MaxBatchSize uint
 
-	// how often to send off batches
+	// How often to send batches. Events queue up into a batch until
+	// this time has elapsed or the batch item limit is reached
+	// (MaxBatchSize), then the batch is sent to Honeycomb API.
+	// If set to zero, batches will only be sent upon reaching the
+	// MaxBatchSize item limit. It is an error for both this and
+	// the MaxBatchSize to be zero.
+	// Default: 100 milliseconds (from Config.SendFrequency)
 	BatchTimeout time.Duration
+
+	// The start-to-finish timeout for HTTP requests sending event
+	// batches to the Honeycomb API. Transmission will retry once
+	// when receiving a timeout, so total time spent attempting to
+	// send events could be twice this value.
+	// Default: 60 seconds.
+	BatchSendTimeout time.Duration
 
 	// how many batches can be inflight simultaneously
 	MaxConcurrentBatches uint
@@ -73,6 +113,10 @@ type Honeycomb struct {
 	batchMaker func() muster.Batch
 	responses  chan Response
 
+	// Transport defines the behavior of the lower layer transport details.
+	// It is used as the Transport value for the constructed HTTP client that
+	// sends batches of events.
+	// Default: http.DefaultTransport
 	Transport http.RoundTripper
 
 	muster     *muster.Client
@@ -91,6 +135,9 @@ func (h *Honeycomb) Start() error {
 	if h.Metrics == nil {
 		h.Metrics = &nullMetrics{}
 	}
+	if h.BatchSendTimeout == 0 {
+		h.BatchSendTimeout = defaultSendTimeout
+	}
 	if h.batchMaker == nil {
 		h.batchMaker = func() muster.Batch {
 			return &batchAgg{
@@ -98,7 +145,7 @@ func (h *Honeycomb) Start() error {
 				batches:           map[string][]*Event{},
 				httpClient: &http.Client{
 					Transport: h.Transport,
-					Timeout:   60 * time.Second,
+					Timeout:   h.BatchSendTimeout,
 				},
 				blockOnResponse:       h.BlockOnResponse,
 				responses:             h.responses,
@@ -137,13 +184,13 @@ func (h *Honeycomb) Flush() (err error) {
 	// the old one (which has a side-effect of flushing the data) and make a new
 	// one. We start the new one and swap it with the old one so that we minimize
 	// the time we hold the musterLock for.
-	m := h.muster
 	newMuster := h.createMuster()
 	err = newMuster.Start()
 	if err != nil {
 		return err
 	}
 	h.musterLock.Lock()
+	m := h.muster
 	h.muster = newMuster
 	h.musterLock.Unlock()
 	return m.Stop()
@@ -173,8 +220,13 @@ func (h *Honeycomb) Add(ev *Event) {
 func (h *Honeycomb) tryAdd(ev *Event) bool {
 	h.musterLock.RLock()
 	defer h.musterLock.RUnlock()
-	h.Logger.Printf("adding event to transmission; queue length %d", len(h.muster.Work))
-	h.Metrics.Gauge("queue_length", len(h.muster.Work))
+
+	// Even though this queue is locked against changing h.Muster, the Work queue length
+	// could change due to actions on the worker side, so make sure we only measure it once.
+	qlen := len(h.muster.Work)
+	h.Logger.Printf("adding event to transmission; queue length %d", qlen)
+	h.Metrics.Gauge("queue_length", qlen)
+
 	if h.BlockOnSend {
 		h.muster.Work <- ev
 		return true
@@ -372,12 +424,6 @@ func (b *batchAgg) fireBatch(events []*Event) {
 	// build the HTTP request
 	url.Path = path.Join(url.Path, "/1/batch", dataset)
 
-	// sigh. dislike
-	userAgent := fmt.Sprintf("libhoney-go/%s", Version)
-	if b.userAgentAddition != "" {
-		userAgent = fmt.Sprintf("%s %s", userAgent, strings.TrimSpace(b.userAgentAddition))
-	}
-
 	// One retry allowed for connection timeouts.
 	var resp *http.Response
 	for try := 0; try < 2; try++ {
@@ -387,16 +433,26 @@ func (b *batchAgg) fireBatch(events []*Event) {
 
 		var req *http.Request
 		reqBody, zipped := buildReqReader(encEvs, !b.disableCompression)
-		req, err = http.NewRequest("POST", url.String(), reqBody)
+		if reader, ok := reqBody.(*pooledReader); ok {
+			// Pass the underlying bytes.Reader to http.Request so that
+			// GetBody and ContentLength fields are populated on Request.
+			// See https://cs.opensource.google/go/go/+/refs/tags/go1.17.5:src/net/http/request.go;l=898
+			req, err = http.NewRequest("POST", url.String(), &reader.Reader)
+		} else {
+			req, err = http.NewRequest("POST", url.String(), reqBody)
+		}
 		req.Header.Set("Content-Type", contentType)
 		if zipped {
 			req.Header.Set("Content-Encoding", "zstd")
 		}
 
-		req.Header.Set("User-Agent", userAgent)
+		req.Header.Set("User-Agent", fmtUserAgent(b.userAgentAddition))
 		req.Header.Add("X-Honeycomb-Team", writeKey)
 		// send off batch!
 		resp, err = b.httpClient.Do(req)
+		if reader, ok := reqBody.(*pooledReader); ok {
+			reader.Release()
+		}
 
 		if httpErr, ok := err.(httpError); ok && httpErr.Timeout() {
 			continue
@@ -496,7 +552,7 @@ func (b *batchAgg) fireBatch(events []*Event) {
 	for _, resp := range batchResponses {
 		resp.Duration = dur / time.Duration(numEncoded)
 		for eIdx < len(events) && events[eIdx] == nil {
-			fmt.Printf("incr, eIdx: %d, len(evs): %d\n", eIdx, len(events))
+			b.logger.Printf("incr, eIdx: %d, len(evs): %d", eIdx, len(events))
 			eIdx++
 		}
 		if eIdx == len(events) { // just in case
@@ -520,12 +576,8 @@ func (b *batchAgg) encodeBatchJSON(events []*Event) ([]byte, int) {
 	bytesTotal := 1
 	// ok, we've got our array, let's populate it with JSON events
 	for i, ev := range events {
-		if !first {
-			buf.WriteByte(',')
-			bytesTotal++
-		}
-		first = false
 		evByt, err := json.Marshal(ev)
+		// check all our errors first in case we need to skip batching this event
 		if err != nil {
 			b.enqueueResponse(Response{
 				Err:      err,
@@ -545,13 +597,20 @@ func (b *batchAgg) encodeBatchJSON(events []*Event) ([]byte, int) {
 			events[i] = nil
 			continue
 		}
-		bytesTotal += len(evByt)
 
+		bytesTotal += len(evByt)
 		// count for the trailing ]
 		if bytesTotal+1 > apiMaxBatchSize {
 			b.reenqueueEvents(events[i:])
 			break
 		}
+
+		// ok, we have valid JSON and it'll fit in this batch; add ourselves a comma and the next value
+		if !first {
+			buf.WriteByte(',')
+			bytesTotal++
+		}
+		first = false
 		buf.Write(evByt)
 		numEncoded++
 	}
@@ -628,13 +687,15 @@ func (b *batchAgg) enqueueErrResponses(err error, events []*Event, duration time
 var zstdBufferPool sync.Pool
 
 type pooledReader struct {
-	*bytes.Reader
+	bytes.Reader
 	buf []byte
 }
 
-func (r *pooledReader) Close() error {
+func (r *pooledReader) Release() error {
+	// Ensure further attempts to read will return io.EOF
+	r.Reset(nil)
+	// Then reset and give up ownership of the buffer.
 	zstdBufferPool.Put(r.buf[:0])
-	r.Reader = nil
 	r.buf = nil
 	return nil
 }
@@ -659,8 +720,8 @@ func init() {
 }
 
 // buildReqReader returns an io.Reader and a boolean, indicating whether or not
-// the io.Reader is compressed.
-func buildReqReader(jsonEncoded []byte, compress bool) (io.ReadCloser, bool) {
+// the underlying bytes.Reader is compressed.
+func buildReqReader(jsonEncoded []byte, compress bool) (io.Reader, bool) {
 	if compress {
 		var buf []byte
 		if found, ok := zstdBufferPool.Get().([]byte); ok {
@@ -668,12 +729,13 @@ func buildReqReader(jsonEncoded []byte, compress bool) (io.ReadCloser, bool) {
 		}
 
 		buf = zstdEncoder.EncodeAll(jsonEncoded, buf)
-		return &pooledReader{
-			Reader: bytes.NewReader(buf),
-			buf:    buf,
-		}, true
+		reader := pooledReader{
+			buf: buf,
+		}
+		reader.Reset(reader.buf)
+		return &reader, true
 	}
-	return ioutil.NopCloser(bytes.NewReader(jsonEncoded)), false
+	return bytes.NewReader(jsonEncoded), false
 }
 
 // nower to make testing easier
