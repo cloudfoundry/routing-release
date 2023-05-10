@@ -101,6 +101,7 @@ properties:
         tls_port (required, integer, for http routes): Either `port` or `tls_port` are required; if both are provided, Gorouter will prefer tls_port.
           Requests for associated URIs will be forwarded over TLS by the router to this port.
           The IP is determined automatically from the host on which route-registrar is run.
+        protocol (optional, string): 'http1' or 'http2'. If not provided, Gorouter uses 'http1' as default.
         route_service_url (optional, string, for http routes): When valid route service URL is provided, Gorouter will proxy requests received for the uris above to the specified route service URL.
         server_cert_domain_san (conditional, string, for http routes): Required if tls_port is present.
           Gorouter will validate that the TLS certificate presented by the destination host contains this as a Subject Alternative Name (SAN).
