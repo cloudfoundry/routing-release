@@ -16,11 +16,11 @@ require (
 	code.cloudfoundry.org/bbs v0.0.0-20230419194333-54391379d38f
 	code.cloudfoundry.org/cfhttp/v2 v2.0.1-0.20210513172332-4c5ee488a657
 	code.cloudfoundry.org/clock v1.1.0
-	code.cloudfoundry.org/debugserver v0.0.0-20230411203424-7d38b2728d52
-	code.cloudfoundry.org/eventhub v0.0.0-20230406153351-9aae0e613674
-	code.cloudfoundry.org/go-metric-registry v0.0.0-20230418213642-fa3811b324ec
+	code.cloudfoundry.org/debugserver v0.0.0-20230508035730-c4fc5f67e21e
+	code.cloudfoundry.org/eventhub v0.0.0-20230508055757-dccaf66cf23e
+	code.cloudfoundry.org/go-metric-registry v0.0.0-20230509190151-74ec78e3019b
 	code.cloudfoundry.org/lager/v3 v3.0.1
-	code.cloudfoundry.org/localip v0.0.0-20230406154131-9ff4293aa842
+	code.cloudfoundry.org/localip v0.0.0-20230508195709-56f4c1fb39ec
 	code.cloudfoundry.org/locket v0.0.0-20230424201354-6cd5416498b6
 	code.cloudfoundry.org/tlsconfig v0.0.0-20230320190829-8f91c367795b
 	github.com/armon/go-proxyproto v0.0.0-20210323213023-7e956b284f0a
@@ -51,19 +51,19 @@ require (
 	github.com/uber-go/zap v1.24.0
 	github.com/urfave/negroni v1.0.0
 	github.com/vito/go-sse v1.0.0
-	golang.org/x/crypto v0.8.0
-	golang.org/x/net v0.9.0
-	golang.org/x/oauth2 v0.7.0
-	golang.org/x/tools v0.8.0
+	golang.org/x/crypto v0.9.0
+	golang.org/x/net v0.10.0
+	golang.org/x/oauth2 v0.8.0
+	golang.org/x/tools v0.9.1
 	google.golang.org/grpc v1.55.0
 	google.golang.org/protobuf v1.30.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.0.0-20230411203518-5d4b9fb8b776 // indirect
-	code.cloudfoundry.org/durationjson v0.0.0-20230406152928-0d835f893c8b // indirect
-	code.cloudfoundry.org/go-diodes v0.0.0-20230406180255-f141159491b0 // indirect
+	code.cloudfoundry.org/diego-logging-client v0.0.0-20230508200927-824f04190d59 // indirect
+	code.cloudfoundry.org/durationjson v0.0.0-20230508215707-5acd8d1a9dec // indirect
+	code.cloudfoundry.org/go-diodes v0.0.0-20230508203442-8ce2048f62dc // indirect
 	code.cloudfoundry.org/go-loggregator/v8 v8.0.5 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
 	filippo.io/edwards25519 v1.0.0 // indirect
@@ -81,7 +81,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/google/pprof v0.0.0-20230502171905-255e3b9b56de // indirect
+	github.com/google/pprof v0.0.0-20230510003242-05f3f57da91a // indirect
 	github.com/jackc/fake v0.0.0-20150926172116-812a484cc733 // indirect
 	github.com/jackc/pgx v3.6.2+incompatible // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
@@ -101,7 +101,7 @@ require (
 	github.com/uber-go/atomic v1.11.0 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
-	go.step.sm/crypto v0.29.3 // indirect
+	go.step.sm/crypto v0.30.0 // indirect
 	go.uber.org/atomic v1.8.0 // indirect
 	golang.org/x/mod v0.10.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
