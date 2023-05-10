@@ -236,6 +236,9 @@ properties:
   router.logging_level:
     description: "Log level for router"
     default: "info"
+  router.enable_log_attempts_details:
+    description: "Log additional fields in the access log that provide more details on the specific timings and attempts performed towards endpoints."
+    default: false
   router.logging.format.timestamp:
     description: |
       Format for timestamp in component logs. Valid values are 'rfc3339', 'deprecated', and 'unix-epoch'."
