@@ -66,6 +66,10 @@
       raise "expected route_registrar.routes[#{index}].route.server_cert_domain_san when tls_port is provided"
     end
 
+    if route['protocol'] != nil && (route['protocol'] != 'http1' && route['protocol'] != 'http2')
+      raise "expected route_registrar.routes[#{index}].route.protocol to be http1 or http2 when protocol is provided"
+    end
+
     if route['prepend_instance_index']
       route['uris'].map! { |uri| "#{spec.index}-#{uri}" }
     end

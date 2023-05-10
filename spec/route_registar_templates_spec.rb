@@ -439,6 +439,25 @@ describe 'route_registrar' do
         expect { template.render(merged_manifest_properties, consumes: links) }.not_to raise_error
       end
     end
+
+    describe 'when protocol is provided' do
+      it 'uses configured protocol http1' do
+        merged_manifest_properties['route_registrar']['routes'][0]['protocol'] = 'http1'
+        rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+        expect(rendered_hash['routes'][0]['protocol']).to eq('http1')
+      end
+      it 'uses configured protocol http2' do
+        merged_manifest_properties['route_registrar']['routes'][0]['protocol'] = 'http2'
+        rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+        expect(rendered_hash['routes'][0]['protocol']).to eq('http2')
+      end
+      it 'raises error for invalid protocol' do
+        merged_manifest_properties['route_registrar']['routes'][0]['protocol'] = 'abc'
+        expect { template.render(merged_manifest_properties, consumes: links) }.to raise_error(
+          RuntimeError, 'expected route_registrar.routes[0].route.protocol to be http1 or http2 when protocol is provided'
+        )
+      end
+    end
   end
 end
 
