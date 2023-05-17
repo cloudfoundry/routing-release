@@ -1,4 +1,4 @@
-// Copyright 2020-2021 The NATS Authors
+// Copyright 2020-2023 The NATS Authors
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -16,7 +16,6 @@ package server
 import (
 	"strconv"
 	"sync"
-	"time"
 )
 
 type outMsg struct {
@@ -24,26 +23,23 @@ type outMsg struct {
 	rply string
 	hdr  []byte
 	msg  []byte
-	next *outMsg
 }
 
 type sendq struct {
-	mu   sync.Mutex
-	mch  chan struct{}
-	head *outMsg
-	tail *outMsg
-	s    *Server
+	mu sync.Mutex
+	q  *ipQueue[*outMsg]
+	s  *Server
 }
 
 func (s *Server) newSendQ() *sendq {
-	sq := &sendq{s: s, mch: make(chan struct{}, 1)}
+	sq := &sendq{s: s, q: newIPQueue[*outMsg](s, "SendQ")}
 	s.startGoRoutine(sq.internalLoop)
 	return sq
 }
 
 func (sq *sendq) internalLoop() {
 	sq.mu.Lock()
-	s, mch := sq.s, sq.mch
+	s, q := sq.s, sq.q
 	sq.mu.Unlock()
 
 	defer s.grWG.Done()
@@ -54,20 +50,33 @@ func (sq *sendq) internalLoop() {
 
 	defer c.closeConnection(ClientClosed)
 
+	// To optimize for not converting a string to a []byte slice.
+	var (
+		subj [256]byte
+		rply [256]byte
+		szb  [10]byte
+		hdb  [10]byte
+	)
+
 	for s.isRunning() {
 		select {
 		case <-s.quitCh:
 			return
-		case <-mch:
-			for pm := sq.pending(); pm != nil; {
-				c.pa.subject = []byte(pm.subj)
+		case <-q.ch:
+			pms := q.pop()
+			for _, pm := range pms {
+				c.pa.subject = append(subj[:0], pm.subj...)
 				c.pa.size = len(pm.msg) + len(pm.hdr)
-				c.pa.szb = []byte(strconv.Itoa(c.pa.size))
-				c.pa.reply = []byte(pm.rply)
+				c.pa.szb = append(szb[:0], strconv.Itoa(c.pa.size)...)
+				if len(pm.rply) > 0 {
+					c.pa.reply = append(rply[:0], pm.rply...)
+				} else {
+					c.pa.reply = nil
+				}
 				var msg []byte
 				if len(pm.hdr) > 0 {
 					c.pa.hdr = len(pm.hdr)
-					c.pa.hdb = []byte(strconv.Itoa(c.pa.hdr))
+					c.pa.hdb = append(hdb[:0], strconv.Itoa(c.pa.hdr)...)
 					msg = append(pm.hdr, pm.msg...)
 					msg = append(msg, _CRLF_...)
 				} else {
@@ -77,53 +86,37 @@ func (sq *sendq) internalLoop() {
 				}
 				c.processInboundClientMsg(msg)
 				c.pa.szb = nil
-				// Do this here to nil out below vs up in for loop.
-				next := pm.next
-				pm.next, pm.hdr, pm.msg = nil, nil, nil
-				if pm = next; pm == nil {
-					pm = sq.pending()
-				}
+				outMsgPool.Put(pm)
 			}
-			c.flushClients(10 * time.Millisecond)
+			// TODO: should this be in the for-loop instead?
+			c.flushClients(0)
+			q.recycle(&pms)
 		}
 	}
 }
 
-func (sq *sendq) pending() *outMsg {
-	sq.mu.Lock()
-	head := sq.head
-	sq.head, sq.tail = nil, nil
-	sq.mu.Unlock()
-	return head
+var outMsgPool = sync.Pool{
+	New: func() any {
+		return &outMsg{}
+	},
 }
 
 func (sq *sendq) send(subj, rply string, hdr, msg []byte) {
-	out := &outMsg{subj, rply, nil, nil, nil}
+	if sq == nil {
+		return
+	}
+	out := outMsgPool.Get().(*outMsg)
+	out.subj, out.rply = subj, rply
+	out.hdr, out.msg = nil, nil
+
 	// We will copy these for now.
 	if len(hdr) > 0 {
-		hdr = append(hdr[:0:0], hdr...)
+		hdr = copyBytes(hdr)
 		out.hdr = hdr
 	}
 	if len(msg) > 0 {
-		msg = append(msg[:0:0], msg...)
+		msg = copyBytes(msg)
 		out.msg = msg
 	}
-
-	sq.mu.Lock()
-	var notify bool
-	if sq.head == nil {
-		sq.head = out
-		notify = true
-	} else {
-		sq.tail.next = out
-	}
-	sq.tail = out
-	sq.mu.Unlock()
-
-	if notify {
-		select {
-		case sq.mch <- struct{}{}:
-		default:
-		}
-	}
+	sq.q.push(out)
 }

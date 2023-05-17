@@ -42,20 +42,20 @@ const (
 // Results is the subject where the latency metrics are published.
 // A metric will be defined by the nats-server's ServiceLatency. Time durations
 // are in nanoseconds.
-// see https://github.com/nats-io/nats-server/blob/master/server/accounts.go#L524
+// see https://github.com/nats-io/nats-server/blob/main/server/accounts.go#L524
 // e.g.
-// {
-//  "app": "dlc22",
-//  "start": "2019-09-16T21:46:23.636869585-07:00",
-//  "svc": 219732,
-//  "nats": {
-//    "req": 320415,
-//    "resp": 228268,
-//    "sys": 0
-//  },
-//  "total": 768415
-// }
 //
+//	{
+//	 "app": "dlc22",
+//	 "start": "2019-09-16T21:46:23.636869585-07:00",
+//	 "svc": 219732,
+//	 "nats": {
+//	   "req": 320415,
+//	   "resp": 228268,
+//	   "sys": 0
+//	 },
+//	 "total": 768415
+//	}
 type ServiceLatency struct {
 	Sampling SamplingRate `json:"sampling"`
 	Results  Subject      `json:"results"`

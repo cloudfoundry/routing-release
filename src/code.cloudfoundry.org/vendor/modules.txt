@@ -1,4 +1,4 @@
-# code.cloudfoundry.org/bbs v0.0.0-20230419194333-54391379d38f
+# code.cloudfoundry.org/bbs v0.0.0-20230515223356-08ff19fb906a
 ## explicit
 code.cloudfoundry.org/bbs/db/sqldb/helpers
 code.cloudfoundry.org/bbs/db/sqldb/helpers/monitor
@@ -16,10 +16,10 @@ code.cloudfoundry.org/clock/fakeclock
 # code.cloudfoundry.org/debugserver v0.0.0-20230508035730-c4fc5f67e21e
 ## explicit; go 1.19
 code.cloudfoundry.org/debugserver
-# code.cloudfoundry.org/diego-logging-client v0.0.0-20230508200927-824f04190d59
+# code.cloudfoundry.org/diego-logging-client v0.0.0-20230515195705-efc368ee68d3
 ## explicit; go 1.20
 code.cloudfoundry.org/diego-logging-client
-# code.cloudfoundry.org/durationjson v0.0.0-20230508215707-5acd8d1a9dec
+# code.cloudfoundry.org/durationjson v0.0.0-20230515215713-3427f375fdf6
 ## explicit; go 1.19
 code.cloudfoundry.org/durationjson
 # code.cloudfoundry.org/eventhub v0.0.0-20230508055757-dccaf66cf23e
@@ -34,7 +34,7 @@ code.cloudfoundry.org/go-loggregator/v8
 code.cloudfoundry.org/go-loggregator/v8/rfc5424
 code.cloudfoundry.org/go-loggregator/v8/rpc/loggregator_v2
 code.cloudfoundry.org/go-loggregator/v8/runtimeemitter
-# code.cloudfoundry.org/go-metric-registry v0.0.0-20230509190151-74ec78e3019b
+# code.cloudfoundry.org/go-metric-registry v0.0.0-20230515181800-7e82b457ff20
 ## explicit; go 1.19
 code.cloudfoundry.org/go-metric-registry
 code.cloudfoundry.org/go-metric-registry/testhelpers
@@ -47,7 +47,7 @@ code.cloudfoundry.org/lager/v3/internal/truncate
 code.cloudfoundry.org/lager/v3/lagerctx
 code.cloudfoundry.org/lager/v3/lagerflags
 code.cloudfoundry.org/lager/v3/lagertest
-# code.cloudfoundry.org/localip v0.0.0-20230508195709-56f4c1fb39ec
+# code.cloudfoundry.org/localip v0.0.0-20230515195708-6e10f6f76fc4
 ## explicit; go 1.20
 code.cloudfoundry.org/localip
 # code.cloudfoundry.org/locket v0.0.0-20230424201354-6cd5416498b6
@@ -182,7 +182,7 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
-# github.com/google/pprof v0.0.0-20230510003242-05f3f57da91a
+# github.com/google/pprof v0.0.0-20230510103437-eeec1cb781c3
 ## explicit; go 1.19
 github.com/google/pprof/profile
 # github.com/honeycombio/libhoney-go v1.18.0
@@ -212,7 +212,7 @@ github.com/jinzhu/inflection
 # github.com/josharian/intern v1.0.0
 ## explicit; go 1.5
 github.com/josharian/intern
-# github.com/kisielk/errcheck v1.6.0
+# github.com/kisielk/errcheck v1.6.3
 ## explicit; go 1.14
 github.com/kisielk/errcheck
 github.com/kisielk/errcheck/errcheck
@@ -241,14 +241,14 @@ github.com/mailru/easyjson/jwriter
 # github.com/matttproud/golang_protobuf_extensions v1.0.4
 ## explicit; go 1.9
 github.com/matttproud/golang_protobuf_extensions/pbutil
-# github.com/minio/highwayhash v1.0.1
+# github.com/minio/highwayhash v1.0.2
 ## explicit; go 1.15
 github.com/minio/highwayhash
-# github.com/nats-io/jwt/v2 v2.0.2
-## explicit; go 1.14
+# github.com/nats-io/jwt/v2 v2.4.1
+## explicit; go 1.18
 github.com/nats-io/jwt/v2
-# github.com/nats-io/nats-server/v2 v2.3.0
-## explicit; go 1.16
+# github.com/nats-io/nats-server/v2 v2.9.16
+## explicit; go 1.19
 github.com/nats-io/nats-server/v2
 github.com/nats-io/nats-server/v2/conf
 github.com/nats-io/nats-server/v2/internal/ldap
@@ -270,7 +270,7 @@ github.com/nats-io/nuid
 # github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 ## explicit
 github.com/nu7hatch/gouuid
-# github.com/onsi/ginkgo/v2 v2.9.4
+# github.com/onsi/ginkgo/v2 v2.9.5
 ## explicit; go 1.18
 github.com/onsi/ginkgo/v2
 github.com/onsi/ginkgo/v2/config
@@ -341,8 +341,8 @@ github.com/rcrowley/go-metrics
 # github.com/square/certstrap v1.3.0
 ## explicit; go 1.18
 github.com/square/certstrap/pkix
-# github.com/tedsuo/ifrit v0.0.0-20230330192023-5cba443a66c4
-## explicit
+# github.com/tedsuo/ifrit v0.0.0-20230516164442-7862c310ad26
+## explicit; go 1.16
 github.com/tedsuo/ifrit
 github.com/tedsuo/ifrit/ginkgomon_v2
 github.com/tedsuo/ifrit/grouper
@@ -384,6 +384,11 @@ go.step.sm/crypto/randutil
 go.step.sm/crypto/x25519
 # go.uber.org/atomic v1.8.0
 ## explicit; go 1.13
+# go.uber.org/automaxprocs v1.5.2
+## explicit; go 1.18
+go.uber.org/automaxprocs/internal/cgroups
+go.uber.org/automaxprocs/internal/runtime
+go.uber.org/automaxprocs/maxprocs
 # golang.org/x/crypto v0.9.0
 ## explicit; go 1.17
 golang.org/x/crypto/bcrypt
@@ -461,7 +466,7 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1
+# golang.org/x/time v0.3.0
 ## explicit
 golang.org/x/time/rate
 # golang.org/x/tools v0.9.1

@@ -17,7 +17,7 @@
 
 // The format supported is less restrictive than today's formats.
 // Supports mixed Arrays [], nested Maps {}, multiple comment types (# and //)
-// Also supports key value assigments using '=' or ':' or whiteSpace()
+// Also supports key value assignments using '=' or ':' or whiteSpace()
 //   e.g. foo = 2, foo : 2, foo 2
 // maps can be assigned with no key separator as well
 // semicolons as value terminators in key/value assignments are optional
@@ -1010,8 +1010,13 @@ func lexConvenientNumber(lx *lexer) stateFn {
 		return lexConvenientNumber
 	}
 	lx.backup()
-	lx.emit(itemInteger)
-	return lx.pop()
+	if isNL(r) || r == eof || r == mapEnd || r == optValTerm || r == mapValTerm || isWhitespace(r) || unicode.IsDigit(r) {
+		lx.emit(itemInteger)
+		return lx.pop()
+	}
+	// This is not a number, so treat it as a string.
+	lx.stringStateFn = lexString
+	return lexString
 }
 
 // lexDateAfterYear consumes a full Zulu Datetime in ISO8601 format.
