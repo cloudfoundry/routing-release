@@ -6,9 +6,6 @@
 	path = src/code.cloudfoundry.org/routing-api
 	url = https://github.com/cloudfoundry/routing-api
 	branch = main
-[submodule "src/code.cloudfoundry.org/trace-logger"]
-	path = src/code.cloudfoundry.org/trace-logger
-	url = https://github.com/cloudfoundry-incubator/trace-logger
 [submodule "src/code.cloudfoundry.org/routing-info"]
 	path = src/code.cloudfoundry.org/routing-info
 	url = http://github.com/cloudfoundry/routing-info
