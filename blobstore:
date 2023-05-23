@@ -1,6 +1,0 @@
-6
-ns:
-    credentials_source: static
-        json_key: |
-              <json-key>
-
