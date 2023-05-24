@@ -37,13 +37,14 @@ const (
 func VersionDesiredLRPsTo(event Event, target format.Version) Event {
 	switch event := event.(type) {
 	case *DesiredLRPCreatedEvent:
-		return NewDesiredLRPCreatedEvent(event.DesiredLrp.VersionDownTo(target))
+		return NewDesiredLRPCreatedEvent(event.DesiredLrp.VersionDownTo(target), event.TraceId)
 	case *DesiredLRPRemovedEvent:
-		return NewDesiredLRPRemovedEvent(event.DesiredLrp.VersionDownTo(target))
+		return NewDesiredLRPRemovedEvent(event.DesiredLrp.VersionDownTo(target), event.TraceId)
 	case *DesiredLRPChangedEvent:
 		return NewDesiredLRPChangedEvent(
 			event.Before.VersionDownTo(target),
 			event.After.VersionDownTo(target),
+			event.TraceId,
 		)
 	default:
 		return event
@@ -64,9 +65,10 @@ func VersionTaskDefinitionsTo(event Event, target format.Version) Event {
 	}
 }
 
-func NewDesiredLRPCreatedEvent(desiredLRP *DesiredLRP) *DesiredLRPCreatedEvent {
+func NewDesiredLRPCreatedEvent(desiredLRP *DesiredLRP, traceId string) *DesiredLRPCreatedEvent {
 	return &DesiredLRPCreatedEvent{
 		DesiredLrp: desiredLRP,
+		TraceId:    traceId,
 	}
 }
 
@@ -78,10 +80,11 @@ func (event *DesiredLRPCreatedEvent) Key() string {
 	return event.DesiredLrp.GetProcessGuid()
 }
 
-func NewDesiredLRPChangedEvent(before, after *DesiredLRP) *DesiredLRPChangedEvent {
+func NewDesiredLRPChangedEvent(before, after *DesiredLRP, traceId string) *DesiredLRPChangedEvent {
 	return &DesiredLRPChangedEvent{
-		Before: before,
-		After:  after,
+		Before:  before,
+		After:   after,
+		TraceId: traceId,
 	}
 }
 
@@ -93,9 +96,10 @@ func (event *DesiredLRPChangedEvent) Key() string {
 	return event.Before.GetProcessGuid()
 }
 
-func NewDesiredLRPRemovedEvent(desiredLRP *DesiredLRP) *DesiredLRPRemovedEvent {
+func NewDesiredLRPRemovedEvent(desiredLRP *DesiredLRP, traceId string) *DesiredLRPRemovedEvent {
 	return &DesiredLRPRemovedEvent{
 		DesiredLrp: desiredLRP,
+		TraceId:    traceId,
 	}
 }
 
@@ -108,7 +112,7 @@ func (event DesiredLRPRemovedEvent) Key() string {
 }
 
 // FIXME: change the signature
-func NewActualLRPInstanceChangedEvent(before, after *ActualLRP) *ActualLRPInstanceChangedEvent {
+func NewActualLRPInstanceChangedEvent(before, after *ActualLRP, traceId string) *ActualLRPInstanceChangedEvent {
 	var (
 		actualLRPKey         ActualLRPKey
 		actualLRPInstanceKey ActualLRPInstanceKey
@@ -133,6 +137,7 @@ func NewActualLRPInstanceChangedEvent(before, after *ActualLRP) *ActualLRPInstan
 		ActualLRPInstanceKey: actualLRPInstanceKey,
 		Before:               before.ToActualLRPInfo(),
 		After:                after.ToActualLRPInfo(),
+		TraceId:              traceId,
 	}
 }
 
@@ -205,9 +210,10 @@ func (event *ActualLRPRemovedEvent) Key() string {
 	return actualLRP.GetInstanceGuid()
 }
 
-func NewActualLRPInstanceRemovedEvent(actualLrp *ActualLRP) *ActualLRPInstanceRemovedEvent {
+func NewActualLRPInstanceRemovedEvent(actualLrp *ActualLRP, traceId string) *ActualLRPInstanceRemovedEvent {
 	return &ActualLRPInstanceRemovedEvent{
 		ActualLrp: actualLrp,
+		TraceId:   traceId,
 	}
 }
 
@@ -243,9 +249,10 @@ func (event *ActualLRPCreatedEvent) Key() string {
 	return actualLRP.GetInstanceGuid()
 }
 
-func NewActualLRPInstanceCreatedEvent(actualLrp *ActualLRP) *ActualLRPInstanceCreatedEvent {
+func NewActualLRPInstanceCreatedEvent(actualLrp *ActualLRP, traceId string) *ActualLRPInstanceCreatedEvent {
 	return &ActualLRPInstanceCreatedEvent{
 		ActualLrp: actualLrp,
+		TraceId:   traceId,
 	}
 }
 

@@ -240,6 +240,26 @@ func (d *DesiredLRP) DesiredLRPSchedulingInfo() DesiredLRPSchedulingInfo {
 	)
 }
 
+func (d *DesiredLRP) DesiredLRPRoutingInfo() DesiredLRP {
+	var routes Routes
+	if d.Routes != nil {
+		routes = *d.Routes
+	}
+
+	var modificationTag ModificationTag
+	if d.ModificationTag != nil {
+		modificationTag = *d.ModificationTag
+	}
+
+	return NewDesiredLRPRoutingInfo(
+		d.DesiredLRPKey(),
+		d.Instances,
+		&routes,
+		&modificationTag,
+		d.MetricTags,
+	)
+}
+
 func (d *DesiredLRP) DesiredLRPRunInfo(createdAt time.Time) DesiredLRPRunInfo {
 	environmentVariables := make([]EnvironmentVariable, len(d.EnvironmentVariables))
 	for i := range d.EnvironmentVariables {
@@ -521,6 +541,24 @@ func NewDesiredLRPSchedulingInfo(
 		ModificationTag:    modTag,
 		VolumePlacement:    volumePlacement,
 		PlacementTags:      placementTags,
+	}
+}
+
+func NewDesiredLRPRoutingInfo(
+	key DesiredLRPKey,
+	instances int32,
+	routes *Routes,
+	modTag *ModificationTag,
+	metrTags map[string]*MetricTagValue,
+) DesiredLRP {
+	return DesiredLRP{
+		ProcessGuid:     key.ProcessGuid,
+		Domain:          key.Domain,
+		LogGuid:         key.LogGuid,
+		Instances:       instances,
+		Routes:          routes,
+		ModificationTag: modTag,
+		MetricTags:      metrTags,
 	}
 }
 

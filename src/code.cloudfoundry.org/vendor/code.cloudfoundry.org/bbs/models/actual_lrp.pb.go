@@ -5,16 +5,15 @@ package models
 
 import (
 	fmt "fmt"
+	_ "github.com/gogo/protobuf/gogoproto"
+	proto "github.com/gogo/protobuf/proto"
+	github_com_gogo_protobuf_sortkeys "github.com/gogo/protobuf/sortkeys"
 	io "io"
 	math "math"
 	math_bits "math/bits"
 	reflect "reflect"
 	strconv "strconv"
 	strings "strings"
-
-	_ "github.com/gogo/protobuf/gogoproto"
-	proto "github.com/gogo/protobuf/proto"
-	github_com_gogo_protobuf_sortkeys "github.com/gogo/protobuf/sortkeys"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -132,7 +131,7 @@ type PortMapping struct {
 	ContainerPort         uint32 `protobuf:"varint,1,opt,name=container_port,json=containerPort,proto3" json:"container_port"`
 	HostPort              uint32 `protobuf:"varint,2,opt,name=host_port,json=hostPort,proto3" json:"host_port"`
 	ContainerTlsProxyPort uint32 `protobuf:"varint,3,opt,name=container_tls_proxy_port,json=containerTlsProxyPort,proto3" json:"container_tls_proxy_port,omitempty"`
-	HostTlsProxyPort      uint32 `protobuf:"varint,4,opt,name=host_tls_proxy_port,json=hostTlsProxyPort,proto3" json:"host_tls_proxy_port"`
+	HostTlsProxyPort      uint32 `protobuf:"varint,4,opt,name=host_tls_proxy_port,json=hostTlsProxyPort,proto3" json:"host_tls_proxy_port,omitempty"`
 }
 
 func (m *PortMapping) Reset()      { *m = PortMapping{} }

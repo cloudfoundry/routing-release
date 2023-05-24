@@ -26,6 +26,7 @@ message ActualLRPRemovedEvent {
 
 message ActualLRPInstanceCreatedEvent  {
   ActualLRP actual_lrp = 1;
+  string trace_id = 2 [(gogoproto.jsontag) =  "trace_id"];
 }
 
 message ActualLRPInfo {
@@ -44,23 +45,28 @@ message ActualLRPInstanceChangedEvent {
   ActualLRPInstanceKey actual_lrp_instance_key = 2 [(gogoproto.nullable) = false, (gogoproto.jsontag) = "", (gogoproto.embed) = true];
   ActualLRPInfo before                         = 3;
   ActualLRPInfo after                          = 4;
+  string trace_id                              = 5 [(gogoproto.jsontag) =  "trace_id"];
 }
 
 message ActualLRPInstanceRemovedEvent {
   ActualLRP actual_lrp = 1;
+  string trace_id = 2 [(gogoproto.jsontag) =  "trace_id"];
 }
 
 message DesiredLRPCreatedEvent {
   DesiredLRP desired_lrp = 1;
+  string trace_id = 2 [(gogoproto.jsontag) =  "trace_id"];
 }
 
 message DesiredLRPChangedEvent {
   DesiredLRP before = 1;
   DesiredLRP after = 2;
+  string trace_id = 3 [(gogoproto.jsontag) =  "trace_id"];
 }
 
 message DesiredLRPRemovedEvent {
   DesiredLRP desired_lrp = 1;
+  string trace_id = 2 [(gogoproto.jsontag) =  "trace_id"];
 }
 
 message ActualLRPCrashedEvent {
