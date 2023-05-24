@@ -115,6 +115,7 @@ files:
   - code.cloudfoundry.org/vendor/github.com/honeycombio/libhoney-go/version/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/josharian/intern/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/klauspost/compress/flate/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/fse/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/huff0/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/huff0/*.s # gosub
@@ -132,6 +133,7 @@ files:
   - code.cloudfoundry.org/vendor/github.com/matttproud/golang_protobuf_extensions/pbutil/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/encoders/builtin/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/internal/parser/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/util/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nats-io/nkeys/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nats-io/nuid/*.go # gosub
