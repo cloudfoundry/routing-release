@@ -380,11 +380,9 @@ properties:
     default: 22
   request_timeout_in_seconds:
     description: |
-      This configures a "request timeout" and a "backend idle timeout".
+      This configures an entire request timeout.
       Requests from router to backend endpoints that are longer than this duration will be canceled and logged as
-      `backend-request-timeout` errors. In addition, TCP connections between router and backend endpoints that
-      are idle for longer than this duration will be closed. Related properties: `router.max_idle_connections`
-      and `router.keep_alive_probe_interval`.
+      `backend-request-timeout` errors. If set to 0 this timeout is disabled.
     default: 900
   endpoint_dial_timeout_in_seconds:
     description: |
