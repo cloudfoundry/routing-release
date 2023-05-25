@@ -36,8 +36,7 @@ COMMANDS:
 
   load         <FILE>
                Load routes from a json file into this gorouter.
-               Example: /var/vcap/jobs/gorouter/bin/nats_client load routes.json'
-`
+               Example: /var/vcap/jobs/gorouter/bin/nats_client load routes.json'`
 
 // Simple NATS client for debugging
 // Uses gorouter.yml for config
