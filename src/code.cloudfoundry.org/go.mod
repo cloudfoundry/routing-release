@@ -18,7 +18,7 @@ require (
 	code.cloudfoundry.org/clock v1.1.0
 	code.cloudfoundry.org/debugserver v0.0.0-20230522035716-70a733dc508f
 	code.cloudfoundry.org/eventhub v0.0.0-20230522060755-8efdeac72e14
-	code.cloudfoundry.org/go-metric-registry v0.0.0-20230522165206-66e81e2d5e46
+	code.cloudfoundry.org/go-metric-registry v0.0.0-20230606141514-b0d3d70728b0
 	code.cloudfoundry.org/lager/v3 v3.0.1
 	code.cloudfoundry.org/localip v0.0.0-20230522195710-2ea90d997658
 	code.cloudfoundry.org/locket v0.0.0-20230424201354-6cd5416498b6
@@ -30,11 +30,11 @@ require (
 	github.com/cloudfoundry/cf-test-helpers/v2 v2.5.0
 	github.com/cloudfoundry/custom-cats-reporters v0.0.2
 	github.com/cloudfoundry/dropsonde v1.1.0
-	github.com/cloudfoundry/sonde-go v0.0.0-20230412182205-eaf74d09b55a
+	github.com/cloudfoundry/sonde-go v0.0.0-20230606195250-c7c0fdf1ccc4
 	github.com/codegangsta/cli v1.22.13
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/golang-jwt/jwt/v4 v4.5.0
-	github.com/honeycombio/libhoney-go v1.18.0
+	github.com/honeycombio/libhoney-go v1.19.0
 	github.com/jinzhu/gorm v1.9.16
 	github.com/kisielk/errcheck v1.6.3
 	github.com/lib/pq v1.10.9
@@ -42,7 +42,7 @@ require (
 	github.com/nats-io/nats-server/v2 v2.9.17
 	github.com/nats-io/nats.go v1.26.0
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo/v2 v2.9.6
+	github.com/onsi/ginkgo/v2 v2.9.7
 	github.com/onsi/gomega v1.27.7
 	github.com/openzipkin/zipkin-go v0.4.1
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
@@ -54,7 +54,7 @@ require (
 	golang.org/x/crypto v0.9.0
 	golang.org/x/net v0.10.0
 	golang.org/x/oauth2 v0.8.0
-	golang.org/x/tools v0.9.1
+	golang.org/x/tools v0.9.3
 	google.golang.org/grpc v1.55.0
 	google.golang.org/protobuf v1.30.0
 	gopkg.in/yaml.v2 v2.4.0
@@ -63,7 +63,7 @@ require (
 require (
 	code.cloudfoundry.org/diego-logging-client v0.0.0-20230522195718-40495b68ac2e // indirect
 	code.cloudfoundry.org/durationjson v0.0.0-20230522215716-7a601daf48ee // indirect
-	code.cloudfoundry.org/go-diodes v0.0.0-20230522165527-d4e956b4bd30 // indirect
+	code.cloudfoundry.org/go-diodes v0.0.0-20230606195509-9853201afab8 // indirect
 	code.cloudfoundry.org/go-loggregator/v8 v8.0.5 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
 	filippo.io/edwards25519 v1.0.0 // indirect
@@ -81,7 +81,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/google/pprof v0.0.0-20230510103437-eeec1cb781c3 // indirect
+	github.com/google/pprof v0.0.0-20230602150820-91b7bce49751 // indirect
 	github.com/jackc/fake v0.0.0-20150926172116-812a484cc733 // indirect
 	github.com/jackc/pgx v3.6.2+incompatible // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
@@ -101,7 +101,7 @@ require (
 	github.com/uber-go/atomic v1.11.0 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
-	go.step.sm/crypto v0.31.1 // indirect
+	go.step.sm/crypto v0.31.2 // indirect
 	go.uber.org/atomic v1.8.0 // indirect
 	go.uber.org/automaxprocs v1.5.2 // indirect
 	golang.org/x/mod v0.10.0 // indirect
