@@ -615,8 +615,8 @@ code.cloudfoundry.org/go-metric-registry v0.0.0-20230606141514-b0d3d70728b0 h1:/
 code.cloudfoundry.org/go-metric-registry v0.0.0-20230606141514-b0d3d70728b0/go.mod h1:6Y6gj4e6AbO5FKat0nZulw0wEnTjXJ5wv8nMejsmHxo=
 code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 h1:XVhLtnvbIlLQh7L0KADVFjd2dfgXVcOpqPLpMtg/IZA=
 code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5/go.mod h1:1ZB1JCh2FAp+SqX79ve6dc8YREvbsziULEOncAilX4Q=
-code.cloudfoundry.org/lager/v3 v3.0.1 h1:AI7h0EgCa4bJCCq0N8JV8EBP+tbJUIovqKc4hB4wZsA=
-code.cloudfoundry.org/lager/v3 v3.0.1/go.mod h1:zA6tOIWhr5uZUez+PGpdfBHDWQOfhOrr0cgKDagZPwk=
+code.cloudfoundry.org/lager/v3 v3.0.2 h1:H0dcQY+814G1Ea0e5K/AMaMpcr+Pe5Iv+AALJEwrP9U=
+code.cloudfoundry.org/lager/v3 v3.0.2/go.mod h1:zA6tOIWhr5uZUez+PGpdfBHDWQOfhOrr0cgKDagZPwk=
 code.cloudfoundry.org/localip v0.0.0-20230522195710-2ea90d997658 h1:A2ayaMb7VeuwyyhrgD4M+GvtU1hWJFHOf6T6mnw5Iq4=
 code.cloudfoundry.org/localip v0.0.0-20230522195710-2ea90d997658/go.mod h1:L+Am8pWwpVpULdQUf72efqz5ZPaalJHhqaSD6cpEty8=
 code.cloudfoundry.org/locket v0.0.0-20230424201354-6cd5416498b6 h1:OOdLe69W0IeYZE9PTkTn5knLtMn6XNQOERyprmTcnjQ=
