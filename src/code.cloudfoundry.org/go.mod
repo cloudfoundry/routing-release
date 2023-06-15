@@ -10,8 +10,6 @@ replace github.com/codegangsta/cli => github.com/codegangsta/cli v1.6.0
 
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
 
-replace github.com/cloudfoundry-community/go-uaa => github.com/mariash/go-uaa v0.3.2
-
 require (
 	code.cloudfoundry.org/bbs v0.0.0-20230613195751-0eae9414b1d5
 	code.cloudfoundry.org/cfhttp/v2 v2.0.1-0.20210513172332-4c5ee488a657
@@ -25,7 +23,7 @@ require (
 	code.cloudfoundry.org/tlsconfig v0.0.0-20230612153104-23c0622de227
 	github.com/armon/go-proxyproto v0.0.0-20210323213023-7e956b284f0a
 	github.com/cactus/go-statsd-client v3.2.1+incompatible
-	github.com/cloudfoundry-community/go-uaa v0.3.1
+	github.com/cloudfoundry-community/go-uaa v0.3.2-0.20230306214931-fabcc6fe629c
 	github.com/cloudfoundry/cf-routing-test-helpers v0.0.0-20230612154734-4f65ecb98d93
 	github.com/cloudfoundry/cf-test-helpers/v2 v2.5.0
 	github.com/cloudfoundry/custom-cats-reporters v0.0.2

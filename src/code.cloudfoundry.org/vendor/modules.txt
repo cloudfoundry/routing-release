@@ -87,7 +87,7 @@ github.com/cactus/go-statsd-client/statsd
 # github.com/cespare/xxhash/v2 v2.2.0
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
-# github.com/cloudfoundry-community/go-uaa v0.3.1 => github.com/mariash/go-uaa v0.3.2
+# github.com/cloudfoundry-community/go-uaa v0.3.2-0.20230306214931-fabcc6fe629c
 ## explicit; go 1.12
 github.com/cloudfoundry-community/go-uaa
 github.com/cloudfoundry-community/go-uaa/passwordcredentials
@@ -612,4 +612,3 @@ gopkg.in/yaml.v3
 # github.com/uber-go/atomic => github.com/uber-go/atomic v1.1.0
 # github.com/codegangsta/cli => github.com/codegangsta/cli v1.6.0
 # github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
-# github.com/cloudfoundry-community/go-uaa => github.com/mariash/go-uaa v0.3.2
