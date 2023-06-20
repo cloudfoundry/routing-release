@@ -1062,6 +1062,21 @@ describe 'gorouter' do
             expect { parsed_yaml }.to raise_error(RuntimeError, "'meow' is not a valid timestamp format for the property 'router.logging.format.timestamp'. Valid options are: 'rfc3339', 'deprecated', and 'unix-epoch'.")
           end
         end
+
+        context 'when enable_detailed_attempts_logging is not provided' do
+          it 'it defaults to false' do
+            expect(parsed_yaml['logging']['enable_attempts_details']).to eq(false)
+          end
+        end
+
+        context 'when enable_detailed_attempts_logging is set to true' do
+          before do
+            deployment_manifest_fragment['router']['enable_log_attempts_details'] = true
+          end
+          it 'it properly sets the value' do
+            expect(parsed_yaml['logging']['enable_attempts_details']).to eq(true)
+          end
+        end
       end
 
       context 'tracing' do
