@@ -25,7 +25,7 @@ code.cloudfoundry.org/durationjson
 # code.cloudfoundry.org/eventhub v0.0.0-20230612151808-5a2f17c5e7b7
 ## explicit; go 1.19
 code.cloudfoundry.org/eventhub
-# code.cloudfoundry.org/go-diodes v0.0.0-20230620185730-2f3f1b7d94bb
+# code.cloudfoundry.org/go-diodes v0.0.0-20230620200700-00403ca60896
 ## explicit; go 1.18
 code.cloudfoundry.org/go-diodes
 # code.cloudfoundry.org/go-loggregator/v8 v8.0.5
@@ -34,7 +34,7 @@ code.cloudfoundry.org/go-loggregator/v8
 code.cloudfoundry.org/go-loggregator/v8/rfc5424
 code.cloudfoundry.org/go-loggregator/v8/rpc/loggregator_v2
 code.cloudfoundry.org/go-loggregator/v8/runtimeemitter
-# code.cloudfoundry.org/go-metric-registry v0.0.0-20230620185237-7a6da10a7396
+# code.cloudfoundry.org/go-metric-registry v0.0.0-20230620224438-af4c01b03479
 ## explicit; go 1.19
 code.cloudfoundry.org/go-metric-registry
 code.cloudfoundry.org/go-metric-registry/testhelpers
@@ -374,7 +374,7 @@ github.com/vmihailenco/msgpack/v5/msgpcode
 github.com/vmihailenco/tagparser/v2
 github.com/vmihailenco/tagparser/v2/internal
 github.com/vmihailenco/tagparser/v2/internal/parser
-# go.step.sm/crypto v0.32.0
+# go.step.sm/crypto v0.32.1
 ## explicit; go 1.18
 go.step.sm/crypto/fingerprint
 go.step.sm/crypto/internal/bcrypt_pbkdf
