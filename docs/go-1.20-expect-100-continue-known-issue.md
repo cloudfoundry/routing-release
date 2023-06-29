@@ -122,7 +122,9 @@ was not compliant with this spec. Now in go 1.20 it is compliant and will forwar
    
    2023-06-29T21:28:49.83+0000 [RTR/0] OUT potato.minionyellow.cf-app.com - [2023-06-29T21:28:49.793188099Z] "POST /upload HTTP/1.1" 200 
    ```
-
 ## Steps to reproduce in Go only
 [Follow the steps in this gist.](https://gist.github.com/ameowlia/f061d4d1f07e89139f6874aea5590246)
 
+## Mapping out the interactions between Go versions and reverse proxy configuration settings
+
+![image](https://github.com/cloudfoundry/routing-release/assets/7025605/e0e02652-202e-4c64-9715-1081e63aa53b)
