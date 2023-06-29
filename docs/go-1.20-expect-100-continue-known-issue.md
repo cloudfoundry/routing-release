@@ -11,7 +11,7 @@ some java spring clients have been reported to throw exceptions when this happen
 ## 🐞 Bug 2 Summary
 Previously when clients sent a request with the header “Expect: 100-continue”, 
 the gorouter's access log entry had the status code of the final response, 
-not “100”. In go 1.20 (before the fix) the access log shows a status code of “100” 
+not “100”. With go 1.20 (before the fix) the access log shows a status code of “100” 
 and would never log the final status code. This made it impossible for operators to 
 look at response codes to be able to successfully monitor the health of their deployments.
 
@@ -31,6 +31,8 @@ look at response codes to be able to successfully monitor the health of their de
 
 ## 🔨 Mitigations
 * upgrade your CF deployment to use routing-release  0.274.0 or later.
+
+# ⚠️ Stop here unless you are interested in the nitty gritty details
 
 ## Bug 1 Root Cause Analysis 
 Gorouter is a go reverse proxy that has a custom [transport](https://pkg.go.dev/net/http#Transport). 
@@ -78,4 +80,49 @@ was not compliant with this spec. Now in go 1.20 it is compliant and will forwar
 👉 This says that clients should be able to handle multiple 1xx responses.
 
 ## Steps to reproduce in Cloud Foundry
-1. Make sure you are using an affected version of routing-release.
+1. Push the proxy example app
+1. Generate a large-ish file to upload
+   ```
+   curl PROXY-APP-URL/download/870912 > large-file
+   ```
+1. Upload the file with the Expect header.
+   ```
+   curl PROXY-APP-URL/upload --data-binary @large-file -H "Expect: 100-continue" -v
+   ```
+1. If you are on a broken env you will see two status code 100 responses (edited response below for brevity and clarity)
+   ```
+   $ curl potato.apps.pewterblue.cf-app.com/upload -d @foo -H "Expect: 100-continue" -v
+   
+   < HTTP/1.1 100 Continue
+   < HTTP/1.1 100 Continue
+   < HTTP/1.1 200 OK
+   
+   430387 bytes received and read
+   ```
+1. If you are are on a broken env, you will see a log with status code 100 in the app's logs
+   ```
+   $ cf logs potato
+   Retrieving logs for app potato in org o / space s as admin...
+   
+   2023-06-29T21:28:49.83+0000 [RTR/0] OUT potato.minionyellow.cf-app.com - [2023-06-29T21:28:49.793188099Z] "POST /upload HTTP/1.1" 100 
+   ```
+1. If you are on a working env, you will see one status code 100 responses (edited response below for brevity and clarity)
+   ```
+   $ curl potato.apps.lightgoldenrodyellow.cf-app.com/upload -d @foo -H "Expect: 100-continue" -v
+   
+   < HTTP/1.1 100 Continue
+   < HTTP/1.1 200 OK
+   
+   430387 bytes received and read
+   ```
+1. If you are are on a working env, you will see a log with status code 200 in the app's logs
+   ```
+   $ cf logs potato
+   Retrieving logs for app potato in org o / space s as admin...
+   
+   2023-06-29T21:28:49.83+0000 [RTR/0] OUT potato.minionyellow.cf-app.com - [2023-06-29T21:28:49.793188099Z] "POST /upload HTTP/1.1" 200 
+   ```
+
+## Steps to reproduce in Go only
+[Follow the steps in this gist.](https://gist.github.com/ameowlia/f061d4d1f07e89139f6874aea5590246)
+
