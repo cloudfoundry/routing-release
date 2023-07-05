@@ -1,5 +1,15 @@
 # libhoney Changelog
 
+## 1.20.0 2023-06-29
+
+### Enhancements
+
+- perf: allow pre-sizing the data map (#228) | @lizthegrey
+
+### Maintenance
+
+- maint(deps): bump github.com/klauspost/compress from 1.16.5 to 1.16.6 (#229) | @dependabot
+
 ## 1.19.0 2023-06-05
 
 ### ⚠️ Breaking Changes ⚠️

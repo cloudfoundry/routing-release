@@ -939,6 +939,12 @@ func (b *Builder) SendNow(data interface{}) error {
 // NewEvent creates a new Event prepopulated with fields, dynamic
 // field values, and configuration inherited from the builder.
 func (b *Builder) NewEvent() *Event {
+	return b.NewEventSized(0)
+}
+
+// NewEventSized() can be used instead of NewEvent() where the number of additional event fields is known and performance is a concern
+// This will preallocate the internal field map based on the size and avoid unnecessary copying and reallocation of the map
+func (b *Builder) NewEventSized(size int) *Event {
 	e := &Event{
 		WriteKey:   b.WriteKey,
 		Dataset:    b.Dataset,
@@ -955,7 +961,7 @@ func (b *Builder) NewEvent() *Event {
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
-	e.data = make(map[string]interface{}, len(b.data)+len(b.dynFields))
+	e.data = make(map[string]interface{}, size+len(b.data)+len(b.dynFields))
 	for k, v := range b.data {
 		e.data[k] = v
 	}
