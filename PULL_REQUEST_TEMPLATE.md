@@ -3,7 +3,7 @@
 
 # What is this change about?
 
-_In your own words, describe this proposed change and the problem it solves._
+_In your own words, describe this proposed change and the problem it solves. If GitHub has prepopulated any text above here with info from your commit message, please clean it up and account for it in this section._
 
 # What type of change is this?
 
@@ -28,10 +28,10 @@ _Are there any non-automated tests that should be performed against this change 
 _Please provide any additional links or context (issues, other PRs, Slack discussions) to help understand this change._
 
 # PR Checklist
-* [ ] I have viewed signed and have submitted the Contributor License Agreement
-* [ ] I have made this pull request to the `develop` branch
-* [ ] I have run all the unit tests using `scripts/run-unit-tests-in-docker`
+* [ ] I have viewed, signed, and submitted the Contributor License Agreement.
+* [ ] I have made this pull request to the `develop` branch.
+* [ ] I have [run all the unit tests](https://github.com/cloudfoundry/routing-release#in-a-docker-container) using `scripts/run-unit-tests-in-docker`.
 * [ ] I have given thought to the backward-compatibility requirements of this change, and listed any mitigations above.
-* [ ] (Optional) I have run Routing Acceptance Tests and Routing Smoke Tests on bosh lite
-* [ ] (Optional) I have run CF Acceptance Tests on bosh lite
+* [ ] (Optional) I have [run Routing Acceptance Tests and Routing Smoke Tests](https://github.com/cloudfoundry/routing-acceptance-tests/tree/e2a5b4eebc7e60615afb10ddbd250c5de73aa9fa#running-test-suites).
+* [ ] (Optional) I have run [CF Acceptance Tests](https://github.com/cloudfoundry/cf-acceptance-tests#test-setup).
 
