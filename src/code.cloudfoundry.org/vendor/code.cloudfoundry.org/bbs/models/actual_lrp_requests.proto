@@ -51,6 +51,9 @@ message StartActualLRPRequest {
   ActualLRPNetInfo actual_lrp_net_info = 3;
   repeated ActualLRPInternalRoute actual_lrp_internal_routes = 4;
   map<string, string> metric_tags = 5;
+  oneof optional_routable {
+    bool Routable = 6;
+  }
 }
 
 message CrashActualLRPRequest {

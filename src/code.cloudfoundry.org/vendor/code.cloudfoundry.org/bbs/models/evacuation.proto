@@ -26,6 +26,9 @@ message EvacuateRunningActualLRPRequest {
   ActualLRPNetInfo actual_lrp_net_info = 3;
   repeated ActualLRPInternalRoute actual_lrp_internal_routes = 5;
   map<string, string> metric_tags = 6;
+  oneof optional_routable {
+    bool Routable = 7;
+  }
 }
 
 message EvacuateStoppedActualLRPRequest {

@@ -16,6 +16,15 @@ func (check CheckDefinition) Validate() error {
 		}
 	}
 
+	readiness_checks := check.GetReadinessChecks()
+
+	for _, check := range readiness_checks {
+		checkError := check.Validate()
+		if checkError != nil {
+			validationError = validationError.Append(checkError)
+		}
+	}
+
 	return validationError.ToError()
 
 }

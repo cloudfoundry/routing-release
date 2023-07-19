@@ -38,6 +38,9 @@ message ActualLRPInfo {
   int64 since = 8 [(gogoproto.jsontag) =  "since"];
   ModificationTag modification_tag = 9 [(gogoproto.nullable) = false,(gogoproto.jsontag) = "modification_tag"];
   ActualLRP.Presence presence = 10 [(gogoproto.jsontag) = "presence"];
+  oneof optional_routable {
+    bool Routable = 11;
+  }
 }
 
 message ActualLRPInstanceChangedEvent {

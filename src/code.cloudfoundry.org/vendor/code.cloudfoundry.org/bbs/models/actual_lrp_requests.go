@@ -157,6 +157,17 @@ func (request *StartActualLRPRequest) Validate() error {
 	return nil
 }
 
+func (request *StartActualLRPRequest) SetRoutable(routable bool) {
+	request.OptionalRoutable = &StartActualLRPRequest_Routable{
+		Routable: routable,
+	}
+}
+
+func (request *StartActualLRPRequest) RoutableExists() bool {
+	_, ok := request.GetOptionalRoutable().(*StartActualLRPRequest_Routable)
+	return ok
+}
+
 func (request *CrashActualLRPRequest) Validate() error {
 	var validationError ValidationError
 

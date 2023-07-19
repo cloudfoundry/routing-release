@@ -8,6 +8,7 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 message CheckDefinition {
   repeated Check checks = 1;
   string log_source = 2 [(gogoproto.jsontag) = "log_source"];
+  repeated Check readiness_checks = 3;
 }
 
 message Check {

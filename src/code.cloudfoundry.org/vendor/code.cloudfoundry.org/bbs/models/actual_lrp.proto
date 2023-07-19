@@ -68,4 +68,7 @@ message ActualLRP {
   Presence presence = 10 [(gogoproto.jsontag) = "presence"];
   repeated ActualLRPInternalRoute actual_lrp_internal_routes = 11;
   map<string, string> metric_tags = 12;
+  oneof optional_routable {
+    bool routable = 13 [(gogoproto.jsontag) = "routable"];
+  }
 }
