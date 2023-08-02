@@ -50,10 +50,10 @@ require (
 	github.com/urfave/negroni v1.0.0
 	github.com/vito/go-sse v1.0.0
 	golang.org/x/crypto v0.11.0
-	golang.org/x/net v0.12.0
+	golang.org/x/net v0.13.0
 	golang.org/x/oauth2 v0.10.0
-	golang.org/x/tools v0.11.0
-	google.golang.org/grpc v1.56.2
+	golang.org/x/tools v0.11.1
+	google.golang.org/grpc v1.57.0
 	google.golang.org/protobuf v1.31.0
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -61,7 +61,7 @@ require (
 require (
 	code.cloudfoundry.org/diego-logging-client v0.0.0-20230612151813-119d7fd9c963 // indirect
 	code.cloudfoundry.org/durationjson v0.0.0-20230612152544-cdd056aaf83d // indirect
-	code.cloudfoundry.org/go-diodes v0.0.0-20230724173406-4a319fb999d4 // indirect
+	code.cloudfoundry.org/go-diodes v0.0.0-20230731230506-667604960bc5 // indirect
 	code.cloudfoundry.org/go-loggregator/v8 v8.0.5 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
 	filippo.io/edwards25519 v1.0.0 // indirect
@@ -79,7 +79,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/google/pprof v0.0.0-20230705174524-200ffdc848b8 // indirect
+	github.com/google/pprof v0.0.0-20230728192033-2ba5b33183c6 // indirect
 	github.com/jackc/fake v0.0.0-20150926172116-812a484cc733 // indirect
 	github.com/jackc/pgx v3.6.2+incompatible // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
@@ -94,12 +94,12 @@ require (
 	github.com/prometheus/client_golang v1.16.0 // indirect
 	github.com/prometheus/client_model v0.4.0 // indirect
 	github.com/prometheus/common v0.44.0 // indirect
-	github.com/prometheus/procfs v0.11.0 // indirect
+	github.com/prometheus/procfs v0.11.1 // indirect
 	github.com/square/certstrap v1.3.0 // indirect
 	github.com/uber-go/atomic v1.11.0 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
-	go.step.sm/crypto v0.32.5 // indirect
+	go.step.sm/crypto v0.33.0 // indirect
 	go.uber.org/atomic v1.8.0 // indirect
 	go.uber.org/automaxprocs v1.5.3 // indirect
 	golang.org/x/mod v0.12.0 // indirect
@@ -107,7 +107,7 @@ require (
 	golang.org/x/text v0.11.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20230725213213-b022f6e96895 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230731193218-e0aa005b6bdf // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
