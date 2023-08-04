@@ -17,6 +17,7 @@ tee_output_to_sys_log "${LOG_DIR}" "pre-start" <%= p("router.logging.format.time
     loggregator_agent_port = 3459
     metrics_agent_port = 3461
     monit_port = 2822
+    otel_collector_port = 3462
     syslog_agent_port = 3460
 
     ports.append(bosh_agent_port)
@@ -24,6 +25,7 @@ tee_output_to_sys_log "${LOG_DIR}" "pre-start" <%= p("router.logging.format.time
     ports.append(forwarder_agent_port)
     ports.append(loggregator_agent_port)
     ports.append(monit_port)
+    ports.append(otel_collector_port)
     ports.append(syslog_agent_port)
     ports.append(metrics_agent_port)
 
