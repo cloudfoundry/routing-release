@@ -282,6 +282,18 @@ properties:
     example:
     - name: X-Vcap-Request-Id
     - name: Accept-Ranges
+  router.hop_by_hop_headers_to_filter:
+    description: |
+       (optional, array value) List of HTTP Headers that are filtered for Hop-By-Hop Connection header
+    default:
+    - X-Forwarded-For
+    - X-Forwarded-Proto
+    - B3
+    - X-B3
+    - X-B3-SpanID
+    - X-B3-TraceID
+    - X-Request-Start
+    - X-Forwarded-Client-Cert
   router.frontend_idle_timeout:
     description: |
       (optional, integer) Duration in seconds to maintain an open connection when client supports keep-alive.
