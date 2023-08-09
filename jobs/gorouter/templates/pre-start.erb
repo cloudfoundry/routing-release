@@ -7,25 +7,25 @@ source /var/vcap/packages/routing_utils/syslog_utils.sh
 tee_output_to_sys_log "${LOG_DIR}" "pre-start" <%= p("router.logging.format.timestamp") %>
 
 <%
-    ports = []
 
-    # the following ports are not available via bosh links and are fragile
-    # or they are available via a link, but they are in an addon, so links don't work
-    bosh_agent_port = 2825
-    bosh_dns_ports = [8853, 53080]
-    forwarder_agent_port = 3458
-    loggregator_agent_port = 3459
-    metrics_agent_port = 3461
-    monit_port = 2822
-    syslog_agent_port = 3460
-
-    ports.append(bosh_agent_port)
-    ports.concat(bosh_dns_ports)
-    ports.append(forwarder_agent_port)
-    ports.append(loggregator_agent_port)
-    ports.append(monit_port)
-    ports.append(syslog_agent_port)
-    ports.append(metrics_agent_port)
+    # The following ports are manually specified for one of the following
+    # reasons:
+    # * Not available via bosh links and fragile.
+    # * From bosh add-ons, so bosh links don't work.
+    ports = [
+        2822, # Monit
+        2825, # Bosh Agent
+        3457, 14829, # UDP Forwarder
+        3458, 14823, # Forwarder Agent
+        3459, 14824, # Loggregator Agent
+        3460, 14822, # Syslog Agent
+        3461, 14726, 14727, # Metrics Agent
+        8853, 53080, # Bosh DNS
+        14821, # Prom Scraper
+        14830, # OTel Collector
+        15821, # Metrics Discovery Registrar
+        53035, # System Metrics Agent
+    ]
 
     # the following ports are set in this release
     ports.append(p("router.port")) # has default. will always exist.
