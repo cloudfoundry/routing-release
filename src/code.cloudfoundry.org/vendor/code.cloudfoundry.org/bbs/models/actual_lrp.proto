@@ -16,8 +16,8 @@ message ActualLRPGroup {
 message PortMapping {
   uint32 container_port = 1 [(gogoproto.jsontag) = "container_port"];
   uint32 host_port = 2 [(gogoproto.jsontag) = "host_port"];
-  uint32 container_tls_proxy_port = 3;
-  uint32 host_tls_proxy_port = 4;
+  uint32 container_tls_proxy_port = 3 [(gogoproto.jsontag) = "container_tls_proxy_port"];
+  uint32 host_tls_proxy_port = 4 [(gogoproto.jsontag) = "host_tls_proxy_port"];
 }
 
 message ActualLRPKey {
