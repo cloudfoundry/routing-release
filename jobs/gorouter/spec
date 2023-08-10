@@ -284,7 +284,9 @@ properties:
     - name: Accept-Ranges
   router.hop_by_hop_headers_to_filter:
     description: |
-       (optional, array value) List of HTTP Headers that are filtered for Hop-By-Hop Connection header
+        (optional, array value) List of HTTP Headers that are filtered for Hop-By-Hop Connection header.
+        When clients make requests to the gorouter, these HTTP Headers will be automatically be
+        removed from their request's Connection header when gorouter proxies the request.
     default:
     - X-Forwarded-For
     - X-Forwarded-Proto
