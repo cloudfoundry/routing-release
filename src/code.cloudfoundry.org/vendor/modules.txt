@@ -182,7 +182,7 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
-# github.com/google/pprof v0.0.0-20230808223545-4887780b67fb
+# github.com/google/pprof v0.0.0-20230811205829-9131a7e9cc17
 ## explicit; go 1.19
 github.com/google/pprof/profile
 # github.com/honeycombio/libhoney-go v1.20.0
@@ -516,7 +516,7 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20230807174057-1744710a1577
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20230815205213-6bfd019c3878
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.57.0
