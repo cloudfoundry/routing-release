@@ -1300,7 +1300,7 @@ describe 'gorouter' do
     context 'ip_local_reserved_ports' do
       it 'contains reserved ports in order' do
         rendered_template = template.render(properties)
-        ports = '81,442,2822,2825,3457,3458,3459,3460,3461,7070,8081,8853,14726,14727,14821,14822,14823,14824,14829,14830,15821,17003,53035,53080'
+        ports = '81,442,2822,2825,3457,3458,3459,3460,3461,7070,8081,8853,9100,14726,14727,14821,14822,14823,14824,14829,14830,14922,15821,17003,53035,53080'
         expect(rendered_template).to include("\"#{ports}\" > /proc/sys/net/ipv4/ip_local_reserved_ports")
       end
 
@@ -1308,7 +1308,7 @@ describe 'gorouter' do
         it 'skips that port' do
           properties['router'].delete('prometheus')
           rendered_template = template.render(properties)
-          ports = '81,442,2822,2825,3457,3458,3459,3460,3461,8081,8853,14726,14727,14821,14822,14823,14824,14829,14830,15821,17003,53035,53080'
+          ports = '81,442,2822,2825,3457,3458,3459,3460,3461,8081,8853,9100,14726,14727,14821,14822,14823,14824,14829,14830,14922,15821,17003,53035,53080'
           expect(rendered_template).to include("\"#{ports}\" > /proc/sys/net/ipv4/ip_local_reserved_ports")
         end
       end
@@ -1317,7 +1317,7 @@ describe 'gorouter' do
         it 'skips that port' do
           properties['router']['debug_address'] = 'meow'
           rendered_template = template.render(properties)
-          ports = '81,442,2822,2825,3457,3458,3459,3460,3461,7070,8081,8853,14726,14727,14821,14822,14823,14824,14829,14830,15821,53035,53080'
+          ports = '81,442,2822,2825,3457,3458,3459,3460,3461,7070,8081,8853,9100,14726,14727,14821,14822,14823,14824,14829,14830,14922,15821,53035,53080'
           expect(rendered_template).to include("\"#{ports}\" > /proc/sys/net/ipv4/ip_local_reserved_ports")
         end
       end
