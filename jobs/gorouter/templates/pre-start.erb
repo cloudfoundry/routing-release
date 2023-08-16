@@ -19,12 +19,12 @@ tee_output_to_sys_log "${LOG_DIR}" "pre-start" <%= p("router.logging.format.time
         3458, 14823, # Forwarder Agent
         3459, 14824, # Loggregator Agent
         3460, 14822, # Syslog Agent
-        3461, 14726, 14727, # Metrics Agent
+        3461, 14726, 14727, # Metrics Agent - grpc ingress, prometheus endpoint, own metrics
         8853, 53080, # Bosh DNS
+        9100, 14830, # OTel Collector
         14821, # Prom Scraper
-        14830, # OTel Collector
         15821, # Metrics Discovery Registrar
-        53035, # System Metrics Agent
+        53035, 14922 # System Metrics Agent
     ]
 
     # the following ports are set in this release
