@@ -173,6 +173,7 @@ describe 'gorouter' do
           'enable_proxy' => false,
           'force_forwarded_proto_https' => false,
           'sanitize_forwarded_proto' => false,
+          'hop_by_hop_headers_to_filter' => ["X-ME", "X-Foo"],
           'suspend_pruning_if_nats_unavailable' => false,
           'max_idle_connections' => 100,
           'keep_alive_probe_interval' => '1s',
@@ -365,6 +366,12 @@ describe 'gorouter' do
           it 'should error' do
             expect { raise parsed_yaml }.to raise_error(RuntimeError, 'router.client_cert_validation must be "none", "request", or "require"')
           end
+        end
+      end
+
+      describe 'hop_by_hop_headers_to_filter' do
+        it 'should set hop_by_hop_headers_to_filter' do
+          expect(parsed_yaml['hop_by_hop_headers_to_filter']).to eq(["X-ME","X-Foo"])
         end
       end
 

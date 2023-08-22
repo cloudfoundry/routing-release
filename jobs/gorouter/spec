@@ -282,6 +282,27 @@ properties:
     example:
     - name: X-Vcap-Request-Id
     - name: Accept-Ranges
+  router.hop_by_hop_headers_to_filter:
+    description: |
+        (optional, array value) List of HTTP Headers that are filtered for
+        Hop-By-Hop Connection header.
+        When clients make requests to the gorouter and the gorouter proxies
+        their request, these HTTP Headers will be automatically be removed from
+        the request's Connection header and sent as normal headers to the
+        target backend. This list *also* specificies the Headers that can be
+        returned by the backend; i.e. if a client attempts to send one of these
+        Headers in their Connection Header to gorouter and it's *NOT* filtered,
+        the header will *NOT* be returned to client properly after proxying the
+        request.
+    default:
+    - X-Forwarded-For
+    - X-Forwarded-Proto
+    - B3
+    - X-B3
+    - X-B3-SpanID
+    - X-B3-TraceID
+    - X-Request-Start
+    - X-Forwarded-Client-Cert
   router.frontend_idle_timeout:
     description: |
       (optional, integer) Duration in seconds to maintain an open connection when client supports keep-alive.
