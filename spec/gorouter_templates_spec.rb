@@ -173,7 +173,7 @@ describe 'gorouter' do
           'enable_proxy' => false,
           'force_forwarded_proto_https' => false,
           'sanitize_forwarded_proto' => false,
-          'hop_by_hop_headers_to_filter' => ["X-ME", "X-Foo"],
+          'hop_by_hop_headers_to_filter' => %w[X-ME X-Foo],
           'suspend_pruning_if_nats_unavailable' => false,
           'max_idle_connections' => 100,
           'keep_alive_probe_interval' => '1s',
@@ -371,7 +371,7 @@ describe 'gorouter' do
 
       describe 'hop_by_hop_headers_to_filter' do
         it 'should set hop_by_hop_headers_to_filter' do
-          expect(parsed_yaml['hop_by_hop_headers_to_filter']).to eq(["X-ME","X-Foo"])
+          expect(parsed_yaml['hop_by_hop_headers_to_filter']).to eq(%w[X-ME X-Foo])
         end
       end
 
