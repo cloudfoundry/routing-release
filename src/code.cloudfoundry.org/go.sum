@@ -669,8 +669,8 @@ github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWR
 github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e/go.mod h1:nSuG5e5PlCu98SY8svDHJxuZscDgtXS6KTTbou5AhLI=
 github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1/go.mod h1:Q3SI9o4m/ZMnBNeIyt5eFwwo7qiLfzFZmjNmxjkiQlU=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
-github.com/cloudfoundry-community/go-uaa v0.3.2-0.20230306214931-fabcc6fe629c h1:8QdNe40uskOWM3DMSlOKPEj8u4xDEdtcRqDXgOhJsPk=
-github.com/cloudfoundry-community/go-uaa v0.3.2-0.20230306214931-fabcc6fe629c/go.mod h1:G2QAAVe4I+AZf4yF2EGGUFb/X98nTLWrqscILUznX88=
+github.com/cloudfoundry-community/go-uaa v0.3.2 h1:tZOyzrWuTRo02IwcUbIiNy9+ghgjHhLhe3/B04Wfg1w=
+github.com/cloudfoundry-community/go-uaa v0.3.2/go.mod h1:G2QAAVe4I+AZf4yF2EGGUFb/X98nTLWrqscILUznX88=
 github.com/cloudfoundry/cf-routing-test-helpers v0.0.0-20230612154734-4f65ecb98d93 h1:XXtu3X6Ubm+7eRJ5f6qCARB6wJut6B6MVcSXR4StifQ=
 github.com/cloudfoundry/cf-routing-test-helpers v0.0.0-20230612154734-4f65ecb98d93/go.mod h1:XigJMOXHcv+D+rPZ0pqcYEk4o2PZWG5CZ5mRycXzVcY=
 github.com/cloudfoundry/cf-test-helpers/v2 v2.7.0 h1:QYPAI6JCL62F8ht6Tz9sDWKwTdoWTV5tKKvDDCZwoJ0=
