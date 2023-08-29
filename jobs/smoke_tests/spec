@@ -7,7 +7,7 @@ templates:
   bpm.yml.erb: config/bpm.yml
 
 packages:
- - golang-1.20-linux
+ - golang-1.21-linux
  - acceptance_tests
  - cf-cli-8-linux
 

@@ -3,7 +3,7 @@ name: acceptance_tests
 
 dependencies:
   - rtr
-  - golang-1.20-linux
+  - golang-1.21-linux
 
 files:
   - code.cloudfoundry.org/go.mod
