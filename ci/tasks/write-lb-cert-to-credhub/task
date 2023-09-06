@@ -7,7 +7,7 @@ source networking-oss-deployments/scripts/script_helpers.sh
 
 bosh_login_toolsmiths
 
-ENV_NAME="$(cat toolsmiths-metadata-dir/name)"
+ENV_NAME="$(cat toolsmiths-metadata-dir/metadata | jq -r .name)"
 CERT_FILE="$(mktemp)"
 
 set +e
