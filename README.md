@@ -142,7 +142,10 @@ The following helper functions are additionally available by sourcing `./scripts
 
 - `docker_run_routing_release_tests <mysql-8.0(or mysql),mysql-5.7,postgres>`:  This function combines steps described above sequentially.
 
-
+There are also these scripts to make local development/testing easier:
+- `./scripts/test-in-docker-locally`: Runs template tests, building binaries, and then the test.bash script
+  - The `<test-script> <component> <subpackage>` syntax mentioned above is also supported here:
+    `./scripts/test-in-docker-locally gorouter router`
 
 #### <a name="running-acceptance-tests"></a> Running Acceptance tests
 
