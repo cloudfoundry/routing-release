@@ -74,6 +74,14 @@ smoke tests | [![networking.ci.cf-app.com](https://networking.ci.cf-app.com/api/
 
 ### <a name="developer-workflow"></a> Developer Workflow
 
+1. Clone CI repository (next to where routing-release is cloned)
+
+  ```bash
+  mkdir -p ~/workspace
+  cd ~/workspace
+  git clone https://github.com/cloudfoundry/wg-app-platform-runtime-ci.git
+  ```
+
 When working on individual components of the Routing Release, work out of the
 submodules under `src/`.
 
@@ -117,36 +125,23 @@ If you do not have `rspec` or `rubocop` installed locally, run
 `./scripts/start-docker-for-testing.sh` and execute the commands in the docker
 container. Prepend "sudo" to the script if you are an unprivileged user.
 
-
-
 #### <a name="running-unit-and-integration-tests"></a> Running Unit and Integration Tests
 
-##### In a Docker container
+##### With Docker
 
-* Run tests using the script provided. This script pulls a docker image and runs
-  the tests within a container because integration tests require Linux specific
-  features.
+Running tests for this release requires Linux specific setup and it takes advantage of having the same configuration as Concourse CI, so it's recommended to run the tests (units & integration) in docker containers.
 
-  Notice/warning: the script is called `run-unit-tests-in-docker` but it really
-  runs unit *and* integration tests, that's why they need to run in a container.
+1. `./scripts/docker/container.bash <mysql-8.0(or mysql),mysql-5.7,postgres>`: This will create a docker container with appropriate mounts.
+1. `/repo/scripts/docker/build-binaries.bash`: This will build binaries required for running tests e.g. nats-server
 
-  ```bash
-  ./scripts/run-unit-tests-in-docker #sudo for unprivileged users
-  ```
+- `/repo/scripts/docker/test.bash`: This will run all tests in this release
+- `/repo/scripts/docker/test.bash gorouter`: This will only run `gorouter` tests
+- `/repo/scripts/docker/test.bash gorouter router`: This will only run `router` sub-package tests for `gorouter` package
 
-* If you'd like to run a specific component's tests in a Docker container,
-  the `run-unit-tests` script also takes a package name as an argument:
-
-  ```bash
-  ./scripts/run-unit-tests-in-docker gorouter
-  ```
-
-##### Locally
-
-* If you'd like to run the unit and integration tests for an individual
-  component locally, we recommend you run `bin/test` in that component's
-  directory. Please make sure it's a component that doesn't require a Linux
-  operating system.
+There are also these scripts to make local development/testing easier:
+- `./scripts/test-in-docker-locally`: Runs template tests, building binaries, and then the test.bash script. Default to `mysql` DB. Set `DB` environment variable for alternate DBs e.g. <mysql-8.0(or mysql),mysql-5.7,postgres>
+  - The `<test-script> <component> <subpackage>` syntax mentioned above is also supported here:
+    `./scripts/test-in-docker-locally gorouter router`
 
 #### <a name="running-acceptance-tests"></a> Running Acceptance tests
 
