@@ -5,6 +5,6 @@ set -o pipefail
 
 . <(/ci/shared/helpers/extract-default-params-for-task.bash /ci/shared/tasks/build-binaries/linux.yml)
 
-export DEFAULT_PARAMS="/ci/routing-release/default-params/build-binaries/linux.yml"
+export DEFAULT_PARAMS="/ci/$REPO_NAME/default-params/build-binaries/linux.yml"
 /ci/shared/tasks/build-binaries/task.bash
 

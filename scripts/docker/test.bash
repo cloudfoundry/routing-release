@@ -10,7 +10,7 @@ function test() {
   export DIR=${package}
   . <(/ci/shared/helpers/extract-default-params-for-task.bash /ci/shared/tasks/run-bin-test/linux.yml)
 
-  export DEFAULT_PARAMS="ci/routing-release/default-params/run-bin-test/linux.yml"
+  export DEFAULT_PARAMS="ci/$REPO_NAME/default-params/run-bin-test/linux.yml"
   export ENVS="DB=${DB}"
   export GOFLAGS="-buildvcs=false"
   /ci/shared/tasks/run-bin-test/task.bash "${sub_package}"
@@ -19,7 +19,8 @@ function test() {
 if [[ -n "${1:-}" ]]; then
   test "src/code.cloudfoundry.org/${1}" "${2:-}"
 else
-  for component in gorouter cf-tcp-router multierror route-registrar routing-api routing-api-cli routing-info; do
+  internal_repos=$(yq '.internal_repos|join("\n")' "/ci/$REPO_NAME/index.yml")
+  for component in $internal_repos; do
     test "src/code.cloudfoundry.org/${component}"
   done
 fi

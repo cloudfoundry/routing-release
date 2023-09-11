@@ -138,12 +138,8 @@ Running tests for this release requires Linux specific setup and it takes advant
 - `/repo/scripts/docker/test.bash gorouter`: This will only run `gorouter` tests
 - `/repo/scripts/docker/test.bash gorouter router`: This will only run `router` sub-package tests for `gorouter` package
 
-The following helper functions are additionally available by sourcing `./scripts/docker/helpers.bash`:
-
-- `docker_run_routing_release_tests <mysql-8.0(or mysql),mysql-5.7,postgres>`:  This function combines steps described above sequentially.
-
 There are also these scripts to make local development/testing easier:
-- `./scripts/test-in-docker-locally`: Runs template tests, building binaries, and then the test.bash script
+- `./scripts/test-in-docker-locally`: Runs template tests, building binaries, and then the test.bash script. Default to `mysql` DB. Set `DB` environment variable for alternate DBs e.g. <mysql-8.0(or mysql),mysql-5.7,postgres>
   - The `<test-script> <component> <subpackage>` syntax mentioned above is also supported here:
     `./scripts/test-in-docker-locally gorouter router`
 

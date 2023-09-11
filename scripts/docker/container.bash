@@ -4,7 +4,6 @@ set -eu
 set -o pipefail
 
 THIS_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-REPO="${THIS_FILE_DIR}/../.."
 CI="${THIS_FILE_DIR}/../../../wg-app-platform-runtime-ci"
 unset THIS_FILE_DIR
 
@@ -34,11 +33,13 @@ fi
 echo $ARGS
 
 docker pull "${IMAGE}"
-docker rm -f routing-release-docker-container
+docker rm -f "$REPO_NAME-docker-container"
 docker run -it \
   --env "DB=${DB}" \
-  --name "routing-release-docker-container" \
-  -v "${REPO}:/repo" \
+  --env "REPO_NAME=$REPO_NAME" \
+  --env "REPO_PATH=/repo" \
+  --name "$REPO_NAME-docker-container" \
+  -v "${REPO_PATH}:/repo" \
   -v "${CI}:/ci" \
   ${ARGS} \
   "${IMAGE}" \

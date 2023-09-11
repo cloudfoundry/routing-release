@@ -8,8 +8,6 @@ set -eu
 
 THIS_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-. "${THIS_FILE_DIR}/docker/helpers.bash"
-
 "${THIS_FILE_DIR}/docker/container.bash" "${DB}" -d
 
 docker exec routing-release-docker-container '/repo/scripts/docker/build-binaries.bash'
