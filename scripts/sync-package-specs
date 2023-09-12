@@ -2,12 +2,12 @@
 
 set -e
 
-export PATH="$PWD/bin:$PATH"
+export PATH="$PWD/tmp:$PATH"
 
 (
-  mkdir -p bin
+  mkdir -p tmp
   cd "src/gosub"
-  go build -o "../../bin/gosub" .
+  go build -o "../../tmp/gosub" .
 )
 
 function sync_package() {
