@@ -11,6 +11,7 @@ This is the README for our scripts. To learn more about `routing-release`, go to
 | staged_shortlog | prints the submodule log titles for any staged submodule changes | |
 | submodule-log | prints the cached submodule log and if you provide story id(s) will add finishes tag(s) | |
 | sync-package-specs | updates the package spec file for component dependencies | |
+| test-in-docker-locally | runs tests in docker, a wrapper script for creating and executing all tests in docker | |
 | template-tests | runs the spec templating tests | |
 | update | updates all submodules | |
 
