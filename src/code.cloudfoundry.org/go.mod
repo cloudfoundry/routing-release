@@ -28,7 +28,7 @@ require (
 	github.com/cloudfoundry/cf-test-helpers/v2 v2.7.0
 	github.com/cloudfoundry/custom-cats-reporters v0.0.2
 	github.com/cloudfoundry/dropsonde v1.1.0
-	github.com/cloudfoundry/sonde-go v0.0.0-20230906214512-0e0d2ab69957
+	github.com/cloudfoundry/sonde-go v0.0.0-20230911203642-fa89d986ae20
 	github.com/codegangsta/cli v1.22.14
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/golang-jwt/jwt/v4 v4.5.0
@@ -61,7 +61,7 @@ require (
 require (
 	code.cloudfoundry.org/diego-logging-client v0.0.0-20230823164527-31a09b08e0af // indirect
 	code.cloudfoundry.org/durationjson v0.0.0-20230612152544-cdd056aaf83d // indirect
-	code.cloudfoundry.org/go-diodes v0.0.0-20230828175936-198af487b8a2 // indirect
+	code.cloudfoundry.org/go-diodes v0.0.0-20230911203732-c04be32f825e // indirect
 	code.cloudfoundry.org/go-loggregator/v8 v8.0.5 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
 	filippo.io/edwards25519 v1.0.0 // indirect
@@ -79,7 +79,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/google/pprof v0.0.0-20230907193218-d3ddc7976beb // indirect
+	github.com/google/pprof v0.0.0-20230912144702-c363fe2c2ed8 // indirect
 	github.com/jackc/fake v0.0.0-20150926172116-812a484cc733 // indirect
 	github.com/jackc/pgx v3.6.2+incompatible // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
