@@ -38,8 +38,6 @@ files:
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry/cf-test-helpers/v2/commandstarter/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry/cf-test-helpers/v2/config/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry/cf-test-helpers/v2/generator/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/cloudfoundry/cf-test-helpers/v2/helpers/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/cloudfoundry/cf-test-helpers/v2/helpers/internal/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry/cf-test-helpers/v2/internal/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry/cf-test-helpers/v2/silentcommandstarter/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry/cf-test-helpers/v2/workflowhelpers/*.go # gosub
