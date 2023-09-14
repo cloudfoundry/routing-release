@@ -101,8 +101,6 @@ github.com/cloudfoundry/cf-test-helpers/v2/commandreporter
 github.com/cloudfoundry/cf-test-helpers/v2/commandstarter
 github.com/cloudfoundry/cf-test-helpers/v2/config
 github.com/cloudfoundry/cf-test-helpers/v2/generator
-github.com/cloudfoundry/cf-test-helpers/v2/helpers
-github.com/cloudfoundry/cf-test-helpers/v2/helpers/internal
 github.com/cloudfoundry/cf-test-helpers/v2/internal
 github.com/cloudfoundry/cf-test-helpers/v2/silentcommandstarter
 github.com/cloudfoundry/cf-test-helpers/v2/workflowhelpers
@@ -259,7 +257,7 @@ github.com/nats-io/nats-server/v2/server/certidp
 github.com/nats-io/nats-server/v2/server/certstore
 github.com/nats-io/nats-server/v2/server/pse
 github.com/nats-io/nats-server/v2/server/sysmem
-# github.com/nats-io/nats.go v1.28.0
+# github.com/nats-io/nats.go v1.29.0
 ## explicit; go 1.19
 github.com/nats-io/nats.go
 github.com/nats-io/nats.go/encoders/builtin
@@ -358,7 +356,7 @@ github.com/tedsuo/rata
 # github.com/uber-go/atomic v1.11.0 => github.com/uber-go/atomic v1.1.0
 ## explicit
 github.com/uber-go/atomic
-# github.com/uber-go/zap v1.25.0 => github.com/uber-go/zap v0.0.0-20161222040304-a5783ee4b216
+# github.com/uber-go/zap v1.26.0 => github.com/uber-go/zap v0.0.0-20161222040304-a5783ee4b216
 ## explicit
 github.com/uber-go/zap
 # github.com/urfave/negroni v1.0.0
@@ -516,10 +514,10 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20230911183012-2d3300fd4832
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20230913181813-007df8e322eb
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.58.0
+# google.golang.org/grpc v1.58.1
 ## explicit; go 1.19
 google.golang.org/grpc
 google.golang.org/grpc/attributes
