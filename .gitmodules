@@ -8,7 +8,8 @@
 	branch = main
 [submodule "src/code.cloudfoundry.org/routing-info"]
 	path = src/code.cloudfoundry.org/routing-info
-	url = http://github.com/cloudfoundry/routing-info
+	url = https://github.com/cloudfoundry/routing-info
+	branch = main
 [submodule "src/code.cloudfoundry.org/routing-api-cli"]
 	path = src/code.cloudfoundry.org/routing-api-cli
 	url = https://github.com/cloudfoundry/routing-api-cli
