@@ -116,6 +116,7 @@ files:
   - code.cloudfoundry.org/vendor/github.com/josharian/intern/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/flate/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/klauspost/compress/flate/*.s # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/fse/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/huff0/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/huff0/*.s # gosub

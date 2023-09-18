@@ -36,6 +36,7 @@ files:
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry-community/go-uaa/passwordcredentials/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/golang-jwt/jwt/v4/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/flate/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/klauspost/compress/flate/*.s # gosub
   - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/encoders/builtin/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/internal/parser/*.go # gosub
