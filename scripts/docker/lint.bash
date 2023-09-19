@@ -3,10 +3,8 @@
 set -eu
 set -o pipefail
 
-function lint() {
-  . <(/ci/shared/helpers/extract-default-params-for-task.bash /ci/shared/tasks/lint-repo/linux.yml)
+. <(/ci/shared/helpers/extract-default-params-for-task.bash /ci/shared/tasks/lint-repo/linux.yml)
 
-  /ci/shared/tasks/lint-repo/task.bash
-}
-
-lint
+pushd / > /dev/null
+/ci/shared/tasks/lint-repo/task.bash
+popd > /dev/null

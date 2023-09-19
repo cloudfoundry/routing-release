@@ -138,6 +138,9 @@ Running tests for this release requires Linux specific setup and it takes advant
 - `/repo/scripts/docker/test.bash gorouter`: This will only run `gorouter` tests
 - `/repo/scripts/docker/test.bash gorouter router`: This will only run `router` sub-package tests for `gorouter` package
 
+- `/repo/scripts/docker/tests-templates.bash`: This will run all of tests for bosh tempalates
+- `/repo/scripts/docker/lint.bash`: This will run all of linting defined for this repo.
+
 There are also these scripts to make local development/testing easier:
 - `./scripts/test-in-docker-locally`: Runs template tests, building binaries, and then the test.bash script. Default to `mysql` DB. Set `DB` environment variable for alternate DBs e.g. <mysql-8.0(or mysql),mysql-5.7,postgres>
   - The `<test-script> <component> <subpackage>` syntax mentioned above is also supported here:
