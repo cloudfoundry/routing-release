@@ -207,6 +207,7 @@ files:
   - code.cloudfoundry.org/vendor/golang.org/x/net/html/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/html/atom/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/html/charset/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/net/websocket/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/oauth2/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/oauth2/clientcredentials/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/oauth2/internal/*.go # gosub
