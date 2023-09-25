@@ -65,25 +65,20 @@ sticky sessions, refer to the [Session Affinity document](docs/session-affinity.
 [X-CF Headers](/docs/x_cf_headers.md) describes the X-CF headers that are set on requests and responses inside of CF.
 
 ## <a name="routing-contributor-resources"></a> Routing Contributor Resources
-### <a name="ci-statues"></a> CI Statuses
-Job | Status
---- | ---
-unit tests | [![networking.ci.cf-app.com](https://networking.ci.cf-app.com/api/v1/teams/ga/pipelines/routing/jobs/routing-release-unit/badge)](https://networking.ci.cf-app.com/teams/ga/pipelines/routing/jobs/routing-release-unit)
-performance tests | [![networking.ci.cf-app.com](https://networking.ci.cf-app.com/api/v1/teams/ga/pipelines/routing/jobs/diana-tcp-perf-tests/badge)](https://networking.ci.cf-app.com/teams/ga/pipelines/routing/jobs/diana-tcp-perf-tests)
-smoke tests | [![networking.ci.cf-app.com](https://networking.ci.cf-app.com/api/v1/teams/ga/pipelines/routing/jobs/cf-deployment-smoke-and-indicator-protocol-tests/badge)](https://networking.ci.cf-app.com/teams/ga/pipelines/routing/jobs/cf-deployment-smoke-and-indicator-protocol-tests)
 
 ### <a name="developer-workflow"></a> Developer Workflow
 
-1. Clone CI repository (next to where routing-release is cloned)
+- Clone CI repository (next to where this code is cloned)
 
   ```bash
   mkdir -p ~/workspace
   cd ~/workspace
   git clone https://github.com/cloudfoundry/wg-app-platform-runtime-ci.git
   ```
-
-When working on individual components of the Routing Release, work out of the
-submodules under `src/`.
+- [Git](https://git-scm.com/) - Distributed version control system
+- [Go](https://golang.org/doc/install#install) - The Go programming
+  language
+- [Direnv](https://github.com/direnv/direnv) - Environment management. `direnv allow` to set `REPO_*` environment variables. These environment variables help with creating/running docker containers for each release.
 
 Run the appropriate unit tests (see
 [Testing](#running-unit-and-integration-tests)).
