@@ -1,4 +1,4 @@
-// Copyright 2018 The Prometheus Authors
+// Copyright 2023 The NATS Authors
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -11,13 +11,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:build !freebsd && !linux
-// +build !freebsd,!linux
+//go:build zos
+// +build zos
 
-package procfs
+package pse
 
-// isRealProc returns true on architectures that don't have a Type argument
-// in their Statfs_t struct
-func isRealProc(mountPoint string) (bool, error) {
-	return true, nil
+// This is a placeholder for now.
+func ProcUsage(pcpu *float64, rss, vss *int64) error {
+	*pcpu = 0.0
+	*rss = 0
+	*vss = 0
+
+	return nil
 }

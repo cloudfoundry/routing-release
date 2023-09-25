@@ -1,4 +1,4 @@
-// Copyright 2018 The Prometheus Authors
+// Copyright 2022 The NATS Authors
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -11,13 +11,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:build !freebsd && !linux
-// +build !freebsd,!linux
+//go:build zos
+// +build zos
 
-package procfs
+package sysmem
 
-// isRealProc returns true on architectures that don't have a Type argument
-// in their Statfs_t struct
-func isRealProc(mountPoint string) (bool, error) {
-	return true, nil
+func Memory() int64 {
+	// TODO: We don't know the system memory
+	return 0
 }
