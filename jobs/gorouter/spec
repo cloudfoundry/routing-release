@@ -518,6 +518,21 @@ properties:
     description: "The number of file descriptors a router can have open at one time"
     default: 100000
 
+  router.verify_client_certificate_metadata:
+    description: |
+      Additional client certificate verification which limits the allowed client certificate for given to a signing CA (identified by its subject) to the certificates with subjects provided in the list of valid subjects. Each list entry contains a ca_subject with a coresponding list of valid subjects.
+      - ca_subject:
+          - common_name: ""
+            organization: []
+            locality: []
+            country: []
+        valid_subjects:
+          - common_name: ""
+            organizational_units: []
+            organizations: []
+            locality: []
+            country: []
+    default: []
   healthchecker.failure_counter_file:
     description: "File used by the healthchecker to monitor consecutive failures."
     default: /var/vcap/data/gorouter/counters/consecutive_healthchecker_failures.count
