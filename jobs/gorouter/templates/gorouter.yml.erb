@@ -115,6 +115,7 @@ params = {
   'send_http_start_stop_server_event' => p('router.send_http_start_stop_server_event'),
   'send_http_start_stop_client_event' => p("router.send_http_start_stop_client_event"),
   'empty_pool_timeout' => p('for_backwards_compatibility_only.empty_pool_timeout'),
+  'verify_client_certificate_metadata'=> p('router.verify_client_certificate_metadata')
 }
 
 if_p('router.prometheus.port') do |port|
@@ -421,6 +422,8 @@ end
 if_p('router.html_error_template') do |t|
   params['html_error_template_file'] = t == '' ? nil : '/var/vcap/jobs/gorouter/config/error.html'
 end
+
+
 
 params.to_yaml[3..-1]
 %>
