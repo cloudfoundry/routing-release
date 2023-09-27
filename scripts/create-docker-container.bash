@@ -4,10 +4,15 @@ set -eu
 set -o pipefail
 
 THIS_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-CI="${THIS_FILE_DIR}/../../../wg-app-platform-runtime-ci"
+CI="${THIS_FILE_DIR}/../../wg-app-platform-runtime-ci"
+. "$CI/shared/helpers/git-helpers.bash"
+REPO_NAME=$(git_get_remote_name)
+REPO_PATH="${THIS_FILE_DIR}/../"
 unset THIS_FILE_DIR
 
-DB="${1?Provide DB flavor e.g mysql-8.0(or mysql),mysql-5.7,postgres}"
+if [[ ${DB:-empty} == "empty" ]]; then
+  DB=mysql
+fi
 
 if [[ "${DB}" == "mysql" ]] || [[ "${DB}" == "mysql-8.0" ]]; then
   IMAGE="cloudfoundry/tas-runtime-mysql-8.0"
@@ -21,8 +26,6 @@ else
   echo "Unsupported DB flavor"
   exit 1
 fi
-
-shift 1
 
 if [[ -z "${*}" ]]; then
   ARGS="-it"
