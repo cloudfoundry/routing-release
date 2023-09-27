@@ -68,7 +68,8 @@ sticky sessions, refer to the [Session Affinity document](docs/session-affinity.
 
 ### <a name="developer-workflow"></a> Developer Workflow
 
-- Clone CI repository (next to where this code is cloned)
+- Clone [CI repository](https://github.com/cloudfoundry/wg-app-platform-runtime-ci) (next to where this code is cloned), and make sure latest
+is pulled by running `git pull`
 
   ```bash
   mkdir -p ~/workspace
@@ -78,7 +79,6 @@ sticky sessions, refer to the [Session Affinity document](docs/session-affinity.
 - [Git](https://git-scm.com/) - Distributed version control system
 - [Go](https://golang.org/doc/install#install) - The Go programming
   language
-- [Direnv](https://github.com/direnv/direnv) - Environment management. `direnv allow` to set `REPO_*` environment variables. These environment variables help with creating/running docker containers for each release.
 
 Run the appropriate unit tests (see
 [Testing](#running-unit-and-integration-tests)).
@@ -124,22 +124,19 @@ container. Prepend "sudo" to the script if you are an unprivileged user.
 
 ##### With Docker
 
-Running tests for this release requires Linux specific setup and it takes advantage of having the same configuration as Concourse CI, so it's recommended to run the tests (units & integration) in docker containers.
+Running tests for this release requires a `DB` flavor. The following scripts with default to `mysql` DB. Set `DB` environment variable for alternate DBs e.g. <mysql-8.0(or mysql),mysql-5.7,postgres>
 
-1. `./scripts/docker/container.bash <mysql-8.0(or mysql),mysql-5.7,postgres>`: This will create a docker container with appropriate mounts.
-1. `/repo/scripts/docker/build-binaries.bash`: This will build binaries required for running tests e.g. nats-server
+- `./scripts/create-docker-container.bash`: This will create a docker container with appropriate mounts.
+- `./scripts/test-in-docker-locally.bash`: Create docker container and run all tests and setup in a single script.
+  - `./scripts/test-in-docker-locally.bash <package> <sub-package>`: For running tests under a specific package and/or sub-package: e.g. `./scripts/test-in-docker-locally.bash gorouter router`
 
+When inside docker container: 
+- `/repo/scripts/docker/build-binaries.bash`: This will build binaries required for running tests e.g. nats-server and rtr
 - `/repo/scripts/docker/test.bash`: This will run all tests in this release
 - `/repo/scripts/docker/test.bash gorouter`: This will only run `gorouter` tests
 - `/repo/scripts/docker/test.bash gorouter router`: This will only run `router` sub-package tests for `gorouter` package
-
 - `/repo/scripts/docker/tests-templates.bash`: This will run all of tests for bosh tempalates
 - `/repo/scripts/docker/lint.bash`: This will run all of linting defined for this repo.
-
-There are also these scripts to make local development/testing easier:
-- `./scripts/test-in-docker-locally`: Runs template tests, building binaries, and then the test.bash script. Default to `mysql` DB. Set `DB` environment variable for alternate DBs e.g. <mysql-8.0(or mysql),mysql-5.7,postgres>
-  - The `<test-script> <component> <subpackage>` syntax mentioned above is also supported here:
-    `./scripts/test-in-docker-locally gorouter router`
 
 #### <a name="running-acceptance-tests"></a> Running Acceptance tests
 
