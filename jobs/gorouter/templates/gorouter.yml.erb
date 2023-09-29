@@ -1,4 +1,4 @@
----
+<% require "openssl" %>---
 <%=
 def property_or_link(description, property, link_path, link_name=nil, optional=false)
   link_name ||= link_path.split('.').first
@@ -115,7 +115,6 @@ params = {
   'send_http_start_stop_server_event' => p('router.send_http_start_stop_server_event'),
   'send_http_start_stop_client_event' => p("router.send_http_start_stop_client_event"),
   'empty_pool_timeout' => p('for_backwards_compatibility_only.empty_pool_timeout'),
-  'verify_client_certificate_metadata'=> p('router.verify_client_certificate_metadata')
 }
 
 if_p('router.prometheus.port') do |port|
@@ -423,7 +422,67 @@ if_p('router.html_error_template') do |t|
   params['html_error_template_file'] = t == '' ? nil : '/var/vcap/jobs/gorouter/config/error.html'
 end
 
+# Verification check for client certificate metadata. Only enabled if client_ca_certs
+if_p('router.enable_verify_client_certificate_metadata', 'router.verify_client_certificate_metadata', 'router.client_ca_certs') do |enable, rules, client_ca_certs|
+  if enable and rules.length > 0 then
+    # Check consistency between client_ca_certs and rules.
 
+    # Find pems in `client_ca_certs`, raise an error if none are defined.
+    pems = client_ca_certs.scan(/(-----BEGIN CERTIFICATE-----.*?-----END CERTIFICATE-----)/m)
+    raise "client certificate rules defined, but no client CA defined in `client_ca_certs`" unless pems.length > 0
+
+    field_map = {
+      'common_name' => 'CN',
+      'serial_number' => 'SN',
+      'organization' => 'O',
+      'organization_name' => 'ON',
+      'locality' => 'L',
+      'country' => 'C',
+      'province' => 'ST',
+      'street_address' => 'STREET',
+    }
+
+    # convert the ca_subject of each rule to a X.509 name with its fields sorted alphabetically.
+    rule_subjects = rules.map { |rule|
+      fields = []
+      # convert properties to X.509 DN field names. Multi-value fields create a tuple for each entry.
+      rule['ca_subject'].each { |k, v|
+        mapping = field_map[k]
+        if v.kind_of?(Array)
+          v.each { |val| fields.push [ mapping, val] }
+        else
+          fields.push [ mapping, v ]
+        end
+      }
+
+      # fields are sorted for the configuration and the subject name of the certificate.
+      sorted_fields = fields.sort{|a,b|a[0] <=> b[0]}
+      OpenSSL::X509::Name.new sorted_fields
+    }
+
+    # Get the client CA certificates' subject names in the same alphabetical order as from the configuration.
+    cert_subjects = pems.map { |pem|
+      cert = OpenSSL::X509::Certificate.new pem[0]
+      sorted_fields = cert.subject.to_a.sort{|a,b|a[0] <=> b[0]}
+      OpenSSL::X509::Name.new sorted_fields
+    }
+
+    # Check for each of the rules if there is _at least one_ client CA certificate with the same subject.
+    # Raise an error if there isn't and show which client CA subjects _are_ configured.
+    rule_subjects.each{ |rule|
+      unless [rule].intersect?(cert_subjects) then
+        raise <<~EOF
+          no CA certificate subjects in `client_ca_certs` matches the rule's subject: #{rule}. \
+          `ca_client_certs` subjects: #{cert_subjects.map { |c| c.to_s }.join(", ")}"
+        EOF
+      end
+    }
+
+    # now that consistency is checked, assign the values.
+    params['enable_verify_client_certificate_metadata'] = enable
+    params['verify_client_certificate_metadata'] = rules
+  end
+end
 
 params.to_yaml[3..-1]
 %>
