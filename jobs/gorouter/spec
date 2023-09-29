@@ -518,6 +518,10 @@ properties:
     description: "The number of file descriptors a router can have open at one time"
     default: 100000
 
+  router.enable_verify_client_certificate_metadata:
+    description: |
+        Enable additional client certificate verification via verify_client_certificate_metadata (see below).
+    default: false
   router.verify_client_certificate_metadata:
     description: |
       Additional client certificate verification which limits the allowed client certificate for given to a signing CA (identified by its subject) to the certificates with subjects provided in the list of valid subjects. Each list entry contains a ca_subject with a coresponding list of valid subjects.

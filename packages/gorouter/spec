@@ -75,6 +75,9 @@ files:
   - code.cloudfoundry.org/routing-api/trace/*.go # gosub
   - code.cloudfoundry.org/routing-api/uaaclient/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/tlsconfig/*.go # gosub
+  - code.cloudfoundry.org/vendor/filippo.io/edwards25519/*.go # gosub
+  - code.cloudfoundry.org/vendor/filippo.io/edwards25519/field/*.go # gosub
+  - code.cloudfoundry.org/vendor/filippo.io/edwards25519/field/*.s # gosub
   - code.cloudfoundry.org/vendor/github.com/armon/go-proxyproto/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/beorn7/perks/quantile/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/bmizerany/pat/*.go # gosub
@@ -192,8 +195,19 @@ files:
   - code.cloudfoundry.org/vendor/github.com/vmihailenco/tagparser/v2/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/vmihailenco/tagparser/v2/internal/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/vmihailenco/tagparser/v2/internal/parser/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.step.sm/crypto/fingerprint/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.step.sm/crypto/internal/bcrypt_pbkdf/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.step.sm/crypto/internal/emoji/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.step.sm/crypto/internal/utils/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.step.sm/crypto/keyutil/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.step.sm/crypto/pemutil/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.step.sm/crypto/randutil/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.step.sm/crypto/x25519/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/blake2b/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/blake2b/*.s # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/crypto/blowfish/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/crypto/chacha20/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/crypto/chacha20/*.s # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/curve25519/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/ed25519/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/internal/alias/*.go # gosub
@@ -204,6 +218,9 @@ files:
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/pbkdf2/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/salsa20/salsa/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/salsa20/salsa/*.s # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/crypto/scrypt/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/crypto/ssh/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/crypto/ssh/internal/bcrypt_pbkdf/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/context/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/html/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/html/atom/*.go # gosub

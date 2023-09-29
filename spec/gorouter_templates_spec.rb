@@ -771,6 +771,89 @@ describe 'gorouter' do
             end
           end
         end
+        context 'verify_client_certificate_metadata' do
+          context 'not enabled but rules provided' do
+            before do
+              deployment_manifest_fragment['router']['verify_client_certificate_metadata'] = [
+                  { "ca_subject" => { "common_name" => "test.com" }}
+              ]
+            end
+            it 'does not populate the property' do
+              expect { parsed_yaml }.not_to raise_error
+              expect(parsed_yaml['enable_verify_client_certificate_metadata']).to eq(nil)
+              expect(parsed_yaml['verify_client_certificate_metadata']).to eq(nil)
+            end
+          end
+
+          context 'enabled but no rules provided' do
+            before do
+              deployment_manifest_fragment['router']['enable_verify_client_certificate_metadata'] = false
+              deployment_manifest_fragment['router']['verify_client_certificate_metadata'] = []
+
+            end
+            it 'does not populate the property' do
+              expect { parsed_yaml }.not_to raise_error
+              expect(parsed_yaml['enable_verify_client_certificate_metadata']).to eq(nil)
+              expect(parsed_yaml['verify_client_certificate_metadata']).to eq(nil)
+            end
+          end
+
+          context 'enabled without configured client_ca_certs' do
+            before do
+              deployment_manifest_fragment['router']['enable_verify_client_certificate_metadata'] = true
+              deployment_manifest_fragment['router']['verify_client_certificate_metadata'] = [
+                { "ca_subject" => { "common_name" => "test-with-san.com" },
+                  "valid_subjects" => [
+                    {"ca_subject" => { "common_name" => "test.com client cert1" }},
+                    {"ca_subject" => { "common_name" => "test.com client cert2", "locality" => ["US"] }}
+                  ]
+                }
+              ]
+            end
+            it 'fails generating the template as there are metadata verification rules but no client ca certs' do
+              expect { parsed_yaml }.to raise_error RuntimeError, "client certificate rules defined, but no client CA defined in `client_ca_certs`"
+            end
+          end
+          context 'enabled with configured client_ca_certs' do
+            before do
+              deployment_manifest_fragment['router']['client_ca_certs'] = TEST_CERT
+            end
+            context 'and matching rule' do
+              before do
+                deployment_manifest_fragment['router']['enable_verify_client_certificate_metadata'] = true
+                deployment_manifest_fragment['router']['verify_client_certificate_metadata'] = [
+                  { "ca_subject" => { "common_name" => "test-with-san.com" },
+                    "valid_subjects" => [
+                      {"ca_subject" => { "common_name" => "test.com client cert1" }},
+                      {"ca_subject" => { "common_name" => "test.com client cert2", "locality" => ["US"] }}
+                    ]
+                  }
+                ]
+              end
+              it 'populates the properties after a successful check' do
+                expect { parsed_yaml }.not_to raise_error
+                expect(parsed_yaml['enable_verify_client_certificate_metadata']).to eq(true)
+                expect(parsed_yaml['verify_client_certificate_metadata']).to eq(deployment_manifest_fragment['router']['verify_client_certificate_metadata'])
+              end
+            end
+            context 'and not matching rule' do
+              before do
+                deployment_manifest_fragment['router']['enable_verify_client_certificate_metadata'] = true
+                deployment_manifest_fragment['router']['verify_client_certificate_metadata'] = [
+                  { "ca_subject" => { "common_name" => "test-with-san.com", "country" => ["US"] },
+                    "valid_subjects" => [
+                      {"ca_subject" => { "common_name" => "test.com client cert1" }},
+                      {"ca_subject" => { "common_name" => "test.com client cert2", "locality" => ["US"] }}
+                    ]
+                  }
+                ]
+              end
+              it 'fails and explains the validpopulates the properties after a successful check' do
+                expect { parsed_yaml }.to raise_error RuntimeError, /no CA certificate subjects in `client_ca_certs` matches the rule's subject:/
+              end
+            end
+          end
+        end
       end
 
       # ca_certs, private_key, cert_chain
