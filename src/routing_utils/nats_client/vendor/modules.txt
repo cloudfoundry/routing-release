@@ -1,4 +1,4 @@
-# code.cloudfoundry.org/tlsconfig v0.0.0-20230612153104-23c0622de227
+# code.cloudfoundry.org/tlsconfig v0.0.0-20230929201433-6cd2b78aba25
 ## explicit; go 1.19
 code.cloudfoundry.org/tlsconfig
 # github.com/golang/protobuf v1.5.3
@@ -8,7 +8,7 @@ code.cloudfoundry.org/tlsconfig
 github.com/klauspost/compress/flate
 # github.com/nats-io/nats-server/v2 v2.9.17
 ## explicit; go 1.19
-# github.com/nats-io/nats.go v1.30.1
+# github.com/nats-io/nats.go v1.30.2
 ## explicit; go 1.20
 github.com/nats-io/nats.go
 github.com/nats-io/nats.go/encoders/builtin
