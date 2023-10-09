@@ -524,18 +524,29 @@ properties:
     default: false
   router.verify_client_certificate_metadata:
     description: |
-      Additional client certificate verification which limits the allowed client certificate for given to a signing CA (identified by its subject) to the certificates with subjects provided in the list of valid subjects. Each list entry contains a ca_subject with a coresponding list of valid subjects.
+      Additional client certificate verification, after the certificate was validated using the regular mTLS mechanism and is issued using one of the CAs in `client_ca_certs`.
+      The additional verification limits the allowed client certificates for a given signing CA (identified by its subject) to certificates with subjects provided in the list of valid subjects. Within the certificate chain there may be more than one CA certificates (e.g. intermediate CA certificates). The `ca_subject` must match one of the CA certificates in the chain.
+      Each list entry contains a ca_subject with a corresponding list of valid subjects. Each ca_subject must match one of the certificates in `client_ca_certs`. When a ca_subject is defined that does not match, this raises an error during templating time and at startup in gorouter.
       - ca_subject:
-          - common_name: ""
-            organization: []
-            locality: []
-            country: []
+          common_name: ""
+          serial_number: ""
+          country: []
+          organisation: []
+          organisation_unit: []
+          locality: []
+          province: []
+          street_address: []
+          postal_code: []
         valid_subjects:
           - common_name: ""
-            organizational_units: []
-            organizations: []
-            locality: []
+            serial_number: ""
             country: []
+            organisation: []
+            organisation_unit: []
+            locality: []
+            province: []
+            street_address: []
+            postal_code: []
     default: []
   healthchecker.failure_counter_file:
     description: "File used by the healthchecker to monitor consecutive failures."
