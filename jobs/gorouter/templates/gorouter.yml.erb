@@ -442,11 +442,11 @@ if_p('router.enable_verify_client_certificate_metadata', 'router.verify_client_c
       'street_address' => 'STREET',
     }
 
-    # convert the ca_subject of each rule to a X.509 name with its fields sorted alphabetically.
+    # convert the issuer_in_chain of each rule to a X.509 name with its fields sorted alphabetically.
     rule_subjects = rules.map { |rule|
       fields = []
       # convert properties to X.509 DN field names. Multi-value fields create a tuple for each entry.
-      rule['ca_subject'].each { |k, v|
+      rule['issuer_in_chain'].each { |k, v|
         mapping = field_map[k]
         if v.kind_of?(Array)
           v.each { |val| fields.push [ mapping, val] }

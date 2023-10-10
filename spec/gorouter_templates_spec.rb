@@ -775,7 +775,7 @@ describe 'gorouter' do
           context 'not enabled but rules provided' do
             before do
               deployment_manifest_fragment['router']['verify_client_certificate_metadata'] = [
-                  { "ca_subject" => { "common_name" => "test.com" }}
+                  { "issuer_in_chain" => { "common_name" => "test.com" }}
               ]
             end
             it 'does not populate the property' do
@@ -802,10 +802,10 @@ describe 'gorouter' do
             before do
               deployment_manifest_fragment['router']['enable_verify_client_certificate_metadata'] = true
               deployment_manifest_fragment['router']['verify_client_certificate_metadata'] = [
-                { "ca_subject" => { "common_name" => "test-with-san.com" },
-                  "valid_subjects" => [
-                    {"ca_subject" => { "common_name" => "test.com client cert1" }},
-                    {"ca_subject" => { "common_name" => "test.com client cert2", "locality" => ["US"] }}
+                { "issuer_in_chain" => { "common_name" => "test-with-san.com" },
+                  "valid_cert_subjects" => [
+                    {"issuer_in_chain" => { "common_name" => "test.com client cert1" }},
+                    {"issuer_in_chain" => { "common_name" => "test.com client cert2", "locality" => ["US"] }}
                   ]
                 }
               ]
@@ -822,10 +822,10 @@ describe 'gorouter' do
               before do
                 deployment_manifest_fragment['router']['enable_verify_client_certificate_metadata'] = true
                 deployment_manifest_fragment['router']['verify_client_certificate_metadata'] = [
-                  { "ca_subject" => { "common_name" => "test-with-san.com" },
-                    "valid_subjects" => [
-                      {"ca_subject" => { "common_name" => "test.com client cert1" }},
-                      {"ca_subject" => { "common_name" => "test.com client cert2", "locality" => ["US"] }}
+                  { "issuer_in_chain" => { "common_name" => "test-with-san.com" },
+                    "valid_cert_subjects" => [
+                      {"issuer_in_chain" => { "common_name" => "test.com client cert1" }},
+                      {"issuer_in_chain" => { "common_name" => "test.com client cert2", "locality" => ["US"] }}
                     ]
                   }
                 ]
@@ -840,10 +840,10 @@ describe 'gorouter' do
               before do
                 deployment_manifest_fragment['router']['enable_verify_client_certificate_metadata'] = true
                 deployment_manifest_fragment['router']['verify_client_certificate_metadata'] = [
-                  { "ca_subject" => { "common_name" => "test-with-san.com", "country" => ["US"] },
-                    "valid_subjects" => [
-                      {"ca_subject" => { "common_name" => "test.com client cert1" }},
-                      {"ca_subject" => { "common_name" => "test.com client cert2", "locality" => ["US"] }}
+                  { "issuer_in_chain" => { "common_name" => "test-with-san.com", "country" => ["US"] },
+                    "valid_cert_subjects" => [
+                      {"issuer_in_chain" => { "common_name" => "test.com client cert1" }},
+                      {"issuer_in_chain" => { "common_name" => "test.com client cert2", "locality" => ["US"] }}
                     ]
                   }
                 ]
