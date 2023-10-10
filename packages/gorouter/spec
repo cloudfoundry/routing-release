@@ -116,6 +116,7 @@ files:
   - code.cloudfoundry.org/vendor/github.com/josharian/intern/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/flate/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/klauspost/compress/flate/*.s # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/fse/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/huff0/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/huff0/*.s # gosub
@@ -213,7 +214,6 @@ files:
   - code.cloudfoundry.org/vendor/golang.org/x/oauth2/internal/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/sys/cpu/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/sys/cpu/*.s # gosub
-  - code.cloudfoundry.org/vendor/golang.org/x/sys/internal/unsafeheader/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/sys/unix/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/sys/unix/*.s # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/sys/windows/*.go # gosub

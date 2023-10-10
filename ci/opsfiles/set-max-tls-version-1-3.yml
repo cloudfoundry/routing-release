@@ -1,3 +1,0 @@
-- type: replace
-  path: /instance_groups/name=router/jobs/name=gorouter/properties/router/max_tls_version?
-  value: "TLSv1.3"

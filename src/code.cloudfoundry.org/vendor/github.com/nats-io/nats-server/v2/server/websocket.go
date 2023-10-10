@@ -15,7 +15,7 @@ package server
 
 import (
 	"bytes"
-	"crypto/rand"
+	crand "crypto/rand"
 	"crypto/sha1"
 	"crypto/tls"
 	"encoding/base64"
@@ -545,7 +545,7 @@ func wsFillFrameHeader(fh []byte, useMasking, first, final, compressed bool, fra
 	var key []byte
 	if useMasking {
 		var keyBuf [4]byte
-		if _, err := io.ReadFull(rand.Reader, keyBuf[:4]); err != nil {
+		if _, err := io.ReadFull(crand.Reader, keyBuf[:4]); err != nil {
 			kv := mrand.Int31()
 			binary.LittleEndian.PutUint32(keyBuf[:4], uint32(kv))
 		}
@@ -958,7 +958,7 @@ func wsAcceptKey(key string) string {
 
 func wsMakeChallengeKey() (string, error) {
 	p := make([]byte, 16)
-	if _, err := io.ReadFull(rand.Reader, p); err != nil {
+	if _, err := io.ReadFull(crand.Reader, p); err != nil {
 		return _EMPTY_, err
 	}
 	return base64.StdEncoding.EncodeToString(p), nil
@@ -1050,6 +1050,10 @@ func (s *Server) wsConfigAuth(opts *WebsocketOpts) {
 }
 
 func (s *Server) startWebsocketServer() {
+	if s.isShuttingDown() {
+		return
+	}
+
 	sopts := s.getOpts()
 	o := &sopts.Websocket
 
@@ -1071,10 +1075,6 @@ func (s *Server) startWebsocketServer() {
 	// avoid the possibility of it being "intercepted".
 
 	s.mu.Lock()
-	if s.shutdown {
-		s.mu.Unlock()
-		return
-	}
 	// Do not check o.NoTLS here. If a TLS configuration is available, use it,
 	// regardless of NoTLS. If we don't have a TLS config, it means that the
 	// user has configured NoTLS because otherwise the server would have failed
@@ -1220,8 +1220,8 @@ func (s *Server) createWSClient(conn net.Conn, ws *websocket) *client {
 	c.mu.Unlock()
 
 	s.mu.Lock()
-	if !s.running || s.ldm {
-		if s.shutdown {
+	if !s.isRunning() || s.ldm {
+		if s.isShuttingDown() {
 			conn.Close()
 		}
 		s.mu.Unlock()
@@ -1234,12 +1234,14 @@ func (s *Server) createWSClient(conn net.Conn, ws *websocket) *client {
 		return nil
 	}
 	s.clients[c.cid] = c
-
-	// Websocket clients do TLS in the websocket http server.
-	// So no TLS here...
 	s.mu.Unlock()
 
 	c.mu.Lock()
+	// Websocket clients do TLS in the websocket http server.
+	// So no TLS initiation here...
+	if _, ok := conn.(*tls.Conn); ok {
+		c.flags.set(handshakeComplete)
+	}
 
 	if c.isClosed() {
 		c.mu.Unlock()
@@ -1293,8 +1295,7 @@ func (c *client) wsCollapsePtoNB() (net.Buffers, int64) {
 		if mfs > 0 && c.ws.nocompfrag {
 			mfs = 0
 		}
-		buf := &bytes.Buffer{}
-
+		buf := bytes.NewBuffer(nbPoolGet(usz))
 		cp := c.ws.compressor
 		if cp == nil {
 			c.ws.compressor, _ = flate.NewWriter(buf, flate.BestSpeed)
@@ -1329,9 +1330,7 @@ func (c *client) wsCollapsePtoNB() (net.Buffers, int64) {
 				if mask {
 					wsMaskBuf(key, p[:lp])
 				}
-				new := nbPoolGet(wsFrameSizeForBrowsers)
-				lp = copy(new[:wsFrameSizeForBrowsers], p[:lp])
-				bufs = append(bufs, fh[:n], new[:lp])
+				bufs = append(bufs, fh[:n], p[:lp])
 				csz += n + lp
 				p = p[lp:]
 			}
@@ -1341,15 +1340,16 @@ func (c *client) wsCollapsePtoNB() (net.Buffers, int64) {
 			if mask {
 				wsMaskBuf(key, p)
 			}
-			bufs = append(bufs, h)
-			for len(p) > 0 {
-				new := nbPoolGet(len(p))
-				n := copy(new[:cap(new)], p)
-				bufs = append(bufs, new[:n])
-				p = p[n:]
+			if ol > 0 {
+				bufs = append(bufs, h, p)
 			}
 			csz = len(h) + ol
 		}
+		// Make sure that the compressor no longer holds a reference to
+		// the bytes.Buffer, so that the underlying memory gets cleaned
+		// up after flushOutbound/flushAndClose. For this to be safe, we
+		// always cp.Reset(...) before reusing the compressor again.
+		cp.Reset(nil)
 		// Add to pb the compressed data size (including headers), but
 		// remove the original uncompressed data size that was added
 		// during the queueing.
@@ -1360,14 +1360,15 @@ func (c *client) wsCollapsePtoNB() (net.Buffers, int64) {
 		if mfs > 0 {
 			// We are limiting the frame size.
 			startFrame := func() int {
-				bufs = append(bufs, nbPoolGet(wsMaxFrameHeaderSize)[:wsMaxFrameHeaderSize])
+				bufs = append(bufs, nbPoolGet(wsMaxFrameHeaderSize))
 				return len(bufs) - 1
 			}
 			endFrame := func(idx, size int) {
+				bufs[idx] = bufs[idx][:wsMaxFrameHeaderSize]
 				n, key := wsFillFrameHeader(bufs[idx], mask, wsFirstFrame, wsFinalFrame, wsUncompressedFrame, wsBinaryMessage, size)
+				bufs[idx] = bufs[idx][:n]
 				c.out.pb += int64(n)
 				c.ws.fs += int64(n + size)
-				bufs[idx] = bufs[idx][:n]
 				if mask {
 					wsMaskBufs(key, bufs[idx+1:])
 				}
@@ -1393,10 +1394,8 @@ func (c *client) wsCollapsePtoNB() (net.Buffers, int64) {
 					if endStart {
 						fhIdx = startFrame()
 					}
-					new := nbPoolGet(total)
-					n := copy(new[:cap(new)], b[:total])
-					bufs = append(bufs, new[:n])
-					b = b[n:]
+					bufs = append(bufs, b[:total])
+					b = b[total:]
 				}
 			}
 			if total > 0 {

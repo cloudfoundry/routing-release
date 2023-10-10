@@ -1,3 +1,0 @@
-- type: replace
-  path: /instance_groups/name=router/jobs/name=gorouter/properties/router/ca_certs/-
-  value: ((lb_cert.certificate))

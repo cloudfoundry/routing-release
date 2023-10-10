@@ -30,7 +30,7 @@ _Please provide any additional links or context (issues, other PRs, Slack discus
 # PR Checklist
 * [ ] I have viewed, signed, and submitted the Contributor License Agreement.
 * [ ] I have made this pull request to the `develop` branch.
-* [ ] I have [run all the unit tests](https://github.com/cloudfoundry/routing-release#in-a-docker-container) using `scripts/run-unit-tests-in-docker`.
+* [ ] I have [run all the unit tests](https://github.com/cloudfoundry/routing-release#running-unit-and-integration-tests).
 * [ ] I have given thought to the backward-compatibility requirements of this change, and listed any mitigations above.
 * [ ] (Optional) I have [run Routing Acceptance Tests and Routing Smoke Tests](https://github.com/cloudfoundry/routing-acceptance-tests/tree/e2a5b4eebc7e60615afb10ddbd250c5de73aa9fa#running-test-suites).
 * [ ] (Optional) I have run [CF Acceptance Tests](https://github.com/cloudfoundry/cf-acceptance-tests#test-setup).

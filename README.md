@@ -65,17 +65,20 @@ sticky sessions, refer to the [Session Affinity document](docs/session-affinity.
 [X-CF Headers](/docs/x_cf_headers.md) describes the X-CF headers that are set on requests and responses inside of CF.
 
 ## <a name="routing-contributor-resources"></a> Routing Contributor Resources
-### <a name="ci-statues"></a> CI Statuses
-Job | Status
---- | ---
-unit tests | [![networking.ci.cf-app.com](https://networking.ci.cf-app.com/api/v1/teams/ga/pipelines/routing/jobs/routing-release-unit/badge)](https://networking.ci.cf-app.com/teams/ga/pipelines/routing/jobs/routing-release-unit)
-performance tests | [![networking.ci.cf-app.com](https://networking.ci.cf-app.com/api/v1/teams/ga/pipelines/routing/jobs/diana-tcp-perf-tests/badge)](https://networking.ci.cf-app.com/teams/ga/pipelines/routing/jobs/diana-tcp-perf-tests)
-smoke tests | [![networking.ci.cf-app.com](https://networking.ci.cf-app.com/api/v1/teams/ga/pipelines/routing/jobs/cf-deployment-smoke-and-indicator-protocol-tests/badge)](https://networking.ci.cf-app.com/teams/ga/pipelines/routing/jobs/cf-deployment-smoke-and-indicator-protocol-tests)
 
 ### <a name="developer-workflow"></a> Developer Workflow
 
-When working on individual components of the Routing Release, work out of the
-submodules under `src/`.
+- Clone [CI repository](https://github.com/cloudfoundry/wg-app-platform-runtime-ci) (next to where this code is cloned), and make sure latest
+is pulled by running `git pull`
+
+  ```bash
+  mkdir -p ~/workspace
+  cd ~/workspace
+  git clone https://github.com/cloudfoundry/wg-app-platform-runtime-ci.git
+  ```
+- [Git](https://git-scm.com/) - Distributed version control system
+- [Go](https://golang.org/doc/install#install) - The Go programming
+  language
 
 Run the appropriate unit tests (see
 [Testing](#running-unit-and-integration-tests)).
@@ -117,36 +120,23 @@ If you do not have `rspec` or `rubocop` installed locally, run
 `./scripts/start-docker-for-testing.sh` and execute the commands in the docker
 container. Prepend "sudo" to the script if you are an unprivileged user.
 
-
-
 #### <a name="running-unit-and-integration-tests"></a> Running Unit and Integration Tests
 
-##### In a Docker container
+##### With Docker
 
-* Run tests using the script provided. This script pulls a docker image and runs
-  the tests within a container because integration tests require Linux specific
-  features.
+Running tests for this release requires a `DB` flavor. The following scripts with default to `mysql` DB. Set `DB` environment variable for alternate DBs e.g. <mysql-8.0(or mysql),mysql-5.7,postgres>
 
-  Notice/warning: the script is called `run-unit-tests-in-docker` but it really
-  runs unit *and* integration tests, that's why they need to run in a container.
+- `./scripts/create-docker-container.bash`: This will create a docker container with appropriate mounts.
+- `./scripts/test-in-docker-locally.bash`: Create docker container and run all tests and setup in a single script.
+  - `./scripts/test-in-docker-locally.bash <package> <sub-package>`: For running tests under a specific package and/or sub-package: e.g. `./scripts/test-in-docker-locally.bash gorouter router`
 
-  ```bash
-  ./scripts/run-unit-tests-in-docker #sudo for unprivileged users
-  ```
-
-* If you'd like to run a specific component's tests in a Docker container,
-  the `run-unit-tests` script also takes a package name as an argument:
-
-  ```bash
-  ./scripts/run-unit-tests-in-docker gorouter
-  ```
-
-##### Locally
-
-* If you'd like to run the unit and integration tests for an individual
-  component locally, we recommend you run `bin/test` in that component's
-  directory. Please make sure it's a component that doesn't require a Linux
-  operating system.
+When inside docker container: 
+- `/repo/scripts/docker/build-binaries.bash`: This will build binaries required for running tests e.g. nats-server and rtr
+- `/repo/scripts/docker/test.bash`: This will run all tests in this release
+- `/repo/scripts/docker/test.bash gorouter`: This will only run `gorouter` tests
+- `/repo/scripts/docker/test.bash gorouter router`: This will only run `router` sub-package tests for `gorouter` package
+- `/repo/scripts/docker/tests-templates.bash`: This will run all of tests for bosh tempalates
+- `/repo/scripts/docker/lint.bash`: This will run all of linting defined for this repo.
 
 #### <a name="running-acceptance-tests"></a> Running Acceptance tests
 

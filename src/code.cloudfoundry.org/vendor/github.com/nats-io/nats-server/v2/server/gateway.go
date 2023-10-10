@@ -473,6 +473,10 @@ func (s *Server) startGateways() {
 // This starts the gateway accept loop in a go routine, unless it
 // is detected that the server has already been shutdown.
 func (s *Server) startGatewayAcceptLoop() {
+	if s.isShuttingDown() {
+		return
+	}
+
 	// Snapshot server options.
 	opts := s.getOpts()
 
@@ -482,10 +486,6 @@ func (s *Server) startGatewayAcceptLoop() {
 	}
 
 	s.mu.Lock()
-	if s.shutdown {
-		s.mu.Unlock()
-		return
-	}
 	hp := net.JoinHostPort(opts.Gateway.Host, strconv.Itoa(port))
 	l, e := natsListen("tcp", hp)
 	s.gatewayListenerErr = e
@@ -1128,8 +1128,8 @@ func (c *client) processGatewayInfo(info *Info) {
 		// connect events to switch those accounts into interest only mode.
 		s.mu.Lock()
 		s.ensureGWsInterestOnlyForLeafNodes()
-		js := s.js
 		s.mu.Unlock()
+		js := s.js.Load()
 
 		// If running in some tests, maintain the original behavior.
 		if gwDoNotForceInterestOnlyMode && js != nil {
@@ -1213,11 +1213,11 @@ func (s *Server) forwardNewGatewayToLocalCluster(oinfo *Info) {
 	b, _ := json.Marshal(info)
 	infoJSON := []byte(fmt.Sprintf(InfoProto, b))
 
-	for _, r := range s.routes {
+	s.forEachRemote(func(r *client) {
 		r.mu.Lock()
 		r.enqueueProto(infoJSON)
 		r.mu.Unlock()
-	}
+	})
 }
 
 // Sends queue subscriptions interest to remote gateway.
@@ -1575,7 +1575,7 @@ func (s *Server) addGatewayURL(urlStr string) bool {
 // Returns true if the URL has been removed, false otherwise.
 // Server lock held on entry
 func (s *Server) removeGatewayURL(urlStr string) bool {
-	if s.shutdown {
+	if s.isShuttingDown() {
 		return false
 	}
 	s.gateway.Lock()
@@ -2742,8 +2742,7 @@ func (g *srvGateway) getClusterHash() []byte {
 
 // Store this route in map with the key being the remote server's name hash
 // and the remote server's ID hash used by gateway replies mapping routing.
-func (s *Server) storeRouteByHash(srvNameHash, srvIDHash string, c *client) {
-	s.routesByHash.Store(srvNameHash, c)
+func (s *Server) storeRouteByHash(srvIDHash string, c *client) {
 	if !s.gateway.enabled {
 		return
 	}
@@ -2751,8 +2750,7 @@ func (s *Server) storeRouteByHash(srvNameHash, srvIDHash string, c *client) {
 }
 
 // Remove the route with the given keys from the map.
-func (s *Server) removeRouteByHash(srvNameHash, srvIDHash string) {
-	s.routesByHash.Delete(srvNameHash)
+func (s *Server) removeRouteByHash(srvIDHash string) {
 	if !s.gateway.enabled {
 		return
 	}
@@ -2761,11 +2759,33 @@ func (s *Server) removeRouteByHash(srvNameHash, srvIDHash string) {
 
 // Returns the route with given hash or nil if not found.
 // This is for gateways only.
-func (g *srvGateway) getRouteByHash(hash []byte) *client {
-	if v, ok := g.routesIDByHash.Load(string(hash)); ok {
-		return v.(*client)
+func (s *Server) getRouteByHash(hash, accName []byte) (*client, bool) {
+	id := string(hash)
+	var perAccount bool
+	if v, ok := s.accRouteByHash.Load(string(accName)); ok {
+		if v == nil {
+			id += string(accName)
+			perAccount = true
+		} else {
+			id += strconv.Itoa(v.(int))
+		}
 	}
-	return nil
+	if v, ok := s.gateway.routesIDByHash.Load(id); ok {
+		return v.(*client), perAccount
+	} else if !perAccount {
+		// Check if we have a "no pool" connection at index 0.
+		if v, ok := s.gateway.routesIDByHash.Load(string(hash) + "0"); ok {
+			if r := v.(*client); r != nil {
+				r.mu.Lock()
+				noPool := r.route.noPool
+				r.mu.Unlock()
+				if noPool {
+					return r, false
+				}
+			}
+		}
+	}
+	return nil, perAccount
 }
 
 // Returns the subject from the routed reply
@@ -2821,10 +2841,11 @@ func (c *client) handleGatewayReply(msg []byte) (processed bool) {
 	}
 
 	var route *client
+	var perAccount bool
 
 	// If the origin is not this server, get the route this should be sent to.
 	if c.kind == GATEWAY && srvHash != nil && !bytes.Equal(srvHash, c.srv.gateway.sIDHash) {
-		route = c.srv.gateway.getRouteByHash(srvHash)
+		route, perAccount = c.srv.getRouteByHash(srvHash, c.pa.account)
 		// This will be possibly nil, and in this case we will try to process
 		// the interest from this server.
 	}
@@ -2836,8 +2857,12 @@ func (c *client) handleGatewayReply(msg []byte) (processed bool) {
 	// getAccAndResultFromCache()
 	var _pacache [256]byte
 	pacache := _pacache[:0]
-	pacache = append(pacache, c.pa.account...)
-	pacache = append(pacache, ' ')
+	// For routes that are dedicated to an account, do not put the account
+	// name in the pacache.
+	if c.kind == GATEWAY || (c.kind == ROUTER && c.route != nil && len(c.route.accName) == 0) {
+		pacache = append(pacache, c.pa.account...)
+		pacache = append(pacache, ' ')
+	}
 	pacache = append(pacache, c.pa.subject...)
 	c.pa.pacache = pacache
 
@@ -2882,8 +2907,10 @@ func (c *client) handleGatewayReply(msg []byte) (processed bool) {
 		var bufa [256]byte
 		var buf = bufa[:0]
 		buf = append(buf, msgHeadProto...)
-		buf = append(buf, acc.Name...)
-		buf = append(buf, ' ')
+		if !perAccount {
+			buf = append(buf, acc.Name...)
+			buf = append(buf, ' ')
+		}
 		buf = append(buf, orgSubject...)
 		buf = append(buf, ' ')
 		if len(c.pa.reply) > 0 {
