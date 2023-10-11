@@ -848,7 +848,7 @@ describe 'gorouter' do
                   }
                 ]
               end
-              it 'fails and explains the validpopulates the properties after a successful check' do
+              it 'fails and explains the valid cert subjects in the message' do
                 expect { parsed_yaml }.to raise_error RuntimeError, /no CA certificate subjects in `client_ca_certs` matches the rule's subject:/
               end
             end

@@ -525,8 +525,8 @@ properties:
   router.verify_client_certificate_metadata:
     description: |
       Additional client certificate verification, after the certificate was validated using the regular mTLS mechanism and is issued using one of the CAs in `client_ca_certs`.
-      The additional verification limits the allowed client certificates for a given signing CA (identified by its subject) to certificates with subjects provided in the list of valid subjects. Within the certificate chain there may be more than one CA certificates (e.g. intermediate CA certificates). The `issuer_in_chain` must match one of the CA certificates in the chain.
-      Each list entry contains a issuer_in_chain with a corresponding list of valid subjects. Each issuer_in_chain must match one of the certificates in `client_ca_certs`. When an issuer_in_chain is defined that does not match, this raises an error during templating time and at startup in gorouter.
+      The additional verification limits the allowed client certificates for a given signing CA (identified by its distinguished name) to certificates with subjects provided in the list of valid subjects. Within the certificate chain there may be more than one CA certificates (e.g. intermediate CA certificates). The `issuer_in_chain` must match one of the CA certificates in the chain.
+      Each list entry contains an issuer_in_chain with a corresponding list of valid subjects. Each issuer_in_chain must match one of the certificates in `client_ca_certs`. When an issuer_in_chain is defined that does not match, this raises an error during templating time and at startup in gorouter.
       - issuer_in_chain:
           common_name: ""
           serial_number: ""
