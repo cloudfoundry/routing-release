@@ -415,7 +415,7 @@ properties:
     default: 5
   websocket_dial_timeout_in_seconds:
     description: |
-      Maximum time in seconds for gorouter to establish a websocket upgrade for the websocket ForwardIO connection with a backend. 
+      Maximum time in seconds for gorouter to establish a websocket upgrade for the websocket ForwardIO connection with a backend.
       This timeout comes before `tls_handshake_timeout_in_seconds` and `request_timeout_in_seconds`. When not set, defaults to `endpoint_dial_timeout_in_seconds`.
     default: endpoint_dial_timeout_in_seconds
   tls_handshake_timeout_in_seconds:
@@ -531,8 +531,8 @@ properties:
           common_name: ""
           serial_number: ""
           country: []
-          organisation: []
-          organisation_unit: []
+          organization: []
+          organizational_unit: []
           locality: []
           province: []
           street_address: []
@@ -541,8 +541,8 @@ properties:
           - common_name: ""
             serial_number: ""
             country: []
-            organisation: []
-            organisation_unit: []
+            organization: []
+            organizational_unit: []
             locality: []
             province: []
             street_address: []
