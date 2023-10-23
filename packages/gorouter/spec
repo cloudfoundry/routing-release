@@ -107,7 +107,6 @@ files:
   - code.cloudfoundry.org/vendor/github.com/go-logr/logr/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/go-logr/logr/funcr/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/golang-jwt/jwt/v4/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/golang/protobuf/proto/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/google/go-cmp/cmp/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/google/go-cmp/cmp/internal/diff/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/google/go-cmp/cmp/internal/flags/*.go # gosub
@@ -134,7 +133,7 @@ files:
   - code.cloudfoundry.org/vendor/github.com/mailru/easyjson/buffer/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/mailru/easyjson/jlexer/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/mailru/easyjson/jwriter/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/matttproud/golang_protobuf_extensions/pbutil/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/matttproud/golang_protobuf_extensions/v2/pbutil/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/encoders/builtin/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/internal/parser/*.go # gosub
@@ -274,12 +273,10 @@ files:
   - code.cloudfoundry.org/vendor/google.golang.org/protobuf/internal/strs/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/protobuf/internal/version/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/protobuf/proto/*.go # gosub
-  - code.cloudfoundry.org/vendor/google.golang.org/protobuf/reflect/protodesc/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/protobuf/reflect/protoreflect/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/protobuf/reflect/protoregistry/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/protobuf/runtime/protoiface/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/protobuf/runtime/protoimpl/*.go # gosub
-  - code.cloudfoundry.org/vendor/google.golang.org/protobuf/types/descriptorpb/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/protobuf/types/known/timestamppb/*.go # gosub
   - code.cloudfoundry.org/vendor/gopkg.in/alexcesaro/statsd.v2/*.go # gosub
   - code.cloudfoundry.org/vendor/gopkg.in/yaml.v2/*.go # gosub
