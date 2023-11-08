@@ -40,7 +40,7 @@ require (
 	github.com/nats-io/nats.go v1.31.0
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.13.0
-	github.com/onsi/gomega v1.29.0
+	github.com/onsi/gomega v1.30.0
 	github.com/openzipkin/zipkin-go v0.4.2
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
 	github.com/tedsuo/ifrit v0.0.0-20230516164442-7862c310ad26
@@ -49,8 +49,8 @@ require (
 	github.com/urfave/negroni v1.0.0
 	github.com/vito/go-sse v1.0.0
 	go.step.sm/crypto v0.36.1
-	golang.org/x/crypto v0.14.0
-	golang.org/x/net v0.17.0
+	golang.org/x/crypto v0.15.0
+	golang.org/x/net v0.18.0
 	golang.org/x/oauth2 v0.13.0
 	golang.org/x/tools v0.14.0
 	google.golang.org/grpc v1.59.0
