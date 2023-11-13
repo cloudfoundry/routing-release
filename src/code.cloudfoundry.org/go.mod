@@ -11,12 +11,12 @@ replace github.com/codegangsta/cli => github.com/codegangsta/cli v1.6.0
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
 
 require (
-	code.cloudfoundry.org/bbs v0.0.0-20231102180322-14c286130ec3
+	code.cloudfoundry.org/bbs v0.0.0-20231109225950-9b797d8d38a5
 	code.cloudfoundry.org/cfhttp/v2 v2.0.1-0.20210513172332-4c5ee488a657
 	code.cloudfoundry.org/clock v1.1.0
 	code.cloudfoundry.org/debugserver v0.0.0-20231101144826-61d4b1f2e7b6
 	code.cloudfoundry.org/eventhub v0.0.0-20231101144817-e1b5e1cd15a3
-	code.cloudfoundry.org/go-metric-registry v0.0.0-20231102232112-e65b4aa84792
+	code.cloudfoundry.org/go-metric-registry v0.0.0-20231113190951-12c9e60cd604
 	code.cloudfoundry.org/lager/v3 v3.0.2
 	code.cloudfoundry.org/localip v0.0.0-20231101144618-f2950077affe
 	code.cloudfoundry.org/locket v0.0.0-20230612151453-08e003863044
@@ -36,10 +36,10 @@ require (
 	github.com/kisielk/errcheck v1.6.3
 	github.com/lib/pq v1.10.9
 	github.com/mailru/easyjson v0.7.7
-	github.com/nats-io/nats-server/v2 v2.10.4
+	github.com/nats-io/nats-server/v2 v2.10.5
 	github.com/nats-io/nats.go v1.31.0
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo/v2 v2.13.0
+	github.com/onsi/ginkgo/v2 v2.13.1
 	github.com/onsi/gomega v1.30.0
 	github.com/openzipkin/zipkin-go v0.4.2
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
@@ -51,8 +51,8 @@ require (
 	go.step.sm/crypto v0.36.1
 	golang.org/x/crypto v0.15.0
 	golang.org/x/net v0.18.0
-	golang.org/x/oauth2 v0.13.0
-	golang.org/x/tools v0.14.0
+	golang.org/x/oauth2 v0.14.0
+	golang.org/x/tools v0.15.0
 	google.golang.org/grpc v1.59.0
 	google.golang.org/protobuf v1.31.0
 	gopkg.in/yaml.v2 v2.4.0
@@ -61,7 +61,7 @@ require (
 require (
 	code.cloudfoundry.org/diego-logging-client v0.0.0-20231101144625-b1a01cfc966d // indirect
 	code.cloudfoundry.org/durationjson v0.0.0-20231101144611-73752e36c7eb // indirect
-	code.cloudfoundry.org/go-diodes v0.0.0-20231102232033-2a479dfa9870 // indirect
+	code.cloudfoundry.org/go-diodes v0.0.0-20231113191959-85adc333ee36 // indirect
 	code.cloudfoundry.org/go-loggregator/v8 v8.0.5 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
 	filippo.io/edwards25519 v1.0.0 // indirect

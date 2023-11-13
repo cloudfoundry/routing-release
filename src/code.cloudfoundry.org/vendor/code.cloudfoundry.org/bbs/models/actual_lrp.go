@@ -275,6 +275,7 @@ func (actualLRPInfo *ActualLRPInfo) ToActualLRP(lrpKey ActualLRPKey, lrpInstance
 		ActualLRPKey:         lrpKey,
 		ActualLRPInstanceKey: lrpInstanceKey,
 		ActualLRPNetInfo:     actualLRPInfo.ActualLRPNetInfo,
+		AvailabilityZone:     actualLRPInfo.AvailabilityZone,
 		CrashCount:           actualLRPInfo.CrashCount,
 		CrashReason:          actualLRPInfo.CrashReason,
 		State:                actualLRPInfo.State,
@@ -297,6 +298,7 @@ func (actual *ActualLRP) ToActualLRPInfo() *ActualLRPInfo {
 	}
 	info := ActualLRPInfo{
 		ActualLRPNetInfo: actual.ActualLRPNetInfo,
+		AvailabilityZone: actual.AvailabilityZone,
 		CrashCount:       actual.CrashCount,
 		CrashReason:      actual.CrashReason,
 		State:            actual.State,

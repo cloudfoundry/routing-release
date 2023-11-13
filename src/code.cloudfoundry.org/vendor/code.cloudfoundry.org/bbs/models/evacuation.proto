@@ -29,6 +29,7 @@ message EvacuateRunningActualLRPRequest {
   oneof optional_routable {
     bool Routable = 7;
   }
+  string availability_zone = 8 [(gogoproto.jsontag) = "availability_zone"];
 }
 
 message EvacuateStoppedActualLRPRequest {

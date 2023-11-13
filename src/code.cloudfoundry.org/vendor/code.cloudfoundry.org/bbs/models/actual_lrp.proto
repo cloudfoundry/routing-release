@@ -71,4 +71,5 @@ message ActualLRP {
   oneof optional_routable {
     bool routable = 13 [(gogoproto.jsontag) = "routable"];
   }
+  string availability_zone = 14 [(gogoproto.jsontag) = "availability_zone"];
 }

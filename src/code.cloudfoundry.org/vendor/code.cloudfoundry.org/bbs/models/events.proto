@@ -41,6 +41,7 @@ message ActualLRPInfo {
   oneof optional_routable {
     bool Routable = 11;
   }
+  string availability_zone = 12 [(gogoproto.jsontag) = "availability_zone"];
 }
 
 message ActualLRPInstanceChangedEvent {
