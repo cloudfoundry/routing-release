@@ -57,6 +57,9 @@ properties:
     default: router-status
   router.status.password:
     description: "Password for HTTP basic auth to the /varz and /routes endpoints."
+  router.status.routes.port:
+    description: "Port used for the /routes endpoint (available on localhost-only)"
+    default: 8082
   router.prometheus.port:
     description: "Port for the prometheus endpoint."
   router.prometheus.server_name:
