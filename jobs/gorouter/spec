@@ -52,6 +52,9 @@ properties:
   router.status.port:
     description: "Port for the /health, /varz, and /routes endpoints."
     default: 8080
+  router.status.tls_port:
+    description: "Port for the /health endpoint"
+    default: 8443
   router.status.user:
     description: "Username for HTTP basic auth to the /varz and /routes endpoints."
     default: router-status

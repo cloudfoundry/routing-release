@@ -52,6 +52,7 @@ access_log_file = p('router.write_access_logs_locally') ? '/var/vcap/sys/log/gor
 params = {
   'status' => {
     'port' => p('router.status.port'),
+    'tls_port' => p('router.status.tls_port'),
     'user' => p('router.status.user'),
     'pass' => p('router.status.password'),
     'routes' => {
