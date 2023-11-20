@@ -1,4 +1,4 @@
-# code.cloudfoundry.org/bbs v0.0.0-20231109225950-9b797d8d38a5
+# code.cloudfoundry.org/bbs v0.0.0-20231114155431-709d9ebc290c
 ## explicit
 code.cloudfoundry.org/bbs/db/sqldb/helpers
 code.cloudfoundry.org/bbs/db/sqldb/helpers/monitor
@@ -13,16 +13,16 @@ code.cloudfoundry.org/cfhttp/v2
 ## explicit; go 1.20
 code.cloudfoundry.org/clock
 code.cloudfoundry.org/clock/fakeclock
-# code.cloudfoundry.org/debugserver v0.0.0-20231101144826-61d4b1f2e7b6
+# code.cloudfoundry.org/debugserver v0.0.0-20231114142234-a442cc402287
 ## explicit; go 1.19
 code.cloudfoundry.org/debugserver
-# code.cloudfoundry.org/diego-logging-client v0.0.0-20231101144625-b1a01cfc966d
+# code.cloudfoundry.org/diego-logging-client v0.0.0-20231114145421-43971a663fb5
 ## explicit; go 1.20
 code.cloudfoundry.org/diego-logging-client
-# code.cloudfoundry.org/durationjson v0.0.0-20231101144611-73752e36c7eb
+# code.cloudfoundry.org/durationjson v0.0.0-20231114145350-b88ca248aa53
 ## explicit; go 1.19
 code.cloudfoundry.org/durationjson
-# code.cloudfoundry.org/eventhub v0.0.0-20231101144817-e1b5e1cd15a3
+# code.cloudfoundry.org/eventhub v0.0.0-20231114142847-bd6625d1028d
 ## explicit; go 1.19
 code.cloudfoundry.org/eventhub
 # code.cloudfoundry.org/go-diodes v0.0.0-20231113191959-85adc333ee36
@@ -47,10 +47,10 @@ code.cloudfoundry.org/lager/v3/internal/truncate
 code.cloudfoundry.org/lager/v3/lagerctx
 code.cloudfoundry.org/lager/v3/lagerflags
 code.cloudfoundry.org/lager/v3/lagertest
-# code.cloudfoundry.org/localip v0.0.0-20231101144618-f2950077affe
+# code.cloudfoundry.org/localip v0.0.0-20231114145404-41b8c8e318cb
 ## explicit; go 1.20
 code.cloudfoundry.org/localip
-# code.cloudfoundry.org/locket v0.0.0-20230612151453-08e003863044
+# code.cloudfoundry.org/locket v0.0.0-20231114154242-23339499a62f
 ## explicit
 code.cloudfoundry.org/locket
 code.cloudfoundry.org/locket/cmd/locket
@@ -214,8 +214,8 @@ github.com/josharian/intern
 ## explicit; go 1.14
 github.com/kisielk/errcheck
 github.com/kisielk/errcheck/errcheck
-# github.com/klauspost/compress v1.17.2
-## explicit; go 1.18
+# github.com/klauspost/compress v1.17.3
+## explicit; go 1.19
 github.com/klauspost/compress
 github.com/klauspost/compress/flate
 github.com/klauspost/compress/fse
@@ -375,7 +375,7 @@ github.com/vmihailenco/msgpack/v5/msgpcode
 github.com/vmihailenco/tagparser/v2
 github.com/vmihailenco/tagparser/v2/internal
 github.com/vmihailenco/tagparser/v2/internal/parser
-# go.step.sm/crypto v0.36.1
+# go.step.sm/crypto v0.37.0
 ## explicit; go 1.20
 go.step.sm/crypto/fingerprint
 go.step.sm/crypto/internal/bcrypt_pbkdf
