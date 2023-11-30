@@ -60,6 +60,12 @@ properties:
   router.status.routes.port:
     description: "Port used for the /routes endpoint (available on localhost-only)"
     default: 8082
+  router.status.tls.port:
+    description: "Port used for the TLS listener of the LB healthcheck endpoint"
+  router.status.tls.certificate:
+    description: "TLS Certificate used for the TLS listener of the LB healthcheck endpoint"
+  router.status.tls.key:
+    description: "Private Key used for the TLS listener of the LB healthcheck endpoint"
   router.prometheus.port:
     description: "Port for the prometheus endpoint."
   router.prometheus.server_name:

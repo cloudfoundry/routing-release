@@ -49,6 +49,26 @@ parse_ip(p('router.debug_address'), 'router.debug_address')
 
 access_log_file = p('router.write_access_logs_locally') ? '/var/vcap/sys/log/gorouter/access.log' : ''
 
+def status_tls
+  tls = {}
+  if_p('router.status.tls.port') do
+    if p('router.status.tls.certificate', "") == ""
+      raise 'router.status.tls.certificate must be provided when router.status.tls.port is set'
+    end
+    if p('router.status.tls.key', "") == ""
+      raise 'router.status.tls.key must be provided when router.status.tls.port is set'
+    end
+
+    tls = {
+      'port' => p('router.status.tls.port'),
+      'certificate' => p('router.status.tls.certificate'),
+      'key' => p('router.status.tls.key'),
+    }
+  end
+  return tls
+end
+
+
 params = {
   'status' => {
     'port' => p('router.status.port'),
@@ -57,6 +77,7 @@ params = {
     'routes' => {
       'port' => p('router.status.routes.port'),
     },
+    'tls' => status_tls
   },
   'tracing' => {
     'enable_zipkin' => p('router.tracing.enable_zipkin'),
