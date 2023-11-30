@@ -33,6 +33,9 @@ tee_output_to_sys_log "${LOG_DIR}" "pre-start" <%= p("router.logging.format.time
     ports.append(p("router.status.routes.port")) # has default. will always exist.
     ports.append(p("router.tls_port")) # has default. will always exist.
 
+    if_p('router.status.tls.port') do |port|
+        ports.append(port)
+    end
     if_p('router.prometheus.port') do |port|
         ports.append(port)
     end

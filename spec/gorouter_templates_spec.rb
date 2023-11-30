@@ -116,7 +116,7 @@ describe 'gorouter' do
           'status' => {
             'port' => 80,
             'user' => 'test',
-            'password' => 'pass'
+            'password' => 'pass',
           },
           'enable_ssl' => true,
           'tls_port' => 443,
@@ -1281,6 +1281,39 @@ describe 'gorouter' do
         expect(parsed_yaml['status']['routes']['port']).to eq 8888
       end
     end
+
+    context 'when router.status.tls is specified' do
+      before do
+        deployment_manifest_fragment['router']['status']['tls'] = {
+          'port' => 8443,
+          'certificate' => TEST_CERT,
+          'key' => 'test-key',
+        }
+      end
+      it 'sets the tls port, cert, and key correctly' do
+        expect(parsed_yaml['status']['tls']['port']).to eq 8443
+        expect(parsed_yaml['status']['tls']['certificate']).to eq TEST_CERT
+        expect(parsed_yaml['status']['tls']['key']).to eq('test-key')
+      end
+
+      context 'but the certificate is not specified' do
+        before do
+          deployment_manifest_fragment['router']['status']['tls'].delete('certificate')
+        end
+        it 'raises an error about missing certificate values' do
+          expect {parsed_yaml}.to raise_error(/router.status.tls.certificate must be provided when router.status.tls.port is set/)
+        end
+      end
+      context 'but the key is not specified' do
+        before do
+          deployment_manifest_fragment['router']['status']['tls'].delete('key')
+        end
+        it 'raises an error about missing key values' do
+          expect {parsed_yaml}.to raise_error(/router.status.tls.key must be provided when router.status.tls.port is set/)
+        end
+      end
+    end
+
   end
 
   describe 'healthchecker.yml' do
@@ -1394,7 +1427,7 @@ describe 'gorouter' do
     let(:properties) do
       { 'router' => {
         'port' => 81,
-        'status' => { 'port' => 8081 },
+        'status' => { 'port' => 8081, 'tls' => {'port' => 8443}, },
         'prometheus' => { 'port' => 7070 },
         'tls_port' => 442,
         'debug_address' => '127.0.0.1:17003'
@@ -1404,7 +1437,7 @@ describe 'gorouter' do
     context 'ip_local_reserved_ports' do
       it 'contains reserved ports in order' do
         rendered_template = template.render(properties)
-        ports = '81,442,2822,2825,3457,3458,3459,3460,3461,7070,8081,8082,8853,9100,14726,14727,14821,14822,14823,14824,14829,14830,14922,15821,17003,53035,53080'
+        ports = '81,442,2822,2825,3457,3458,3459,3460,3461,7070,8081,8082,8443,8853,9100,14726,14727,14821,14822,14823,14824,14829,14830,14922,15821,17003,53035,53080'
         expect(rendered_template).to include("\"#{ports}\" > /proc/sys/net/ipv4/ip_local_reserved_ports")
       end
 
@@ -1412,7 +1445,7 @@ describe 'gorouter' do
         it 'skips that port' do
           properties['router'].delete('prometheus')
           rendered_template = template.render(properties)
-          ports = '81,442,2822,2825,3457,3458,3459,3460,3461,8081,8082,8853,9100,14726,14727,14821,14822,14823,14824,14829,14830,14922,15821,17003,53035,53080'
+          ports = '81,442,2822,2825,3457,3458,3459,3460,3461,8081,8082,8443,8853,9100,14726,14727,14821,14822,14823,14824,14829,14830,14922,15821,17003,53035,53080'
           expect(rendered_template).to include("\"#{ports}\" > /proc/sys/net/ipv4/ip_local_reserved_ports")
         end
       end
@@ -1421,7 +1454,7 @@ describe 'gorouter' do
         it 'skips that port' do
           properties['router']['debug_address'] = 'meow'
           rendered_template = template.render(properties)
-          ports = '81,442,2822,2825,3457,3458,3459,3460,3461,7070,8081,8082,8853,9100,14726,14727,14821,14822,14823,14824,14829,14830,14922,15821,53035,53080'
+          ports = '81,442,2822,2825,3457,3458,3459,3460,3461,7070,8081,8082,8443,8853,9100,14726,14727,14821,14822,14823,14824,14829,14830,14922,15821,53035,53080'
           expect(rendered_template).to include("\"#{ports}\" > /proc/sys/net/ipv4/ip_local_reserved_ports")
         end
       end
