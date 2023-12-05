@@ -1,9 +1,20 @@
 <%=
   require 'json'
 
+nats_err_msg = <<-TEXT
+Using nats (instead of nats-tls) is deprecated. The nats process will
+be removed soon. Please migrate to using nats-tls as soon as possible.
+If you must continue using nats for a short time you can set the
+nats.fail_if_using_nats_without_tls property on route_registrar to
+false.
+TEXT
   nats_link_name = 'nats'
   if p('nats.tls.enabled')
     nats_link_name = 'nats-tls'
+  else
+    if p('nats.fail_if_using_nats_without_tls')
+      raise nats_err_msg
+    end
   end
 
   nats_machines = nil
