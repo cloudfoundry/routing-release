@@ -53,6 +53,13 @@ properties:
     description: "PEM-encoded certificate for the route-registrar to present to NATS for verification when connecting via TLS."
   nats.tls.client_key:
     description: "PEM-encoded private key for the route-registrar to present to NATS for verification when connecting via TLS."
+  nats.fail_if_using_nats_without_tls:
+    description: |
+        Connecting to nats (instead of nats-tls) is deprecated. The nats
+        process will be removed soon. Please migrate to using nats-tls as soon
+        as possible. If you must continue using nats for a short time you can
+        set this flag to false.
+    default: true
 
   host:
     description: (string, optional) By default, route_registrar will detect the IP of the VM and use it, in combination with port as the backend destination for each uri being registered. This property enables overriding the destination hostname or IP.
