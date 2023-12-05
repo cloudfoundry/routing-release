@@ -31,5 +31,7 @@ func (h *sqlHelper) One(
 		query += "\nFOR UPDATE"
 	}
 
+	// meow - I think q here is the tx. Do we need to mock this perhaps?
+	// errors are deferred until rows.Scan occurs.
 	return q.QueryRowContext(ctx, h.Rebind(query), whereBindings...)
 }

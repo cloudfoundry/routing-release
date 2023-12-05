@@ -19,6 +19,7 @@ const (
 
 type SQLHelper interface {
 	Transact(ctx context.Context, logger lager.Logger, db QueryableDB, f func(logger lager.Logger, tx Tx) error) error
+	RetryOnDeadlock(logger lager.Logger, f func() error) error
 	One(ctx context.Context, logger lager.Logger, q Queryable, table string, columns ColumnList, lockRow RowLock, wheres string, whereBindings ...interface{}) RowScanner
 	All(ctx context.Context, logger lager.Logger, q Queryable, table string, columns ColumnList, lockRow RowLock, wheres string, whereBindings ...interface{}) (*sql.Rows, error)
 	Upsert(ctx context.Context, logger lager.Logger, q Queryable, table string, attributes SQLAttributes, wheres string, whereBindings ...interface{}) (bool, error)

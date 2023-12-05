@@ -8,6 +8,7 @@ import (
 	"code.cloudfoundry.org/bbs/db/sqldb/helpers/monitor"
 )
 
+//counterfeiter:generate . RowScanner
 type RowScanner interface {
 	Scan(dest ...interface{}) error
 }
@@ -30,6 +31,7 @@ type QueryableDB interface {
 	WaitCount() int64
 }
 
+//counterfeiter:generate . Tx
 type Tx interface {
 	Queryable
 	Commit() error

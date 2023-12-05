@@ -26,6 +26,7 @@ func (h *sqlHelper) Upsert(
 		wheres,
 		whereBindings...,
 	)
+
 	if err != nil {
 		return false, err
 	}

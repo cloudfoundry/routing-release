@@ -1,4 +1,4 @@
-# code.cloudfoundry.org/bbs v0.0.0-20231114155431-709d9ebc290c
+# code.cloudfoundry.org/bbs v0.0.0-20231204223625-b4a8e8d97ad9
 ## explicit
 code.cloudfoundry.org/bbs/db/sqldb/helpers
 code.cloudfoundry.org/bbs/db/sqldb/helpers/monitor
@@ -180,7 +180,7 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
-# github.com/google/pprof v0.0.0-20231203200248-ad67f76aa53d
+# github.com/google/pprof v0.0.0-20231205033806-a5a03c77bf08
 ## explicit; go 1.19
 github.com/google/pprof/profile
 # github.com/honeycombio/libhoney-go v1.20.0

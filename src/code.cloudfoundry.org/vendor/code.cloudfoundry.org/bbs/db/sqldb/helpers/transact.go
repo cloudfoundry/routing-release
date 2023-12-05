@@ -13,30 +13,35 @@ import (
 // BEGIN TRANSACTION; f ... ; COMMIT; or
 // BEGIN TRANSACTION; f ... ; ROLLBACK; if f returns an error.
 func (h *sqlHelper) Transact(ctx context.Context, logger lager.Logger, db QueryableDB, f func(logger lager.Logger, tx Tx) error) error {
+	return h.RetryOnDeadlock(logger, func() error {
+		// meow - the transact wrapper called Begin.
+		// The test is making sure Begin is called 3 times.
+		tx, err := db.BeginTx(ctx, nil)
+		if err != nil {
+			logger.Error("failed-starting-transaction", err)
+			return err
+		}
+		defer tx.Rollback()
+
+		err = f(logger, tx)
+		if err != nil {
+			return err
+		}
+
+		err = tx.Commit()
+		if err != nil {
+			logger.Error("failed-committing-transaction", err)
+
+		}
+		return err
+	})
+}
+
+func (h *sqlHelper) RetryOnDeadlock(logger lager.Logger, f func() error) error {
 	var err error
 
 	for attempts := 0; attempts < 3; attempts++ {
-		err = func() error {
-			tx, err := db.BeginTx(ctx, nil)
-			if err != nil {
-				logger.Error("failed-starting-transaction", err)
-				return err
-			}
-			defer tx.Rollback()
-
-			err = f(logger, tx)
-			if err != nil {
-				return err
-			}
-
-			err = tx.Commit()
-			if err != nil {
-				logger.Error("failed-committing-transaction", err)
-
-			}
-			return err
-		}()
-
+		err = f()
 		convertedErr := h.ConvertSQLError(err)
 		// golang sql package does not always retry query on ErrBadConn, e.g. if it
 		// is in the middle of a transaction. This make sense since the package
@@ -49,6 +54,5 @@ func (h *sqlHelper) Transact(ctx context.Context, logger lager.Logger, db Querya
 			time.Sleep(500 * time.Millisecond)
 		}
 	}
-
 	return err
 }
