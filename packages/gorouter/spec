@@ -115,7 +115,6 @@ files:
   - code.cloudfoundry.org/vendor/github.com/honeycombio/libhoney-go/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/honeycombio/libhoney-go/transmission/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/honeycombio/libhoney-go/version/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/josharian/intern/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/flate/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/flate/*.s # gosub
@@ -129,10 +128,6 @@ files:
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/zstd/*.s # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/zstd/internal/xxhash/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/zstd/internal/xxhash/*.s # gosub
-  - code.cloudfoundry.org/vendor/github.com/mailru/easyjson/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/mailru/easyjson/buffer/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/mailru/easyjson/jlexer/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/mailru/easyjson/jwriter/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/matttproud/golang_protobuf_extensions/v2/pbutil/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/encoders/builtin/*.go # gosub
