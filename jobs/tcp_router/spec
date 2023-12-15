@@ -67,6 +67,10 @@ properties:
   tcp_router.request_timeout_in_seconds:
     description: "Server and client timeouts in seconds"
     default: 300
+
+  tcp_router.enable_nontls_health_checks:
+    description: "Toggles on/off whether or not to listen for load balancer health check requests on the non-tls `tcp_router.health_check_port` port"
+    default: true
   tcp_router.health_check_port:
     description: "Load balancer in front of TCP Routers should be configured to check the health of TCP Router instances by establishing a TCP connection on this port"
     default: 80
