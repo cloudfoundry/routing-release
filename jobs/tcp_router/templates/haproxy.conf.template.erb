@@ -4,6 +4,7 @@ global
     maxconn 64000
     spread-checks 4
     stats socket /var/vcap/data/tcp_router/config/haproxy.sock user vcap group vcap mode 600 level operator expose-fd listeners
+    ssl-default-bind-options ssl-min-ver TLSv1.2
 
 defaults
     log global
@@ -17,4 +18,9 @@ defaults
 listen health_check_http_url
     mode http
     bind :<%= p("tcp_router.health_check_port") %>
+    monitor-uri /health
+
+listen health_check_https_url
+    mode http
+    bind :<%= p("tcp_router.tls_health_check_port") %> ssl crt /var/vcap/jobs/tcp_router/config/certs/health.pem
     monitor-uri /health

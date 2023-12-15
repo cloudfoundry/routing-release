@@ -10,6 +10,7 @@ templates:
   routing_api_client_certificate.crt.erb: config/certs/routing-api/client.crt
   routing_api_client_private.key.erb: config/keys/routing-api/client.key
   routing_api_ca_certificate.crt.erb: config/certs/routing-api/ca_cert.crt
+  tcp_router_health_check_certificate.pem.erb: config/certs/health.pem
   haproxy.conf.erb: config/haproxy.conf
   haproxy.conf.template.erb: config/haproxy.conf.template
   bpm.yml.erb: config/bpm.yml
@@ -69,6 +70,13 @@ properties:
   tcp_router.health_check_port:
     description: "Load balancer in front of TCP Routers should be configured to check the health of TCP Router instances by establishing a TCP connection on this port"
     default: 80
+  tcp_router.tls_health_check_port:
+    description: "Load balancer in front of TCP Routers should be configured to check the health of TCP Router instances by establishing a TLS connection on this port"
+    default: 443
+  tcp_router.tls_health_check_cert:
+    description: "TLS certificate to use on the TCP Router's TLS health check port"
+  tcp_router.tls_health_check_key:
+    description: "TLS private key to use on the TCP Router's TLS health check port"
 
   tcp_router.fail_on_router_port_conflicts:
     description: "Fail the tcp router if routing_api.reserved_system_component_ports conflict with ports in existing router groups."
