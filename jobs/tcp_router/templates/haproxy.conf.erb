@@ -15,10 +15,12 @@ defaults
         timeout server <%= p("tcp_router.request_timeout_in_seconds").to_i * 1000 %>ms
     <% end %>
 
+<% if p("tcp_router.enable_nontls_health_checks") %>
 listen health_check_http_url
     mode http
     bind :<%= p("tcp_router.health_check_port") %>
     monitor-uri /health
+<% end %>
 
 listen health_check_https_url
     mode http

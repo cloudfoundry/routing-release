@@ -39,6 +39,16 @@ describe 'tcp_router haproxy configs' do
           expect(http_health_check).to include('monitor-uri /health')
         end
 
+        context 'when disabled' do
+          before do
+            properties['tcp_router']['enable_nontls_health_checks'] = false
+          end
+
+          it 'does not have a listener defined' do
+            expect(haproxy_config).to_not have_key('listen health_check_http_url')
+          end
+        end
+
         context 'when overriding the default port' do
           before do
             properties['tcp_router']['health_check_port'] = 8080
