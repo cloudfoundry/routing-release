@@ -24,6 +24,59 @@ describe 'tcp_router' do
     }
   end
 
+  describe 'config/certs/health.pem' do
+    let(:template) { job.template('config/certs/health.pem') }
+    let(:links) do
+      [
+        Bosh::Template::Test::Link.new(
+          name: 'routing_api',
+          properties: {
+            'routing_api' => {
+              'mtls_client_cert' => 'the mtls client cert from link'
+            }
+          }
+        )
+      ]
+    end
+
+    before do
+      merged_manifest_properties['tcp_router']['tls_health_check_key'] = 'tls health check key'
+      merged_manifest_properties['tcp_router']['tls_health_check_cert'] = 'tls health check cert'
+    end
+
+    it 'should render the key + cert in a pem file' do
+      rendered_template = template.render(merged_manifest_properties, consumes: links)
+      expect(rendered_template).to eq("tls health check key\ntls health check cert\n")
+    end
+
+    describe 'when tls_health_check_key is not provided' do
+      before do
+        merged_manifest_properties['tcp_router'].delete('tls_health_check_key')
+      end
+      it 'should error' do
+        expect do
+          template.render(merged_manifest_properties)
+        end.to raise_error(
+          RuntimeError,
+          "Please set tcp_router.tls_health_check_key in the tcp_router's job properties.",
+        )
+      end
+    end
+    describe 'when tls_health_check_key is not provided' do
+      before do
+        merged_manifest_properties['tcp_router'].delete('tls_health_check_cert')
+      end
+      it 'should error' do
+        expect do
+          template.render(merged_manifest_properties)
+        end.to raise_error(
+          RuntimeError,
+          "Please set tcp_router.tls_health_check_cert in the tcp_router's job properties.",
+        )
+      end
+    end
+  end
+
   describe 'config/certs/routing-api/client.crt' do
     let(:template) { job.template('config/certs/routing-api/client.crt') }
     let(:links) do
