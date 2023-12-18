@@ -148,6 +148,7 @@ describe 'gorouter' do
           'requested_route_registration_interval_in_seconds' => 10,
           'load_balancer_healthy_threshold' => 10,
           'balancing_algorithm' => 'round-robin',
+          'balancing_algorithm_az_preference' => 'none',
           'disable_log_forwarded_for' => true,
           'disable_log_source_ip' => true,
           'tls_pem' => [
@@ -254,6 +255,52 @@ describe 'gorouter' do
           expect do
             rendered_template
           end.to raise_error(/Invalid router.debug_address/)
+        end
+      end
+
+      describe 'balancing_algorithm*' do
+        context 'using default values' do
+          before do
+            deployment_manifest_fragment['router'].delete('balancing_algorithm')
+            deployment_manifest_fragment['router'].delete('balancing_algorithm_az_preference')
+          end
+
+          it 'should set balancing_algorithm and balancing_algorithm_az_preference' do
+            expect(parsed_yaml['balancing_algorithm']).to eq('round-robin')
+            expect(parsed_yaml['balancing_algorithm_az_preference']).to eq('none')
+          end
+        end
+
+        context 'using custom values' do
+          before do
+            deployment_manifest_fragment['router']['balancing_algorithm'] = 'least-connection'
+            deployment_manifest_fragment['router']['balancing_algorithm_az_preference'] = 'locally-optimistic'
+          end
+
+          it 'should set balancing_algorithm and balancing_algorithm_az_preference' do
+            expect(parsed_yaml['balancing_algorithm']).to eq('least-connection')
+            expect(parsed_yaml['balancing_algorithm_az_preference']).to eq('locally-optimistic')
+          end
+        end
+
+        context 'providing an invalid balancing_algorithm' do
+          before do
+            deployment_manifest_fragment['router']['balancing_algorithm'] = 'meow-only'
+          end
+
+          it 'should error' do
+            expect { raise parsed_yaml }.to raise_error(RuntimeError, 'Invalid router.balancing_algorithm "meow-only". Must be "round-robin" or "least-connection"')
+          end
+        end
+
+        context 'providing an invalid balancing_algorithm_az_preference' do
+          before do
+            deployment_manifest_fragment['router']['balancing_algorithm_az_preference'] = 'meow-only'
+          end
+
+          it 'should error' do
+            expect { raise parsed_yaml }.to raise_error(RuntimeError, 'Invalid router.balancing_algorithm_az_preference "meow-only". Must be "none" or "locally-optimistic"')
+          end
         end
       end
 

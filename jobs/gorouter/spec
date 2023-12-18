@@ -101,6 +101,16 @@ properties:
   router.balancing_algorithm:
     description: "Algorithm used to distribute requests for a route across backends. Supported values are round-robin and least-connection"
     default: round-robin
+  router.balancing_algorithm_az_preference:
+    description: |
+      Configuration option used in conjunction with the `router.balancing_algorithm` to decide from which
+      availability zone to pick a suitable backend. Defaults to "None".
+      "none" - There is no preference regarding availability zones. The router uses the 
+        `router.balancing_algorithm` across all possible backends in all existing AZs.
+      "locally-optimistic" - On the initial attempt to pick a backend, the router will use
+        `router.balancing_algorithm` across all backends in the same AZ as the router itself. Subsequent
+        retries, in the case of failure or unavailability, will use _all_ available AZs.
+    default: "none"
   router.number_of_cpus:
     description: "Number of CPUs to utilize, the default (-1) will equal the number of available CPUs"
     default: -1
