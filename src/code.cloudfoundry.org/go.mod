@@ -48,7 +48,7 @@ require (
 	github.com/urfave/negroni v1.0.0
 	github.com/vito/go-sse v1.0.0
 	go.step.sm/crypto v0.40.0
-	golang.org/x/crypto v0.16.0
+	golang.org/x/crypto v0.17.0
 	golang.org/x/net v0.19.0
 	golang.org/x/oauth2 v0.15.0
 	golang.org/x/tools v0.16.1
@@ -60,7 +60,7 @@ require (
 require (
 	code.cloudfoundry.org/diego-logging-client v0.0.0-20231206170752-1baebe76b38e // indirect
 	code.cloudfoundry.org/durationjson v0.0.0-20231206170547-9040c1b5941e // indirect
-	code.cloudfoundry.org/go-diodes v0.0.0-20231211192053-a3b1d14514be // indirect
+	code.cloudfoundry.org/go-diodes v0.0.0-20231218170342-258647f3c6ec // indirect
 	code.cloudfoundry.org/go-loggregator/v8 v8.0.5 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect

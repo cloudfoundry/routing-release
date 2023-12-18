@@ -607,8 +607,8 @@ code.cloudfoundry.org/durationjson v0.0.0-20231206170547-9040c1b5941e/go.mod h1:
 code.cloudfoundry.org/eventhub v0.0.0-20231206170708-7e26ec40032d h1:EdYdESdkydGT1vQYhTXV+PQQUUqsEyi123rM4Eh9zDw=
 code.cloudfoundry.org/eventhub v0.0.0-20231206170708-7e26ec40032d/go.mod h1:dPOdFRuqkzi4Z0u+tKfAni6j2t7t4XrUsTMZkTAWaso=
 code.cloudfoundry.org/go-diodes v0.0.0-20180905200951-72629b5276e3/go.mod h1:Jzi+ccHgo/V/PLQUaQ6hnZcC1c4BS790gx21LRRui4g=
-code.cloudfoundry.org/go-diodes v0.0.0-20231211192053-a3b1d14514be h1:2suTINVu92CANCCXwwoAprBwZpTH6ucj7b+aDxdJYtk=
-code.cloudfoundry.org/go-diodes v0.0.0-20231211192053-a3b1d14514be/go.mod h1:1KYU0bAZJNbVeC9TWqb9is1OQksOaJkFLY8NiUDp8Aw=
+code.cloudfoundry.org/go-diodes v0.0.0-20231218170342-258647f3c6ec h1:BY2GQZNPqdE/ZViS4+y/oJZybKG6lcPu9E4o0HcVsMs=
+code.cloudfoundry.org/go-diodes v0.0.0-20231218170342-258647f3c6ec/go.mod h1:1KYU0bAZJNbVeC9TWqb9is1OQksOaJkFLY8NiUDp8Aw=
 code.cloudfoundry.org/go-loggregator/v8 v8.0.5 h1:p1rrGxTwUqLjlUVtbjTAvKOSGNmPuBja8LeQOQgRrBc=
 code.cloudfoundry.org/go-loggregator/v8 v8.0.5/go.mod h1:mLlJ1ZyG6gVvBEtYypvbztRvFeCtBsTxE9tt+85tS6Y=
 code.cloudfoundry.org/go-metric-registry v0.0.0-20231211170043-fcb9057b0d09 h1:3V4tuIPhkcgxe1qbZcnv/WLS3X6Gbp6p0v6o3rWQj2s=
@@ -1128,8 +1128,8 @@ golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b/go.mod h1:T9bdIzuCu7OtxOm
 golang.org/x/crypto v0.0.0-20210921155107-089bfa567519/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=
 golang.org/x/crypto v0.0.0-20211108221036-ceb1ce70b4fa/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=
 golang.org/x/crypto v0.1.0/go.mod h1:RecgLatLF4+eUMCP1PoPZQb+cVrJcOPbHkTkbkB9sbw=
-golang.org/x/crypto v0.16.0 h1:mMMrFzRSCF0GvB7Ne27XVtVAaXLrPmgPC7/v0tkwHaY=
-golang.org/x/crypto v0.16.0/go.mod h1:gCAAfMLgwOJRpTjQ2zCCt2OcSfYMTeZVSRtQlPC7Nq4=
+golang.org/x/crypto v0.17.0 h1:r8bRNjWL3GshPW3gkd+RpvzWrZAwPS49OmTGZ/uhM4k=
+golang.org/x/crypto v0.17.0/go.mod h1:gCAAfMLgwOJRpTjQ2zCCt2OcSfYMTeZVSRtQlPC7Nq4=
 golang.org/x/exp v0.0.0-20180321215751-8460e604b9de/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
 golang.org/x/exp v0.0.0-20180807140117-3d87b88a115f/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
 golang.org/x/exp v0.0.0-20190121172915-509febef88a4/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
