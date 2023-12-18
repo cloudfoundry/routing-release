@@ -35,6 +35,22 @@ def validate_max_header_kb (kb)
   kb * 1024
 end
 
+def validate_balancing_algorithm (algorithm)
+  valid_balancing_algorithms = ['round-robin', 'least-connection']
+  unless valid_balancing_algorithms.include?(algorithm)
+    raise "Invalid router.balancing_algorithm \"#{algorithm}\". Must be \"round-robin\" or \"least-connection\""
+  end
+  algorithm
+end
+
+def validate_az_preference (az_preference)
+  valid_az_preferences = ['none', 'locally-optimistic']
+  unless valid_az_preferences.include?(az_preference)
+    raise "Invalid router.balancing_algorithm_az_preference \"#{az_preference}\". Must be \"none\" or \"locally-optimistic\""
+  end
+  az_preference
+end
+
 def get_valid_ca_certs
   ca_certs = p('router.ca_certs')
 
@@ -68,6 +84,7 @@ end
 
 
 params = {
+  'zone' => spec.az,
   'status' => {
     'enable_nontls_health_checks' => p('router.status.enable_nontls_health_checks'),
     'enable_deprecated_varz_healthz_endpoints' => p('router.status.enable_deprecated_varz_healthz_endpoints'),
@@ -109,7 +126,8 @@ params = {
   'tls_handshake_timeout' => "#{p('tls_handshake_timeout_in_seconds')}s",
   'start_response_delay_interval' => "#{p('router.requested_route_registration_interval_in_seconds')}s",
   'load_balancer_healthy_threshold' => "#{p('router.load_balancer_healthy_threshold')}s",
-  'balancing_algorithm' => p('router.balancing_algorithm'),
+  'balancing_algorithm' => validate_balancing_algorithm(p('router.balancing_algorithm')),
+  'balancing_algorithm_az_preference' => validate_az_preference(p('router.balancing_algorithm_az_preference')),
   'only_trust_client_ca_certs' => p('router.only_trust_client_ca_certs'),
   'skip_ssl_validation' => p('router.ssl_skip_validation'),
   'cipher_suites' => p('router.cipher_suites'),
