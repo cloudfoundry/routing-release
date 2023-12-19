@@ -117,6 +117,10 @@ describe 'gorouter' do
             'port' => 80,
             'user' => 'test',
             'password' => 'pass',
+            'tls' => {
+              'certificate' => TEST_CERT,
+              'key' => TEST_KEY,
+            }
           },
           'enable_ssl' => true,
           'tls_port' => 443,
@@ -1282,18 +1286,32 @@ describe 'gorouter' do
       end
     end
 
-    context 'when router.status.tls is specified' do
+    context 'when router.status.enable_nontls_health_checks is disabled' do
       before do
-        deployment_manifest_fragment['router']['status']['tls'] = {
-          'port' => 8443,
-          'certificate' => TEST_CERT,
-          'key' => 'test-key',
-        }
+        deployment_manifest_fragment['router']['status']['enable_nontls_health_checks'] = false
       end
+
+      it 'disables nont-tls health checks in gorouter' do
+        expect(parsed_yaml['status']['enable_nontls_health_checks']).to eq false
+      end
+    end
+
+    context 'when router.status.tls is specified' do
       it 'sets the tls port, cert, and key correctly' do
+        # port is default
+        # cert + key are provided in the default values for deployment_manifest_fragment
         expect(parsed_yaml['status']['tls']['port']).to eq 8443
         expect(parsed_yaml['status']['tls']['certificate']).to eq TEST_CERT
-        expect(parsed_yaml['status']['tls']['key']).to eq('test-key')
+        expect(parsed_yaml['status']['tls']['key']).to eq(TEST_KEY)
+      end
+
+      context 'and the tls port is specified' do
+        before do
+          deployment_manifest_fragment['router']['status']['tls']['port'] = 1234
+        end
+        it 'overrides the default' do
+        expect(parsed_yaml['status']['tls']['port']).to eq 1234
+        end
       end
 
       context 'but the certificate is not specified' do
