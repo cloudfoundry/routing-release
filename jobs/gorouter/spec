@@ -57,11 +57,15 @@ properties:
     default: router-status
   router.status.password:
     description: "Password for HTTP basic auth to the /varz and /routes endpoints."
+  router.status.enable_nontls_health_checks:
+    description: "Toggles whether or not gorouter will listen on a non-tls endpoint for load balancer health checks."
+    default: true
   router.status.routes.port:
     description: "Port used for the /routes endpoint (available on localhost-only)"
     default: 8082
   router.status.tls.port:
     description: "Port used for the TLS listener of the LB healthcheck endpoint"
+    default: 8443
   router.status.tls.certificate:
     description: "TLS Certificate used for the TLS listener of the LB healthcheck endpoint"
   router.status.tls.key:

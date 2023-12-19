@@ -51,7 +51,6 @@ access_log_file = p('router.write_access_logs_locally') ? '/var/vcap/sys/log/gor
 
 def status_tls
   tls = {}
-  if_p('router.status.tls.port') do
     if p('router.status.tls.certificate', "") == ""
       raise 'router.status.tls.certificate must be provided when router.status.tls.port is set'
     end
@@ -64,13 +63,13 @@ def status_tls
       'certificate' => p('router.status.tls.certificate'),
       'key' => p('router.status.tls.key'),
     }
-  end
   return tls
 end
 
 
 params = {
   'status' => {
+    'enable_nontls_health_checks' => p('router.status.enable_nontls_health_checks'),
     'port' => p('router.status.port'),
     'user' => p('router.status.user'),
     'pass' => p('router.status.password'),
