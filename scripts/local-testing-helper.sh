@@ -26,5 +26,5 @@ function test_in_docker_locally {
 
 function start_docker_for_testing {
   setup_docker
-  docker exec -ti "${REPO_NAME}-docker-container" bash
+  docker exec -ti "${REPO_NAME}-docker-container" 'bash' '--rcfile' '/repo/scripts/docker/init.bash'
 }
