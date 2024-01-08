@@ -1357,7 +1357,7 @@ describe 'gorouter' do
           'router' =>
             {
               'logging_level' => 'debug',
-              'status' => { 'port' => 8090, 'user' => 'some-user', 'password' => 'some-password' }
+              'status' => { 'tls' => { 'port' => 8490 }, 'user' => 'some-user', 'password' => 'some-password' }
             }
         }
       )
@@ -1377,10 +1377,11 @@ describe 'gorouter' do
       expect(parsed_yaml['healthcheck_endpoint']).to eq(
         {
           'host' => '0.0.0.0',
-          'port' => 8090,
+          'port' => 8490,
           'user' => 'some-user',
           'password' => 'some-password',
-          'path' => '/healthz'
+          'path' => '/is-process-alive-do-not-use-for-loadbalancing',
+          'scheme' => 'https',
         }
       )
     end
