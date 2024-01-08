@@ -60,6 +60,12 @@ properties:
   router.status.enable_nontls_health_checks:
     description: "Toggles whether or not gorouter will listen on a non-tls endpoint for load balancer health checks."
     default: true
+  router.status.enable_deprecated_varz_healthz_endpoints:
+    description: |
+      Toggles whether or not gorouter will respond to the deprecated /healthz,
+      /varz, and /routes endpoints on its non-tls load balancer status port.
+      Requires 'router.status.enable_nontls_health_checks' to be true.
+    default: false
   router.status.routes.port:
     description: "Port used for the /routes endpoint (available on localhost-only)"
     default: 8082

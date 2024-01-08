@@ -1296,6 +1296,21 @@ describe 'gorouter' do
       end
     end
 
+    context 'when router.status.enable_deprecated_varz_healthz_endpoints is enabled' do
+      before do
+        deployment_manifest_fragment['router']['status']['enable_deprecated_varz_healthz_endpoints'] = true
+      end
+      it 'enables healthz/varz endpoints in gorouter' do
+        expect(parsed_yaml['status']['enable_deprecated_varz_healthz_endpoints']).to eq true
+      end
+    end
+
+    context 'router.status.enable_deprecated_varz_healthz_endpoints is disabled by default' do
+      it 'enables healthz/varz endpoints in gorouter' do
+        expect(parsed_yaml['status']['enable_deprecated_varz_healthz_endpoints']).to eq false
+      end
+    end
+
     context 'when router.status.tls is specified' do
       it 'sets the tls port, cert, and key correctly' do
         # port is default
