@@ -48,9 +48,9 @@ require (
 	github.com/urfave/negroni v1.0.0
 	github.com/vito/go-sse v1.0.0
 	go.step.sm/crypto v0.40.0
-	golang.org/x/crypto v0.17.0
-	golang.org/x/net v0.19.0
-	golang.org/x/oauth2 v0.15.0
+	golang.org/x/crypto v0.18.0
+	golang.org/x/net v0.20.0
+	golang.org/x/oauth2 v0.16.0
 	golang.org/x/tools v0.16.1
 	google.golang.org/grpc v1.60.1
 	google.golang.org/protobuf v1.32.0
@@ -101,11 +101,11 @@ require (
 	go.uber.org/atomic v1.8.0 // indirect
 	go.uber.org/automaxprocs v1.5.3 // indirect
 	golang.org/x/mod v0.14.0 // indirect
-	golang.org/x/sys v0.15.0 // indirect
+	golang.org/x/sys v0.16.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240102182953-50ed04b92917 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240108191215-35c7eff3a6b1 // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
