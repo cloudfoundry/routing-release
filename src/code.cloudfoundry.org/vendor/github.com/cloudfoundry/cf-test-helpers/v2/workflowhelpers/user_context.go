@@ -2,7 +2,6 @@ package workflowhelpers
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 	"time"
@@ -19,7 +18,7 @@ import (
 type userValues interface {
 	Username() string
 	Password() string
-	Origin()   string
+	Origin() string
 }
 
 type spaceValues interface {
@@ -111,7 +110,7 @@ func (uc UserContext) Login() {
 
 func (uc UserContext) SetCfHomeDir() (string, string) {
 	originalCfHomeDir := os.Getenv("CF_HOME")
-	currentCfHomeDir, err := ioutil.TempDir("", fmt.Sprintf("cf_home_%d", GinkgoParallelProcess()))
+	currentCfHomeDir, err := os.MkdirTemp("", fmt.Sprintf("cf_home_%d", GinkgoParallelProcess()))
 	if err != nil {
 		panic("Error: could not create temporary home directory: " + err.Error())
 	}

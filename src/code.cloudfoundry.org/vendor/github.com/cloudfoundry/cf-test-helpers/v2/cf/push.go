@@ -2,7 +2,7 @@ package cf
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strconv"
 	"time"
@@ -28,7 +28,7 @@ type Application struct {
 }
 
 var Push = func(appName string, args ...string) *gexec.Session {
-	tmpDir, err := ioutil.TempDir("", "")
+	tmpDir, err := os.MkdirTemp("", "")
 	if err != nil {
 		panic(err)
 	}
@@ -77,7 +77,7 @@ var Push = func(appName string, args ...string) *gexec.Session {
 	}
 
 	manifestPath := filepath.Join(tmpDir, "manifest.yml")
-	err = ioutil.WriteFile(manifestPath, manifestText, 0644)
+	err = os.WriteFile(manifestPath, manifestText, 0644)
 	if err != nil {
 		panic(err)
 	}
