@@ -128,7 +128,6 @@ files:
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/zstd/*.s # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/zstd/internal/xxhash/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/zstd/internal/xxhash/*.s # gosub
-  - code.cloudfoundry.org/vendor/github.com/matttproud/golang_protobuf_extensions/v2/pbutil/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/encoders/builtin/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/internal/parser/*.go # gosub
@@ -247,6 +246,7 @@ files:
   - code.cloudfoundry.org/vendor/golang.org/x/text/runes/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/text/transform/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/grpc/metadata/*.go # gosub
+  - code.cloudfoundry.org/vendor/google.golang.org/protobuf/encoding/protodelim/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/protobuf/encoding/prototext/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/protobuf/encoding/protowire/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/protobuf/internal/descfmt/*.go # gosub
