@@ -53,6 +53,8 @@ properties:
     description: "PEM-encoded certificate for the route-registrar to present to NATS for verification when connecting via TLS."
   nats.tls.client_key:
     description: "PEM-encoded private key for the route-registrar to present to NATS for verification when connecting via TLS."
+  nats.tls.ca_cert:
+    description: "The certificate authority certificate used for the route registrar"
   nats.fail_if_using_nats_without_tls:
     description: |
         Connecting to nats (instead of nats-tls) is deprecated. The nats

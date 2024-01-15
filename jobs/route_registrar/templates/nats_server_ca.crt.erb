@@ -1,5 +1,17 @@
-<% if_link('nats-tls') do |nats_link| %>
-<% nats_link.if_p('nats.external.tls.ca') do |ca_cert| %>
-<%= ca_cert %>
-<% end %>
-<% end %>
+<%=
+  def nats_tls_ca
+    if_p('nats.tls.ca_cert') do |prop|
+      return prop
+    end.else do
+      if_link('nats-tls') do |nats_link|
+        nats_link.if_p('nats.external.tls.ca') do |ca_cert|
+          return ca_cert
+        end
+      end
+    end
+
+    return ''
+  end
+
+  nats_tls_ca
+-%>
