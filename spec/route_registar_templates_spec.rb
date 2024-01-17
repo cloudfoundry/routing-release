@@ -493,6 +493,57 @@ TEXT
         )
       end
     end
+    describe 'config/nats/certs/server_ca.crt' do
+      let(:template) { job.template('config/nats/certs/server_ca.crt') }
+      let(:links) do
+        [
+          Bosh::Template::Test::Link.new(
+            name: 'nats-tls',
+            properties: {
+              'nats' => {
+                'external' => {
+                  'tls' => {
+                    'ca' => 'the ca cert from link'
+                  }
+                }
+              }
+            }
+          )
+        ]
+      end
+      context 'when properties and link is provided' do
+        before do
+          merged_manifest_properties['nats'] = {"tls" => {"enabled" => true, "ca_cert" => 'the ca cert from properties'}}
+        end
+        it 'should prefer the value in the properties' do
+          rendered_template = template.render(merged_manifest_properties, consumes: links)
+          expect(rendered_template).to eq('the ca cert from properties')
+        end
+      end
+      context 'when no properties and link is provided' do
+        it 'should render the value from the link' do
+          rendered_template = template.render({}, consumes: links)
+          expect(rendered_template).to eq('the ca cert from link')
+        end
+      end
+      context 'when properties and no link is provided' do
+        before do
+          merged_manifest_properties['nats'] = {"tls" => {"enabled" => true, "ca_cert" => 'the ca cert from properties'}}
+        end
+
+        it 'should prefer the value in the properties' do
+          rendered_template = template.render(merged_manifest_properties)
+          expect(rendered_template).to eq('the ca cert from properties')
+        end
+      end
+      context 'when no properties and no link is provided' do
+        it 'should not error' do
+          expect do
+            template.render(merged_manifest_properties)
+          end.not_to raise_error
+        end
+      end
+    end
   end
 end
 
