@@ -104,21 +104,10 @@ happens on the `develop` branch.
   ```
 
 #### <a name="running-bosh-job-templating-tests"></a> Running BOSH Job Templating Tests
-From the root of the repo, run:
 
-##### Run the specs
-```bash
-rspec ./spec/
-```
+Template tests can be run with `./scripts/test-in-docker-locally.bash`. This will also run unit + integration tests.
 
-##### Lint the specs
-```bash
-rubocop ./spec/
-```
-
-If you do not have `rspec` or `rubocop` installed locally, run
-`./scripts/start-docker-for-testing.sh` and execute the commands in the docker
-container. Prepend "sudo" to the script if you are an unprivileged user.
+If you wish to run template tests on their own,  you can enter the docker env with `./scripts/start-docker-for-testing.bash` and then run the tests via `cd /repo && ./scripts/docker/tests-templates.bash` 
 
 #### <a name="running-unit-and-integration-tests"></a> Running Unit and Integration Tests
 
