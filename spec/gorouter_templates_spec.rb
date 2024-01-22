@@ -1509,7 +1509,7 @@ describe 'gorouter' do
       { 'router' => {
         'port' => 81,
         'status' => { 'port' => 8081, 'tls' => {'port' => 8443}, },
-        'prometheus' => { 'port' => 7070 },
+        'prometheus' => { 'port' => 7777 },
         'tls_port' => 442,
         'debug_address' => '127.0.0.1:17003'
       } }
@@ -1518,7 +1518,7 @@ describe 'gorouter' do
     context 'ip_local_reserved_ports' do
       it 'contains reserved ports in order' do
         rendered_template = template.render(properties)
-        ports = '81,442,2822,2825,3457,3458,3459,3460,3461,7070,8081,8082,8443,8853,9100,14726,14727,14821,14822,14823,14824,14829,14830,14922,15821,17003,53035,53080'
+        ports = '81,442,2822,2825,3457,3458,3459,3460,3461,7070,7777,8081,8082,8443,8853,9100,14726,14727,14821,14822,14823,14824,14829,14830,14922,15821,17003,53035,53080'
         expect(rendered_template).to include("\"#{ports}\" > /proc/sys/net/ipv4/ip_local_reserved_ports")
       end
 
@@ -1526,7 +1526,7 @@ describe 'gorouter' do
         it 'skips that port' do
           properties['router'].delete('prometheus')
           rendered_template = template.render(properties)
-          ports = '81,442,2822,2825,3457,3458,3459,3460,3461,8081,8082,8443,8853,9100,14726,14727,14821,14822,14823,14824,14829,14830,14922,15821,17003,53035,53080'
+          ports = '81,442,2822,2825,3457,3458,3459,3460,3461,7070,8081,8082,8443,8853,9100,14726,14727,14821,14822,14823,14824,14829,14830,14922,15821,17003,53035,53080'
           expect(rendered_template).to include("\"#{ports}\" > /proc/sys/net/ipv4/ip_local_reserved_ports")
         end
       end
@@ -1535,7 +1535,15 @@ describe 'gorouter' do
         it 'skips that port' do
           properties['router']['debug_address'] = 'meow'
           rendered_template = template.render(properties)
-          ports = '81,442,2822,2825,3457,3458,3459,3460,3461,7070,8081,8082,8443,8853,9100,14726,14727,14821,14822,14823,14824,14829,14830,14922,15821,53035,53080'
+          ports = '81,442,2822,2825,3457,3458,3459,3460,3461,7070,7777,8081,8082,8443,8853,9100,14726,14727,14821,14822,14823,14824,14829,14830,14922,15821,53035,53080'
+          expect(rendered_template).to include("\"#{ports}\" > /proc/sys/net/ipv4/ip_local_reserved_ports")
+        end
+      end
+      context 'when route_services_internal_server_port is set to a non-default value' do
+        it 'uses that port' do
+          properties['router']['route_services_internal_server_port'] = 7272
+          rendered_template = template.render(properties)
+          ports = '81,442,2822,2825,3457,3458,3459,3460,3461,7272,7777,8081,8082,8443,8853,9100,14726,14727,14821,14822,14823,14824,14829,14830,14922,15821,17003,53035,53080'
           expect(rendered_template).to include("\"#{ports}\" > /proc/sys/net/ipv4/ip_local_reserved_ports")
         end
       end
