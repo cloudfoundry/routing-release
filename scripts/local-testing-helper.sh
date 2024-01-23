@@ -19,9 +19,9 @@ function setup_docker {
 
 function test_in_docker_locally {
   setup_docker
-  # docker exec "${REPO_NAME}-docker-container" '/repo/scripts/docker/tests-templates.bash'
+  docker exec "${REPO_NAME}-docker-container" '/repo/scripts/docker/tests-templates.bash'
   docker exec "${REPO_NAME}-docker-container" '/repo/scripts/docker/test.bash' "$@"
-  # docker exec "${REPO_NAME}-docker-container" '/repo/scripts/docker/lint.bash'
+  docker exec "${REPO_NAME}-docker-container" '/repo/scripts/docker/lint.bash'
 }
 
 function start_docker_for_testing {
