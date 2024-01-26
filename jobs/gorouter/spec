@@ -243,6 +243,9 @@ properties:
   router.route_services_internal_lookup_allowlist:
     description: "a list of host names for route services that should be resolved internally. Each entry can be a fully qualified domain name or DNS wildcard (i.e. wildcard on 1 segment of a subdomain). If the list is empty, it is not in effect and internal lookup will be attempted for all host names, which can lead to CVE-2019-3789. Please turn on internal lookup only with an allowlist."
     default: []
+  router.route_services_internal_server_port:
+    description: "Gorouter will use this port for internal route services."
+    default: 7070
   router.route_services_secret_decrypt_only:
     description: "To rotate keys, add your new key here and deploy. Then swap this key with the value of route_services_secret and deploy again."
     default: ""
