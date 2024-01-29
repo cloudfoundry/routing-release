@@ -33,7 +33,3 @@
 	path = src/code.cloudfoundry.org/multierror
 	url = https://github.com/cloudfoundry/multierror
 	branch = main
-[submodule "src/gosub"]
-	path = src/gosub
-	url = https://github.com/vito/gosub
-	branch = master
