@@ -58,7 +58,7 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.0.0-20231206170752-1baebe76b38e // indirect
+	code.cloudfoundry.org/diego-logging-client v0.0.0-20240129164815-4a8e1f658c90 // indirect
 	code.cloudfoundry.org/durationjson v0.0.0-20231206170547-9040c1b5941e // indirect
 	code.cloudfoundry.org/go-diodes v0.0.0-20240124183017-31ac915ce912 // indirect
 	code.cloudfoundry.org/go-loggregator/v8 v8.0.5 // indirect
@@ -78,7 +78,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
-	github.com/google/pprof v0.0.0-20240125082051-42cd04596328 // indirect
+	github.com/google/pprof v0.0.0-20240130152714-0ed6a68c8d9e // indirect
 	github.com/honeycombio/libhoney-go v1.20.0 // indirect
 	github.com/jackc/fake v0.0.0-20150926172116-812a484cc733 // indirect
 	github.com/jackc/pgx v3.6.2+incompatible // indirect
