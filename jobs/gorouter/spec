@@ -123,6 +123,9 @@ properties:
   router.sticky_session_cookie_names:
     description: "The names of the cookies to use for handling sticky sessions"
     default: [ "JSESSIONID" ]
+  router.sticky_sessions_for_auth_negotiate:
+    description: "Controls whether or not gorouter will apply sticky sessions to request/response flows using 'Authorization: Negotiate'"
+    default: false
   router.drain_wait:
     description: |
       Delay in seconds after shut down is initiated before server stops listening.

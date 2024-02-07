@@ -403,6 +403,21 @@ describe 'gorouter' do
           end
         end
       end
+      describe 'sticky_sessions_for_auth_negotiate' do
+        context 'when no value is provided' do
+          it 'should be false' do
+            expect(parsed_yaml['sticky_sessions_for_auth_negotiate']).to eq(false)
+          end
+        end
+        context 'when it is enabled' do
+          before do
+            deployment_manifest_fragment['router']['sticky_sessions_for_auth_negotiate'] = true
+          end
+          it 'should be true' do
+            expect(parsed_yaml['sticky_sessions_for_auth_negotiate']).to eq(true)
+          end
+        end
+      end
       describe 'client_cert_validation' do
         context 'when no override is provided' do
           it 'should default to none' do
