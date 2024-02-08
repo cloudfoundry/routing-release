@@ -473,6 +473,21 @@ describe 'gorouter' do
         end
       end
 
+      context 'route_services_internal_server_port' do
+        it 'defaults to 7070' do
+          expect(parsed_yaml['route_services_internal_server_port']).to eq(7070)
+        end
+
+        context 'when set to a value' do
+          before do
+            deployment_manifest_fragment['router']['route_services_internal_server_port'] = 7272
+          end
+
+          it 'configures that value for the gorouter' do
+            expect(parsed_yaml['route_services_internal_server_port']).to eq(7272)
+          end
+        end
+      end
       context 'html_error_template' do
         it 'is not set by default' do
           expect(parsed_yaml['html_error_template_file']).to be_nil
@@ -1560,6 +1575,15 @@ describe 'gorouter' do
           rendered_template = template.render(properties)
           ports = '81,442,2822,2825,3457,3458,3459,3460,3461,7272,7777,8081,8082,8443,8853,9100,14726,14727,14821,14822,14823,14824,14829,14830,14922,15821,17003,53035,53080'
           expect(rendered_template).to include("\"#{ports}\" > /proc/sys/net/ipv4/ip_local_reserved_ports")
+        end
+
+        context 'when route_services_internal_server_port is set to 0' do
+          it 'does not attempt to add 0 to the list of reserved ports because 0 represents use of a random, available port' do
+            properties['router']['route_services_internal_server_port'] = 0
+            rendered_template = template.render(properties)
+            ports = '81,442,2822,2825,3457,3458,3459,3460,3461,7777,8081,8082,8443,8853,9100,14726,14727,14821,14822,14823,14824,14829,14830,14922,15821,17003,53035,53080'
+            expect(rendered_template).to include("\"#{ports}\" > /proc/sys/net/ipv4/ip_local_reserved_ports")
+          end
         end
       end
     end
