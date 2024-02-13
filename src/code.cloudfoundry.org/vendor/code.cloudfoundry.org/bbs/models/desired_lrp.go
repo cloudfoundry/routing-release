@@ -722,10 +722,6 @@ func (runInfo DesiredLRPRunInfo) Validate() error {
 		}
 	}
 
-	if runInfo.GetCpuWeight() > 100 {
-		validationError = validationError.Append(ErrInvalidField{"cpu_weight"})
-	}
-
 	err := validateCachedDependencies(runInfo.CachedDependencies)
 	if err != nil {
 		validationError = validationError.Append(err)

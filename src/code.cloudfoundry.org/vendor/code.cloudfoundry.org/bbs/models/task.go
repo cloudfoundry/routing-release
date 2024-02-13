@@ -110,10 +110,6 @@ func (def *TaskDefinition) Validate() error {
 		validationError = validationError.Append(err)
 	}
 
-	if def.CpuWeight > 100 {
-		validationError = validationError.Append(ErrInvalidField{"cpu_weight"})
-	}
-
 	if def.MemoryMb < 0 {
 		validationError = validationError.Append(ErrInvalidField{"memory_mb"})
 	}
