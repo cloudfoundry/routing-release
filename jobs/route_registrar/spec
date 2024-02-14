@@ -131,6 +131,7 @@ properties:
         name (required, string): Human-readable reference for the healthcheck
         script_path (required, string): Path to script that will be run periodically to determine
           service health
+        additional_bpm_mount_paths (optional, array of strings): Additional directories to be mounted in the bpm config for the route_registrar job.
         timeout (optional, string): The healthcheck script must exit within this timeout, otherwise
           the script is terminated with `SIGKILL` and the route is unregistered. Value is a string (e.g. "10s") and must parse to a positive time duration i.e. "-5s" is not permitted. Must be less than the value of `registration_interval`.
           Default: Half of the value of `registration_interval`
