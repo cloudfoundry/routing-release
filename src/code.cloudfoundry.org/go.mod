@@ -36,7 +36,7 @@ require (
 	github.com/kisielk/errcheck v1.7.0
 	github.com/lib/pq v1.10.9
 	github.com/nats-io/nats-server/v2 v2.10.10
-	github.com/nats-io/nats.go v1.32.0
+	github.com/nats-io/nats.go v1.33.0
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.15.0
 	github.com/onsi/gomega v1.31.1
@@ -52,7 +52,7 @@ require (
 	golang.org/x/net v0.21.0
 	golang.org/x/oauth2 v0.17.0
 	golang.org/x/tools v0.18.0
-	google.golang.org/grpc v1.61.0
+	google.golang.org/grpc v1.61.1
 	google.golang.org/protobuf v1.32.0
 	gopkg.in/yaml.v2 v2.4.0
 )

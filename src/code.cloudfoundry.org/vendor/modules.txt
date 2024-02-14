@@ -249,7 +249,7 @@ github.com/nats-io/nats-server/v2/server/certstore
 github.com/nats-io/nats-server/v2/server/pse
 github.com/nats-io/nats-server/v2/server/stree
 github.com/nats-io/nats-server/v2/server/sysmem
-# github.com/nats-io/nats.go v1.32.0
+# github.com/nats-io/nats.go v1.33.0
 ## explicit; go 1.20
 github.com/nats-io/nats.go
 github.com/nats-io/nats.go/encoders/builtin
@@ -510,7 +510,7 @@ google.golang.org/appengine/urlfetch
 # google.golang.org/genproto/googleapis/rpc v0.0.0-20240213162025-012b6fc9bca9
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.61.0
+# google.golang.org/grpc v1.61.1
 ## explicit; go 1.19
 google.golang.org/grpc
 google.golang.org/grpc/attributes
