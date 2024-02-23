@@ -275,8 +275,8 @@ end
 backend_attempts = 3
 if_p('router.backends.max_attempts') { |val| backend_attempts = val }
 
-if (backend_attempts < 0 )
-  raise 'router.backends.max_attempts cannot be negative'
+if (backend_attempts < 1 )
+  raise 'router.backends.max_attempts must maintain a minimum value of 1'
 end
 
 backends = {
