@@ -110,6 +110,7 @@ params = {
   'sticky_sessions_for_auth_negotiate' => p('router.sticky_sessions_for_auth_negotiate'),
   'access_log' => {
     'file' => access_log_file,
+    'enable_streaming' => p('router.enable_access_log_streaming')
   },
   'publish_start_message_interval' => '30s',
   'prune_stale_droplets_interval' => '30s',
@@ -374,7 +375,9 @@ if timestamp_format == 'deprecated'
 end
 
 params['logging'] = {
-  'syslog' => 'vcap.gorouter',
+  'syslog' => p('router.logging.syslog_tag'),
+  'syslog_addr' => p('router.logging.syslog_addr'),
+  'syslog_network' => p('router.logging.syslog_network'),
   'level' => p('router.logging_level'),
   'loggregator_enabled' => true,
   'metron_address' => "localhost:#{p('metron.port')}",
