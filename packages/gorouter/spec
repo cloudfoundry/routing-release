@@ -182,7 +182,7 @@ files:
   - code.cloudfoundry.org/vendor/github.com/tedsuo/rata/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/uber-go/atomic/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/uber-go/zap/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/urfave/negroni/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/urfave/negroni/v3/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/vito/go-sse/sse/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/vmihailenco/msgpack/v5/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/vmihailenco/msgpack/v5/msgpcode/*.go # gosub
