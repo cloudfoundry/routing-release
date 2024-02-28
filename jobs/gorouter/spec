@@ -274,6 +274,15 @@ properties:
   router.enable_log_attempts_details:
     description: "Log additional fields in the access log that provide more details on the specific timings and attempts performed towards endpoints."
     default: false
+  router.logging.syslog_tag:
+    description: "Tag to use when writing syslog messages"
+    default: "vcap.gorouter"
+  router.logging.syslog_addr:
+    description: "Address of a syslog server to send access logs"
+    default: "localhost:514"
+  router.logging.syslog_network:
+    description: "Network protocol to use when connecting to the syslog server. Valid values are 'tcp', 'udp', <empty>. When choosing an empty string value, the local syslog daemon is used."
+    default: "udp"
   router.logging.format.timestamp:
     description: |
       Format for timestamp in component logs. Valid values are 'rfc3339', 'deprecated', and 'unix-epoch'."
@@ -492,6 +501,9 @@ properties:
   router.write_access_logs_locally:
     description: "Enables writing access log to local disk."
     default: true
+  router.enable_access_log_streaming:
+    description: "Enables streaming access log to syslog server."
+    default: false
   router.suspend_pruning_if_nats_unavailable:
     description: |
       Suspend pruning of routes when NATs is unavailable and maintain the

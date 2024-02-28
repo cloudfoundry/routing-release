@@ -1214,7 +1214,7 @@ describe 'gorouter' do
           end
         end
 
-        fcontext 'when the timestamp format is set to deprecated' do
+        context 'when the timestamp format is set to deprecated' do
           before do
             deployment_manifest_fragment['router']['logging'] = { 'format' => { 'timestamp' => 'deprecated' } }
           end
@@ -1246,6 +1246,46 @@ describe 'gorouter' do
           end
           it 'it properly sets the value' do
             expect(parsed_yaml['logging']['enable_attempts_details']).to eq(true)
+          end
+        end
+
+        context 'when access log streaming via syslog is enabled' do
+          before do
+            deployment_manifest_fragment['router']['write_access_logs_locally'] = false
+            deployment_manifest_fragment['router']['enable_access_log_streaming'] = true
+          end
+          it 'it properly sets the value' do
+            expect(parsed_yaml['access_log']['file']).to eq('')
+            expect(parsed_yaml['access_log']['enable_streaming']).to eq(true)
+          end
+          it 'it properly sets default values' do
+            expect(parsed_yaml['logging']['syslog']).to eq('vcap.gorouter')
+            expect(parsed_yaml['logging']['syslog_addr']).to eq('localhost:514')
+            expect(parsed_yaml['logging']['syslog_network']).to eq('udp')
+          end
+          context 'when syslog tag is set' do
+            before do
+              deployment_manifest_fragment['router']['logging'] = { 'syslog_tag' => 'funny.cat' }
+            end
+            it 'it properly sets the value' do
+              expect(parsed_yaml['logging']['syslog']).to eq('funny.cat')
+            end
+          end
+          context 'when syslog address is set' do
+            before do
+              deployment_manifest_fragment['router']['logging'] = { 'syslog_addr' => '10.0.1.2:1234' }
+            end
+            it 'it properly sets the value' do
+              expect(parsed_yaml['logging']['syslog_addr']).to eq('10.0.1.2:1234')
+            end
+          end
+          context 'when syslog network protocol is set' do
+            before do
+              deployment_manifest_fragment['router']['logging'] = { 'syslog_network' => 'tcp' }
+            end
+            it 'it properly sets default values' do
+              expect(parsed_yaml['logging']['syslog_network']).to eq('tcp')
+            end
           end
         end
       end
