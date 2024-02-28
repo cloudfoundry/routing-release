@@ -438,6 +438,7 @@ end
 
 params['disable_http'] = p('router.disable_http')
 params['enable_http2'] = p('router.enable_http2')
+params['enable_http1_concurrent_read_write'] = p('router.enable_http1_concurrent_read_write')
 
 if p('router.ca_certs')
   params['ca_certs'] = get_valid_ca_certs
