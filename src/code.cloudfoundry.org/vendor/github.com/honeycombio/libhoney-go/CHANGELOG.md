@@ -1,5 +1,16 @@
 # libhoney Changelog
 
+## 1.21.0 2024-02-28
+
+### Enhancements
+
+- feat: support classic-flavored ingest keys (#237) | @jharley
+
+### Maintenance
+
+- maint: update codeowners to pipeline (#233) | @JamieDanielson
+- maint: update codeowners to pipeline-team (#234) | @JamieDanielson
+
 ## 1.20.0 2023-06-29
 
 ### Enhancements

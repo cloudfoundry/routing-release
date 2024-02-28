@@ -11,6 +11,10 @@ const (
 	DefaultAddress = ":8080"
 )
 
+func init() {
+	initFeaturePicker()
+}
+
 // Handler handler is an interface that objects can implement to be registered to serve as middleware
 // in the Negroni middleware stack.
 // ServeHTTP should yield to the next middleware in the chain by invoking the next http.HandlerFunc
@@ -31,11 +35,20 @@ func (h HandlerFunc) ServeHTTP(rw http.ResponseWriter, r *http.Request, next htt
 
 type middleware struct {
 	handler Handler
-	next    *middleware
+
+	// nextfn stores the next.ServeHTTP to reduce memory allocate
+	nextfn func(rw http.ResponseWriter, r *http.Request)
+}
+
+func newMiddleware(handler Handler, next *middleware) middleware {
+	return middleware{
+		handler: handler,
+		nextfn:  next.ServeHTTP,
+	}
 }
 
 func (m middleware) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-	m.handler.ServeHTTP(rw, r, m.next.ServeHTTP)
+	m.handler.ServeHTTP(rw, r, m.nextfn)
 }
 
 // Wrap converts a http.Handler into a negroni.Handler so it can be used as a Negroni
@@ -77,8 +90,10 @@ func New(handlers ...Handler) *Negroni {
 // With returns a new Negroni instance that is a combination of the negroni
 // receiver's handlers and the provided handlers.
 func (n *Negroni) With(handlers ...Handler) *Negroni {
+	currentHandlers := make([]Handler, len(n.handlers))
+	copy(currentHandlers, n.handlers)
 	return New(
-		append(n.handlers, handlers...)...,
+		append(currentHandlers, handlers...)...,
 	)
 }
 
@@ -150,20 +165,21 @@ func (n *Negroni) Handlers() []Handler {
 func build(handlers []Handler) middleware {
 	var next middleware
 
-	if len(handlers) == 0 {
+	switch {
+	case len(handlers) == 0:
 		return voidMiddleware()
-	} else if len(handlers) > 1 {
+	case len(handlers) > 1:
 		next = build(handlers[1:])
-	} else {
+	default:
 		next = voidMiddleware()
 	}
 
-	return middleware{handlers[0], &next}
+	return newMiddleware(handlers[0], &next)
 }
 
 func voidMiddleware() middleware {
-	return middleware{
+	return newMiddleware(
 		HandlerFunc(func(rw http.ResponseWriter, r *http.Request, next http.HandlerFunc) {}),
 		&middleware{},
-	}
+	)
 }

@@ -1,9 +1,7 @@
 package negroni
 
 import (
-	"bufio"
-	"fmt"
-	"net"
+	"io"
 	"net/http"
 )
 
@@ -12,7 +10,7 @@ import (
 // if the functionality calls for it.
 type ResponseWriter interface {
 	http.ResponseWriter
-	http.Flusher
+
 	// Status returns the status code of the response or 0 if the response has
 	// not been written
 	Status() int
@@ -27,29 +25,39 @@ type ResponseWriter interface {
 
 type beforeFunc func(ResponseWriter)
 
-// NewResponseWriter creates a ResponseWriter that wraps an http.ResponseWriter
+// NewResponseWriter creates a ResponseWriter that wraps a http.ResponseWriter
 func NewResponseWriter(rw http.ResponseWriter) ResponseWriter {
 	nrw := &responseWriter{
 		ResponseWriter: rw,
 	}
 
-	if _, ok := rw.(http.CloseNotifier); ok {
-		return &responseWriterCloseNotifer{nrw}
-	}
-
-	return nrw
+	return wrapFeature(nrw)
 }
 
 type responseWriter struct {
 	http.ResponseWriter
-	status      int
-	size        int
-	beforeFuncs []beforeFunc
+	pendingStatus  int
+	status         int
+	size           int
+	beforeFuncs    []beforeFunc
+	callingBefores bool
 }
 
 func (rw *responseWriter) WriteHeader(s int) {
-	rw.status = s
+	if rw.Written() {
+		return
+	}
+
+	rw.pendingStatus = s
 	rw.callBefore()
+
+	// Any of the rw.beforeFuncs may have written a header,
+	// so check again to see if any work is necessary.
+	if rw.Written() {
+		return
+	}
+
+	rw.status = s
 	rw.ResponseWriter.WriteHeader(s)
 }
 
@@ -63,8 +71,30 @@ func (rw *responseWriter) Write(b []byte) (int, error) {
 	return size, err
 }
 
+// ReadFrom exposes underlying http.ResponseWriter to io.Copy and if it implements
+// io.ReaderFrom, it can take advantage of optimizations such as sendfile, io.Copy
+// with sync.Pool's buffer which is in http.(*response).ReadFrom and so on.
+func (rw *responseWriter) ReadFrom(r io.Reader) (n int64, err error) {
+	if !rw.Written() {
+		// The status will be StatusOK if WriteHeader has not been called yet
+		rw.WriteHeader(http.StatusOK)
+	}
+	n, err = io.Copy(rw.ResponseWriter, r)
+	rw.size += int(n)
+	return
+}
+
+// Satisfy http.ResponseController support (Go 1.20+)
+func (rw *responseWriter) Unwrap() http.ResponseWriter {
+	return rw.ResponseWriter
+}
+
 func (rw *responseWriter) Status() int {
-	return rw.status
+	if rw.Written() {
+		return rw.status
+	}
+
+	return rw.pendingStatus
 }
 
 func (rw *responseWriter) Size() int {
@@ -79,35 +109,17 @@ func (rw *responseWriter) Before(before func(ResponseWriter)) {
 	rw.beforeFuncs = append(rw.beforeFuncs, before)
 }
 
-func (rw *responseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
-	hijacker, ok := rw.ResponseWriter.(http.Hijacker)
-	if !ok {
-		return nil, nil, fmt.Errorf("the ResponseWriter doesn't support the Hijacker interface")
-	}
-	return hijacker.Hijack()
-}
-
 func (rw *responseWriter) callBefore() {
+	// Don't recursively call before() functions, to avoid infinite looping if
+	// one of them calls rw.WriteHeader again.
+	if rw.callingBefores {
+		return
+	}
+
+	rw.callingBefores = true
+	defer func() { rw.callingBefores = false }()
+
 	for i := len(rw.beforeFuncs) - 1; i >= 0; i-- {
 		rw.beforeFuncs[i](rw)
 	}
-}
-
-func (rw *responseWriter) Flush() {
-	flusher, ok := rw.ResponseWriter.(http.Flusher)
-	if ok {
-		if !rw.Written() {
-			// The status will be StatusOK if WriteHeader has not been called yet
-			rw.WriteHeader(http.StatusOK)
-		}
-		flusher.Flush()
-	}
-}
-
-type responseWriterCloseNotifer struct {
-	*responseWriter
-}
-
-func (rw *responseWriterCloseNotifer) CloseNotify() <-chan bool {
-	return rw.ResponseWriter.(http.CloseNotifier).CloseNotify()
 }
