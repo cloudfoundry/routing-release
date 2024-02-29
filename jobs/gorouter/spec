@@ -197,8 +197,9 @@ properties:
   router.backends.max_attempts:
     description: |
       Maximum number of attempts on failing requests against backend routes.
+      The number of attempts per request is limited by the number of endpoints on the route, regardless of this setting.
       This includes CF apps and route-registrar endpoints.
-      A value of 0 implies indefinite retries, i.e. retry until success or endpoint list is exhausted.
+      The minimum value for this setting is 1. This prevents gorouter from getting blocked by indefinite retries.
     default: 3
   router.backends.ca:
     description: Certificate authority that was used to sign certificates for TLS-registered backends. In PEM format.

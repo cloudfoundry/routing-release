@@ -673,8 +673,8 @@ describe 'gorouter' do
           before do
             deployment_manifest_fragment['router']['backends']['max_attempts'] = 0
           end
-          it 'should configure the property with indefinite retries' do
-            expect(parsed_yaml['backends']['max_attempts']).to eq(0)
+          it 'should error' do
+            expect { raise parsed_yaml }.to raise_error(RuntimeError, 'router.backends.max_attempts must maintain a minimum value of 1')
           end
         end
         context 'when max_attempts is negative' do
@@ -682,7 +682,7 @@ describe 'gorouter' do
             deployment_manifest_fragment['router']['backends']['max_attempts'] = -1
           end
           it 'should error' do
-            expect { raise parsed_yaml }.to raise_error(RuntimeError, 'router.backends.max_attempts cannot be negative')
+            expect { raise parsed_yaml }.to raise_error(RuntimeError, 'router.backends.max_attempts must maintain a minimum value of 1')
           end
         end
         context 'when both cert_chain and private_key are provided' do
