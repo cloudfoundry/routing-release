@@ -169,12 +169,16 @@ func (c *Config) getDataset() string {
 }
 
 func (c *Config) IsClassic() bool {
-	if len(c.APIKey) == 0 {
+	return IsClassicKey(c.APIKey)
+}
+
+func IsClassicKey(key string) bool {
+	if len(key) == 0 {
 		return true
-	} else if len(c.APIKey) == 32 {
-		return classicKeyRegex.MatchString(c.APIKey)
-	} else if len(c.APIKey) == 64 {
-		return classicIngestKeyRegex.MatchString(c.APIKey)
+	} else if len(key) == 32 {
+		return classicKeyRegex.MatchString(key)
+	} else if len(key) == 64 {
+		return classicIngestKeyRegex.MatchString(key)
 	}
 	return false
 }

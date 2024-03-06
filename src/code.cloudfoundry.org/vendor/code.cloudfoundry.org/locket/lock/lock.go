@@ -13,6 +13,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 type lockRunner struct {
@@ -128,7 +129,7 @@ func (l *lockRunner) Run(signals <-chan os.Signal, ready chan<- struct{}) error 
 			}
 			ctx, cancel := context.WithTimeout(ctx, time.Duration(l.ttlInSeconds)*time.Second)
 			start := time.Now()
-			_, err = l.locker.Lock(ctx, &models.LockRequest{Resource: l.lock, TtlInSeconds: l.ttlInSeconds}, grpc.FailFast(false))
+			_, err = l.locker.Lock(ctx, &models.LockRequest{Resource: l.lock, TtlInSeconds: l.ttlInSeconds}, grpc.WaitForReady(true))
 			cancel()
 			if err != nil {
 				if acquired {
@@ -138,7 +139,7 @@ func (l *lockRunner) Run(signals <-chan os.Signal, ready chan<- struct{}) error 
 					}
 
 					acquired = false
-				} else if grpc.Code(err) != grpc.Code(models.ErrLockCollision) {
+				} else if status.Code(err) != status.Code(models.ErrLockCollision) {
 					logger.Error("failed-to-acquire-lock", err, lager.Data{"request-uuid": uuid, "duration": time.Since(start)})
 				}
 			} else if !acquired {
@@ -157,7 +158,7 @@ func (l *lockRunner) Run(signals <-chan os.Signal, ready chan<- struct{}) error 
 
 func newLockLostError(err error, requestUUID string) error {
 	additionalMessage := "request failed"
-	switch grpc.Code(err) {
+	switch status.Code(err) {
 	case codes.DeadlineExceeded:
 		additionalMessage = "request timed out"
 	}

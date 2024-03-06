@@ -127,7 +127,7 @@ func (notifier *RequestMetricsNotifier) Run(signals <-chan os.Signal, ready chan
 			logger.Debug("emitting-metrics")
 
 			var err error
-			for requestType, _ := range notifier.metrics {
+			for requestType := range notifier.metrics {
 				metric := notifier.requestMetricsForType(requestType)
 				opt := loggregator.WithEnvelopeTag("request-type", requestType)
 

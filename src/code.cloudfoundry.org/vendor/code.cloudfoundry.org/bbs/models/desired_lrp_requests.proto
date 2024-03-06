@@ -30,6 +30,11 @@ message DesiredLRPSchedulingInfosResponse {
   repeated DesiredLRPSchedulingInfo desired_lrp_scheduling_infos = 2;
 }
 
+message DesiredLRPSchedulingInfoByProcessGuidResponse {
+  Error error = 1;
+  DesiredLRPSchedulingInfo desired_lrp_scheduling_info = 2;
+}
+
 message DesiredLRPByProcessGuidRequest {
   string process_guid = 1 [(gogoproto.jsontag) = "process_guid"];
 }

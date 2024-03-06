@@ -1,8 +1,8 @@
 package certauthority
 
 import (
-	"io/ioutil"
 	"net"
+	"os"
 	"path/filepath"
 	"sync"
 	"time"
@@ -49,6 +49,9 @@ func (c certAuthority) CAAndKey() (string, string) {
 
 func (c certAuthority) GenerateSelfSignedCertAndKey(commonName string, sans []string, intermediateCA bool) (string, string, error) {
 	key, err := pkix.CreateRSAKey(4096)
+	if err != nil {
+		return handleError(err)
+	}
 	keyBytes, err := key.ExportPrivate()
 	if err != nil {
 		return handleError(err)
@@ -62,7 +65,7 @@ func (c certAuthority) GenerateSelfSignedCertAndKey(commonName string, sans []st
 	}
 	csrLock.Unlock()
 
-	caBytes, err := ioutil.ReadFile(c.caCert)
+	caBytes, err := os.ReadFile(c.caCert)
 	if err != nil {
 		return handleError(err)
 	}
@@ -72,7 +75,7 @@ func (c certAuthority) GenerateSelfSignedCertAndKey(commonName string, sans []st
 		return handleError(err)
 	}
 
-	caKeyBytes, err := ioutil.ReadFile(c.caKey)
+	caKeyBytes, err := os.ReadFile(c.caKey)
 	if err != nil {
 		return handleError(err)
 	}
@@ -100,22 +103,22 @@ func (c certAuthority) GenerateSelfSignedCertAndKey(commonName string, sans []st
 		return handleError(err)
 	}
 
-	keyFile, err := ioutil.TempFile(c.depotDir, commonName)
+	keyFile, err := os.CreateTemp(c.depotDir, commonName)
 	if err != nil {
 		return handleError(err)
 	}
 	defer keyFile.Close()
-	err = ioutil.WriteFile(keyFile.Name(), keyBytes, 0655)
+	err = os.WriteFile(keyFile.Name(), keyBytes, 0655)
 	if err != nil {
 		return handleError(err)
 	}
 
-	crtFile, err := ioutil.TempFile(c.depotDir, commonName)
+	crtFile, err := os.CreateTemp(c.depotDir, commonName)
 	if err != nil {
 		return handleError(err)
 	}
 	defer crtFile.Close()
-	err = ioutil.WriteFile(crtFile.Name(), crtBytes, 0655)
+	err = os.WriteFile(crtFile.Name(), crtBytes, 0655)
 	if err != nil {
 		return handleError(err)
 	}
@@ -164,13 +167,13 @@ func generateCAAndKey(depotDir, commonName string) (string, string, error) {
 	}
 
 	keyFile := filepath.Join(depotDir, commonName+".key")
-	err = ioutil.WriteFile(keyFile, keyBytes, 0655)
+	err = os.WriteFile(keyFile, keyBytes, 0655)
 	if err != nil {
 		return handleError(err)
 	}
 
 	crtFile := filepath.Join(depotDir, commonName+".crt")
-	err = ioutil.WriteFile(crtFile, crtBytes, 0655)
+	err = os.WriteFile(crtFile, crtBytes, 0655)
 	if err != nil {
 		return handleError(err)
 	}

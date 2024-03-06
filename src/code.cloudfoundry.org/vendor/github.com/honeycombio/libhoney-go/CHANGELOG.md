@@ -1,5 +1,11 @@
 # libhoney Changelog
 
+## 1.22.0 2024-03-04
+
+### Enhancements
+
+- feat: introduce IsClassicKey helper function (#239) | @jharley
+
 ## 1.21.0 2024-02-28
 
 ### Enhancements
