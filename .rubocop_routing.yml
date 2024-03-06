@@ -1,9 +1,7 @@
 # Routing Release rubocop config for bosh template tests
 
-# TODO: Eventually this should be enabled, but there will be over 800
-#       offenses to correct, most of them not auto-correctable
-# require:
-#   - rubocop-rspec
+require:
+  - rubocop-rspec
 
 AllCops:
   TargetRubyVersion: 3.2
