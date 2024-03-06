@@ -1,0 +1,38 @@
+# Routing Release rubocop config for bosh template tests
+
+# TODO: Eventually this should be enabled, but there will be over 800
+#       offenses to correct, most of them not auto-correctable
+# require:
+#   - rubocop-rspec
+
+AllCops:
+  TargetRubyVersion: 3.2
+  NewCops: enable
+
+Layout/LineLength:
+  Max: 200
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+  Max: 50
+
+Metrics/MethodLength:
+  Max: 60
+
+Style/MutableConstant:
+  EnforcedStyle: literals
+
+Style/FrozenStringLiteralComment:
+  EnforcedStyle: always_true
+  Exclude:
+    - 'Gemfile'
+    - 'scripts/staged_shortlog'
+
+Style/Documentation:
+  Exclude:
+    - spec/spec_helper.rb
+
+Style/SelectByRegexp:
+  Exclude:
+    - 'scripts/staged_shortlog'

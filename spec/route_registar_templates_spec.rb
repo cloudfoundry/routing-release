@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop: disable Layout/LineLength
-# rubocop: disable Metrics/BlockLength
 require 'rspec'
 require 'bosh/template/test'
 require 'yaml'
@@ -218,7 +216,7 @@ describe 'route_registrar' do
 
     describe 'nats properties' do
       it 'renders with the default' do
-        merged_manifest_properties['nats'] = {'fail_if_using_nats_without_tls' => false }
+        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
         rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
         expect(rendered_hash['message_bus_servers'][0]['host']).to eq('nats-host:8080')
         expect(rendered_hash['message_bus_servers'][0]['user']).to eq('nats-user')
@@ -266,7 +264,7 @@ describe 'route_registrar' do
       context 'when mTLS is not enabled for NATS' do
         context 'when nats.fail_if_using_nats_without_tls is false' do
           it 'renders with the default nat properties' do
-            merged_manifest_properties['nats'] = {'fail_if_using_nats_without_tls' => false }
+            merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
             rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
             expect(rendered_hash['nats_mtls_config']['enabled']).to be false
             expect(rendered_hash['message_bus_servers'].length).to eq(1)
@@ -277,14 +275,14 @@ describe 'route_registrar' do
         end
         context 'when nats.fail_if_using_nats_without_tls is true' do
           it 'fails' do
-            nats_err_msg = <<-TEXT
-Using nats (instead of nats-tls) is deprecated. The nats process will
-be removed soon. Please migrate to using nats-tls as soon as possible.
-If you must continue using nats for a short time you can set the
-nats.fail_if_using_nats_without_tls property on route_registrar to
-false.
-TEXT
-            merged_manifest_properties['nats'] = {'fail_if_using_nats_without_tls' => true }
+            nats_err_msg = <<~TEXT
+              Using nats (instead of nats-tls) is deprecated. The nats process will
+              be removed soon. Please migrate to using nats-tls as soon as possible.
+              If you must continue using nats for a short time you can set the
+              nats.fail_if_using_nats_without_tls property on route_registrar to
+              false.
+            TEXT
+            merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => true }
             expect { template.render(merged_manifest_properties, consumes: links) }.to raise_error(
               RuntimeError, nats_err_msg
             )
@@ -386,7 +384,7 @@ TEXT
 
     describe 'when given a valid set of properties' do
       it 'renders the template' do
-        merged_manifest_properties['nats'] = {'fail_if_using_nats_without_tls' => false }
+        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
         rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
         expect(rendered_hash).to eq(
           'host' => '192.168.0.0',
@@ -426,7 +424,7 @@ TEXT
     describe 'when skip_ssl_validation is enabled' do
       before do
         merged_manifest_properties['route_registrar']['routing_api'] = { 'skip_ssl_validation' => true }
-        merged_manifest_properties['nats'] = {'fail_if_using_nats_without_tls' => false }
+        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
       end
 
       it 'renders skip_ssl_validation as true' do
@@ -438,7 +436,7 @@ TEXT
     describe 'when tls is enabled and the san is not provided' do
       before do
         merged_manifest_properties['route_registrar']['routes'][0].delete('server_cert_domain_san')
-        merged_manifest_properties['nats'] = {'fail_if_using_nats_without_tls' => false }
+        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
       end
       it 'should required san if tls_port is provided' do
         expect { template.render(merged_manifest_properties, consumes: links) }.to raise_error(
@@ -450,7 +448,7 @@ TEXT
     describe 'when tls is enabled and the san is not provided' do
       before do
         merged_manifest_properties['route_registrar']['routes'][0]['server_cert_domain_san'] = ''
-        merged_manifest_properties['nats'] = {'fail_if_using_nats_without_tls' => false }
+        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
       end
       it 'should required san if tls_port is provided' do
         expect { template.render(merged_manifest_properties, consumes: links) }.to raise_error(
@@ -463,7 +461,7 @@ TEXT
       before do
         merged_manifest_properties['route_registrar']['routes'][0].delete('tls_port')
         merged_manifest_properties['route_registrar']['routes'][0].delete('server_cert_domain_san')
-        merged_manifest_properties['nats'] = {'fail_if_using_nats_without_tls' => false }
+        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
       end
 
       it 'renders the template' do
@@ -473,7 +471,7 @@ TEXT
 
     describe 'when protocol is provided' do
       before do
-        merged_manifest_properties['nats'] = {'fail_if_using_nats_without_tls' => false }
+        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
       end
 
       it 'uses configured protocol http1' do
@@ -513,7 +511,7 @@ TEXT
       end
       context 'when properties and link is provided' do
         before do
-          merged_manifest_properties['nats'] = {"tls" => {"enabled" => true, "ca_cert" => 'the ca cert from properties'}}
+          merged_manifest_properties['nats'] = { 'tls' => { 'enabled' => true, 'ca_cert' => 'the ca cert from properties' } }
         end
         it 'should prefer the value in the properties' do
           rendered_template = template.render(merged_manifest_properties, consumes: links)
@@ -528,7 +526,7 @@ TEXT
       end
       context 'when properties and no link is provided' do
         before do
-          merged_manifest_properties['nats'] = {"tls" => {"enabled" => true, "ca_cert" => 'the ca cert from properties'}}
+          merged_manifest_properties['nats'] = { 'tls' => { 'enabled' => true, 'ca_cert' => 'the ca cert from properties' } }
         end
 
         it 'should prefer the value in the properties' do
@@ -546,6 +544,3 @@ TEXT
     end
   end
 end
-
-# rubocop: enable Layout/LineLength
-# rubocop: enable Metrics/BlockLength

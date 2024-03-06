@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop: disable Layout/LineLength
-# rubocop: disable Metrics/BlockLength
 require 'rspec'
 require 'bosh/template/test'
 require 'yaml'
@@ -202,7 +200,8 @@ describe 'routing_api' do
                                       'mtls_server_key_file' => '/var/vcap/jobs/routing-api/config/certs/routing-api/server.key'
                                     },
                                     'router_groups' => [],
-                                    'reserved_system_component_ports' => [2_822, 2_825, 3_457, 3_458, 3_459, 3_460, 3_461, 8_853, 9_100, 14_726, 14_727, 14_821, 14_822, 14_823, 14_824, 14_829, 14_830, 14_920, 14_922, 15_821, 17_002, 53_035, 53_080],
+                                    'reserved_system_component_ports' => [2_822, 2_825, 3_457, 3_458, 3_459, 3_460, 3_461, 8_853, 9_100, 14_726, 14_727, 14_821, 14_822, 14_823, 14_824, 14_829,
+                                                                          14_830, 14_920, 14_922, 15_821, 17_002, 53_035, 53_080],
                                     'sqldb' => {
                                       'host' => 'host',
                                       'port' => 1234,
@@ -386,5 +385,3 @@ describe 'routing_api' do
     end
   end
 end
-# rubocop: enable Layout/LineLength
-# rubocop: enable Metrics/BlockLength

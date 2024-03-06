@@ -4,7 +4,7 @@ diffs = `git diff --cached`.split('diff --git').select { |log| log =~ /Subprojec
 
 locations = {}
 diffs.each do |diff|
-  /a\/(?<loc>.+?)\sb.*index\s(?<shas>\S+)/m.match diff do |matches|
+  %r{a/(?<loc>.+?)\sb.*index\s(?<shas>\S+)}m.match diff do |matches|
     locations[matches[:loc]] = matches[:shas]
   end
 end
@@ -14,7 +14,7 @@ puts # Second line of git commit message should always be empty
 
 locations.each do |location, shas|
   Dir.chdir(location) do
-    remote = `git remote -v`.match(/github.com[\/:]([^\s]+?).git/)
+    remote = `git remote -v`.match(%r{github.com[/:]([^\s]+?).git})
     repo = remote && remote[1]
 
     puts "Bump #{repo}"

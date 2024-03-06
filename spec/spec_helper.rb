@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop: disable Layout/LineLength
-# rubocop:disable Metrics/BlockLength
 require 'rspec'
 require 'bosh/template/test'
 
@@ -78,12 +76,8 @@ shared_examples 'overridable_link' do |link_config|
       end
 
       it 'should error' do
-        expect do
-          parsed_yaml
-        end.to raise_error(
-          RuntimeError,
-          "#{link_config.description} not found in properties nor in \"#{link_config.link_namespace}\" link. This value can be specified using the \"#{link_config.property}\" property."
-        )
+        msg = "#{link_config.description} not found in properties nor in \"#{link_config.link_namespace}\" link. This value can be specified using the \"#{link_config.property}\" property."
+        expect { parsed_yaml }.to raise_error(RuntimeError, msg)
       end
     end
   end
@@ -129,5 +123,3 @@ shared_examples 'overridable_link' do |link_config|
     end
   end
 end
-# rubocop: enable Layout/LineLength
-# rubocop: enable Metrics/BlockLength
