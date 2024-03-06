@@ -599,6 +599,14 @@ properties:
             street_address: []
             postal_code: []
     default: []
+
   healthchecker.failure_counter_file:
     description: "File used by the healthchecker to monitor consecutive failures."
     default: /var/vcap/data/gorouter/counters/consecutive_healthchecker_failures.count
+
+  go.httplaxcontentlength:
+    description: |
+        Environment Flag to temporarily allow requests containing an invalid, empty `Content-Length` header for backwards compatibility.
+        This toggle allows operators to add the `GODEBUG` field `httplaxcontentlength=1`, as allowable per the [go 1.22 release documentation](https://tip.golang.org/doc/go1.22#minor_library_changes).
+        Defaults to `false` as the default behavior in go 1.22+ is to reject these requests.
+    default: false

@@ -1628,6 +1628,31 @@ describe 'gorouter' do
       end
     end
   end
+
+  describe 'bpm' do
+    let(:deployment_manifest_fragment) { {} }
+    let(:template) { job.template('config/bpm.yml') }
+    let(:rendered_template) { template.render(deployment_manifest_fragment) }
+    subject(:parsed_yaml) { YAML.safe_load(rendered_template) }
+
+    context 'GODEBUG' do
+      it 'defaults to netdns=cgo' do
+        expect(parsed_yaml['processes'][0]['env']['GODEBUG']).to eq('netdns=cgo')
+      end
+
+      context 'when go.HTTPLaxContentLength is enabled' do
+        before do
+          deployment_manifest_fragment['go'] = {
+            'httplaxcontentlength' => true,
+          }
+        end
+
+        it 'sets httplaxcontentlength=1 correctly' do
+          expect(parsed_yaml['processes'][0]['env']['GODEBUG']).to eq('netdns=cgo,httplaxcontentlength=1')
+        end
+      end
+    end
+  end
 end
 
 # rubocop:enable Layout/LineLength
