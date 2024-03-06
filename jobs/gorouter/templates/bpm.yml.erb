@@ -26,5 +26,9 @@ bpm = {
   ]
 }
 
+if p('go.httplaxcontentlength') == true
+      bpm['processes'][0]['env']['GODEBUG'] << ',httplaxcontentlength=1'
+end
+
 YAML.dump(bpm)
 %>
