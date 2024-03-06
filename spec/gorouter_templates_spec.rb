@@ -1643,7 +1643,7 @@ describe 'gorouter' do
       context 'when go.HTTPLaxContentLength is enabled' do
         before do
           deployment_manifest_fragment['go'] = {
-            'httplaxcontentlength' => true,
+            'httplaxcontentlength' => true
           }
         end
 
