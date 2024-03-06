@@ -42,7 +42,7 @@ func (h *sqlHelper) Upsert(
 		return false, nil
 	}
 
-	res, err = h.Insert(
+	_, err = h.Insert(
 		ctx,
 		logger,
 		q,

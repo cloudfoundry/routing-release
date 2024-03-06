@@ -29,11 +29,11 @@ func (e *ErrUnknownError) Error() string {
 
 func (h *sqlHelper) ConvertSQLError(err error) error {
 	if err != nil {
-		switch err.(type) {
+		switch e := err.(type) {
 		case *mysql.MySQLError:
-			return h.convertMySQLError(err.(*mysql.MySQLError))
+			return h.convertMySQLError(e)
 		case pgx.PgError:
-			return h.convertPostgresError(err.(pgx.PgError))
+			return h.convertPostgresError(e)
 		}
 
 		if err == sql.ErrNoRows {
