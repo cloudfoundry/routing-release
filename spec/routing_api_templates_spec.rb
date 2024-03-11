@@ -195,7 +195,7 @@ describe 'routing_api' do
                                     },
                                     'api' => {
                                       'listen_port' => 3000,
-                                      'http_enabled' => true,
+                                      'http_enabled' => false,
                                       'mtls_listen_port' => 3001,
                                       'mtls_client_ca_file' => '/var/vcap/jobs/routing-api/config/certs/routing-api/client_ca.crt',
                                       'mtls_server_cert_file' => '/var/vcap/jobs/routing-api/config/certs/routing-api/server.crt',
