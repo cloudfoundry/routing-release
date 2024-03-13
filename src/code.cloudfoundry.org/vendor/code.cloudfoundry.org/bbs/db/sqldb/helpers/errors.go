@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"github.com/go-sql-driver/mysql"
-	"github.com/jackc/pgx"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 var (
@@ -32,7 +32,7 @@ func (h *sqlHelper) ConvertSQLError(err error) error {
 		switch e := err.(type) {
 		case *mysql.MySQLError:
 			return h.convertMySQLError(e)
-		case pgx.PgError:
+		case *pgconn.PgError:
 			return h.convertPostgresError(e)
 		}
 
@@ -59,7 +59,7 @@ func (h *sqlHelper) convertMySQLError(err *mysql.MySQLError) error {
 	}
 }
 
-func (h *sqlHelper) convertPostgresError(err pgx.PgError) error {
+func (h *sqlHelper) convertPostgresError(err *pgconn.PgError) error {
 	switch err.Code {
 	case "22001":
 		return ErrBadRequest

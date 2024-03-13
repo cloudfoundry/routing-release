@@ -12,7 +12,6 @@ func lagerDataFromLock(resource *models.Resource) lager.Data {
 	return lager.Data{
 		"key":       resource.GetKey(),
 		"owner":     resource.GetOwner(),
-		"type":      resource.GetType(),
 		"type-code": resource.GetTypeCode(),
 	}
 }

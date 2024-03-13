@@ -146,7 +146,7 @@ func (h *locketHandler) lock(ctx context.Context, req *models.LockRequest) (*mod
 
 	err := validate(req)
 	if err != nil {
-		logger.Error("invalid-request", err, lager.Data{"type": req.Resource.GetType(), "typeCode": req.Resource.GetTypeCode()})
+		logger.Error("invalid-request", err, lager.Data{"typeCode": req.Resource.GetTypeCode()})
 
 		return nil, err
 	}
@@ -224,11 +224,11 @@ func (h *locketHandler) fetchAll(ctx context.Context, req *models.FetchAllReques
 
 	err := validate(req)
 	if err != nil {
-		logger.Error("invalid-request", err, lager.Data{"type": req.GetType(), "typeCode": req.GetTypeCode()})
+		logger.Error("invalid-request", err, lager.Data{"typeCode": req.GetTypeCode()})
 		return nil, err
 	}
 
-	locks, err := h.db.FetchAll(ctx, logger, models.GetType(&models.Resource{Type: req.Type, TypeCode: req.TypeCode}))
+	locks, err := h.db.FetchAll(ctx, logger, models.GetType(&models.Resource{TypeCode: req.TypeCode}))
 	if err != nil {
 		return nil, err
 	}
@@ -244,15 +244,12 @@ func (h *locketHandler) fetchAll(ctx context.Context, req *models.FetchAllReques
 }
 
 func validate(req interface{}) error {
-	var reqType string
 	var reqTypeCode models.TypeCode
 
 	switch incomingReq := req.(type) {
 	case *models.LockRequest:
-		reqType = incomingReq.Resource.GetType()
 		reqTypeCode = incomingReq.Resource.GetTypeCode()
 	case *models.FetchAllRequest:
-		reqType = incomingReq.GetType()
 		reqTypeCode = incomingReq.GetTypeCode()
 	default:
 		return nil
@@ -263,21 +260,7 @@ func validate(req interface{}) error {
 	}
 
 	if reqTypeCode == models.UNKNOWN {
-		if reqType != models.PresenceType && reqType != models.LockType {
-			return models.ErrInvalidType
-		} else {
-			return nil
-		}
-	}
-
-	if reqType != "" {
-		if reqTypeCode == models.LOCK && reqType != models.LockType {
-			return models.ErrInvalidType
-		}
-
-		if reqTypeCode == models.PRESENCE && reqType != models.PresenceType {
-			return models.ErrInvalidType
-		}
+		return models.ErrInvalidType
 	}
 
 	return nil
