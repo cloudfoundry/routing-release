@@ -1,4 +1,4 @@
-# code.cloudfoundry.org/bbs v0.0.0-20240313131430-939bf008c1b5
+# code.cloudfoundry.org/bbs v0.0.0-20240313161749-134f7e72b48b
 ## explicit
 code.cloudfoundry.org/bbs/db/sqldb/helpers
 code.cloudfoundry.org/bbs/db/sqldb/helpers/monitor
@@ -199,6 +199,12 @@ github.com/jackc/pgx/v5/pgconn/internal/bgreader
 github.com/jackc/pgx/v5/pgconn/internal/ctxwatch
 github.com/jackc/pgx/v5/pgproto3
 github.com/jackc/pgx/v5/pgtype
+github.com/jackc/pgx/v5/pgxpool
+github.com/jackc/pgx/v5/stdlib
+# github.com/jackc/puddle/v2 v2.2.1
+## explicit; go 1.19
+github.com/jackc/puddle/v2
+github.com/jackc/puddle/v2/internal/genstack
 # github.com/jinzhu/gorm v1.9.16
 ## explicit; go 1.12
 github.com/jinzhu/gorm
@@ -426,6 +432,9 @@ golang.org/x/net/websocket
 golang.org/x/oauth2
 golang.org/x/oauth2/clientcredentials
 golang.org/x/oauth2/internal
+# golang.org/x/sync v0.6.0
+## explicit; go 1.18
+golang.org/x/sync/semaphore
 # golang.org/x/sys v0.18.0
 ## explicit; go 1.18
 golang.org/x/sys/cpu
