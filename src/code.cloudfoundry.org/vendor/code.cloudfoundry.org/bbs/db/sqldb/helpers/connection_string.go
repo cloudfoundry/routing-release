@@ -11,7 +11,6 @@ import (
 	"code.cloudfoundry.org/lager/v3"
 	"github.com/go-sql-driver/mysql"
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgconn"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
@@ -74,7 +73,7 @@ func addTLSParams(
 		}
 		databaseConnectionString = cfg.FormatDSN()
 	case "postgres":
-		config, err := pgconn.ParseConfig(databaseConnectionString)
+		config, err := pgx.ParseConfig(databaseConnectionString)
 		if err != nil {
 			logger.Fatal("invalid-db-connection-string", err, lager.Data{"connection-string": databaseConnectionString})
 		}
@@ -82,9 +81,7 @@ func addTLSParams(
 		tlsConfig := generateTLSConfig(logger, sqlCACertFile, sqlEnableIdentityVerification)
 		config.TLSConfig = tlsConfig
 
-		connConfig := &pgx.ConnConfig{Config: *config}
-		return connConfig.ConnString()
-
+		databaseConnectionString = config.ConnString()
 	default:
 		logger.Fatal("invalid-driver-name", nil, lager.Data{"driver-name": driverName})
 	}

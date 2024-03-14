@@ -11,7 +11,7 @@ replace github.com/codegangsta/cli => github.com/codegangsta/cli v1.6.0
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
 
 require (
-	code.cloudfoundry.org/bbs v0.0.0-20240313161749-134f7e72b48b
+	code.cloudfoundry.org/bbs v0.0.0-20240314215631-30cc7a3ab9d1
 	code.cloudfoundry.org/cfhttp/v2 v2.0.1-0.20210513172332-4c5ee488a657
 	code.cloudfoundry.org/clock v1.1.0
 	code.cloudfoundry.org/debugserver v0.0.0-20240308143924-cdf7d6ade8bb
