@@ -11,7 +11,7 @@ replace github.com/codegangsta/cli => github.com/codegangsta/cli v1.6.0
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
 
 require (
-	code.cloudfoundry.org/bbs v0.0.0-20240320152056-40ac893db41b
+	code.cloudfoundry.org/bbs v0.0.0-20240321110538-9b9671a851e9
 	code.cloudfoundry.org/cfhttp/v2 v2.0.1-0.20210513172332-4c5ee488a657
 	code.cloudfoundry.org/clock v1.1.0
 	code.cloudfoundry.org/debugserver v0.0.0-20240308143924-cdf7d6ade8bb
@@ -36,7 +36,7 @@ require (
 	github.com/kisielk/errcheck v1.7.0
 	github.com/lib/pq v1.10.9
 	github.com/nats-io/nats-server/v2 v2.10.12
-	github.com/nats-io/nats.go v1.33.1
+	github.com/nats-io/nats.go v1.34.0
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.17.0
 	github.com/onsi/gomega v1.32.0
@@ -47,7 +47,7 @@ require (
 	github.com/uber-go/zap v1.27.0
 	github.com/urfave/negroni/v3 v3.1.0
 	github.com/vito/go-sse v1.0.0
-	go.step.sm/crypto v0.43.1
+	go.step.sm/crypto v0.44.0
 	golang.org/x/crypto v0.21.0
 	golang.org/x/net v0.22.0
 	golang.org/x/oauth2 v0.18.0
@@ -91,7 +91,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_golang v1.19.0 // indirect
 	github.com/prometheus/client_model v0.6.0 // indirect
-	github.com/prometheus/common v0.50.0 // indirect
+	github.com/prometheus/common v0.51.0 // indirect
 	github.com/prometheus/procfs v0.13.0 // indirect
 	github.com/square/certstrap v1.3.0 // indirect
 	github.com/uber-go/atomic v1.11.0 // indirect

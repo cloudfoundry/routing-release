@@ -18,9 +18,12 @@ const (
 	EventTypeDesiredLRPChanged = "desired_lrp_changed"
 	EventTypeDesiredLRPRemoved = "desired_lrp_removed"
 
-	EventTypeActualLRPCreated = "actual_lrp_created" // DEPRECATED
-	EventTypeActualLRPChanged = "actual_lrp_changed" // DEPRECATED
-	EventTypeActualLRPRemoved = "actual_lrp_removed" // DEPRECATED
+	// Deprecated: use the ActualLRPInstance versions of this instead
+	EventTypeActualLRPCreated = "actual_lrp_created"
+	// Deprecated: use the ActualLRPInstance versions of this instead
+	EventTypeActualLRPChanged = "actual_lrp_changed"
+	// Deprecated: use the ActualLRPInstance versions of this instead
+	EventTypeActualLRPRemoved = "actual_lrp_removed"
 	EventTypeActualLRPCrashed = "actual_lrp_crashed"
 
 	EventTypeActualLRPInstanceCreated = "actual_lrp_instance_created"
@@ -149,7 +152,7 @@ func (event *ActualLRPInstanceChangedEvent) Key() string {
 	return event.GetInstanceGuid()
 }
 
-// DEPRECATED
+// Deprecated: use the ActualLRPInstance versions of this instead
 func NewActualLRPChangedEvent(before, after *ActualLRPGroup) *ActualLRPChangedEvent {
 	return &ActualLRPChangedEvent{
 		Before: before,
@@ -157,12 +160,12 @@ func NewActualLRPChangedEvent(before, after *ActualLRPGroup) *ActualLRPChangedEv
 	}
 }
 
-// DEPRECATED
+// Deprecated: use the ActualLRPInstance versions of this instead
 func (event *ActualLRPChangedEvent) EventType() string {
 	return EventTypeActualLRPChanged
 }
 
-// DEPRECATED
+// Deprecated: use the ActualLRPInstance versions of this instead
 func (event *ActualLRPChangedEvent) Key() string {
 	actualLRP, _, resolveError := event.Before.Resolve()
 	if resolveError != nil {
@@ -189,19 +192,19 @@ func (event *ActualLRPCrashedEvent) Key() string {
 	return event.ActualLRPInstanceKey.InstanceGuid
 }
 
-// DEPRECATED
+// Deprecated: use the ActualLRPInstance versions of this instead
 func NewActualLRPRemovedEvent(actualLRPGroup *ActualLRPGroup) *ActualLRPRemovedEvent {
 	return &ActualLRPRemovedEvent{
 		ActualLrpGroup: actualLRPGroup,
 	}
 }
 
-// DEPRECATED
+// Deprecated: use the ActualLRPInstance versions of this instead
 func (event *ActualLRPRemovedEvent) EventType() string {
 	return EventTypeActualLRPRemoved
 }
 
-// DEPRECATED
+// Deprecated: use the ActualLRPInstance versions of this instead
 func (event *ActualLRPRemovedEvent) Key() string {
 	actualLRP, _, resolveError := event.ActualLrpGroup.Resolve()
 	if resolveError != nil {
@@ -228,19 +231,19 @@ func (event *ActualLRPInstanceRemovedEvent) Key() string {
 	return event.ActualLrp.GetInstanceGuid()
 }
 
-// DEPRECATED
+// Deprecated: use the ActualLRPInstance versions of this instead
 func NewActualLRPCreatedEvent(actualLRPGroup *ActualLRPGroup) *ActualLRPCreatedEvent {
 	return &ActualLRPCreatedEvent{
 		ActualLrpGroup: actualLRPGroup,
 	}
 }
 
-// DEPRECATED
+// Deprecated: use the ActualLRPInstance versions of this instead
 func (event *ActualLRPCreatedEvent) EventType() string {
 	return EventTypeActualLRPCreated
 }
 
-// DEPRECATED
+// Deprecated: use the ActualLRPInstance versions of this instead
 func (event *ActualLRPCreatedEvent) Key() string {
 	actualLRP, _, resolveError := event.ActualLrpGroup.Resolve()
 	if resolveError != nil {

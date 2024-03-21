@@ -17,12 +17,12 @@ func UnmarshalEnvelope(logger lager.Logger, unencodedPayload []byte, model Model
 	return UnmarshalProto(logger, unencodedPayload[EnvelopeOffset:], model)
 }
 
-// DEPRECATED
 // dummy version for backward compatability. old BBS used to serialize proto
 // messages with a 2-byte header that has the envelope format (i.e. PROTO) and
 // the version of the model (e.g. 0, 1 or 2). Adding the version was a
 // pre-mature optimization that we decided to get rid of in #133215113. That
 // said, we have the ensure the header is a 2-byte to avoid breaking older BBS
+// Deprecated: do not use, see note above
 const version = 0
 
 func MarshalEnvelope(model Model) ([]byte, error) {
