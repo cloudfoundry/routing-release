@@ -1,5 +1,5 @@
-code.cloudfoundry.org/tlsconfig v0.0.0-20240308143921-4b874b341ed6 h1:1ST1gDGrIBPt3Tuhx1tfxVxK5UQq7p6sqgdHBIeuSwM=
-code.cloudfoundry.org/tlsconfig v0.0.0-20240308143921-4b874b341ed6/go.mod h1:F7K0dpcWQmW1Z0+4at/mDMg1OF89sJJmVMfo/EZR3iI=
+code.cloudfoundry.org/tlsconfig v0.0.0-20240327135916-6e62718de212 h1:E2kNimTp9k005hBfPCkCEd59zWdNKsNMRb2fVO+Yj1g=
+code.cloudfoundry.org/tlsconfig v0.0.0-20240327135916-6e62718de212/go.mod h1:6JQJKj6axoHQPfWaCLd01zQN1BWzjwaKkNTkwnFSmrM=
 filippo.io/edwards25519 v1.1.0 h1:FNf4tywRC1HmFuKW5xopWpigGjJKiJSV0Cqo0cJWDaA=
 github.com/klauspost/compress v1.17.7 h1:ehO88t2UGzQK66LMdE8tibEd1ErmzZjNEqWkjLAKQQg=
 github.com/klauspost/compress v1.17.7/go.mod h1:Di0epgTjJY877eYKx5yC51cX2A2Vl2ibi7bDH9ttBbw=
@@ -11,7 +11,7 @@ github.com/nats-io/nuid v1.0.1 h1:5iA8DT8V7q8WK2EScv2padNa/rTESc1KdnPw4TC2paw=
 github.com/nats-io/nuid v1.0.1/go.mod h1:19wcPz3Ph3q0Jbyiqsd0kePYG7A95tJPxeL+1OSON2c=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/square/certstrap v1.3.0 h1:N9P0ZRA+DjT8pq5fGDj0z3FjafRKnBDypP0QHpMlaAk=
-go.step.sm/crypto v0.43.1 h1:18Z/M49SnFDPXvFbfoN/ugE1i0J7phLWARhSQs/XSDI=
+go.step.sm/crypto v0.44.1 h1:8ouq8JEYXVxSymuVuX54Ilh5X2dqyjgOGGXyPeXDzV8=
 golang.org/x/crypto v0.21.0 h1:X31++rzVUdKhX5sWmSOFZxx8UW/ldWx55cbf08iNAMA=
 golang.org/x/crypto v0.21.0/go.mod h1:0BP7YvVV9gBbVKyeTG0Gyn+gZm94bibOW5BjDEYAOMs=
 golang.org/x/sys v0.18.0 h1:DBdB3niSjOA/O0blCZBqDefyWNYveAYMNF1Wum0DYQ4=
