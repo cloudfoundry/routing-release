@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop: disable Layout/LineLength
-# rubocop: disable Metrics/BlockLength
 require 'rspec'
 require 'bosh/template/test'
 require 'yaml'
@@ -58,7 +56,7 @@ describe 'tcp_router' do
           template.render(merged_manifest_properties)
         end.to raise_error(
           RuntimeError,
-          "Please set tcp_router.tls_health_check_key in the tcp_router's job properties.",
+          "Please set tcp_router.tls_health_check_key in the tcp_router's job properties."
         )
       end
     end
@@ -71,7 +69,7 @@ describe 'tcp_router' do
           template.render(merged_manifest_properties)
         end.to raise_error(
           RuntimeError,
-          "Please set tcp_router.tls_health_check_cert in the tcp_router's job properties.",
+          "Please set tcp_router.tls_health_check_cert in the tcp_router's job properties."
         )
       end
     end
@@ -379,5 +377,3 @@ describe 'tcp_router' do
     end
   end
 end
-# rubocop: enable Layout/LineLength
-# rubocop: enable Metrics/BlockLength

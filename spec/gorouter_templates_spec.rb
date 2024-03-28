@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Layout/LineLength
-# rubocop:disable Metrics/BlockLength
-
 require 'rspec'
 require 'yaml'
 require 'json'
@@ -119,7 +116,7 @@ describe 'gorouter' do
             'password' => 'pass',
             'tls' => {
               'certificate' => TEST_CERT,
-              'key' => TEST_KEY,
+              'key' => TEST_KEY
             }
           },
           'enable_ssl' => true,
@@ -856,7 +853,7 @@ describe 'gorouter' do
           context 'not enabled but rules provided' do
             before do
               deployment_manifest_fragment['router']['verify_client_certificate_metadata'] = [
-                  { "issuer_in_chain" => { "common_name" => "test.com" }}
+                { 'issuer_in_chain' => { 'common_name' => 'test.com' } }
               ]
             end
             it 'does not populate the property' do
@@ -870,7 +867,6 @@ describe 'gorouter' do
             before do
               deployment_manifest_fragment['router']['enable_verify_client_certificate_metadata'] = false
               deployment_manifest_fragment['router']['verify_client_certificate_metadata'] = []
-
             end
             it 'does not populate the property' do
               expect { parsed_yaml }.not_to raise_error
@@ -883,16 +879,15 @@ describe 'gorouter' do
             before do
               deployment_manifest_fragment['router']['enable_verify_client_certificate_metadata'] = true
               deployment_manifest_fragment['router']['verify_client_certificate_metadata'] = [
-                { "issuer_in_chain" => { "common_name" => "test-with-san.com" },
-                  "valid_cert_subjects" => [
-                    {"issuer_in_chain" => { "common_name" => "test.com client cert1" }},
-                    {"issuer_in_chain" => { "common_name" => "test.com client cert2", "locality" => ["US"] }}
-                  ]
-                }
+                { 'issuer_in_chain' => { 'common_name' => 'test-with-san.com' },
+                  'valid_cert_subjects' => [
+                    { 'issuer_in_chain' => { 'common_name' => 'test.com client cert1' } },
+                    { 'issuer_in_chain' => { 'common_name' => 'test.com client cert2', 'locality' => ['US'] } }
+                  ] }
               ]
             end
             it 'fails generating the template as there are metadata verification rules but no client ca certs' do
-              expect { parsed_yaml }.to raise_error RuntimeError, "client certificate rules defined, but no client CA defined in `client_ca_certs`"
+              expect { parsed_yaml }.to raise_error RuntimeError, 'client certificate rules defined, but no client CA defined in `client_ca_certs`'
             end
           end
           context 'enabled with configured client_ca_certs' do
@@ -903,12 +898,11 @@ describe 'gorouter' do
               before do
                 deployment_manifest_fragment['router']['enable_verify_client_certificate_metadata'] = true
                 deployment_manifest_fragment['router']['verify_client_certificate_metadata'] = [
-                  { "issuer_in_chain" => { "common_name" => "test-with-san.com" },
-                    "valid_cert_subjects" => [
-                      {"issuer_in_chain" => { "common_name" => "test.com client cert1" }},
-                      {"issuer_in_chain" => { "common_name" => "test.com client cert2", "locality" => ["US"] }}
-                    ]
-                  }
+                  { 'issuer_in_chain' => { 'common_name' => 'test-with-san.com' },
+                    'valid_cert_subjects' => [
+                      { 'issuer_in_chain' => { 'common_name' => 'test.com client cert1' } },
+                      { 'issuer_in_chain' => { 'common_name' => 'test.com client cert2', 'locality' => ['US'] } }
+                    ] }
                 ]
               end
               it 'populates the properties after a successful check' do
@@ -921,12 +915,11 @@ describe 'gorouter' do
               before do
                 deployment_manifest_fragment['router']['enable_verify_client_certificate_metadata'] = true
                 deployment_manifest_fragment['router']['verify_client_certificate_metadata'] = [
-                  { "issuer_in_chain" => { "common_name" => "test-with-san.com", "country" => ["US"] },
-                    "valid_cert_subjects" => [
-                      {"issuer_in_chain" => { "common_name" => "test.com client cert1" }},
-                      {"issuer_in_chain" => { "common_name" => "test.com client cert2", "locality" => ["US"] }}
-                    ]
-                  }
+                  { 'issuer_in_chain' => { 'common_name' => 'test-with-san.com', 'country' => ['US'] },
+                    'valid_cert_subjects' => [
+                      { 'issuer_in_chain' => { 'common_name' => 'test.com client cert1' } },
+                      { 'issuer_in_chain' => { 'common_name' => 'test.com client cert2', 'locality' => ['US'] } }
+                    ] }
                 ]
               end
               it 'fails and explains the valid cert subjects in the message' do
@@ -1230,7 +1223,9 @@ describe 'gorouter' do
           end
 
           it 'raises error' do
-            expect { parsed_yaml }.to raise_error(RuntimeError, "'meow' is not a valid timestamp format for the property 'router.logging.format.timestamp'. Valid options are: 'rfc3339', 'deprecated', and 'unix-epoch'.")
+            err_msg = "'meow' is not a valid timestamp format for the property 'router.logging.format.timestamp'. Valid options are: 'rfc3339', 'deprecated', and 'unix-epoch'."
+
+            expect { parsed_yaml }.to raise_error(RuntimeError, err_msg)
           end
         end
 
@@ -1395,7 +1390,7 @@ describe 'gorouter' do
 
     context 'when router.status.routes.port is specified' do
       before do
-        deployment_manifest_fragment['router']['status']['routes'] = {'port' => 8888}
+        deployment_manifest_fragment['router']['status']['routes'] = { 'port' => 8888 }
       end
 
       it 'overrides the default value' do
@@ -1442,7 +1437,7 @@ describe 'gorouter' do
           deployment_manifest_fragment['router']['status']['tls']['port'] = 1234
         end
         it 'overrides the default' do
-        expect(parsed_yaml['status']['tls']['port']).to eq 1234
+          expect(parsed_yaml['status']['tls']['port']).to eq 1234
         end
       end
 
@@ -1451,7 +1446,7 @@ describe 'gorouter' do
           deployment_manifest_fragment['router']['status']['tls'].delete('certificate')
         end
         it 'raises an error about missing certificate values' do
-          expect {parsed_yaml}.to raise_error(/router.status.tls.certificate must be provided when router.status.tls.port is set/)
+          expect { parsed_yaml }.to raise_error(/router.status.tls.certificate must be provided when router.status.tls.port is set/)
         end
       end
       context 'but the key is not specified' do
@@ -1459,11 +1454,10 @@ describe 'gorouter' do
           deployment_manifest_fragment['router']['status']['tls'].delete('key')
         end
         it 'raises an error about missing key values' do
-          expect {parsed_yaml}.to raise_error(/router.status.tls.key must be provided when router.status.tls.port is set/)
+          expect { parsed_yaml }.to raise_error(/router.status.tls.key must be provided when router.status.tls.port is set/)
         end
       end
     end
-
   end
 
   describe 'healthchecker.yml' do
@@ -1498,7 +1492,7 @@ describe 'gorouter' do
           'user' => 'some-user',
           'password' => 'some-password',
           'path' => '/is-process-alive-do-not-use-for-loadbalancing',
-          'scheme' => 'https',
+          'scheme' => 'https'
         }
       )
     end
@@ -1578,7 +1572,7 @@ describe 'gorouter' do
     let(:properties) do
       { 'router' => {
         'port' => 81,
-        'status' => { 'port' => 8081, 'tls' => {'port' => 8443}, },
+        'status' => { 'port' => 8081, 'tls' => { 'port' => 8443 } },
         'prometheus' => { 'port' => 7777 },
         'tls_port' => 442,
         'debug_address' => '127.0.0.1:17003'
@@ -1654,6 +1648,3 @@ describe 'gorouter' do
     end
   end
 end
-
-# rubocop:enable Layout/LineLength
-# rubocop:enable Metrics/BlockLength

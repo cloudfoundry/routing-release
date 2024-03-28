@@ -10,10 +10,10 @@ describe 'tcp_router haproxy configs' do
   let(:properties) do
     {
       'tcp_router' => {
-        'oauth_secret' => '',
+        'oauth_secret' => ''
       },
       'uaa' => {
-        'tls_port' => 1000,
+        'tls_port' => 1000
       },
       'routing_api' => {
         'mtls_port' => 1337,
@@ -22,7 +22,7 @@ describe 'tcp_router haproxy configs' do
     }
   end
 
-  ["haproxy.conf", "haproxy.conf.template"].each do |file|
+  ['haproxy.conf', 'haproxy.conf.template'].each do |file|
     context "config/#{file}" do
       let(:template) { tcp_router_job.template("config/#{file}") }
 
@@ -87,7 +87,6 @@ describe 'tcp_router haproxy configs' do
   end
 end
 
-
 ### The following code has been pulled from https://github.com/cloudfoundry/haproxy-boshrelease/blob/master/spec/spec_helper.rb
 # converts haproxy config into hash of arrays grouped
 # by top-level values eg
@@ -100,7 +99,7 @@ end
 # }
 def parse_haproxy_config(config) # rubocop:disable Metrics/AbcSize
   # remove comments and empty lines
-  config = config.split(/\n/).reject { |l| l.empty? || l =~ /^\s*#.*$/ }.join("\n")
+  config = config.split("\n").reject { |l| l.empty? || l =~ /^\s*#.*$/ }.join("\n")
 
   # split into top-level groups
   config.split(/^([^\s].*)/).drop(1).each_slice(2).to_h do |group|
@@ -108,10 +107,10 @@ def parse_haproxy_config(config) # rubocop:disable Metrics/AbcSize
     properties = group[1]
 
     # remove empty lines
-    properties = properties.split(/\n/).reject(&:empty?).join("\n")
+    properties = properties.split("\n").reject(&:empty?).join("\n")
 
     # split and strip leading/trailing whitespace
-    properties = properties.split(/\n/).map(&:strip)
+    properties = properties.split("\n").map(&:strip)
 
     [key, properties]
   end
