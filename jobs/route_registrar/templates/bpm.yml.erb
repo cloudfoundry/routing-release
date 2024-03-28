@@ -19,6 +19,7 @@ bpm = {
 }
 
 paths = []
+additional_paths = []
 routes = p('route_registrar.routes')
 routes.each do |route|
   if route['health_check']
@@ -26,6 +27,9 @@ routes.each do |route|
     matched = /(^\/var\/vcap\/jobs\/[^\/]*)\/.*/.match(route['health_check']['script_path'])
     if matched
       paths << matched[1]
+    end
+    if route['health_check']['additional_bpm_mount_paths']
+      additional_paths << route['health_check']['additional_bpm_mount_paths']
     end
   end
 end
@@ -37,9 +41,13 @@ unless paths.empty?
     }
   }
 
-   paths.each do |path|
+  paths.each do |path|
      unsafe['unsafe']['unrestricted_volumes'] << {"path" =>  path, "allow_executions" => true}
      unsafe['unsafe']['unrestricted_volumes'] << {"path" => path.sub('jobs', 'data')}
+  end
+
+  additional_paths.each do |path|
+    unsafe['unsafe']['unrestricted_volumes'] << {"path" =>  path, "allow_executions" => true}
   end
 
   bpm['processes'][0].merge!(unsafe)
