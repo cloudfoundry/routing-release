@@ -712,10 +712,20 @@ func (js *js) resetPendingAcksOnReconnect() {
 			return
 		}
 		js.mu.Lock()
-		for _, paf := range js.pafs {
+		errCb := js.opts.aecb
+		for id, paf := range js.pafs {
 			paf.err = ErrDisconnected
+			if paf.errCh != nil {
+				paf.errCh <- paf.err
+			}
+			if errCb != nil {
+				// clear reply subject so that new one is created on republish
+				js.mu.Unlock()
+				errCb(js, paf.msg, ErrDisconnected)
+				js.mu.Lock()
+			}
+			delete(js.pafs, id)
 		}
-		js.pafs = nil
 		if js.dch != nil {
 			close(js.dch)
 			js.dch = nil
@@ -2867,6 +2877,7 @@ func (sub *Subscription) Fetch(batch int, opts ...PullOpt) ([]*Msg, error) {
 	if subClosed {
 		err = errors.Join(ErrBadSubscription, ErrSubscriptionClosed)
 	}
+	hbLock := sync.Mutex{}
 	if err == nil && len(msgs) < batch && !subClosed {
 		// For batch real size of 1, it does not make sense to set no_wait in
 		// the request.
@@ -2909,7 +2920,9 @@ func (sub *Subscription) Fetch(batch int, opts ...PullOpt) ([]*Msg, error) {
 			if o.hb > 0 {
 				if hbTimer == nil {
 					hbTimer = time.AfterFunc(2*o.hb, func() {
+						hbLock.Lock()
 						hbErr = ErrNoHeartbeat
+						hbLock.Unlock()
 						cancel()
 					})
 				} else {
@@ -2951,6 +2964,8 @@ func (sub *Subscription) Fetch(batch int, opts ...PullOpt) ([]*Msg, error) {
 	}
 	// If there is at least a message added to msgs, then need to return OK and no error
 	if err != nil && len(msgs) == 0 {
+		hbLock.Lock()
+		defer hbLock.Unlock()
 		if hbErr != nil {
 			return nil, hbErr
 		}
@@ -3181,9 +3196,12 @@ func (sub *Subscription) FetchBatch(batch int, opts ...PullOpt) (MessageBatch, e
 	}
 	var hbTimer *time.Timer
 	var hbErr error
+	hbLock := sync.Mutex{}
 	if o.hb > 0 {
 		hbTimer = time.AfterFunc(2*o.hb, func() {
+			hbLock.Lock()
 			hbErr = ErrNoHeartbeat
+			hbLock.Unlock()
 			cancel()
 		})
 	}
@@ -3219,11 +3237,13 @@ func (sub *Subscription) FetchBatch(batch int, opts ...PullOpt) (MessageBatch, e
 			}
 		}
 		if err != nil {
+			hbLock.Lock()
 			if hbErr != nil {
 				result.err = hbErr
 			} else {
 				result.err = o.checkCtxErr(err)
 			}
+			hbLock.Unlock()
 		}
 		close(result.msgs)
 		result.done <- struct{}{}
