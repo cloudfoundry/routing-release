@@ -49,7 +49,7 @@ require (
 	github.com/vito/go-sse v1.0.0
 	go.step.sm/crypto v0.44.2
 	golang.org/x/crypto v0.21.0
-	golang.org/x/net v0.22.0
+	golang.org/x/net v0.23.0
 	golang.org/x/oauth2 v0.18.0
 	golang.org/x/tools v0.19.0
 	google.golang.org/grpc v1.62.1
