@@ -3,7 +3,7 @@ module routing_utils/nats_client
 go 1.20
 
 require (
-	code.cloudfoundry.org/tlsconfig v0.0.0-20240327135916-6e62718de212
+	code.cloudfoundry.org/tlsconfig v0.0.0-20240403132441-f9f6ab7c839e
 	github.com/nats-io/nats.go v1.34.0
 	gopkg.in/yaml.v2 v2.4.0
 )
