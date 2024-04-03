@@ -205,14 +205,12 @@ github.com/jackc/pgx/v5/stdlib
 ## explicit; go 1.19
 github.com/jackc/puddle/v2
 github.com/jackc/puddle/v2/internal/genstack
-# github.com/jinzhu/gorm v1.9.16
-## explicit; go 1.12
-github.com/jinzhu/gorm
-github.com/jinzhu/gorm/dialects/mysql
-github.com/jinzhu/gorm/dialects/postgres
 # github.com/jinzhu/inflection v1.0.0
 ## explicit
 github.com/jinzhu/inflection
+# github.com/jinzhu/now v1.1.5
+## explicit; go 1.12
+github.com/jinzhu/now
 # github.com/kisielk/errcheck v1.7.0
 ## explicit; go 1.18
 github.com/kisielk/errcheck
@@ -229,12 +227,6 @@ github.com/klauspost/compress/internal/snapref
 github.com/klauspost/compress/s2
 github.com/klauspost/compress/zstd
 github.com/klauspost/compress/zstd/internal/xxhash
-# github.com/lib/pq v1.10.9
-## explicit; go 1.13
-github.com/lib/pq
-github.com/lib/pq/hstore
-github.com/lib/pq/oid
-github.com/lib/pq/scram
 # github.com/minio/highwayhash v1.0.2
 ## explicit; go 1.15
 github.com/minio/highwayhash
@@ -621,6 +613,21 @@ gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
+# gorm.io/driver/mysql v1.5.6
+## explicit; go 1.14
+gorm.io/driver/mysql
+# gorm.io/driver/postgres v1.5.7
+## explicit; go 1.18
+gorm.io/driver/postgres
+# gorm.io/gorm v1.25.9
+## explicit; go 1.18
+gorm.io/gorm
+gorm.io/gorm/callbacks
+gorm.io/gorm/clause
+gorm.io/gorm/logger
+gorm.io/gorm/migrator
+gorm.io/gorm/schema
+gorm.io/gorm/utils
 # github.com/uber-go/zap => github.com/uber-go/zap v0.0.0-20161222040304-a5783ee4b216
 # github.com/uber-go/atomic => github.com/uber-go/atomic v1.1.0
 # github.com/codegangsta/cli => github.com/codegangsta/cli v1.6.0

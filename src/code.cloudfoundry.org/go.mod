@@ -32,9 +32,8 @@ require (
 	github.com/codegangsta/cli v1.22.14
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/golang-jwt/jwt/v4 v4.5.0
-	github.com/jinzhu/gorm v1.9.16
+	github.com/jackc/pgx/v5 v5.5.5
 	github.com/kisielk/errcheck v1.7.0
-	github.com/lib/pq v1.10.9
 	github.com/nats-io/nats-server/v2 v2.10.12
 	github.com/nats-io/nats.go v1.34.1
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
@@ -55,6 +54,9 @@ require (
 	google.golang.org/grpc v1.62.1
 	google.golang.org/protobuf v1.33.0
 	gopkg.in/yaml.v2 v2.4.0
+	gorm.io/driver/mysql v1.5.6
+	gorm.io/driver/postgres v1.5.7
+	gorm.io/gorm v1.25.9
 )
 
 require (
@@ -80,9 +82,9 @@ require (
 	github.com/honeycombio/libhoney-go v1.22.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
-	github.com/jackc/pgx/v5 v5.5.5 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/klauspost/compress v1.17.7 // indirect
 	github.com/minio/highwayhash v1.0.2 // indirect
 	github.com/nats-io/jwt/v2 v2.5.5 // indirect
