@@ -109,7 +109,12 @@ func (rule SecurityGroupRule) validateDestinations() error {
 
 	var validationError ValidationError
 
+	var destinations []string
 	for _, d := range rule.Destinations {
+		destinations = append(destinations, strings.Split(d, ",")...)
+	}
+
+	for _, d := range destinations {
 		n := strings.IndexAny(d, "-/")
 		if n == -1 {
 			if net.ParseIP(d) == nil {
