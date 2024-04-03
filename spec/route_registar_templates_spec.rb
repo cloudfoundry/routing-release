@@ -416,7 +416,8 @@ describe 'route_registrar' do
             'cert_path' => '/var/vcap/jobs/route_registrar/config/nats/certs/client.crt',
             'key_path' => '/var/vcap/jobs/route_registrar/config/nats/certs/client_private.key',
             'ca_path' => '/var/vcap/jobs/route_registrar/config/nats/certs/server_ca.crt'
-          }
+          },
+          'availability_zone' => 'az1',
         )
       end
     end

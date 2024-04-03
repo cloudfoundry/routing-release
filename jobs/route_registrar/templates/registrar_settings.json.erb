@@ -152,6 +152,7 @@ TEXT
     host: host,
     routes: routes,
     routing_api: routing_api,
+    availability_zone: spec.az,
   }
   JSON.pretty_generate(config)
 %>
