@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	code.cloudfoundry.org/tlsconfig v0.0.0-20240403132441-f9f6ab7c839e
-	github.com/nats-io/nats.go v1.34.0
+	github.com/nats-io/nats.go v1.34.1
 	gopkg.in/yaml.v2 v2.4.0
 )
 
