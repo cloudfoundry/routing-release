@@ -14,13 +14,13 @@ require (
 	code.cloudfoundry.org/bbs v0.0.0-20240401230014-ed87f495edc2
 	code.cloudfoundry.org/cfhttp/v2 v2.0.1-0.20210513172332-4c5ee488a657
 	code.cloudfoundry.org/clock v1.1.0
-	code.cloudfoundry.org/debugserver v0.0.0-20240403132449-5d2c8205fccf
-	code.cloudfoundry.org/eventhub v0.0.0-20240403132424-316d05b1129c
+	code.cloudfoundry.org/debugserver v0.0.0-20240405144453-34182e5de535
+	code.cloudfoundry.org/eventhub v0.0.0-20240405144435-97c7652cd916
 	code.cloudfoundry.org/go-metric-registry v0.0.0-20240325232813-eb1144b007e4
 	code.cloudfoundry.org/lager/v3 v3.0.3
-	code.cloudfoundry.org/localip v0.0.0-20240403132407-90bfe96e2c2c
+	code.cloudfoundry.org/localip v0.0.0-20240405144441-7c0fb8a04c60
 	code.cloudfoundry.org/locket v0.0.0-20240311215808-a90299e1f75d
-	code.cloudfoundry.org/tlsconfig v0.0.0-20240403132441-f9f6ab7c839e
+	code.cloudfoundry.org/tlsconfig v0.0.0-20240405144453-942277399864
 	github.com/armon/go-proxyproto v0.1.0
 	github.com/cactus/go-statsd-client v3.2.1+incompatible
 	github.com/cloudfoundry-community/go-uaa v0.3.2
@@ -51,15 +51,15 @@ require (
 	golang.org/x/crypto v0.22.0
 	golang.org/x/net v0.24.0
 	golang.org/x/oauth2 v0.19.0
-	golang.org/x/tools v0.19.0
+	golang.org/x/tools v0.20.0
 	google.golang.org/grpc v1.63.0
 	google.golang.org/protobuf v1.33.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.0.0-20240403132506-4e6d96d497d1 // indirect
-	code.cloudfoundry.org/durationjson v0.0.0-20240403132506-6f2aac628504 // indirect
+	code.cloudfoundry.org/diego-logging-client v0.0.0-20240405144442-1a4930ebf5b9 // indirect
+	code.cloudfoundry.org/durationjson v0.0.0-20240405144453-b5a6e37a8c63 // indirect
 	code.cloudfoundry.org/go-diodes v0.0.0-20240325171903-fa19631aa7ba // indirect
 	code.cloudfoundry.org/go-loggregator/v8 v8.0.5 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
