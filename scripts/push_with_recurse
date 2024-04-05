@@ -1,3 +1,0 @@
-#!/bin/bash
-
-git push origin develop --recurse-submodules=on-demand
