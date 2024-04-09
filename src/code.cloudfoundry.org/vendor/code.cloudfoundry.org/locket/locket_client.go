@@ -53,10 +53,7 @@ func newClientInternal(logger lager.Logger, config ClientLocketConfig, skipCertV
 	// return a list of addresses. We will also need to add a new NewClient
 	// method that accepts a dialer in order to mock the ipsec (blocking) issue
 	// we ran into in https://www.pivotaltracker.com/story/show/158104990
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	conn, err := grpc.DialContext(ctx,
-		config.LocketAddress,
+	conn, err := grpc.NewClient(config.LocketAddress,
 		grpc.WithTransportCredentials(credentials.NewTLS(locketTLSConfig)),
 		grpc.WithContextDialer(func(ctx context.Context, addr string) (net.Conn, error) {
 			return net.DialTimeout("tcp", addr, 10*time.Second) // give at least 2 seconds per ip address (assuming there are at most 5)

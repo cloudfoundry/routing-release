@@ -11,7 +11,7 @@ replace github.com/codegangsta/cli => github.com/codegangsta/cli v1.6.0
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
 
 require (
-	code.cloudfoundry.org/bbs v0.0.0-20240401230014-ed87f495edc2
+	code.cloudfoundry.org/bbs v0.0.0-20240408163833-8758af90a126
 	code.cloudfoundry.org/cfhttp/v2 v2.0.1-0.20210513172332-4c5ee488a657
 	code.cloudfoundry.org/clock v1.1.0
 	code.cloudfoundry.org/debugserver v0.0.0-20240405144453-34182e5de535
@@ -19,7 +19,7 @@ require (
 	code.cloudfoundry.org/go-metric-registry v0.0.0-20240325232813-eb1144b007e4
 	code.cloudfoundry.org/lager/v3 v3.0.3
 	code.cloudfoundry.org/localip v0.0.0-20240405144441-7c0fb8a04c60
-	code.cloudfoundry.org/locket v0.0.0-20240311215808-a90299e1f75d
+	code.cloudfoundry.org/locket v0.0.0-20240408164541-2c9b31c2cf1e
 	code.cloudfoundry.org/tlsconfig v0.0.0-20240405144453-942277399864
 	github.com/armon/go-proxyproto v0.1.0
 	github.com/cactus/go-statsd-client v3.2.1+incompatible
@@ -52,7 +52,7 @@ require (
 	golang.org/x/net v0.24.0
 	golang.org/x/oauth2 v0.19.0
 	golang.org/x/tools v0.20.0
-	google.golang.org/grpc v1.63.0
+	google.golang.org/grpc v1.63.2
 	google.golang.org/protobuf v1.33.0
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -76,14 +76,14 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
-	github.com/google/pprof v0.0.0-20240402174815-29b9bb013b0f // indirect
+	github.com/google/pprof v0.0.0-20240409012703-83162a5b38cd // indirect
 	github.com/honeycombio/libhoney-go v1.22.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
 	github.com/jackc/pgx/v5 v5.5.5 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
-	github.com/klauspost/compress v1.17.7 // indirect
+	github.com/klauspost/compress v1.17.8 // indirect
 	github.com/minio/highwayhash v1.0.2 // indirect
 	github.com/nats-io/jwt/v2 v2.5.5 // indirect
 	github.com/nats-io/nkeys v0.4.7 // indirect
