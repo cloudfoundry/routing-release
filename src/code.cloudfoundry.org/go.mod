@@ -14,12 +14,12 @@ require (
 	code.cloudfoundry.org/bbs v0.0.0-20240408163833-8758af90a126
 	code.cloudfoundry.org/cfhttp/v2 v2.0.1-0.20210513172332-4c5ee488a657
 	code.cloudfoundry.org/clock v1.1.0
-	code.cloudfoundry.org/debugserver v0.0.0-20240405144453-34182e5de535
-	code.cloudfoundry.org/eventhub v0.0.0-20240405144435-97c7652cd916
+	code.cloudfoundry.org/debugserver v0.0.0-20240409162631-369419c6e60d
+	code.cloudfoundry.org/eventhub v0.0.0-20240409162701-3a3bd6f06390
 	code.cloudfoundry.org/go-metric-registry v0.0.0-20240325232813-eb1144b007e4
 	code.cloudfoundry.org/lager/v3 v3.0.3
-	code.cloudfoundry.org/localip v0.0.0-20240405144441-7c0fb8a04c60
-	code.cloudfoundry.org/locket v0.0.0-20240408164541-2c9b31c2cf1e
+	code.cloudfoundry.org/localip v0.0.0-20240409162628-e6b88b496fac
+	code.cloudfoundry.org/locket v0.0.0-20240410131216-aa54b91f26c7
 	code.cloudfoundry.org/tlsconfig v0.0.0-20240405144453-942277399864
 	github.com/armon/go-proxyproto v0.1.0
 	github.com/cactus/go-statsd-client v3.2.1+incompatible
@@ -47,7 +47,7 @@ require (
 	github.com/uber-go/zap v1.27.0
 	github.com/urfave/negroni/v3 v3.1.0
 	github.com/vito/go-sse v1.0.0
-	go.step.sm/crypto v0.44.2
+	go.step.sm/crypto v0.44.3
 	golang.org/x/crypto v0.22.0
 	golang.org/x/net v0.24.0
 	golang.org/x/oauth2 v0.19.0
@@ -58,8 +58,8 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.0.0-20240405144442-1a4930ebf5b9 // indirect
-	code.cloudfoundry.org/durationjson v0.0.0-20240405144453-b5a6e37a8c63 // indirect
+	code.cloudfoundry.org/diego-logging-client v0.0.0-20240409162632-9001435eca9c // indirect
+	code.cloudfoundry.org/durationjson v0.0.0-20240409162628-8fbe9649fa0f // indirect
 	code.cloudfoundry.org/go-diodes v0.0.0-20240325171903-fa19631aa7ba // indirect
 	code.cloudfoundry.org/go-loggregator/v8 v8.0.5 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect

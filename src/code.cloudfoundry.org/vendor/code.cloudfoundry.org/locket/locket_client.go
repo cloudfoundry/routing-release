@@ -9,6 +9,7 @@ import (
 	"code.cloudfoundry.org/locket/models"
 	"code.cloudfoundry.org/tlsconfig"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/keepalive"
 )
@@ -53,6 +54,8 @@ func newClientInternal(logger lager.Logger, config ClientLocketConfig, skipCertV
 	// return a list of addresses. We will also need to add a new NewClient
 	// method that accepts a dialer in order to mock the ipsec (blocking) issue
 	// we ran into in https://www.pivotaltracker.com/story/show/158104990
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	conn, err := grpc.NewClient(config.LocketAddress,
 		grpc.WithTransportCredentials(credentials.NewTLS(locketTLSConfig)),
 		grpc.WithContextDialer(func(ctx context.Context, addr string) (net.Conn, error) {
@@ -67,5 +70,17 @@ func newClientInternal(logger lager.Logger, config ClientLocketConfig, skipCertV
 	if err != nil {
 		return nil, err
 	}
-	return models.NewLocketClient(conn), nil
+
+	for {
+		s := conn.GetState()
+		if s == connectivity.Idle {
+			conn.Connect()
+		}
+		if s == connectivity.Ready {
+			return models.NewLocketClient(conn), nil
+		}
+		if !conn.WaitForStateChange(ctx, s) {
+			return nil, ctx.Err()
+		}
+	}
 }
