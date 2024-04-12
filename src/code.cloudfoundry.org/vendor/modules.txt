@@ -13,10 +13,10 @@ code.cloudfoundry.org/cfhttp/v2
 ## explicit; go 1.20
 code.cloudfoundry.org/clock
 code.cloudfoundry.org/clock/fakeclock
-# code.cloudfoundry.org/debugserver v0.0.0-20240409162631-369419c6e60d
+# code.cloudfoundry.org/debugserver v0.0.0-20240412143000-e1e6490a72a0
 ## explicit; go 1.19
 code.cloudfoundry.org/debugserver
-# code.cloudfoundry.org/diego-logging-client v0.0.0-20240409162632-9001435eca9c
+# code.cloudfoundry.org/diego-logging-client v0.0.0-20240411162706-f5d202be5c6e
 ## explicit; go 1.21
 code.cloudfoundry.org/diego-logging-client
 # code.cloudfoundry.org/durationjson v0.0.0-20240409162628-8fbe9649fa0f
@@ -241,7 +241,7 @@ github.com/minio/highwayhash
 # github.com/nats-io/jwt/v2 v2.5.5
 ## explicit; go 1.18
 github.com/nats-io/jwt/v2
-# github.com/nats-io/nats-server/v2 v2.10.12
+# github.com/nats-io/nats-server/v2 v2.10.14
 ## explicit; go 1.20
 github.com/nats-io/nats-server/v2
 github.com/nats-io/nats-server/v2/conf
