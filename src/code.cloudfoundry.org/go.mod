@@ -14,11 +14,11 @@ require (
 	code.cloudfoundry.org/bbs v0.0.0-20240408163833-8758af90a126
 	code.cloudfoundry.org/cfhttp/v2 v2.0.1-0.20210513172332-4c5ee488a657
 	code.cloudfoundry.org/clock v1.1.0
-	code.cloudfoundry.org/debugserver v0.0.0-20240412143000-e1e6490a72a0
-	code.cloudfoundry.org/eventhub v0.0.0-20240409162701-3a3bd6f06390
+	code.cloudfoundry.org/debugserver v0.0.0-20240415163122-773208e977a2
+	code.cloudfoundry.org/eventhub v0.0.0-20240415163115-5d7cff970255
 	code.cloudfoundry.org/go-metric-registry v0.0.0-20240325232813-eb1144b007e4
 	code.cloudfoundry.org/lager/v3 v3.0.3
-	code.cloudfoundry.org/localip v0.0.0-20240409162628-e6b88b496fac
+	code.cloudfoundry.org/localip v0.0.0-20240415163129-d07e61fbafff
 	code.cloudfoundry.org/locket v0.0.0-20240410131216-aa54b91f26c7
 	code.cloudfoundry.org/tlsconfig v0.0.0-20240410162701-78a97c114f7f
 	github.com/armon/go-proxyproto v0.1.0
@@ -47,7 +47,7 @@ require (
 	github.com/uber-go/zap v1.27.0
 	github.com/urfave/negroni/v3 v3.1.0
 	github.com/vito/go-sse v1.0.0
-	go.step.sm/crypto v0.44.3
+	go.step.sm/crypto v0.44.5
 	golang.org/x/crypto v0.22.0
 	golang.org/x/net v0.24.0
 	golang.org/x/oauth2 v0.19.0
@@ -58,8 +58,8 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.0.0-20240413162951-28a656464511 // indirect
-	code.cloudfoundry.org/durationjson v0.0.0-20240409162628-8fbe9649fa0f // indirect
+	code.cloudfoundry.org/diego-logging-client v0.0.0-20240415163141-ee22d61ddd03 // indirect
+	code.cloudfoundry.org/durationjson v0.0.0-20240415163103-f50bb49169c8 // indirect
 	code.cloudfoundry.org/go-diodes v0.0.0-20240325171903-fa19631aa7ba // indirect
 	code.cloudfoundry.org/go-loggregator/v8 v8.0.5 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
@@ -104,7 +104,7 @@ require (
 	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240415141817-7cd4c1c1f9ec // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240415180920-8c6c420018be // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

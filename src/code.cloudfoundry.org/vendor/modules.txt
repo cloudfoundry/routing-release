@@ -13,16 +13,16 @@ code.cloudfoundry.org/cfhttp/v2
 ## explicit; go 1.20
 code.cloudfoundry.org/clock
 code.cloudfoundry.org/clock/fakeclock
-# code.cloudfoundry.org/debugserver v0.0.0-20240412143000-e1e6490a72a0
+# code.cloudfoundry.org/debugserver v0.0.0-20240415163122-773208e977a2
 ## explicit; go 1.19
 code.cloudfoundry.org/debugserver
-# code.cloudfoundry.org/diego-logging-client v0.0.0-20240413162951-28a656464511
+# code.cloudfoundry.org/diego-logging-client v0.0.0-20240415163141-ee22d61ddd03
 ## explicit; go 1.21
 code.cloudfoundry.org/diego-logging-client
-# code.cloudfoundry.org/durationjson v0.0.0-20240409162628-8fbe9649fa0f
+# code.cloudfoundry.org/durationjson v0.0.0-20240415163103-f50bb49169c8
 ## explicit; go 1.19
 code.cloudfoundry.org/durationjson
-# code.cloudfoundry.org/eventhub v0.0.0-20240409162701-3a3bd6f06390
+# code.cloudfoundry.org/eventhub v0.0.0-20240415163115-5d7cff970255
 ## explicit; go 1.19
 code.cloudfoundry.org/eventhub
 # code.cloudfoundry.org/go-diodes v0.0.0-20240325171903-fa19631aa7ba
@@ -47,7 +47,7 @@ code.cloudfoundry.org/lager/v3/internal/truncate
 code.cloudfoundry.org/lager/v3/lagerctx
 code.cloudfoundry.org/lager/v3/lagerflags
 code.cloudfoundry.org/lager/v3/lagertest
-# code.cloudfoundry.org/localip v0.0.0-20240409162628-e6b88b496fac
+# code.cloudfoundry.org/localip v0.0.0-20240415163129-d07e61fbafff
 ## explicit; go 1.20
 code.cloudfoundry.org/localip
 # code.cloudfoundry.org/locket v0.0.0-20240410131216-aa54b91f26c7
@@ -372,7 +372,7 @@ github.com/vmihailenco/msgpack/v5/msgpcode
 github.com/vmihailenco/tagparser/v2
 github.com/vmihailenco/tagparser/v2/internal
 github.com/vmihailenco/tagparser/v2/internal/parser
-# go.step.sm/crypto v0.44.3
+# go.step.sm/crypto v0.44.5
 ## explicit; go 1.20
 go.step.sm/crypto/fingerprint
 go.step.sm/crypto/internal/bcrypt_pbkdf
@@ -510,7 +510,7 @@ golang.org/x/tools/internal/stdlib
 golang.org/x/tools/internal/tokeninternal
 golang.org/x/tools/internal/typesinternal
 golang.org/x/tools/internal/versions
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20240415141817-7cd4c1c1f9ec
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20240415180920-8c6c420018be
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.63.2
