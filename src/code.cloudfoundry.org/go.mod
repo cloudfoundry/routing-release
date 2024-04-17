@@ -14,13 +14,13 @@ require (
 	code.cloudfoundry.org/bbs v0.0.0-20240408163833-8758af90a126
 	code.cloudfoundry.org/cfhttp/v2 v2.0.1-0.20210513172332-4c5ee488a657
 	code.cloudfoundry.org/clock v1.1.0
-	code.cloudfoundry.org/debugserver v0.0.0-20240415163122-773208e977a2
-	code.cloudfoundry.org/eventhub v0.0.0-20240415163115-5d7cff970255
+	code.cloudfoundry.org/debugserver v0.0.0-20240416163159-6daef1b4c90c
+	code.cloudfoundry.org/eventhub v0.0.0-20240416163154-3f6e16d565b6
 	code.cloudfoundry.org/go-metric-registry v0.0.0-20240325232813-eb1144b007e4
 	code.cloudfoundry.org/lager/v3 v3.0.3
-	code.cloudfoundry.org/localip v0.0.0-20240415163129-d07e61fbafff
+	code.cloudfoundry.org/localip v0.0.0-20240416163151-0c7ee3b63ec1
 	code.cloudfoundry.org/locket v0.0.0-20240410131216-aa54b91f26c7
-	code.cloudfoundry.org/tlsconfig v0.0.0-20240410162701-78a97c114f7f
+	code.cloudfoundry.org/tlsconfig v0.0.0-20240416163159-16b37d67cb91
 	github.com/armon/go-proxyproto v0.1.0
 	github.com/cactus/go-statsd-client v3.2.1+incompatible
 	github.com/cloudfoundry-community/go-uaa v0.3.2
@@ -47,7 +47,7 @@ require (
 	github.com/uber-go/zap v1.27.0
 	github.com/urfave/negroni/v3 v3.1.0
 	github.com/vito/go-sse v1.0.0
-	go.step.sm/crypto v0.44.5
+	go.step.sm/crypto v0.44.6
 	golang.org/x/crypto v0.22.0
 	golang.org/x/net v0.24.0
 	golang.org/x/oauth2 v0.19.0
@@ -58,8 +58,8 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.0.0-20240415163141-ee22d61ddd03 // indirect
-	code.cloudfoundry.org/durationjson v0.0.0-20240415163103-f50bb49169c8 // indirect
+	code.cloudfoundry.org/diego-logging-client v0.0.0-20240416163159-4d65bf1c2d41 // indirect
+	code.cloudfoundry.org/durationjson v0.0.0-20240416163158-31d69049edb8 // indirect
 	code.cloudfoundry.org/go-diodes v0.0.0-20240325171903-fa19631aa7ba // indirect
 	code.cloudfoundry.org/go-loggregator/v8 v8.0.5 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
@@ -76,7 +76,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
-	github.com/google/pprof v0.0.0-20240415144954-be81aee2d733 // indirect
+	github.com/google/pprof v0.0.0-20240416155748-26353dc0451f // indirect
 	github.com/honeycombio/libhoney-go v1.22.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
