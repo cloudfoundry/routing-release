@@ -600,8 +600,8 @@ code.cloudfoundry.org/clock v1.1.0 h1:XLzC6W3Ah/Y7ht1rmZ6+QfPdt1iGWEAAtIZXgiaj57
 code.cloudfoundry.org/clock v1.1.0/go.mod h1:yA3fxddT9RINQL2XHS7PS+OXxKCGhfrZmlNUCIM6AKo=
 code.cloudfoundry.org/debugserver v0.0.0-20240416163159-6daef1b4c90c h1:xEQc0tZ7n7jLMTFD6D/uShth1j9Jp6c9OsToYGlMNN4=
 code.cloudfoundry.org/debugserver v0.0.0-20240416163159-6daef1b4c90c/go.mod h1:nWhlW1Yc+VjufMDc+zfBftalLmSgzxzWOSbOwRv+L30=
-code.cloudfoundry.org/diego-logging-client v0.0.0-20240416163159-4d65bf1c2d41 h1:7aYUYhYwHBhAzYrh4W8Eca7jAQwKlTLFJf/aez9SJRk=
-code.cloudfoundry.org/diego-logging-client v0.0.0-20240416163159-4d65bf1c2d41/go.mod h1:YcxNebynEBYrm9DE6h55YxMFInDnC6fmh36RPB3kxIE=
+code.cloudfoundry.org/diego-logging-client v0.0.0-20240417163320-3004e41c895c h1:5mP5GcbEs8MkFW+xmJp1i5kuPOmRjWltanwxmMUBpvs=
+code.cloudfoundry.org/diego-logging-client v0.0.0-20240417163320-3004e41c895c/go.mod h1:lTJ0t//471D0lLzpZjCg8usF35r76etdBtR4c6Egeig=
 code.cloudfoundry.org/durationjson v0.0.0-20240416163158-31d69049edb8 h1:cjUIZeDTkf2WVCy5g9DvjmzOe+OwZryUMjf8vzKGD5E=
 code.cloudfoundry.org/durationjson v0.0.0-20240416163158-31d69049edb8/go.mod h1:YzLYhljQFKYrrHvQummt9H+vLtR8gvL6yg3UNquU1z8=
 code.cloudfoundry.org/eventhub v0.0.0-20240416163154-3f6e16d565b6 h1:Zdjnt5izNPDAgdvRXDR3XL7CeDkh9sP3NSolsNgzdYw=
@@ -622,8 +622,8 @@ code.cloudfoundry.org/localip v0.0.0-20240416163151-0c7ee3b63ec1/go.mod h1:VTf9r
 code.cloudfoundry.org/locket v0.0.0-20240410131216-aa54b91f26c7 h1:p7eUtojXqgcfybueqCqZ6WO9Sv0NWI0bMhWBtw/Isqs=
 code.cloudfoundry.org/locket v0.0.0-20240410131216-aa54b91f26c7/go.mod h1:AwHLRkdXtttLXNB8RHgLfErJ2kKafH62AR2OClhy6xI=
 code.cloudfoundry.org/tlsconfig v0.0.0-20200131000646-bbe0f8da39b3/go.mod h1:eTbFJpyXRGuFVyg5+oaj9B2eIbIc+0/kZjH8ftbtdew=
-code.cloudfoundry.org/tlsconfig v0.0.0-20240416163159-16b37d67cb91 h1:NSjgca6N8Ozg5NjSagMJiHgOOsC6TzVEcm6vVwTxuP8=
-code.cloudfoundry.org/tlsconfig v0.0.0-20240416163159-16b37d67cb91/go.mod h1:+tUojmqPan76xFy75nGWE8AgsbTsZO00e72KIzR59Yk=
+code.cloudfoundry.org/tlsconfig v0.0.0-20240417163319-a2cf10de323a h1:k54Ave0EIhSrvV0uSGRuSSYhiJnEI/a/Q9dRbKZLa8c=
+code.cloudfoundry.org/tlsconfig v0.0.0-20240417163319-a2cf10de323a/go.mod h1:H397f5P8Jq2Z20iIyC8UIY+vkC9ouur2Dxe4a+KTIQQ=
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 filippo.io/edwards25519 v1.1.0 h1:FNf4tywRC1HmFuKW5xopWpigGjJKiJSV0Cqo0cJWDaA=
 filippo.io/edwards25519 v1.1.0/go.mod h1:BxyFTGdWcka3PhytdK4V28tE5sGfRvvvRV7EaN4VDT4=
@@ -949,8 +949,8 @@ github.com/minio/asm2plan9s v0.0.0-20200509001527-cdd76441f9d8/go.mod h1:mC1jAcs
 github.com/minio/c2goasm v0.0.0-20190812172519-36a3d3bbc4f3/go.mod h1:RagcQ7I8IeTMnF8JTXieKnO4Z6JCsikNEzj0DwauVzE=
 github.com/minio/highwayhash v1.0.2 h1:Aak5U0nElisjDCfPSG79Tgzkn2gl66NxOMspRrKnA/g=
 github.com/minio/highwayhash v1.0.2/go.mod h1:BQskDq+xkJ12lmlUUi7U0M5Swg3EWR+dLTk+kldvVxY=
-github.com/nats-io/jwt/v2 v2.5.5 h1:ROfXb50elFq5c9+1ztaUbdlrArNFl2+fQWP6B8HGEq4=
-github.com/nats-io/jwt/v2 v2.5.5/go.mod h1:ZdWS1nZa6WMZfFwwgpEaqBV8EPGVgOTDHN/wTbz0Y5A=
+github.com/nats-io/jwt/v2 v2.5.6 h1:Cp618+z4q042sWqHiSoIHFT08OZtAskui0hTmRfmGGQ=
+github.com/nats-io/jwt/v2 v2.5.6/go.mod h1:ZdWS1nZa6WMZfFwwgpEaqBV8EPGVgOTDHN/wTbz0Y5A=
 github.com/nats-io/nats-server/v2 v2.10.14 h1:98gPJFOAO2vLdM0gogh8GAiHghwErrSLhugIqzRC+tk=
 github.com/nats-io/nats-server/v2 v2.10.14/go.mod h1:a0TwOVBJZz6Hwv7JH2E4ONdpyFk9do0C18TEwxnHdRk=
 github.com/nats-io/nats.go v1.34.1 h1:syWey5xaNHZgicYBemv0nohUPPmaLteiBEUT6Q5+F/4=
@@ -1028,8 +1028,8 @@ github.com/prometheus/client_model v0.2.0/go.mod h1:xMI15A0UPsDsEKsMN9yxemIoYk6T
 github.com/prometheus/client_model v0.3.0/go.mod h1:LDGWKZIo7rky3hgvBe+caln+Dr3dPggB5dvjtD7w9+w=
 github.com/prometheus/client_model v0.6.1 h1:ZKSh/rekM+n3CeS952MLRAdFwIKqeY8b62p8ais2e9E=
 github.com/prometheus/client_model v0.6.1/go.mod h1:OrxVMOVHjw3lKMa8+x6HeMGkHMQyHDk9E3jmP2AmGiY=
-github.com/prometheus/common v0.52.3 h1:5f8uj6ZwHSscOGNdIQg6OiZv/ybiK2CO2q2drVZAQSA=
-github.com/prometheus/common v0.52.3/go.mod h1:BrxBKv3FWBIGXw89Mg1AeBq7FSyRzXWI3l3e7W3RN5U=
+github.com/prometheus/common v0.53.0 h1:U2pL9w9nmJwJDa4qqLQ3ZaePJ6ZTwt7cMD3AG3+aLCE=
+github.com/prometheus/common v0.53.0/go.mod h1:BrxBKv3FWBIGXw89Mg1AeBq7FSyRzXWI3l3e7W3RN5U=
 github.com/prometheus/procfs v0.13.0 h1:GqzLlQyfsPbaEHaQkO7tbDlriv/4o5Hudv6OXHGKX7o=
 github.com/prometheus/procfs v0.13.0/go.mod h1:cd4PFCR54QLnGKPaKGA6l+cfuNXtht43ZKY6tow0Y1g=
 github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 h1:N/ElC8H3+5XpJzTSTfLsJV/mx9Q9g7kxmchpfZyxgzM=
