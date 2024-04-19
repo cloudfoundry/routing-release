@@ -11,14 +11,14 @@ replace github.com/codegangsta/cli => github.com/codegangsta/cli v1.6.0
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
 
 require (
-	code.cloudfoundry.org/bbs v0.0.0-20240408163833-8758af90a126
+	code.cloudfoundry.org/bbs v0.0.0-20240418184526-a7ed0dccd9f7
 	code.cloudfoundry.org/cfhttp/v2 v2.0.1-0.20210513172332-4c5ee488a657
 	code.cloudfoundry.org/clock v1.1.0
-	code.cloudfoundry.org/debugserver v0.0.0-20240416163159-6daef1b4c90c
-	code.cloudfoundry.org/eventhub v0.0.0-20240416163154-3f6e16d565b6
+	code.cloudfoundry.org/debugserver v0.0.0-20240418163436-96a22b512925
+	code.cloudfoundry.org/eventhub v0.0.0-20240418163432-077543692157
 	code.cloudfoundry.org/go-metric-registry v0.0.0-20240325232813-eb1144b007e4
 	code.cloudfoundry.org/lager/v3 v3.0.3
-	code.cloudfoundry.org/localip v0.0.0-20240416163151-0c7ee3b63ec1
+	code.cloudfoundry.org/localip v0.0.0-20240418163417-db5b659080e9
 	code.cloudfoundry.org/locket v0.0.0-20240410131216-aa54b91f26c7
 	code.cloudfoundry.org/tlsconfig v0.0.0-20240417163319-a2cf10de323a
 	github.com/armon/go-proxyproto v0.1.0
@@ -39,7 +39,7 @@ require (
 	github.com/nats-io/nats.go v1.34.1
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.17.1
-	github.com/onsi/gomega v1.32.0
+	github.com/onsi/gomega v1.33.0
 	github.com/openzipkin/zipkin-go v0.4.2
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
 	github.com/tedsuo/ifrit v0.0.0-20230516164442-7862c310ad26
@@ -58,8 +58,8 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.0.0-20240417163320-3004e41c895c // indirect
-	code.cloudfoundry.org/durationjson v0.0.0-20240416163158-31d69049edb8 // indirect
+	code.cloudfoundry.org/diego-logging-client v0.0.0-20240418163439-6bdf47b4db95 // indirect
+	code.cloudfoundry.org/durationjson v0.0.0-20240418163405-71c2948d8306 // indirect
 	code.cloudfoundry.org/go-diodes v0.0.0-20240325171903-fa19631aa7ba // indirect
 	code.cloudfoundry.org/go-loggregator/v8 v8.0.5 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
