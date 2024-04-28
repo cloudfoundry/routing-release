@@ -44,7 +44,7 @@ files:
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry/cf-test-helpers/v2/workflowhelpers/internal/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/go-logr/logr/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/go-logr/logr/funcr/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/go-task/slim-sprig/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/go-task/slim-sprig/v3/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/golang-jwt/jwt/v4/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/google/go-cmp/cmp/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/google/go-cmp/cmp/internal/diff/*.go # gosub
