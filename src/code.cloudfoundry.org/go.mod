@@ -20,7 +20,7 @@ require (
 	code.cloudfoundry.org/lager/v3 v3.0.3
 	code.cloudfoundry.org/localip v0.0.0-20240425163849-4800a50a1fc0
 	code.cloudfoundry.org/locket v0.0.0-20240410131216-aa54b91f26c7
-	code.cloudfoundry.org/tlsconfig v0.0.0-20240423163804-1b0dcf57fddb
+	code.cloudfoundry.org/tlsconfig v0.0.0-20240427164042-d6180ef19863
 	github.com/armon/go-proxyproto v0.1.0
 	github.com/cactus/go-statsd-client v3.2.1+incompatible
 	github.com/cloudfoundry-community/go-uaa v0.3.2
@@ -38,7 +38,7 @@ require (
 	github.com/nats-io/nats-server/v2 v2.10.14
 	github.com/nats-io/nats.go v1.34.1
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo/v2 v2.17.1
+	github.com/onsi/ginkgo/v2 v2.17.2
 	github.com/onsi/gomega v1.33.0
 	github.com/openzipkin/zipkin-go v0.4.2
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
@@ -71,7 +71,7 @@ require (
 	github.com/facebookgo/limitgroup v0.0.0-20150612190941-6abd8d71ec01 // indirect
 	github.com/facebookgo/muster v0.0.0-20150708232844-fd3d7953fd52 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
-	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
+	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/go-test/deep v1.0.7 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect

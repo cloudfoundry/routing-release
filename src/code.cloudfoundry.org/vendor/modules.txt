@@ -65,7 +65,7 @@ code.cloudfoundry.org/locket/lock
 code.cloudfoundry.org/locket/metrics
 code.cloudfoundry.org/locket/metrics/helpers
 code.cloudfoundry.org/locket/models
-# code.cloudfoundry.org/tlsconfig v0.0.0-20240423163804-1b0dcf57fddb
+# code.cloudfoundry.org/tlsconfig v0.0.0-20240427164042-d6180ef19863
 ## explicit; go 1.19
 code.cloudfoundry.org/tlsconfig
 # filippo.io/edwards25519 v1.1.0
@@ -147,9 +147,9 @@ github.com/go-logr/logr/funcr
 # github.com/go-sql-driver/mysql v1.8.1
 ## explicit; go 1.18
 github.com/go-sql-driver/mysql
-# github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572
-## explicit; go 1.13
-github.com/go-task/slim-sprig
+# github.com/go-task/slim-sprig/v3 v3.0.0
+## explicit; go 1.20
+github.com/go-task/slim-sprig/v3
 # github.com/go-test/deep v1.0.7
 ## explicit; go 1.13
 # github.com/gogo/protobuf v1.3.2
@@ -270,7 +270,7 @@ github.com/nats-io/nuid
 # github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 ## explicit
 github.com/nu7hatch/gouuid
-# github.com/onsi/ginkgo/v2 v2.17.1
+# github.com/onsi/ginkgo/v2 v2.17.2
 ## explicit; go 1.20
 github.com/onsi/ginkgo/v2
 github.com/onsi/ginkgo/v2/config
