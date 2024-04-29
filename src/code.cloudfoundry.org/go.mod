@@ -14,11 +14,11 @@ require (
 	code.cloudfoundry.org/bbs v0.0.0-20240418184526-a7ed0dccd9f7
 	code.cloudfoundry.org/cfhttp/v2 v2.0.1
 	code.cloudfoundry.org/clock v1.1.0
-	code.cloudfoundry.org/debugserver v0.0.0-20240425163856-a2926feff29c
-	code.cloudfoundry.org/eventhub v0.0.0-20240425163852-8b8d420b0582
+	code.cloudfoundry.org/debugserver v0.0.0-20240428164226-989147bfd604
+	code.cloudfoundry.org/eventhub v0.0.0-20240428164228-1b2d5948d156
 	code.cloudfoundry.org/go-metric-registry v0.0.0-20240325232813-eb1144b007e4
 	code.cloudfoundry.org/lager/v3 v3.0.3
-	code.cloudfoundry.org/localip v0.0.0-20240425163849-4800a50a1fc0
+	code.cloudfoundry.org/localip v0.0.0-20240428164227-14cae1a74938
 	code.cloudfoundry.org/locket v0.0.0-20240410131216-aa54b91f26c7
 	code.cloudfoundry.org/tlsconfig v0.0.0-20240427164042-d6180ef19863
 	github.com/armon/go-proxyproto v0.1.0
@@ -40,7 +40,7 @@ require (
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.17.2
 	github.com/onsi/gomega v1.33.0
-	github.com/openzipkin/zipkin-go v0.4.2
+	github.com/openzipkin/zipkin-go v0.4.3
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
 	github.com/tedsuo/ifrit v0.0.0-20230516164442-7862c310ad26
 	github.com/tedsuo/rata v1.0.0
@@ -58,8 +58,8 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.0.0-20240425163859-d24244a490c1 // indirect
-	code.cloudfoundry.org/durationjson v0.0.0-20240425163906-22abdd2d941c // indirect
+	code.cloudfoundry.org/diego-logging-client v0.0.0-20240428164231-9d48de651f5d // indirect
+	code.cloudfoundry.org/durationjson v0.0.0-20240428164228-5dec242b68c9 // indirect
 	code.cloudfoundry.org/go-diodes v0.0.0-20240419195010-376885f5f3d4 // indirect
 	code.cloudfoundry.org/go-loggregator/v8 v8.0.5 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
