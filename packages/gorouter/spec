@@ -45,7 +45,6 @@ files:
   - code.cloudfoundry.org/gorouter/proxy/*.go # gosub
   - code.cloudfoundry.org/gorouter/proxy/fails/*.go # gosub
   - code.cloudfoundry.org/gorouter/proxy/fails/fakes/*.go # gosub
-  - code.cloudfoundry.org/gorouter/proxy/handler/*.go # gosub
   - code.cloudfoundry.org/gorouter/proxy/round_tripper/*.go # gosub
   - code.cloudfoundry.org/gorouter/proxy/round_tripper/fakes/*.go # gosub
   - code.cloudfoundry.org/gorouter/proxy/test_helpers/*.go # gosub
