@@ -1,5 +1,5 @@
-code.cloudfoundry.org/tlsconfig v0.0.0-20240504164951-c74da1f146df h1:4U3c76wvs9/bgQcoCG2cxkGWU/Z1VisSGQXCVfCBRYw=
-code.cloudfoundry.org/tlsconfig v0.0.0-20240504164951-c74da1f146df/go.mod h1:GhibmEi9wrnCNxhF8l6U8kKtYm/JDtMPwzsbTjpci/A=
+code.cloudfoundry.org/tlsconfig v0.0.0-20240506165053-ee50c1ee9388 h1:TAtvhdrE/hhV3Prqe9VpD+ZuHc+sN/8GkT1fAKtoYmY=
+code.cloudfoundry.org/tlsconfig v0.0.0-20240506165053-ee50c1ee9388/go.mod h1:nrEZdor0XB7oBXmkKyVtYFk3oGF6eCmryhVBOeGaUso=
 filippo.io/edwards25519 v1.1.0 h1:FNf4tywRC1HmFuKW5xopWpigGjJKiJSV0Cqo0cJWDaA=
 github.com/klauspost/compress v1.17.8 h1:YcnTYrq7MikUT7k0Yb5eceMmALQPYBW/Xltxn0NAMnU=
 github.com/klauspost/compress v1.17.8/go.mod h1:Di0epgTjJY877eYKx5yC51cX2A2Vl2ibi7bDH9ttBbw=
