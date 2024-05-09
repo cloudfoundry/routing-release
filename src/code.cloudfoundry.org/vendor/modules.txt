@@ -13,19 +13,19 @@ code.cloudfoundry.org/cfhttp/v2
 ## explicit; go 1.20
 code.cloudfoundry.org/clock
 code.cloudfoundry.org/clock/fakeclock
-# code.cloudfoundry.org/debugserver v0.0.0-20240506165051-f868bd580e8d
+# code.cloudfoundry.org/debugserver v0.0.0-20240509165312-93e40ee13b6f
 ## explicit; go 1.19
 code.cloudfoundry.org/debugserver
-# code.cloudfoundry.org/diego-logging-client v0.0.0-20240506165100-9c1d40465aaf
+# code.cloudfoundry.org/diego-logging-client v0.0.0-20240509165314-c5e78b386579
 ## explicit; go 1.21
 code.cloudfoundry.org/diego-logging-client
-# code.cloudfoundry.org/durationjson v0.0.0-20240506165051-9f6d677e8186
+# code.cloudfoundry.org/durationjson v0.0.0-20240509165306-6fb24ae87327
 ## explicit; go 1.19
 code.cloudfoundry.org/durationjson
-# code.cloudfoundry.org/eventhub v0.0.0-20240506165044-3ea889f3158b
+# code.cloudfoundry.org/eventhub v0.0.0-20240509165302-985b9adf9d7f
 ## explicit; go 1.19
 code.cloudfoundry.org/eventhub
-# code.cloudfoundry.org/go-diodes v0.0.0-20240419195010-376885f5f3d4
+# code.cloudfoundry.org/go-diodes v0.0.0-20240507202434-96dd3c119b5c
 ## explicit; go 1.21
 code.cloudfoundry.org/go-diodes
 # code.cloudfoundry.org/go-loggregator/v8 v8.0.5
@@ -34,7 +34,7 @@ code.cloudfoundry.org/go-loggregator/v8
 code.cloudfoundry.org/go-loggregator/v8/rfc5424
 code.cloudfoundry.org/go-loggregator/v8/rpc/loggregator_v2
 code.cloudfoundry.org/go-loggregator/v8/runtimeemitter
-# code.cloudfoundry.org/go-metric-registry v0.0.0-20240325232813-eb1144b007e4
+# code.cloudfoundry.org/go-metric-registry v0.0.0-20240507185439-f0b17e194563
 ## explicit; go 1.21
 code.cloudfoundry.org/go-metric-registry
 code.cloudfoundry.org/go-metric-registry/testhelpers
@@ -47,7 +47,7 @@ code.cloudfoundry.org/lager/v3/internal/truncate
 code.cloudfoundry.org/lager/v3/lagerctx
 code.cloudfoundry.org/lager/v3/lagerflags
 code.cloudfoundry.org/lager/v3/lagertest
-# code.cloudfoundry.org/localip v0.0.0-20240506165051-e4042fdda905
+# code.cloudfoundry.org/localip v0.0.0-20240509165301-8bc1ed51129f
 ## explicit; go 1.20
 code.cloudfoundry.org/localip
 # code.cloudfoundry.org/locket v0.0.0-20240410131216-aa54b91f26c7
@@ -125,7 +125,7 @@ github.com/cloudfoundry/dropsonde/metric_sender/fake
 github.com/cloudfoundry/dropsonde/metricbatcher
 github.com/cloudfoundry/dropsonde/metrics
 github.com/cloudfoundry/dropsonde/runtime_stats
-# github.com/cloudfoundry/sonde-go v0.0.0-20240311165458-423aa0d4dfc8
+# github.com/cloudfoundry/sonde-go v0.0.0-20240507181428-8b8ae008ea35
 ## explicit; go 1.17
 github.com/cloudfoundry/sonde-go/events
 # github.com/codegangsta/cli v1.22.15 => github.com/codegangsta/cli v1.6.0
@@ -172,7 +172,7 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
-# github.com/google/pprof v0.0.0-20240430035430-e4905b036c4e
+# github.com/google/pprof v0.0.0-20240509144519-723abb6459b7
 ## explicit; go 1.19
 github.com/google/pprof/profile
 # github.com/honeycombio/libhoney-go v1.22.0
@@ -238,7 +238,7 @@ github.com/lib/pq/scram
 # github.com/minio/highwayhash v1.0.2
 ## explicit; go 1.15
 github.com/minio/highwayhash
-# github.com/nats-io/jwt/v2 v2.5.6
+# github.com/nats-io/jwt/v2 v2.5.7
 ## explicit; go 1.18
 github.com/nats-io/jwt/v2
 # github.com/nats-io/nats-server/v2 v2.10.14
@@ -316,7 +316,7 @@ github.com/openzipkin/zipkin-go/propagation/b3
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
-# github.com/prometheus/client_golang v1.19.0
+# github.com/prometheus/client_golang v1.19.1
 ## explicit; go 1.20
 github.com/prometheus/client_golang/prometheus
 github.com/prometheus/client_golang/prometheus/collectors
@@ -510,7 +510,7 @@ golang.org/x/tools/internal/stdlib
 golang.org/x/tools/internal/tokeninternal
 golang.org/x/tools/internal/typesinternal
 golang.org/x/tools/internal/versions
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20240506185236-b8a5c65736ae
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20240509183442-62759503f434
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.63.2
