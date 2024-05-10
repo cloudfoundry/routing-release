@@ -81,6 +81,12 @@ TEXT
       raise "expected route_registrar.routes[#{index}].route.protocol to be http1 or http2 when protocol is provided"
     end
 
+    if route['options'] != nil
+      if (route['options']['lb_algo'] != nil && route['options']['lb_algo'] != 'least-connection' && route['options']['lb_algo'] != 'round-robin')
+        raise "expected route_registrar.routes[#{index}].route.options.lb_algo to be least-connection or round-robin when provided"
+      end
+    end
+
     if route['prepend_instance_index']
       route['uris'].map! { |uri| "#{spec.index}-#{uri}" }
     end

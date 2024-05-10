@@ -492,6 +492,35 @@ describe 'route_registrar' do
         )
       end
     end
+
+    describe 'when per-route options are provided' do
+      before do
+        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
+        merged_manifest_properties['route_registrar']['routes'][0]['options'] = {}
+      end
+
+      it 'uses configured round-robin lb_algo' do
+        merged_manifest_properties['route_registrar']['routes'][0]['options']['lb_algo'] = 'round-robin'
+        rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+        expect(rendered_hash['routes'][0]['options']['lb_algo']).to eq('round-robin')
+      end
+      it 'uses configured least-connection lb_algo' do
+        merged_manifest_properties['route_registrar']['routes'][0]['options']['lb_algo'] = 'least-connection'
+        rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+        expect(rendered_hash['routes'][0]['options']['lb_algo']).to eq('least-connection')
+      end
+      it 'without lb_algo' do
+        rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+        expect(rendered_hash['routes'][0]['options']['lb_algo']).to be nil
+      end
+      it 'raises error for unknown lb_algo' do
+        merged_manifest_properties['route_registrar']['routes'][0]['options']['lb_algo'] = 'unknown'
+        expect { template.render(merged_manifest_properties, consumes: links) }.to raise_error(
+          RuntimeError, 'expected route_registrar.routes[0].route.options.lb_algo to be least-connection or round-robin when provided'
+        )
+      end
+    end
+
     describe 'config/nats/certs/server_ca.crt' do
       let(:template) { job.template('config/nats/certs/server_ca.crt') }
       let(:links) do
