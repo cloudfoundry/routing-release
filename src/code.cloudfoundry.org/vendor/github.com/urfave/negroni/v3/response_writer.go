@@ -102,7 +102,7 @@ func (rw *responseWriter) Size() int {
 }
 
 func (rw *responseWriter) Written() bool {
-	return rw.status != 0
+	return rw.status >= http.StatusOK // don't treat 1xx responses as being written, as 100s are interim response codes and likely to send another response code
 }
 
 func (rw *responseWriter) Before(before func(ResponseWriter)) {
