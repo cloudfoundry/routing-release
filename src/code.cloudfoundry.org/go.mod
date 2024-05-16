@@ -31,7 +31,7 @@ require (
 	github.com/cloudfoundry/cf-test-helpers/v2 v2.9.0
 	github.com/cloudfoundry/custom-cats-reporters v0.0.2
 	github.com/cloudfoundry/dropsonde v1.1.0
-	github.com/cloudfoundry/sonde-go v0.0.0-20240507181428-8b8ae008ea35
+	github.com/cloudfoundry/sonde-go v0.0.0-20240515174134-adba8bce1248
 	github.com/codegangsta/cli v1.22.15
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/golang-jwt/jwt/v4 v4.5.0
@@ -50,7 +50,7 @@ require (
 	github.com/uber-go/zap v1.27.0
 	github.com/urfave/negroni/v3 v3.1.0
 	github.com/vito/go-sse v1.0.0
-	go.step.sm/crypto v0.44.8
+	go.step.sm/crypto v0.45.0
 	golang.org/x/crypto v0.23.0
 	golang.org/x/net v0.25.0
 	golang.org/x/oauth2 v0.20.0
@@ -61,9 +61,9 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.0.0-20240513165807-cf64912690b6 // indirect
+	code.cloudfoundry.org/diego-logging-client v0.0.0-20240515165956-e0ebd03e0809 // indirect
 	code.cloudfoundry.org/durationjson v0.0.0-20240510172921-4f2634116b9e // indirect
-	code.cloudfoundry.org/go-diodes v0.0.0-20240507202434-96dd3c119b5c // indirect
+	code.cloudfoundry.org/go-diodes v0.0.0-20240515174142-71582f284718 // indirect
 	code.cloudfoundry.org/go-loggregator/v8 v8.0.5 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
@@ -107,7 +107,7 @@ require (
 	golang.org/x/sys v0.20.0 // indirect
 	golang.org/x/text v0.15.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240513163218-0867130af1f8 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240515191416-fc5f0ca64291 // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
