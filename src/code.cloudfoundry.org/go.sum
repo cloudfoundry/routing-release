@@ -600,8 +600,8 @@ code.cloudfoundry.org/clock v1.1.0 h1:XLzC6W3Ah/Y7ht1rmZ6+QfPdt1iGWEAAtIZXgiaj57
 code.cloudfoundry.org/clock v1.1.0/go.mod h1:yA3fxddT9RINQL2XHS7PS+OXxKCGhfrZmlNUCIM6AKo=
 code.cloudfoundry.org/debugserver v0.0.0-20240510172920-2e46c6dc69d9 h1:IUMSJAmSfloOnpLHUNX1qhq8epmIgfq9L25rY5dapnA=
 code.cloudfoundry.org/debugserver v0.0.0-20240510172920-2e46c6dc69d9/go.mod h1:w8y3Kai28/2VnvER31QVzlKEqPcSkE87D4F/YhWakAU=
-code.cloudfoundry.org/diego-logging-client v0.0.0-20240515165956-e0ebd03e0809 h1:baZaGi2LcA5/yB6q7VOqBaHp81VrvJUr7TyPTIn6CuI=
-code.cloudfoundry.org/diego-logging-client v0.0.0-20240515165956-e0ebd03e0809/go.mod h1:r7sDIkdJ8KfL3ddrK3OWw2aziryzW+7G2MATpHLaeMg=
+code.cloudfoundry.org/diego-logging-client v0.0.0-20240516170206-bd2d4505c48e h1:kAx9HrlJGRQz6v5uFtZztT8RKhZcL2TSleqSn7EDIdQ=
+code.cloudfoundry.org/diego-logging-client v0.0.0-20240516170206-bd2d4505c48e/go.mod h1:ls3PE3vSP1F0Rv4CaE5iLhOxJSat627IhHhj8owrA9M=
 code.cloudfoundry.org/durationjson v0.0.0-20240510172921-4f2634116b9e h1:4EKn9Kbzj5qrT/I5DF84WBJ65mTEOg5DrPfMjedwMRE=
 code.cloudfoundry.org/durationjson v0.0.0-20240510172921-4f2634116b9e/go.mod h1:rPjC6YynB595v2o6yoB0+24PK7+PsJ9vaymDCiDiB/M=
 code.cloudfoundry.org/eventhub v0.0.0-20240510172922-57a202b02d86 h1:0YYV5zcK95gbR2OT5hUMdb21QcspWKhKS+V0jXYPvMM=
@@ -622,8 +622,8 @@ code.cloudfoundry.org/localip v0.0.0-20240510172921-bb8a25c4a355/go.mod h1:J/06x
 code.cloudfoundry.org/locket v0.0.0-20240410131216-aa54b91f26c7 h1:p7eUtojXqgcfybueqCqZ6WO9Sv0NWI0bMhWBtw/Isqs=
 code.cloudfoundry.org/locket v0.0.0-20240410131216-aa54b91f26c7/go.mod h1:AwHLRkdXtttLXNB8RHgLfErJ2kKafH62AR2OClhy6xI=
 code.cloudfoundry.org/tlsconfig v0.0.0-20200131000646-bbe0f8da39b3/go.mod h1:eTbFJpyXRGuFVyg5+oaj9B2eIbIc+0/kZjH8ftbtdew=
-code.cloudfoundry.org/tlsconfig v0.0.0-20240510172918-c1e19801fe80 h1:nxUb5mt6hUgetPgjwcApBzu7SvoweFyxeJndc6ueERU=
-code.cloudfoundry.org/tlsconfig v0.0.0-20240510172918-c1e19801fe80/go.mod h1:nrEZdor0XB7oBXmkKyVtYFk3oGF6eCmryhVBOeGaUso=
+code.cloudfoundry.org/tlsconfig v0.0.0-20240516170203-d50b3d56ba06 h1:6mvV9jU4n3O/qravFisQ9SAf5hfm8OPhbPhsp6dbfFE=
+code.cloudfoundry.org/tlsconfig v0.0.0-20240516170203-d50b3d56ba06/go.mod h1:ZY3YrTTScCAwr0qLDISfNBmYuXCmgvOlHhzQKQ/Gk9w=
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 filippo.io/edwards25519 v1.1.0 h1:FNf4tywRC1HmFuKW5xopWpigGjJKiJSV0Cqo0cJWDaA=
 filippo.io/edwards25519 v1.1.0/go.mod h1:BxyFTGdWcka3PhytdK4V28tE5sGfRvvvRV7EaN4VDT4=
@@ -954,10 +954,10 @@ github.com/minio/highwayhash v1.0.2 h1:Aak5U0nElisjDCfPSG79Tgzkn2gl66NxOMspRrKnA
 github.com/minio/highwayhash v1.0.2/go.mod h1:BQskDq+xkJ12lmlUUi7U0M5Swg3EWR+dLTk+kldvVxY=
 github.com/nats-io/jwt/v2 v2.5.7 h1:j5lH1fUXCnJnY8SsQeB/a/z9Azgu2bYIDvtPVNdxe2c=
 github.com/nats-io/jwt/v2 v2.5.7/go.mod h1:ZdWS1nZa6WMZfFwwgpEaqBV8EPGVgOTDHN/wTbz0Y5A=
-github.com/nats-io/nats-server/v2 v2.10.14 h1:98gPJFOAO2vLdM0gogh8GAiHghwErrSLhugIqzRC+tk=
-github.com/nats-io/nats-server/v2 v2.10.14/go.mod h1:a0TwOVBJZz6Hwv7JH2E4ONdpyFk9do0C18TEwxnHdRk=
-github.com/nats-io/nats.go v1.34.1 h1:syWey5xaNHZgicYBemv0nohUPPmaLteiBEUT6Q5+F/4=
-github.com/nats-io/nats.go v1.34.1/go.mod h1:Ubdu4Nh9exXdSz0RVWRFBbRfrbSxOYd26oF0wkWclB8=
+github.com/nats-io/nats-server/v2 v2.10.15 h1:O/l+ZT91ltMiiRJKjWLQJcGg7ypzjlb/bC5bFIRVw3M=
+github.com/nats-io/nats-server/v2 v2.10.15/go.mod h1:ul+pGt5I7e4U+nI09ZFDG4vqM+6Ce2Tou7UbVSnLiIw=
+github.com/nats-io/nats.go v1.35.0 h1:XFNqNM7v5B+MQMKqVGAyHwYhyKb48jrenXNxIU20ULk=
+github.com/nats-io/nats.go v1.35.0/go.mod h1:Ubdu4Nh9exXdSz0RVWRFBbRfrbSxOYd26oF0wkWclB8=
 github.com/nats-io/nkeys v0.4.7 h1:RwNJbbIdYCoClSDNY7QVKZlyb/wfT6ugvFCiKy6vDvI=
 github.com/nats-io/nkeys v0.4.7/go.mod h1:kqXRgRDPlGy7nGaEDMuYzmiJCIAAWDK0IMBtDmGD0nc=
 github.com/nats-io/nuid v1.0.1 h1:5iA8DT8V7q8WK2EScv2padNa/rTESc1KdnPw4TC2paw=
