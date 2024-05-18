@@ -594,8 +594,8 @@ cloud.google.com/go/workflows v1.9.0/go.mod h1:ZGkj1aFIOd9c8Gerkjjq7OW7I5+l6cSvT
 cloud.google.com/go/workflows v1.10.0/go.mod h1:fZ8LmRmZQWacon9UCX1r/g/DfAXx5VcPALq2CxzdePw=
 code.cloudfoundry.org/bbs v0.0.0-20240418184526-a7ed0dccd9f7 h1:vmwkTM1T0Hx6V4LgOGrU6dgkwNNJg5yf8Wyk1I6ptpg=
 code.cloudfoundry.org/bbs v0.0.0-20240418184526-a7ed0dccd9f7/go.mod h1:XKlGVVXFi5EcHHMPzw3xgONK9PeEZuUbIC43XNwxD10=
-code.cloudfoundry.org/cfhttp/v2 v2.0.1 h1:xCbkvDVUDuFCquDo66QnvM9hG6vxM2cvTMjj/A8BcNA=
-code.cloudfoundry.org/cfhttp/v2 v2.0.1/go.mod h1:yD0n22D4KP4xamgTxbz82KsWzK5kcfUrmJNrrmd4YBg=
+code.cloudfoundry.org/cfhttp/v2 v2.0.2 h1:V32WO2djBwD/Zxmjd8QF6kJdYeT/kMbK5MBHp3hyR0M=
+code.cloudfoundry.org/cfhttp/v2 v2.0.2/go.mod h1:JD6Dgp+240Z4lbsbOiqY3xjhX+W8zB/4x7pFwlNLcJI=
 code.cloudfoundry.org/clock v1.1.0 h1:XLzC6W3Ah/Y7ht1rmZ6+QfPdt1iGWEAAtIZXgiaj57c=
 code.cloudfoundry.org/clock v1.1.0/go.mod h1:yA3fxddT9RINQL2XHS7PS+OXxKCGhfrZmlNUCIM6AKo=
 code.cloudfoundry.org/debugserver v0.0.0-20240510172920-2e46c6dc69d9 h1:IUMSJAmSfloOnpLHUNX1qhq8epmIgfq9L25rY5dapnA=

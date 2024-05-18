@@ -15,7 +15,7 @@ replace github.com/urfave/negroni/v3 => github.com/geofffranks/negroni/v3 v3.0.0
 
 require (
 	code.cloudfoundry.org/bbs v0.0.0-20240418184526-a7ed0dccd9f7
-	code.cloudfoundry.org/cfhttp/v2 v2.0.1
+	code.cloudfoundry.org/cfhttp/v2 v2.0.2
 	code.cloudfoundry.org/clock v1.1.0
 	code.cloudfoundry.org/debugserver v0.0.0-20240510172920-2e46c6dc69d9
 	code.cloudfoundry.org/eventhub v0.0.0-20240510172922-57a202b02d86
