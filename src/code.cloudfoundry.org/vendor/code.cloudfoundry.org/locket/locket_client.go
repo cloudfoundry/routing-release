@@ -61,7 +61,6 @@ func newClientInternal(logger lager.Logger, config ClientLocketConfig, skipCertV
 		grpc.WithContextDialer(func(ctx context.Context, addr string) (net.Conn, error) {
 			return net.DialTimeout("tcp", addr, 10*time.Second) // give at least 2 seconds per ip address (assuming there are at most 5)
 		}),
-		grpc.WithBlock(),
 		grpc.WithKeepaliveParams(keepalive.ClientParameters{
 			Time:    time.Duration(config.LocketClientKeepAliveTime) * time.Second,
 			Timeout: time.Duration(config.LocketClientKeepAliveTimeout) * time.Second,

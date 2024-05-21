@@ -1,4 +1,4 @@
-# code.cloudfoundry.org/bbs v0.0.0-20240418184526-a7ed0dccd9f7
+# code.cloudfoundry.org/bbs v0.0.0-20240521125508-20d3971ce31b
 ## explicit
 code.cloudfoundry.org/bbs/db/sqldb/helpers
 code.cloudfoundry.org/bbs/db/sqldb/helpers/monitor
@@ -16,7 +16,7 @@ code.cloudfoundry.org/clock/fakeclock
 # code.cloudfoundry.org/debugserver v0.0.0-20240510172920-2e46c6dc69d9
 ## explicit; go 1.19
 code.cloudfoundry.org/debugserver
-# code.cloudfoundry.org/diego-logging-client v0.0.0-20240517170314-c798dbdab9ae
+# code.cloudfoundry.org/diego-logging-client v0.0.0-20240520225601-1832168b1f9d
 ## explicit; go 1.21
 code.cloudfoundry.org/diego-logging-client
 # code.cloudfoundry.org/durationjson v0.0.0-20240510172921-4f2634116b9e
@@ -28,12 +28,11 @@ code.cloudfoundry.org/eventhub
 # code.cloudfoundry.org/go-diodes v0.0.0-20240515174142-71582f284718
 ## explicit; go 1.21
 code.cloudfoundry.org/go-diodes
-# code.cloudfoundry.org/go-loggregator/v8 v8.0.5
-## explicit; go 1.16
-code.cloudfoundry.org/go-loggregator/v8
-code.cloudfoundry.org/go-loggregator/v8/rfc5424
-code.cloudfoundry.org/go-loggregator/v8/rpc/loggregator_v2
-code.cloudfoundry.org/go-loggregator/v8/runtimeemitter
+# code.cloudfoundry.org/go-loggregator/v9 v9.2.1
+## explicit; go 1.21
+code.cloudfoundry.org/go-loggregator/v9
+code.cloudfoundry.org/go-loggregator/v9/rpc/loggregator_v2
+code.cloudfoundry.org/go-loggregator/v9/runtimeemitter
 # code.cloudfoundry.org/go-metric-registry v0.0.0-20240507185439-f0b17e194563
 ## explicit; go 1.21
 code.cloudfoundry.org/go-metric-registry
@@ -50,7 +49,7 @@ code.cloudfoundry.org/lager/v3/lagertest
 # code.cloudfoundry.org/localip v0.0.0-20240510172921-bb8a25c4a355
 ## explicit; go 1.20
 code.cloudfoundry.org/localip
-# code.cloudfoundry.org/locket v0.0.0-20240410131216-aa54b91f26c7
+# code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
 ## explicit
 code.cloudfoundry.org/locket
 code.cloudfoundry.org/locket/cmd/locket
@@ -161,10 +160,6 @@ github.com/gogo/protobuf/sortkeys
 # github.com/golang-jwt/jwt/v4 v4.5.0
 ## explicit; go 1.16
 github.com/golang-jwt/jwt/v4
-# github.com/golang/protobuf v1.5.4
-## explicit; go 1.17
-github.com/golang/protobuf/jsonpb
-github.com/golang/protobuf/proto
 # github.com/google/go-cmp v0.6.0
 ## explicit; go 1.13
 github.com/google/go-cmp/cmp
@@ -172,7 +167,7 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
-# github.com/google/pprof v0.0.0-20240509144519-723abb6459b7
+# github.com/google/pprof v0.0.0-20240521024322-9665fa269a30
 ## explicit; go 1.19
 github.com/google/pprof/profile
 # github.com/honeycombio/libhoney-go v1.22.0
@@ -576,7 +571,6 @@ google.golang.org/protobuf/internal/descfmt
 google.golang.org/protobuf/internal/descopts
 google.golang.org/protobuf/internal/detrand
 google.golang.org/protobuf/internal/editiondefaults
-google.golang.org/protobuf/internal/editionssupport
 google.golang.org/protobuf/internal/encoding/defval
 google.golang.org/protobuf/internal/encoding/json
 google.golang.org/protobuf/internal/encoding/messageset
@@ -595,13 +589,10 @@ google.golang.org/protobuf/internal/strs
 google.golang.org/protobuf/internal/version
 google.golang.org/protobuf/proto
 google.golang.org/protobuf/protoadapt
-google.golang.org/protobuf/reflect/protodesc
 google.golang.org/protobuf/reflect/protoreflect
 google.golang.org/protobuf/reflect/protoregistry
 google.golang.org/protobuf/runtime/protoiface
 google.golang.org/protobuf/runtime/protoimpl
-google.golang.org/protobuf/types/descriptorpb
-google.golang.org/protobuf/types/gofeaturespb
 google.golang.org/protobuf/types/known/anypb
 google.golang.org/protobuf/types/known/durationpb
 google.golang.org/protobuf/types/known/timestamppb

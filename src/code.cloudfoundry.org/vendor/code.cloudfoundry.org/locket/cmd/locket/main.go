@@ -12,7 +12,7 @@ import (
 	"code.cloudfoundry.org/clock"
 	"code.cloudfoundry.org/debugserver"
 	loggingclient "code.cloudfoundry.org/diego-logging-client"
-	"code.cloudfoundry.org/go-loggregator/v8/runtimeemitter"
+	"code.cloudfoundry.org/go-loggregator/v9/runtimeemitter"
 	"code.cloudfoundry.org/lager/v3"
 	"code.cloudfoundry.org/lager/v3/lagerflags"
 	"code.cloudfoundry.org/locket"
