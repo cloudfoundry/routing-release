@@ -259,6 +259,7 @@ if p("router.max_idle_connections") && p("router.max_idle_connections") > 0
 else
   params['disable_keep_alives'] = true
 end
+params['keep_alive_100_continue_requests'] = p('router.keep_alive_100_continue_requests')
 
 if p('router.tracing.enable_w3c')
   params['tracing']['w3c_tenant_id'] = p('router.tracing.w3c_tenant_id') == '' ? nil : p('router.tracing.w3c_tenant_id')
