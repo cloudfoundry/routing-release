@@ -600,8 +600,8 @@ code.cloudfoundry.org/clock v1.1.0 h1:XLzC6W3Ah/Y7ht1rmZ6+QfPdt1iGWEAAtIZXgiaj57
 code.cloudfoundry.org/clock v1.1.0/go.mod h1:yA3fxddT9RINQL2XHS7PS+OXxKCGhfrZmlNUCIM6AKo=
 code.cloudfoundry.org/debugserver v0.0.0-20240522170726-5166a3ff2759 h1:gp4zO6N1Tp3wbEZWbOocTySv76c1eizlU7axun05aXY=
 code.cloudfoundry.org/debugserver v0.0.0-20240522170726-5166a3ff2759/go.mod h1:XHdK64R2OLK0dCl27oZmqZVmJ/gPZ/oW/JdprlYbhQ4=
-code.cloudfoundry.org/diego-logging-client v0.0.0-20240522204038-615a6113989c h1:nww9sOMYyyoyxA0zkIjQM4NKpFhbbwGb7E2GioFCEi0=
-code.cloudfoundry.org/diego-logging-client v0.0.0-20240522204038-615a6113989c/go.mod h1:4VHToYMbaXNCqe7AVu4sUyri+6E/WVT0MQ6ghxfkx28=
+code.cloudfoundry.org/diego-logging-client v0.0.0-20240523171002-24c331f0e3c4 h1:d4/dbCtWp4xcUJZLoo+z97q5YBYwnhuc/Kvd18bSCPQ=
+code.cloudfoundry.org/diego-logging-client v0.0.0-20240523171002-24c331f0e3c4/go.mod h1:rwS8infyfTeVVhdXGtkPJ480A80BYZGfuUh2vcbt1c0=
 code.cloudfoundry.org/durationjson v0.0.0-20240522170728-eb9d30509ee0 h1:14veQUu6ILPJX7KTMStv72bp14F56ueVe4gHu67cHrc=
 code.cloudfoundry.org/durationjson v0.0.0-20240522170728-eb9d30509ee0/go.mod h1:IdL60tjA9b3OEETSGCT2QoJhml6KFC586UEWo14EumE=
 code.cloudfoundry.org/eventhub v0.0.0-20240522170710-dbd345eb9248 h1:0OaPua0wqKa3XA3WMmdRm2vXgkx56pORF8RIks/DFbM=
@@ -610,8 +610,8 @@ code.cloudfoundry.org/go-diodes v0.0.0-20240515174142-71582f284718 h1:6wazSuHaJj
 code.cloudfoundry.org/go-diodes v0.0.0-20240515174142-71582f284718/go.mod h1:eVHabU/rcpC5ocoIAXvnaySkdH6+PgORRVlY5l3SDys=
 code.cloudfoundry.org/go-loggregator/v9 v9.2.1 h1:S6Lgg5UJbhh2bt2TGQxs6R00CF8PrUA3GFPYDxy56Fk=
 code.cloudfoundry.org/go-loggregator/v9 v9.2.1/go.mod h1:FTFFruqGeOhVCDFvyLgl8EV8YW63NNwRzLhxJcporu8=
-code.cloudfoundry.org/go-metric-registry v0.0.0-20240522170000-72a4274ce4cc h1:GEsbrwy5Q9+6e+m32mGgclaprTGEjzHrVKRP6cPnvHY=
-code.cloudfoundry.org/go-metric-registry v0.0.0-20240522170000-72a4274ce4cc/go.mod h1:FihLMs5jiM7cDajEleMfYruCMPcpxcrCAc/tBilKn+I=
+code.cloudfoundry.org/go-metric-registry v0.0.0-20240523160243-6c152ef80e25 h1:p1RGKEtKpZJ4CtjLoQudjEpvMLi+l2MZCyheWthmaNg=
+code.cloudfoundry.org/go-metric-registry v0.0.0-20240523160243-6c152ef80e25/go.mod h1:C+P03mf5ZSJVpcigPZ3tH5Vb66HIfCTKxatA4llc298=
 code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 h1:XVhLtnvbIlLQh7L0KADVFjd2dfgXVcOpqPLpMtg/IZA=
 code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5/go.mod h1:1ZB1JCh2FAp+SqX79ve6dc8YREvbsziULEOncAilX4Q=
 code.cloudfoundry.org/lager/v3 v3.0.3 h1:/UTmadZfIaKuT/whEinSxK1mzRfNu1uPfvjFfGqiwzM=
