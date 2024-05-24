@@ -306,6 +306,9 @@ properties:
   router.keep_alive_probe_interval:
     default: 1s
     description: Interval between TCP keep alive probes. Value is a string (e.g. "10s")
+  router.keep_alive_100_continue_requests:
+    description: "If set gorouter reuses backend connection for requests expecting 100-Continue"
+    default: false
   router.force_forwarded_proto_https:
     description: "Enables setting X-Forwarded-Proto header if SSL termination happened upstream and incorrectly set the header value. When this property is set to true gorouter sets the header X-Forwarded-Proto to https. When this value set to false, gorouter set the header X-Forwarded-Proto to the protocol of the incoming request"
     default: false
