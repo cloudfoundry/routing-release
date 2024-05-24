@@ -41,7 +41,7 @@ require (
 	github.com/nats-io/nats-server/v2 v2.10.16
 	github.com/nats-io/nats.go v1.35.0
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo/v2 v2.18.0
+	github.com/onsi/ginkgo/v2 v2.19.0
 	github.com/onsi/gomega v1.33.1
 	github.com/openzipkin/zipkin-go v0.4.3
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
