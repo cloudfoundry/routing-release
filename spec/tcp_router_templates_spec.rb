@@ -13,7 +13,7 @@ describe 'tcp_router' do
   let(:merged_manifest_properties) do
     {
       'tcp_router' => {
-        'oauth_secret' => ''
+        'oauth_secret' => '',
       },
       'uaa' => {
         'tls_port' => 1000
@@ -71,6 +71,247 @@ describe 'tcp_router' do
           RuntimeError,
           "Please set tcp_router.tls_health_check_cert in the tcp_router's job properties."
         )
+      end
+    end
+  end
+
+  describe 'config/certs/tcp-router/ca_cert.crt' do
+    let(:template) { job.template('config/certs/tcp-router/ca_cert.crt') }
+    
+    let(:links) do
+      [
+        Bosh::Template::Test::Link.new(
+          name: 'routing_api',
+          properties: {
+            'routing_api' => {
+              'mtls_client_cert' => 'the mtls client cert from link'
+            },
+            'tcp_router' => {}
+          }
+        )
+      ]
+    end
+
+    before do
+      merged_manifest_properties['tcp_router']['ca_cert'] = 'ca_cert_string'
+    end
+
+    it 'renders the client ca cert' do
+      client_ca = template.render(merged_manifest_properties, consumes: links)
+      expect(client_ca).to eq('ca_cert_string')
+    end
+
+    describe 'when the client ca is not provided' do # TODO: the routing_api this is based on doesn't include the ca_cert property and relies on deletion of mtls to raise a template error
+      before do
+        merged_manifest_properties['tcp_router'].delete('mtls_ca')
+      end
+
+      it 'should err' do
+        expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
+      end
+    end
+
+    describe 'when the gorouter link is present and includes the backends ca' do
+      let(:links) do
+        [
+          Bosh::Template::Test::Link.new(
+            name: 'gorouter',
+            properties: {
+              'router' => {
+                'backends' => {
+                  'ca' => 'gorouter backends ca cert'
+                }
+              }
+            }
+          )
+        ]
+      end
+      it 'renders the gorouter backends ca cert' do
+        client_ca = template.render(merged_manifest_properties, consumes: links)
+        expect(client_ca.strip).to eq("a ca cert\n\ngorouter backends ca cert")
+      end
+    end
+
+    describe 'when the link is present and does not include the backends ca cert' do
+      let(:links) do
+        [
+          Bosh::Template::Test::Link.new(
+            name: 'gorouter',
+            properties: {
+              'router' => {}
+            }
+          )
+        ]
+      end
+      it 'does not render the gorouter backends ca cert' do
+        client_ca = template.render(merged_manifest_properties, consumes: links)
+        expect(client_ca.strip).to eq('a ca cert')
+      end
+    end
+  end
+
+  describe 'config/certs/tcp-router/server.crt' do
+    let(:template) { job.template('config/certs/tcp-router/server.crt') }
+
+    it 'renders the server cert' do
+      client_ca = template.render(merged_manifest_properties)
+      expect(client_ca).to eq('the server cert')
+    end
+
+    describe 'when the server cert is not provided' do
+      before do
+        merged_manifest_properties['tcp_router'].delete('mtls_server_cert')
+      end
+
+      it 'should err' do
+        expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
+      end
+    end
+  end
+
+  describe 'config/keys/tcp-router/server.key' do
+    let(:template) { job.template('config/certs/tcp-router/server.key') }
+
+    it 'renders the server key' do
+      expect(template.render(merged_manifest_properties)).to eq('the server key')
+    end
+
+    describe 'when the server key is not provided' do
+      before do
+        merged_manifest_properties['tcp_router'].delete('mtls_server_key')
+      end
+
+      it 'should err' do
+        expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
+      end
+    end
+  end
+
+  describe 'tcp_router.yml' do
+    let(:template) { job.template('config/tcp_router.yml') }
+    let(:links) { [] }
+
+    subject(:rendered_config) do
+      YAML.safe_load(template.render(merged_manifest_properties, consumes: links))
+    end
+
+    describe "when the client cert isn't supplied" do
+      before do
+        merged_manifest_properties['tcp_router'].delete('mtls_client_cert')
+      end
+
+      it 'should error so that link consumers are ensured to have the property' do
+        expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
+      end
+    end
+
+    describe "when the client key isn't supplied" do
+      before do
+        merged_manifest_properties['tcp_router'].delete('mtls_client_key')
+      end
+
+      it 'should error so that link consumers are ensured to have the property' do
+        expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
+      end
+    end
+
+    it 'renders a file with default properties' do
+      expect(rendered_config).to eq('admin_port' => 15_897,
+                                    'lock_ttl' => '10s',
+                                    'retry_interval' => '5s',
+                                    'debug_address' => '127.0.0.1:17002',
+                                    'fail_on_router_port_conflicts' => false,
+                                    'locket' => {
+                                      'locket_address' => 'locket_server',
+                                      'locket_ca_cert_file' => '/var/vcap/jobs/tcp-router/config/certs/locket/ca.crt',
+                                      'locket_client_cert_file' => '/var/vcap/jobs/tcp-router/config/certs/locket/client.crt',
+                                      'locket_client_key_file' => '/var/vcap/jobs/tcp-router/config/certs/locket/client.key'
+                                    },
+                                    'log_guid' => 'tcp_router',
+                                    'max_ttl' => '120s',
+                                    'metrics_reporting_interval' => '30s',
+                                    'metron_config' => { 'address' => 'localhost', 'port' => 3457 },
+                                    'oauth' => {
+                                      'token_endpoint' => 'uaa.service.cf.internal',
+                                      'port' => 8080,
+                                      'skip_ssl_validation' => false
+                                    },
+                                    'api' => {
+                                      'listen_port' => 3000,
+                                      'http_enabled' => false,
+                                      'mtls_listen_port' => 3001,
+                                      'mtls_client_ca_file' => '/var/vcap/jobs/tcp-router/config/certs/routing-api/client_ca.crt',
+                                      'mtls_server_cert_file' => '/var/vcap/jobs/tcp-router/config/certs/routing-api/server.crt',
+                                      'mtls_server_key_file' => '/var/vcap/jobs/tcp-router/config/certs/routing-api/server.key'
+                                    },
+                                    'router_groups' => [],
+                                    'reserved_system_component_ports' => [2_822, 2_825, 3_457, 3_458, 3_459, 3_460, 3_461, 8_853, 9_100, 14_726, 14_727, 14_821, 14_822, 14_823, 14_824, 14_829,
+                                                                          14_830, 14_920, 14_922, 15_821, 17_002, 53_035, 53_080],
+                                    'sqldb' => {
+                                      'host' => 'host',
+                                      'port' => 1234,
+                                      'type' => 'mysql',
+                                      'schema' => 'schema',
+                                      'username' => 'username',
+                                      'password' => 'password',
+                                      'skip_hostname_validation' => false,
+                                      'max_open_connections' => 201,
+                                      'max_idle_connections' => 11,
+                                      'connections_max_lifetime_seconds' => 3601
+                                    },
+                                    'statsd_client_flush_interval' => '300ms',
+                                    'statsd_endpoint' => 'localhost:8125',
+                                    'system_domain' => 'the.system.domain',
+                                    'uuid' => 'xxxxxx-xxxxxxxx-xxxxx')
+    end
+
+    describe 'when overrideing the mTLS api listen port' do
+      before do
+        merged_manifest_properties['tcp_router']['mtls_port'] = 6000
+      end
+
+      it 'renders the overridden port' do
+        expect(rendered_config['api']['mtls_listen_port']).to eq(6000)
+      end
+    end
+
+    describe 'when overriding the api listen port' do
+      before do
+        merged_manifest_properties['tcp_router']['port'] = 6000
+      end
+
+      it 'renders the overridden port' do
+        expect(rendered_config['api']['listen_port']).to eq(6000)
+      end
+    end
+
+    describe 'when mtls is enabled' do
+      before do
+        merged_manifest_properties['tcp_router']['enabled_api_endpoints'] = 'mtls'
+      end
+
+      it 'enables just the mTLS API endpoint' do
+        expect(rendered_config['api']['http_enabled']).to eq(false)
+      end
+    end
+
+    describe 'when both are enabled' do
+      before do
+        merged_manifest_properties['tcp_router']['enabled_api_endpoints'] = 'both'
+      end
+
+      it 'enables the HTTP API endpoint' do
+        expect(rendered_config['api']['http_enabled']).to eq(true)
+      end
+    end
+
+    describe 'when an invalid api endpoints is specified' do
+      before do
+        merged_manifest_properties['tcp_router']['enabled_api_endpoints'] = 'junk'
+      end
+
+      it 'raises a validation error' do
+        expect { template.render(merged_manifest_properties) }.to raise_error(RuntimeError, "expected tcp_router.enabled_api_endpoints to be one of 'mtls' or 'both' but got 'junk'")
       end
     end
   end
