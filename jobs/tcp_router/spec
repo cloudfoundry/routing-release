@@ -14,6 +14,8 @@ templates:
   tcp_router_client_certificate.crt.erb: config/certs/tcp-router/client.crt
   tcp_router_client_private.key.erb: config/keys/tcp-router/client.key
   tcp_router_ca_certificate.crt.erb: config/certs/tcp-router/ca_cert.crt
+  tcp_router_server_certificate.crt.erb: config/certs/tcp-router/server.crt
+  tcp_router_server_private.key.erb: config/keys/tcp-router/server.key
   haproxy.conf.erb: config/haproxy.conf
   haproxy.conf.template.erb: config/haproxy.conf.template
   bpm.yml.erb: config/bpm.yml
@@ -32,6 +34,8 @@ provides:
 consumes:
   - name: routing_api
     type: routing_api
+    optional: true
+  - name: gorouter
     optional: true
 
 properties:
@@ -55,6 +59,10 @@ properties:
     description: "TCP Router Client Private Key"
   tcp_router.ca_cert:
     description: "TCP Router Certificate Authority"
+  tcp_router.server_cert:
+    description: "TCP Router Server Certificate"
+  tcp_router.server_private_key:
+    description: "TCP Router Server Private Key"
 
   routing_api.uri:
     description: "URL where the routing API can be reached internally"

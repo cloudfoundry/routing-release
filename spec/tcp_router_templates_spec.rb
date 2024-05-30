@@ -103,15 +103,18 @@ describe 'tcp_router' do
 
     describe 'when the client ca is not provided' do # TODO: the routing_api this is based on doesn't include the ca_cert property and relies on deletion of mtls to raise a template error
       before do
-        merged_manifest_properties['tcp_router'].delete('mtls_ca')
+        merged_manifest_properties['tcp_router'].delete('ca_cert')
       end
 
       it 'should err' do
-        expect { template.render(merged_manifest_properties) }.to raise_error Bosh::Template::UnknownProperty
+        expect { template.render(merged_manifest_properties) }.to raise_error(RuntimeError, 'TCP Router server ca certificate not found in properties nor in tcp_router Link. This value can be specified using the tcp_router.ca_cert property.')
       end
     end
 
     describe 'when the gorouter link is present and includes the backends ca' do
+      before do
+        merged_manifest_properties['tcp_router'].delete('ca_cert')
+      end
       let(:links) do
         [
           Bosh::Template::Test::Link.new(
@@ -170,7 +173,7 @@ describe 'tcp_router' do
   end
 
   describe 'config/keys/tcp-router/server.key' do
-    let(:template) { job.template('config/certs/tcp-router/server.key') }
+    let(:template) { job.template('config/keys/tcp-router/server.key') }
 
     it 'renders the server key' do
       expect(template.render(merged_manifest_properties)).to eq('the server key')

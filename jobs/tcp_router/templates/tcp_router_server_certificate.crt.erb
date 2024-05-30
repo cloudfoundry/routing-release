@@ -1,0 +1,14 @@
+<%=
+  def server_cert
+    if_p('tcp_router.server_cert') do |prop|
+      return prop
+    end.else do
+      if_link('tcp_router') do |link|
+        return link.p('tcp_router.mtls_server_cert')
+      end
+    end
+    raise RuntimeError, 'TCP server client certificate not found in properties nor in tcp_router Link. This value can be specified using the tcp_router.server_cert property.'
+  end
+
+  server_cert
+-%>
