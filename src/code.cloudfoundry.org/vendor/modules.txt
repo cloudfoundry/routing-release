@@ -64,7 +64,7 @@ code.cloudfoundry.org/locket/lock
 code.cloudfoundry.org/locket/metrics
 code.cloudfoundry.org/locket/metrics/helpers
 code.cloudfoundry.org/locket/models
-# code.cloudfoundry.org/tlsconfig v0.0.0-20240522170710-79df114af82a
+# code.cloudfoundry.org/tlsconfig v0.0.0-20240530171334-2593348de0c6
 ## explicit; go 1.19
 code.cloudfoundry.org/tlsconfig
 # filippo.io/edwards25519 v1.1.0
@@ -324,8 +324,8 @@ github.com/prometheus/client_model/go
 github.com/prometheus/common/expfmt
 github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg
 github.com/prometheus/common/model
-# github.com/prometheus/procfs v0.15.0
-## explicit; go 1.21
+# github.com/prometheus/procfs v0.15.1
+## explicit; go 1.20
 github.com/prometheus/procfs
 github.com/prometheus/procfs/internal/fs
 github.com/prometheus/procfs/internal/util

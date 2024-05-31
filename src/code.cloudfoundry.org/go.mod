@@ -23,7 +23,7 @@ require (
 	code.cloudfoundry.org/lager/v3 v3.0.3
 	code.cloudfoundry.org/localip v0.0.0-20240528171257-80c5abae8ed6
 	code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
-	code.cloudfoundry.org/tlsconfig v0.0.0-20240522170710-79df114af82a
+	code.cloudfoundry.org/tlsconfig v0.0.0-20240530171334-2593348de0c6
 	github.com/armon/go-proxyproto v0.1.0
 	github.com/cactus/go-statsd-client v3.2.1+incompatible
 	github.com/cloudfoundry-community/go-uaa v0.3.2
@@ -94,7 +94,7 @@ require (
 	github.com/prometheus/client_golang v1.19.1 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.53.0 // indirect
-	github.com/prometheus/procfs v0.15.0 // indirect
+	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/square/certstrap v1.3.0 // indirect
 	github.com/uber-go/atomic v1.11.0 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
