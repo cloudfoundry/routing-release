@@ -1,17 +1,31 @@
-# Known Issue: TCP Router Fails when Port Conflicts with Local Process
+---
+title: (routing-release-0.277.0) TCP Router Port Conflict
+expires_at: 2028-08-17
+tags: [routing-release,0.277.0]
+---
 
-## 🔥 Affected Versions
+<!-- vim-markdown-toc GFM -->
 
-* All versions of routing-release 
+* [(routing-release-0.277.0) TCP Router Port Conflict](#routing-release-02770-tcp-router-port-conflict)
+  * [📑 Context](#-context)
+  * [🔥 Affected Versions](#-affected-versions)
+  * [✔️ Operator Checklist](#-operator-checklist)
+  * [🐛 Bug Variation 1 - TCP Router claims the port first](#-bug-variation-1---tcp-router-claims-the-port-first)
+    * [Symptoms](#symptoms)
+    * [Explanation](#explanation)
+  * [🐞 Bug Variation 2 - Internal component claims the port first](#-bug-variation-2---internal-component-claims-the-port-first)
+    * [Symptoms](#symptoms-1)
+    * [Explanation](#explanation-1)
+  * [🧰 Fix](#-fix)
+    * [Overview](#overview)
+    * [New Bosh Properties](#new-bosh-properties)
+    * [Runtime Check Details](#runtime-check-details)
+    * [Deploytime Check Details](#deploytime-check-details)
+  * [🗨️ FAQ](#-faq)
+  * [📝 <a name="list-of-ports"></a>Appendix A: Default System Component Ports](#-a-namelist-of-portsaappendix-a-default-system-component-ports)
 
-## ✔️ Operator Checklist
-* [ ] Read this doc.
-* [ ] Compare the listening ports on your TCP Router VM to the list below. See how [here](#how-to-check).
-* [ ] Update your manifest to make `routing_api.reserved_system_component_ports` match the ports you learned about from step 2. See bosh properties details [here](#new-bosh-properties).
-* [ ] Upgrade to a version of routing-release with these fixes.
-* [ ] Look at the TCP Router logs to see if any exisiting router groups are invalid. See logs to look for [here](#fix).
-* [ ] Fix invalid router groups. See routing-api documentation [here](https://github.com/cloudfoundry/routing-api/blob/main/docs/api_docs.md#update-router-group).
-* [ ] Re-run the check to make sure all router groups are valid. See how [here](#how-to-rerun).
+<!-- vim-markdown-toc -->
+# (routing-release-0.277.0) TCP Router Port Conflict
 
 ## 📑 Context
 
@@ -24,6 +38,20 @@ These port suggestions do not overlap with any ports used by system components.
 However, there is nothing (until now) preventing users from expanding this range into ports that *do* overlap with ports used by system components.
 
 This port conflict can result in two different buggy outcomes.
+
+## 🔥 Affected Versions
+
+* All versions of routing-release before 0.277.0
+
+## ✔️ Operator Checklist
+* [ ] Read this doc.
+* [ ] Compare the listening ports on your TCP Router VM to the list below. See how [here](#how-to-check).
+* [ ] Update your manifest to make `routing_api.reserved_system_component_ports` match the ports you learned about from step 2. See bosh properties details [here](#new-bosh-properties).
+* [ ] Upgrade to a version of routing-release with these fixes.
+* [ ] Look at the TCP Router logs to see if any exisiting router groups are invalid. See logs to look for [here](#fix).
+* [ ] Fix invalid router groups. See routing-api documentation [here](https://github.com/cloudfoundry/routing-api/blob/main/docs/api_docs.md#update-router-group).
+* [ ] Re-run the check to make sure all router groups are valid. See how [here](#how-to-rerun).
+
 
 ## 🐛 Bug Variation 1 - TCP Router claims the port first
 
@@ -64,7 +92,7 @@ The fix for this issues focuses on preventing the creation of router groups that
 * a runtime check for creating and updating router groups
 * a deploytime check for exising router groups
  
-These fixes are available in routing release XYZ+ (will update when released). If you cannot update at this time, you can fix your routing groups manually. See [here](#how-to-manually-fix) for instructions.
+These fixes are available in routing release v0.277.0+. If you cannot update at this time, you can fix your routing groups manually. See [here](#how-to-manually-fix) for instructions.
 
 ### New Bosh Properties
 

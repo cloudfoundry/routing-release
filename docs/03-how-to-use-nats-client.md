@@ -1,4 +1,10 @@
-# NATS Client
+---
+title: How To Use NATS Client
+expires_at: never
+tags: [routing-release]
+---
+
+# How To Use NATS Client
 
 ## What is it?
 

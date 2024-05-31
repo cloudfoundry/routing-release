@@ -1,4 +1,10 @@
-# X-CF Headers
+---
+title: How To Use X-CF Headers
+expires_at: never
+tags: [routing-release]
+---
+
+# How To Use X-CF Headers
 
 | Header | If a client provides this header will that affect routing decisions? | Value | More info |
 | -- | -- | -- | -- |
