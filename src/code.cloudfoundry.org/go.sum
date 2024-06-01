@@ -600,8 +600,8 @@ code.cloudfoundry.org/clock v1.1.0 h1:XLzC6W3Ah/Y7ht1rmZ6+QfPdt1iGWEAAtIZXgiaj57
 code.cloudfoundry.org/clock v1.1.0/go.mod h1:yA3fxddT9RINQL2XHS7PS+OXxKCGhfrZmlNUCIM6AKo=
 code.cloudfoundry.org/debugserver v0.0.0-20240528171256-ba541ff4aaaf h1:jLs0boRQQHC7PKVNjXXxpuhPPTTAleoyhg72Jj4vQtU=
 code.cloudfoundry.org/debugserver v0.0.0-20240528171256-ba541ff4aaaf/go.mod h1:uq2VgiP6cxx2HNWWyfLCM16v5zHuFfwMb8u4EqJtEE4=
-code.cloudfoundry.org/diego-logging-client v0.0.0-20240529171340-a2004ccdc223 h1:4VSpVuPELJMDYH3+aOJVUUko2oVKFxfPZTfcdYBj0As=
-code.cloudfoundry.org/diego-logging-client v0.0.0-20240529171340-a2004ccdc223/go.mod h1:L2ruOrzZPS2XnWf7KRWJVLBQlPn3A3vGPuvdWf/zoSQ=
+code.cloudfoundry.org/diego-logging-client v0.0.0-20240531171534-fd452ceff3ef h1:WZHkYKcxF27RREwC8jceZaeYdkJkzA5gtnwqBsL4RyI=
+code.cloudfoundry.org/diego-logging-client v0.0.0-20240531171534-fd452ceff3ef/go.mod h1:KY3qgshYJC12eOEyIqo/M2WDjB/GQoolVHV8544aoL0=
 code.cloudfoundry.org/durationjson v0.0.0-20240528171241-639cd04bbf26 h1:9mCOA2ZvhRkwA+eAtNr9W201XoKcd94gom4BNPsXlh8=
 code.cloudfoundry.org/durationjson v0.0.0-20240528171241-639cd04bbf26/go.mod h1:ercPOcyAyPXWs9lt4QL8yRw3MI/7CqeG4J3f970/Lko=
 code.cloudfoundry.org/eventhub v0.0.0-20240528171240-70fc08e4e541 h1:K0jqNUm2yI/FOgF3DMywXvc/8i5ZGLBPR5azHwZbdJI=
