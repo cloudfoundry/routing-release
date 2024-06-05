@@ -262,6 +262,9 @@ properties:
   router.route_services_timeout:
     description: "Expiry time of a route service signature in seconds"
     default: 60
+  router.route_services_strict_signature_validation:
+      description: "Enforce strict validation of a route service signature"
+      default: false
   router.max_header_kb:
     description: |
         This value controls the maximum number of bytes (in KB) the gorouter will read

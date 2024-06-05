@@ -188,7 +188,8 @@ describe 'gorouter' do
           'route_services' => {
             'max_attempts' => 3,
             'cert_chain' => ROUTE_SERVICES_CLIENT_TEST_CERT,
-            'private_key' => ROUTE_SERVICES_CLIENT_TEST_KEY
+            'private_key' => ROUTE_SERVICES_CLIENT_TEST_KEY,
+            'strict_signature_validation' => false
           },
           'frontend_idle_timeout' => 5,
           'ip_local_port_range' => '1024 65535',
@@ -656,6 +657,19 @@ describe 'gorouter' do
           it 'should not error and should not configure the properties' do
             expect(parsed_yaml['route_services']['cert_chain']).to eq('')
             expect(parsed_yaml['route_services']['private_key']).to eq('')
+          end
+        end
+        context 'when strict_signature_validation not set' do
+          it 'defaults to false' do
+            expect(parsed_yaml['route_services']['strict_signature_validation']).to eq(false)
+          end
+        end
+        context 'when strict_signature_validation enabled' do
+          before do
+            deployment_manifest_fragment['router']['route_services_strict_signature_validation'] = true
+          end
+          it 'parses to true' do
+            expect(parsed_yaml['route_services']['strict_signature_validation']).to eq(true)
           end
         end
       end
