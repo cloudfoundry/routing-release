@@ -13,16 +13,16 @@ code.cloudfoundry.org/cfhttp/v2
 ## explicit; go 1.20
 code.cloudfoundry.org/clock
 code.cloudfoundry.org/clock/fakeclock
-# code.cloudfoundry.org/debugserver v0.0.0-20240604172006-4dee5ddcdb7c
+# code.cloudfoundry.org/debugserver v0.0.0-20240605172147-3433a40ea1bc
 ## explicit; go 1.19
 code.cloudfoundry.org/debugserver
-# code.cloudfoundry.org/diego-logging-client v0.0.0-20240604172016-489f4029d3f1
+# code.cloudfoundry.org/diego-logging-client v0.0.0-20240605172200-e2549c297631
 ## explicit; go 1.21
 code.cloudfoundry.org/diego-logging-client
-# code.cloudfoundry.org/durationjson v0.0.0-20240604172003-0d793792bfe4
+# code.cloudfoundry.org/durationjson v0.0.0-20240605172149-1c08fce07291
 ## explicit; go 1.19
 code.cloudfoundry.org/durationjson
-# code.cloudfoundry.org/eventhub v0.0.0-20240604172006-e8f3e3d06960
+# code.cloudfoundry.org/eventhub v0.0.0-20240605172144-c5372e294841
 ## explicit; go 1.19
 code.cloudfoundry.org/eventhub
 # code.cloudfoundry.org/go-diodes v0.0.0-20240604201846-c756bfed2ed3
@@ -46,7 +46,7 @@ code.cloudfoundry.org/lager/v3/internal/truncate
 code.cloudfoundry.org/lager/v3/lagerctx
 code.cloudfoundry.org/lager/v3/lagerflags
 code.cloudfoundry.org/lager/v3/lagertest
-# code.cloudfoundry.org/localip v0.0.0-20240604172015-484561499a86
+# code.cloudfoundry.org/localip v0.0.0-20240605172145-e093a99dad61
 ## explicit; go 1.20
 code.cloudfoundry.org/localip
 # code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
@@ -178,7 +178,7 @@ github.com/honeycombio/libhoney-go/version
 # github.com/jackc/pgpassfile v1.0.0
 ## explicit; go 1.12
 github.com/jackc/pgpassfile
-# github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9
+# github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761
 ## explicit; go 1.14
 github.com/jackc/pgservicefile
 # github.com/jackc/pgx/v5 v5.6.0
@@ -366,7 +366,7 @@ github.com/vmihailenco/msgpack/v5/msgpcode
 github.com/vmihailenco/tagparser/v2
 github.com/vmihailenco/tagparser/v2/internal
 github.com/vmihailenco/tagparser/v2/internal/parser
-# go.step.sm/crypto v0.46.0
+# go.step.sm/crypto v0.47.0
 ## explicit; go 1.20
 go.step.sm/crypto/fingerprint
 go.step.sm/crypto/internal/bcrypt_pbkdf

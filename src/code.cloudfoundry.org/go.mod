@@ -17,11 +17,11 @@ require (
 	code.cloudfoundry.org/bbs v0.0.0-20240521125508-20d3971ce31b
 	code.cloudfoundry.org/cfhttp/v2 v2.1.0
 	code.cloudfoundry.org/clock v1.1.0
-	code.cloudfoundry.org/debugserver v0.0.0-20240604172006-4dee5ddcdb7c
-	code.cloudfoundry.org/eventhub v0.0.0-20240604172006-e8f3e3d06960
+	code.cloudfoundry.org/debugserver v0.0.0-20240605172147-3433a40ea1bc
+	code.cloudfoundry.org/eventhub v0.0.0-20240605172144-c5372e294841
 	code.cloudfoundry.org/go-metric-registry v0.0.0-20240604201903-7cef498efb7a
 	code.cloudfoundry.org/lager/v3 v3.0.3
-	code.cloudfoundry.org/localip v0.0.0-20240604172015-484561499a86
+	code.cloudfoundry.org/localip v0.0.0-20240605172145-e093a99dad61
 	code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
 	code.cloudfoundry.org/tlsconfig v0.0.0-20240604172015-5be76e21ea65
 	github.com/armon/go-proxyproto v0.1.0
@@ -50,7 +50,7 @@ require (
 	github.com/uber-go/zap v1.27.0
 	github.com/urfave/negroni/v3 v3.1.1
 	github.com/vito/go-sse v1.0.0
-	go.step.sm/crypto v0.46.0
+	go.step.sm/crypto v0.47.0
 	golang.org/x/crypto v0.24.0
 	golang.org/x/net v0.26.0
 	golang.org/x/oauth2 v0.21.0
@@ -61,8 +61,8 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.0.0-20240604172016-489f4029d3f1 // indirect
-	code.cloudfoundry.org/durationjson v0.0.0-20240604172003-0d793792bfe4 // indirect
+	code.cloudfoundry.org/diego-logging-client v0.0.0-20240605172200-e2549c297631 // indirect
+	code.cloudfoundry.org/durationjson v0.0.0-20240605172149-1c08fce07291 // indirect
 	code.cloudfoundry.org/go-diodes v0.0.0-20240604201846-c756bfed2ed3 // indirect
 	code.cloudfoundry.org/go-loggregator/v9 v9.2.1 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
@@ -81,7 +81,7 @@ require (
 	github.com/google/pprof v0.0.0-20240528025155-186aa0362fba // indirect
 	github.com/honeycombio/libhoney-go v1.22.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
-	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
+	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/pgx/v5 v5.6.0 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
