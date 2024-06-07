@@ -64,7 +64,7 @@ code.cloudfoundry.org/locket/lock
 code.cloudfoundry.org/locket/metrics
 code.cloudfoundry.org/locket/metrics/helpers
 code.cloudfoundry.org/locket/models
-# code.cloudfoundry.org/tlsconfig v0.0.0-20240604172015-5be76e21ea65
+# code.cloudfoundry.org/tlsconfig v0.0.0-20240606172222-82aa02bc07ea
 ## explicit; go 1.19
 code.cloudfoundry.org/tlsconfig
 # filippo.io/edwards25519 v1.1.0
