@@ -10,9 +10,6 @@ replace github.com/codegangsta/cli => github.com/codegangsta/cli v1.6.0
 
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
 
-// Use forked negroni to work around https://github.com/cloudfoundry/routing-release/issues/409 until https://github.com/urfave/negroni/pull/277 is merged
-replace github.com/urfave/negroni/v3 => github.com/geofffranks/negroni/v3 v3.0.0-20240514190444-68130a0ac8eb
-
 require (
 	code.cloudfoundry.org/bbs v0.0.0-20240521125508-20d3971ce31b
 	code.cloudfoundry.org/cfhttp/v2 v2.1.0
