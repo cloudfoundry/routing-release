@@ -351,7 +351,7 @@ github.com/uber-go/atomic
 # github.com/uber-go/zap v1.27.0 => github.com/uber-go/zap v0.0.0-20161222040304-a5783ee4b216
 ## explicit
 github.com/uber-go/zap
-# github.com/urfave/negroni/v3 v3.1.1 => github.com/geofffranks/negroni/v3 v3.0.0-20240514190444-68130a0ac8eb
+# github.com/urfave/negroni/v3 v3.1.1
 ## explicit; go 1.17
 github.com/urfave/negroni/v3
 # github.com/vito/go-sse v1.0.0
@@ -608,4 +608,3 @@ gopkg.in/yaml.v3
 # github.com/uber-go/atomic => github.com/uber-go/atomic v1.1.0
 # github.com/codegangsta/cli => github.com/codegangsta/cli v1.6.0
 # github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
-# github.com/urfave/negroni/v3 => github.com/geofffranks/negroni/v3 v3.0.0-20240514190444-68130a0ac8eb
