@@ -1,66 +1,47 @@
 # Routing Release
 
-This repository is a [BOSH release](https://github.com/cloudfoundry/bosh) for
-deploying Gorouter, TCP Routing, and other associated tasks that provide HTTP and TCP routing in Cloud Foundry foundations.
+This repository is a [BOSH](https://github.com/cloudfoundry/bosh)
+release for deploying Gorouter, TCP Routing, and other associated tasks
+that provide HTTP and TCP routing in Cloud Foundry foundations.
 
-## Downloads
+For information on getting started with Cloud Foundry look at the docs
+for [CF Deployment](https://github.com/cloudfoundry/cf-deployment).
 
-Our BOSH release is available on [bosh.io](http://bosh.io/releases/github.com/cloudfoundry/routing-release)
-and on our [GitHub Releases page](https://github.com/cloudfoundry/routing-release/releases).
+# Docs
 
-## Getting Help
+-   [How To enable Quotas for TCP
+    Routing](./docs/03-how-to-enable-quota-tcp-routing.md)
+-   [How To Limit Trusted CAs for
+    Gorouter](./docs/03-how-to-limit-trusted-cas-for-gorouter.md)
+-   [How To Use NATS Client](./docs/03-how-to-use-nats-client.md)
+-   [How To Use Session
+    Affinity](./docs/03-how-to-use-session-affinity.md)
+-   [How To Use X-CF Headers](./docs/03-how-to-use-x-cf-headers.md)
+-   [(go1.15) Fixing Bad
+    Transfer-Encoding](./docs/04-go1.15-fixing-bad-transfer-encoding.md)
+-   [(go1.15) X.509 CommonName
+    deprecation](./docs/04-go1.15-x509-commonname-deprecation.md)
+-   [(go1.20) Multiple Expect 100-continue
+    responses](./docs/04-go1.20-multiple-expect-100-continue.md)
+-   [(routing-release-0.262.0) Healthy App Route
+    Pruning](./docs/04-routing-0.262.0-healthy-app-route-pruning.md)
+-   [(routing-release-0.277.0) TCP Router Port
+    Conflict](./docs/04-routing-0.277.0-tcp-router-port-conflict.md)
+-   [High Availability & Scaling](./docs/05-high-availbility-scaling.md)
 
-If you have a concrete issue to report or a change to request, please create a
-[Github issue on
-routing-release](https://github.com/cloudfoundry/routing-release/issues/new/choose).
+# Contributing
 
-Issues with any related submodules
-([Gorouter](https://github.com/cloudfoundry/gorouter), [Routing
-API](https://github.com/cloudfoundry/routing-api), [Route
-Registrar](https://github.com/cloudfoundry/route-registrar), [CF TCP
-Router](https://github.com/cloudfoundry/cf-tcp-router)) should be created here
-instead.
+See the [Contributing.md](./.github/CONTRIBUTING.md) for more
+information on how to contribute.
 
-You can also reach us on Slack at
-[cloudfoundry.slack.com](https://cloudfoundry.slack.com) in the
-[`#cf-for-vms-networking`](https://cloudfoundry.slack.com/app_redirect?channel=C01ABMVNE9E).
-channel.
+# Working Group Charter
 
-## Contributing
-See the [Contributing.md](./.github/CONTRIBUTING.md) for more information on how to contribute.
+This repository is maintained by [App Runtime
+Platform](https://github.com/cloudfoundry/community/blob/main/toc/working-groups/app-runtime-platform.md)
+under `Networking` area.
 
-## Table of Contents
-1. [Routing Operator Resources](#routing-operator-resources)
-1. [Routing App Developer Resources](#routing-app-developer-resources)
-1. [Routing Contributor Resources](#routing-contributor-resources)
-
----
-## <a name="routing-operator-resources"></a> Routing Operator Resources
-### <a name="high-availability"></a> High Availability
-
-The TCP Router and Routing API are stateless and horizontally scalable. The TCP
-Routers must be fronted by a load balancer for high-availability. The Routing
-API depends on a database, that can be clustered for high-availability. For high
-availability, deploy multiple instances of each job, distributed across regions
-of your infrastructure.
-
-### <a name="routing-api"></a> Routing API
-For details refer to [Routing API](https://github.com/cloudfoundry/routing-api/blob/master/README.md).
-
-### <a name="metrics"></a> Metrics
-For documentation on metrics available for streaming from Routing components
-through the Loggregator
-[Firehose](https://docs.cloudfoundry.org/loggregator/architecture.html), visit
-the [CloudFoundry
-Documentation](http://docs.cloudfoundry.org/loggregator/all_metrics.html#routing).
-You can use the [NOAA Firehose sample app](https://github.com/cloudfoundry/noaa)
-to quickly consume metrics from the Firehose.
-## <a name="routing-app-developer-resources"></a> Routing App Developer Resources
-
-### <a name="session-affinity"></a> Session Affinity
-For more information on how Routing release accomplishes session affinity, i.e.
-sticky sessions, refer to the [Session Affinity document](docs/session-affinity.md).
-
-### <a name="headers"></a> Headers
-[X-CF Headers](/docs/x_cf_headers.md) describes the X-CF headers that are set on requests and responses inside of CF.
-
+> \[!IMPORTANT\]
+>
+> Content in this file is managed by the [CI task
+> `sync-readme`](https://github.com/cloudfoundry/wg-app-platform-runtime-ci/blob/c83c224ad06515ed52f51bdadf6075f56300ec93/shared/tasks/sync-readme/metadata.yml)
+> and is generated by CI following a convention.
