@@ -600,8 +600,8 @@ code.cloudfoundry.org/clock v1.1.0 h1:XLzC6W3Ah/Y7ht1rmZ6+QfPdt1iGWEAAtIZXgiaj57
 code.cloudfoundry.org/clock v1.1.0/go.mod h1:yA3fxddT9RINQL2XHS7PS+OXxKCGhfrZmlNUCIM6AKo=
 code.cloudfoundry.org/debugserver v0.0.0-20240605172147-3433a40ea1bc h1:8/ZQ94SzErTOQauUS8+m8dBASYOQXI7SNidpoBrXEXc=
 code.cloudfoundry.org/debugserver v0.0.0-20240605172147-3433a40ea1bc/go.mod h1:1pcxPb5e3omAEcU4hXW3zy1D4qfi0Ttyh3vmhGb1PdA=
-code.cloudfoundry.org/diego-logging-client v0.0.0-20240607172319-a6c635476209 h1:PlsEnMpnqQ7RpQVe2BU9/eDQ5q4dZkV3hZ2+daev2Og=
-code.cloudfoundry.org/diego-logging-client v0.0.0-20240607172319-a6c635476209/go.mod h1:HjPyuTujjbCeZoRfm0K0nYyi7fzTJINQ+M0I7mQuXy8=
+code.cloudfoundry.org/diego-logging-client v0.0.0-20240610172700-1709b2f54f2e h1:VLxRG4Ej20LlY+CbpjdjXRaq49g8n6QzNJWWW5YYqb4=
+code.cloudfoundry.org/diego-logging-client v0.0.0-20240610172700-1709b2f54f2e/go.mod h1:KjGaeGLViVqGPE9xt7vlVF7pdme87Xz8GzC6YllpUHQ=
 code.cloudfoundry.org/durationjson v0.0.0-20240605172149-1c08fce07291 h1:k1AK823tnpP3T+OKOdU6rdV9ddNDFYA0E3gcArn1LXU=
 code.cloudfoundry.org/durationjson v0.0.0-20240605172149-1c08fce07291/go.mod h1:L6sgZgivKogoY3mLklqlbCxRKtht3p8tU8PrP8gdCSU=
 code.cloudfoundry.org/eventhub v0.0.0-20240605172144-c5372e294841 h1:waINvCqdnykd91Y7pnmm41jGkD/KZVcdugBkTGcv/4U=
@@ -1760,8 +1760,8 @@ google.golang.org/protobuf v1.28.0/go.mod h1:HV8QOd/L58Z+nl8r43ehVNZIU/HEI6OcFqw
 google.golang.org/protobuf v1.28.1/go.mod h1:HV8QOd/L58Z+nl8r43ehVNZIU/HEI6OcFqwMG9pJV4I=
 google.golang.org/protobuf v1.29.1/go.mod h1:HV8QOd/L58Z+nl8r43ehVNZIU/HEI6OcFqwMG9pJV4I=
 google.golang.org/protobuf v1.30.0/go.mod h1:HV8QOd/L58Z+nl8r43ehVNZIU/HEI6OcFqwMG9pJV4I=
-google.golang.org/protobuf v1.34.1 h1:9ddQBjfCyZPOHPUiPxpYESBLc+T8P3E+Vo4IbKZgFWg=
-google.golang.org/protobuf v1.34.1/go.mod h1:c6P6GXX6sHbq/GpV6MGZEdwhWPcYBgnhAHhKbcUYpos=
+google.golang.org/protobuf v1.34.2 h1:6xV6lTsCfpGD21XK49h7MhtcApnLqkfYgPcdHftf6hg=
+google.golang.org/protobuf v1.34.2/go.mod h1:qYOHts0dSfpeUzUFpOMr/WGzszTmLH+DiWniOlNbLDw=
 gopkg.in/alexcesaro/statsd.v2 v2.0.0 h1:FXkZSCZIH17vLCO5sO2UucTHsH9pc+17F6pl3JVCwMc=
 gopkg.in/alexcesaro/statsd.v2 v2.0.0/go.mod h1:i0ubccKGzBVNBpdGV5MocxyA/XlLUJzA7SLonnE4drU=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=

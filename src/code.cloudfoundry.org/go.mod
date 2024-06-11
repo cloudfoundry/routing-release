@@ -53,12 +53,12 @@ require (
 	golang.org/x/oauth2 v0.21.0
 	golang.org/x/tools v0.22.0
 	google.golang.org/grpc v1.64.0
-	google.golang.org/protobuf v1.34.1
+	google.golang.org/protobuf v1.34.2
 	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.0.0-20240607172319-a6c635476209 // indirect
+	code.cloudfoundry.org/diego-logging-client v0.0.0-20240610172700-1709b2f54f2e // indirect
 	code.cloudfoundry.org/durationjson v0.0.0-20240605172149-1c08fce07291 // indirect
 	code.cloudfoundry.org/go-diodes v0.0.0-20240604201846-c756bfed2ed3 // indirect
 	code.cloudfoundry.org/go-loggregator/v9 v9.2.1 // indirect
