@@ -1,4 +1,10 @@
-# Session Affinity
+---
+title: How To Use Session Affinity
+expires_at: never
+tags: [routing-release]
+---
+
+# How To Use Session Affinity
 
 ## What is it?
 

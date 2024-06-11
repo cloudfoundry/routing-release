@@ -1,4 +1,10 @@
-# Limiting Trusted CAs for Gorouter
+---
+title: How To Limit Trusted CAs for Gorouter
+expires_at: never
+tags: [routing-release]
+---
+
+# How to Limit Trusted CAs for Gorouter
 
 This doc is for operators who want to use the new "only trust client CA certs" feature for gorouter to limit the CA certs that gorouter trusts. 
 

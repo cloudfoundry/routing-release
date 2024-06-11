@@ -1,17 +1,31 @@
-# Known Issue: TCP Router Fails when Port Conflicts with Local Process
+---
+title: (routing-release-0.277.0) TCP Router Port Conflict
+expires_at: 2028-08-17
+tags: [routing-release,0.277.0]
+---
 
-## 🔥 Affected Versions
+<!-- vim-markdown-toc GFM -->
 
-* All versions of routing-release 
+* [(routing-release-0.277.0) TCP Router Port Conflict](#routing-release-02770-tcp-router-port-conflict)
+  * [📑 Context](#-context)
+  * [🔥 Affected Versions](#-affected-versions)
+  * [✔️ Operator Checklist](#-operator-checklist)
+  * [🐛 Bug Variation 1 - TCP Router claims the port first](#-bug-variation-1---tcp-router-claims-the-port-first)
+    * [Symptoms](#symptoms)
+    * [Explanation](#explanation)
+  * [🐞 Bug Variation 2 - Internal component claims the port first](#-bug-variation-2---internal-component-claims-the-port-first)
+    * [Symptoms](#symptoms-1)
+    * [Explanation](#explanation-1)
+  * [🧰 Fix](#-fix)
+    * [Overview](#overview)
+    * [New Bosh Properties](#new-bosh-properties)
+    * [Runtime Check Details](#runtime-check-details)
+    * [Deploytime Check Details](#deploytime-check-details)
+  * [🗨️ FAQ](#-faq)
+  * [📝 <a name="list-of-ports"></a>Appendix A: Default System Component Ports](#-a-namelist-of-portsaappendix-a-default-system-component-ports)
 
-## ✔️ Operator Checklist
-* [ ] Read this doc.
-* [ ] Compare the listening ports on your TCP Router VM to the list below. See how [here](#how-to-check).
-* [ ] Update your manifest to make `routing_api.reserved_system_component_ports` match the ports you learned about from step 2. See bosh properties details [here](#new-bosh-properties).
-* [ ] Upgrade to a version of routing-release with these fixes.
-* [ ] Look at the TCP Router logs to see if any exisiting router groups are invalid. See logs to look for [here](#fix).
-* [ ] Fix invalid router groups. See routing-api documentation [here](https://github.com/cloudfoundry/routing-api/blob/main/docs/api_docs.md#update-router-group).
-* [ ] Re-run the check to make sure all router groups are valid. See how [here](#how-to-rerun).
+<!-- vim-markdown-toc -->
+# (routing-release-0.277.0) TCP Router Port Conflict
 
 ## 📑 Context
 
@@ -24,6 +38,20 @@ These port suggestions do not overlap with any ports used by system components.
 However, there is nothing (until now) preventing users from expanding this range into ports that *do* overlap with ports used by system components.
 
 This port conflict can result in two different buggy outcomes.
+
+## 🔥 Affected Versions
+
+* All versions of routing-release before 0.277.0
+
+## ✔️ Operator Checklist
+* [ ] Read this doc.
+* [ ] Compare the listening ports on your TCP Router VM to the list below. See how [here](#how-to-check).
+* [ ] Update your manifest to make `routing_api.reserved_system_component_ports` match the ports you learned about from step 2. See bosh properties details [here](#new-bosh-properties).
+* [ ] Upgrade to a version of routing-release with these fixes.
+* [ ] Look at the TCP Router logs to see if any exisiting router groups are invalid. See logs to look for [here](#fix).
+* [ ] Fix invalid router groups. See routing-api documentation [here](https://github.com/cloudfoundry/routing-api/blob/main/docs/api_docs.md#update-router-group).
+* [ ] Re-run the check to make sure all router groups are valid. See how [here](#how-to-rerun).
+
 
 ## 🐛 Bug Variation 1 - TCP Router claims the port first
 
@@ -64,7 +92,7 @@ The fix for this issues focuses on preventing the creation of router groups that
 * a runtime check for creating and updating router groups
 * a deploytime check for exising router groups
  
-These fixes are available in routing release XYZ+ (will update when released). If you cannot update at this time, you can fix your routing groups manually. See [here](#how-to-manually-fix) for instructions.
+These fixes are available in routing release v0.277.0+. If you cannot update at this time, you can fix your routing groups manually. See [here](#how-to-manually-fix) for instructions.
 
 ### New Bosh Properties
 
@@ -227,7 +255,7 @@ Some of these ports are configurable and may not match what is running on your d
 | 14823 | loggr-forwarder-agent | metrics.port | no | See bosh property [here](https://github.com/cloudfoundry/loggregator-agent-release/blob/acfbb6b015d897c11f715ac9e1a226eb5b96875c/jobs/loggr-forwarder-agent/spec#L51-L53) |
 | 14824 | loggregator_agent | metrics.port | no | See bosh property [here](https://github.com/cloudfoundry/loggregator-agent-release/blob/acfbb6b015d897c11f715ac9e1a226eb5b96875c/jobs/loggregator_agent/spec#L78-L80). |
 | 14829 | loggr-udp-forwarder | metrics.port | no | See bosh property [here](https://github.com/cloudfoundry/loggregator-agent-release/blob/acfbb6b015d897c11f715ac9e1a226eb5b96875c/jobs/loggr-udp-forwarder/spec#L44-L46). |
-| 14830 | otel-collector | TBD | n/a | This port is used for the collector's metrics. This port was previously used by loggr-udp-forwarder, however it was disabled there. See bosh property [here](TBD). See [this issue](https://github.com/cloudfoundry/loggregator-agent-release/issues/44) for more historical information. |
+| 14830 | otel-collector | TBD | n/a | This port is used for the collector's metrics. This port was previously used by loggr-udp-forwarder, however it was disabled there. See [this issue](https://github.com/cloudfoundry/loggregator-agent-release/issues/44) for more historical information. |
 | 14920* | system-metrics-scraper | metrics_port | no | *This job does not run on TCP router or Gorouter! However you should not use it for an agent that will be deployed along side that job. See bosh property [here](https://github.com/cloudfoundry/system-metrics-scraper-release/blob/473caa08af286e617e7391111639a70846d35de0/jobs/loggr-system-metric-scraper/spec#L58-L60). |
 | ~14921*~ | ~system-metrics-scraper~ | ~n/a~ | ~n/a~ | *This port was considered for a debug port, but it turns out it's in use by leadership-election which does not run on tcp-router. It is not reserved in TCP Router.  See [this issue](https://github.com/cloudfoundry/system-metrics-scraper-release/issues/2) for more information. |
 | 14922 | system-metrics-agent | debug_port | no | See bosh property [here](https://github.com/cloudfoundry/system-metrics-release/blob/4e22e11ba4d72c5bd6895b94a75d67c212cfaa22/jobs/loggr-system-metrics-agent/spec#L20) |
