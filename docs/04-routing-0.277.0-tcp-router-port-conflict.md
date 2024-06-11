@@ -29,7 +29,7 @@ tags: [routing-release,0.277.0]
 
 ## 📑 Context
 
-Each TCP route requires one port on the TCP Router VM. Ports for TCP routes are managed via [router groups](https://github.com/cloudfoundry/routing-api/blob/main/docs/api_docs.md#create-router-groups). Each router group has a list of `reservable_ports`. 
+Each TCP route requires one port on the TCP Router VM. Ports for TCP routes are managed via [router groups](https://github.com/cloudfoundry/routing-api/blob/main/docs/02-api-docs.md#create-router-groups). Each router group has a list of `reservable_ports`. 
 The [Cloud Foundry documentation for "Enabling and Configuring TCP Routing"](https://docs.cloudfoundry.org/adminguide/enabling-tcp-routing.html#-modify-tcp-port-reservations) has the following warning and suggestions for valid port ranges:
 
 > Do not enter reservable_ports that conflict with other TCP router instances or ephemeral port ranges. Cloud Foundry recommends using port ranges within 1024-2047 and 18000-32767 on default installations.
@@ -49,7 +49,7 @@ This port conflict can result in two different buggy outcomes.
 * [ ] Update your manifest to make `routing_api.reserved_system_component_ports` match the ports you learned about from step 2. See bosh properties details [here](#new-bosh-properties).
 * [ ] Upgrade to a version of routing-release with these fixes.
 * [ ] Look at the TCP Router logs to see if any exisiting router groups are invalid. See logs to look for [here](#fix).
-* [ ] Fix invalid router groups. See routing-api documentation [here](https://github.com/cloudfoundry/routing-api/blob/main/docs/api_docs.md#update-router-group).
+* [ ] Fix invalid router groups. See routing-api documentation [here](https://github.com/cloudfoundry/routing-api/blob/main/docs/02-api-docs.md#update-router-group).
 * [ ] Re-run the check to make sure all router groups are valid. See how [here](#how-to-rerun).
 
 
@@ -209,7 +209,7 @@ To see if there is a system component using that port run `netstat -tlpn | grep 
 
 <a name="how-to-manually-fix"></a> **❓ I can't upgrade yet. Is there another way I could check to see if there are invalid router groups?**
 
-Yes! You don't need our fancy automation, you can do it yourself. First grab all of the ports from the TCP Router VM (see instructions [here](#how-to-check)). Then grab all of your router groups (see docs [here](https://github.com/cloudfoundry/routing-api/blob/main/docs/api_docs.md#list-router-groups)). Then check all of the router groups to make sure they don't include any of the system component ports.
+Yes! You don't need our fancy automation, you can do it yourself. First grab all of the ports from the TCP Router VM (see instructions [here](#how-to-check)). Then grab all of your router groups (see docs [here](https://github.com/cloudfoundry/routing-api/blob/main/docs/02-api-docs.md#list-router-groups)). Then check all of the router groups to make sure they don't include any of the system component ports.
 
 You will also need to check the router groups seeded in the `routing_api.router_groups` property. Even though this property is only used to seed router groups on the very first deploy, it cannot contain invalid router groups. Either delete these seeded router groups from the manifest (this will have no affect on the current created router groups) or fix the router groups to contain valid ports only.
 
