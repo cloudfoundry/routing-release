@@ -12,7 +12,7 @@ For tracing support and automatic instrumentation of Gorilla, `httprouter`, `sql
 
 ## Dependencies
 
-Golang 1.17+
+Golang 1.19+
 
 ## Contributions
 

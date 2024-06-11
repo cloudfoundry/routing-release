@@ -13,19 +13,19 @@ code.cloudfoundry.org/cfhttp/v2
 ## explicit; go 1.20
 code.cloudfoundry.org/clock
 code.cloudfoundry.org/clock/fakeclock
-# code.cloudfoundry.org/debugserver v0.0.0-20240528171256-ba541ff4aaaf
+# code.cloudfoundry.org/debugserver v0.0.0-20240605172147-3433a40ea1bc
 ## explicit; go 1.19
 code.cloudfoundry.org/debugserver
-# code.cloudfoundry.org/diego-logging-client v0.0.0-20240528171304-21a75a4002e7
+# code.cloudfoundry.org/diego-logging-client v0.0.0-20240607172319-a6c635476209
 ## explicit; go 1.21
 code.cloudfoundry.org/diego-logging-client
-# code.cloudfoundry.org/durationjson v0.0.0-20240528171241-639cd04bbf26
+# code.cloudfoundry.org/durationjson v0.0.0-20240605172149-1c08fce07291
 ## explicit; go 1.19
 code.cloudfoundry.org/durationjson
-# code.cloudfoundry.org/eventhub v0.0.0-20240528171240-70fc08e4e541
+# code.cloudfoundry.org/eventhub v0.0.0-20240605172144-c5372e294841
 ## explicit; go 1.19
 code.cloudfoundry.org/eventhub
-# code.cloudfoundry.org/go-diodes v0.0.0-20240515174142-71582f284718
+# code.cloudfoundry.org/go-diodes v0.0.0-20240604201846-c756bfed2ed3
 ## explicit; go 1.21
 code.cloudfoundry.org/go-diodes
 # code.cloudfoundry.org/go-loggregator/v9 v9.2.1
@@ -33,7 +33,7 @@ code.cloudfoundry.org/go-diodes
 code.cloudfoundry.org/go-loggregator/v9
 code.cloudfoundry.org/go-loggregator/v9/rpc/loggregator_v2
 code.cloudfoundry.org/go-loggregator/v9/runtimeemitter
-# code.cloudfoundry.org/go-metric-registry v0.0.0-20240523160243-6c152ef80e25
+# code.cloudfoundry.org/go-metric-registry v0.0.0-20240604201903-7cef498efb7a
 ## explicit; go 1.21
 code.cloudfoundry.org/go-metric-registry
 code.cloudfoundry.org/go-metric-registry/testhelpers
@@ -46,7 +46,7 @@ code.cloudfoundry.org/lager/v3/internal/truncate
 code.cloudfoundry.org/lager/v3/lagerctx
 code.cloudfoundry.org/lager/v3/lagerflags
 code.cloudfoundry.org/lager/v3/lagertest
-# code.cloudfoundry.org/localip v0.0.0-20240528171257-80c5abae8ed6
+# code.cloudfoundry.org/localip v0.0.0-20240605172145-e093a99dad61
 ## explicit; go 1.20
 code.cloudfoundry.org/localip
 # code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
@@ -64,7 +64,7 @@ code.cloudfoundry.org/locket/lock
 code.cloudfoundry.org/locket/metrics
 code.cloudfoundry.org/locket/metrics/helpers
 code.cloudfoundry.org/locket/models
-# code.cloudfoundry.org/tlsconfig v0.0.0-20240522170710-79df114af82a
+# code.cloudfoundry.org/tlsconfig v0.0.0-20240606172222-82aa02bc07ea
 ## explicit; go 1.19
 code.cloudfoundry.org/tlsconfig
 # filippo.io/edwards25519 v1.1.0
@@ -170,15 +170,15 @@ github.com/google/go-cmp/cmp/internal/value
 # github.com/google/pprof v0.0.0-20240528025155-186aa0362fba
 ## explicit; go 1.19
 github.com/google/pprof/profile
-# github.com/honeycombio/libhoney-go v1.22.0
-## explicit; go 1.14
+# github.com/honeycombio/libhoney-go v1.23.0
+## explicit; go 1.19
 github.com/honeycombio/libhoney-go
 github.com/honeycombio/libhoney-go/transmission
 github.com/honeycombio/libhoney-go/version
 # github.com/jackc/pgpassfile v1.0.0
 ## explicit; go 1.12
 github.com/jackc/pgpassfile
-# github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9
+# github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761
 ## explicit; go 1.14
 github.com/jackc/pgservicefile
 # github.com/jackc/pgx/v5 v5.6.0
@@ -319,13 +319,13 @@ github.com/prometheus/client_golang/prometheus/promhttp
 # github.com/prometheus/client_model v0.6.1
 ## explicit; go 1.19
 github.com/prometheus/client_model/go
-# github.com/prometheus/common v0.53.0
+# github.com/prometheus/common v0.54.0
 ## explicit; go 1.20
 github.com/prometheus/common/expfmt
 github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg
 github.com/prometheus/common/model
-# github.com/prometheus/procfs v0.15.0
-## explicit; go 1.21
+# github.com/prometheus/procfs v0.15.1
+## explicit; go 1.20
 github.com/prometheus/procfs
 github.com/prometheus/procfs/internal/fs
 github.com/prometheus/procfs/internal/util
@@ -351,7 +351,7 @@ github.com/uber-go/atomic
 # github.com/uber-go/zap v1.27.0 => github.com/uber-go/zap v0.0.0-20161222040304-a5783ee4b216
 ## explicit
 github.com/uber-go/zap
-# github.com/urfave/negroni/v3 v3.1.0 => github.com/geofffranks/negroni/v3 v3.0.0-20240514190444-68130a0ac8eb
+# github.com/urfave/negroni/v3 v3.1.1
 ## explicit; go 1.17
 github.com/urfave/negroni/v3
 # github.com/vito/go-sse v1.0.0
@@ -366,7 +366,7 @@ github.com/vmihailenco/msgpack/v5/msgpcode
 github.com/vmihailenco/tagparser/v2
 github.com/vmihailenco/tagparser/v2/internal
 github.com/vmihailenco/tagparser/v2/internal/parser
-# go.step.sm/crypto v0.45.1
+# go.step.sm/crypto v0.47.0
 ## explicit; go 1.20
 go.step.sm/crypto/fingerprint
 go.step.sm/crypto/internal/bcrypt_pbkdf
@@ -384,7 +384,7 @@ go.step.sm/crypto/x25519
 go.uber.org/automaxprocs/internal/cgroups
 go.uber.org/automaxprocs/internal/runtime
 go.uber.org/automaxprocs/maxprocs
-# golang.org/x/crypto v0.23.0
+# golang.org/x/crypto v0.24.0
 ## explicit; go 1.18
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blake2b
@@ -406,10 +406,10 @@ golang.org/x/crypto/salsa20/salsa
 golang.org/x/crypto/scrypt
 golang.org/x/crypto/ssh
 golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
-# golang.org/x/mod v0.17.0
+# golang.org/x/mod v0.18.0
 ## explicit; go 1.18
 golang.org/x/mod/semver
-# golang.org/x/net v0.25.0
+# golang.org/x/net v0.26.0
 ## explicit; go 1.18
 golang.org/x/net/context
 golang.org/x/net/html
@@ -422,7 +422,7 @@ golang.org/x/net/idna
 golang.org/x/net/internal/timeseries
 golang.org/x/net/trace
 golang.org/x/net/websocket
-# golang.org/x/oauth2 v0.20.0
+# golang.org/x/oauth2 v0.21.0
 ## explicit; go 1.18
 golang.org/x/oauth2
 golang.org/x/oauth2/clientcredentials
@@ -431,7 +431,7 @@ golang.org/x/oauth2/internal
 ## explicit; go 1.18
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
-# golang.org/x/sys v0.20.0
+# golang.org/x/sys v0.21.0
 ## explicit; go 1.18
 golang.org/x/sys/cpu
 golang.org/x/sys/unix
@@ -440,7 +440,7 @@ golang.org/x/sys/windows/registry
 golang.org/x/sys/windows/svc
 golang.org/x/sys/windows/svc/eventlog
 golang.org/x/sys/windows/svc/mgr
-# golang.org/x/text v0.15.0
+# golang.org/x/text v0.16.0
 ## explicit; go 1.18
 golang.org/x/text/cases
 golang.org/x/text/encoding
@@ -469,7 +469,7 @@ golang.org/x/text/width
 # golang.org/x/time v0.5.0
 ## explicit; go 1.18
 golang.org/x/time/rate
-# golang.org/x/tools v0.21.0
+# golang.org/x/tools v0.22.0
 ## explicit; go 1.19
 golang.org/x/tools/cover
 golang.org/x/tools/go/analysis
@@ -504,7 +504,7 @@ golang.org/x/tools/internal/stdlib
 golang.org/x/tools/internal/tokeninternal
 golang.org/x/tools/internal/typesinternal
 golang.org/x/tools/internal/versions
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20240528184218-531527333157
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20240610135401-a8a62080eff3
 ## explicit; go 1.20
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.64.0
@@ -608,4 +608,3 @@ gopkg.in/yaml.v3
 # github.com/uber-go/atomic => github.com/uber-go/atomic v1.1.0
 # github.com/codegangsta/cli => github.com/codegangsta/cli v1.6.0
 # github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
-# github.com/urfave/negroni/v3 => github.com/geofffranks/negroni/v3 v3.0.0-20240514190444-68130a0ac8eb

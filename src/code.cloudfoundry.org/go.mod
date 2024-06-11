@@ -10,20 +10,17 @@ replace github.com/codegangsta/cli => github.com/codegangsta/cli v1.6.0
 
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
 
-// Use forked negroni to work around https://github.com/cloudfoundry/routing-release/issues/409 until https://github.com/urfave/negroni/pull/277 is merged
-replace github.com/urfave/negroni/v3 => github.com/geofffranks/negroni/v3 v3.0.0-20240514190444-68130a0ac8eb
-
 require (
 	code.cloudfoundry.org/bbs v0.0.0-20240521125508-20d3971ce31b
 	code.cloudfoundry.org/cfhttp/v2 v2.1.0
 	code.cloudfoundry.org/clock v1.1.0
-	code.cloudfoundry.org/debugserver v0.0.0-20240528171256-ba541ff4aaaf
-	code.cloudfoundry.org/eventhub v0.0.0-20240528171240-70fc08e4e541
-	code.cloudfoundry.org/go-metric-registry v0.0.0-20240523160243-6c152ef80e25
+	code.cloudfoundry.org/debugserver v0.0.0-20240605172147-3433a40ea1bc
+	code.cloudfoundry.org/eventhub v0.0.0-20240605172144-c5372e294841
+	code.cloudfoundry.org/go-metric-registry v0.0.0-20240604201903-7cef498efb7a
 	code.cloudfoundry.org/lager/v3 v3.0.3
-	code.cloudfoundry.org/localip v0.0.0-20240528171257-80c5abae8ed6
+	code.cloudfoundry.org/localip v0.0.0-20240605172145-e093a99dad61
 	code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
-	code.cloudfoundry.org/tlsconfig v0.0.0-20240522170710-79df114af82a
+	code.cloudfoundry.org/tlsconfig v0.0.0-20240606172222-82aa02bc07ea
 	github.com/armon/go-proxyproto v0.1.0
 	github.com/cactus/go-statsd-client v3.2.1+incompatible
 	github.com/cloudfoundry-community/go-uaa v0.3.2
@@ -48,22 +45,22 @@ require (
 	github.com/tedsuo/ifrit v0.0.0-20230516164442-7862c310ad26
 	github.com/tedsuo/rata v1.0.0
 	github.com/uber-go/zap v1.27.0
-	github.com/urfave/negroni/v3 v3.1.0
+	github.com/urfave/negroni/v3 v3.1.1
 	github.com/vito/go-sse v1.0.0
-	go.step.sm/crypto v0.45.1
-	golang.org/x/crypto v0.23.0
-	golang.org/x/net v0.25.0
-	golang.org/x/oauth2 v0.20.0
-	golang.org/x/tools v0.21.0
+	go.step.sm/crypto v0.47.0
+	golang.org/x/crypto v0.24.0
+	golang.org/x/net v0.26.0
+	golang.org/x/oauth2 v0.21.0
+	golang.org/x/tools v0.22.0
 	google.golang.org/grpc v1.64.0
 	google.golang.org/protobuf v1.34.1
 	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.0.0-20240528171304-21a75a4002e7 // indirect
-	code.cloudfoundry.org/durationjson v0.0.0-20240528171241-639cd04bbf26 // indirect
-	code.cloudfoundry.org/go-diodes v0.0.0-20240515174142-71582f284718 // indirect
+	code.cloudfoundry.org/diego-logging-client v0.0.0-20240607172319-a6c635476209 // indirect
+	code.cloudfoundry.org/durationjson v0.0.0-20240605172149-1c08fce07291 // indirect
+	code.cloudfoundry.org/go-diodes v0.0.0-20240604201846-c756bfed2ed3 // indirect
 	code.cloudfoundry.org/go-loggregator/v9 v9.2.1 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
@@ -79,9 +76,9 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/pprof v0.0.0-20240528025155-186aa0362fba // indirect
-	github.com/honeycombio/libhoney-go v1.22.0 // indirect
+	github.com/honeycombio/libhoney-go v1.23.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
-	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
+	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/pgx/v5 v5.6.0 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
@@ -93,20 +90,20 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_golang v1.19.1 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
-	github.com/prometheus/common v0.53.0 // indirect
-	github.com/prometheus/procfs v0.15.0 // indirect
+	github.com/prometheus/common v0.54.0 // indirect
+	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/square/certstrap v1.3.0 // indirect
 	github.com/uber-go/atomic v1.11.0 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	go.uber.org/atomic v1.8.0 // indirect
 	go.uber.org/automaxprocs v1.5.3 // indirect
-	golang.org/x/mod v0.17.0 // indirect
+	golang.org/x/mod v0.18.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
-	golang.org/x/sys v0.20.0 // indirect
-	golang.org/x/text v0.15.0 // indirect
+	golang.org/x/sys v0.21.0 // indirect
+	golang.org/x/text v0.16.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240528184218-531527333157 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240610135401-a8a62080eff3 // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

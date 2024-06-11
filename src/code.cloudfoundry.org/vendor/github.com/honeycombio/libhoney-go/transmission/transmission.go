@@ -422,7 +422,7 @@ func (b *batchAgg) fireBatch(events []*Event) {
 	}
 
 	// build the HTTP request
-	url.Path = path.Join(url.Path, "/1/batch", dataset)
+	url.Path = buildReqestPath(url.Path, dataset)
 
 	// One retry allowed for connection timeouts.
 	var resp *http.Response
@@ -741,4 +741,8 @@ func buildReqReader(jsonEncoded []byte, compress bool) (io.Reader, bool) {
 // nower to make testing easier
 type nower interface {
 	Now() time.Time
+}
+
+func buildReqestPath(existingPath, dataset string) string {
+	return path.Join(existingPath, "/1/batch", url.PathEscape(dataset))
 }
