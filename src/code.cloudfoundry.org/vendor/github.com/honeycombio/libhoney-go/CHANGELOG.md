@@ -1,5 +1,11 @@
 # libhoney Changelog
 
+## 1.23.1 2024-06-13
+
+### Fixes
+
+- fix: Build the URL using url.JoinPath instead of path.Join (#249) | @MikeGoldsmith
+
 ## 1.23.0 2024-06-10
 
 ### ⚠️ Breaking Changes ⚠️

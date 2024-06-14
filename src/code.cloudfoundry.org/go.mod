@@ -20,7 +20,7 @@ require (
 	code.cloudfoundry.org/lager/v3 v3.0.3
 	code.cloudfoundry.org/localip v0.0.0-20240605172145-e093a99dad61
 	code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
-	code.cloudfoundry.org/tlsconfig v0.0.0-20240606172222-82aa02bc07ea
+	code.cloudfoundry.org/tlsconfig v0.0.0-20240613173017-075d5b187a0d
 	github.com/armon/go-proxyproto v0.1.0
 	github.com/cactus/go-statsd-client v3.2.1+incompatible
 	github.com/cloudfoundry-community/go-uaa v0.3.2
@@ -36,7 +36,7 @@ require (
 	github.com/kisielk/errcheck v1.7.0
 	github.com/lib/pq v1.10.9
 	github.com/nats-io/nats-server/v2 v2.10.16
-	github.com/nats-io/nats.go v1.35.0
+	github.com/nats-io/nats.go v1.36.0
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.19.0
 	github.com/onsi/gomega v1.33.1
@@ -76,7 +76,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/pprof v0.0.0-20240528025155-186aa0362fba // indirect
-	github.com/honeycombio/libhoney-go v1.23.0 // indirect
+	github.com/honeycombio/libhoney-go v1.23.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/pgx/v5 v5.6.0 // indirect

@@ -64,7 +64,7 @@ code.cloudfoundry.org/locket/lock
 code.cloudfoundry.org/locket/metrics
 code.cloudfoundry.org/locket/metrics/helpers
 code.cloudfoundry.org/locket/models
-# code.cloudfoundry.org/tlsconfig v0.0.0-20240606172222-82aa02bc07ea
+# code.cloudfoundry.org/tlsconfig v0.0.0-20240613173017-075d5b187a0d
 ## explicit; go 1.19
 code.cloudfoundry.org/tlsconfig
 # filippo.io/edwards25519 v1.1.0
@@ -170,7 +170,7 @@ github.com/google/go-cmp/cmp/internal/value
 # github.com/google/pprof v0.0.0-20240528025155-186aa0362fba
 ## explicit; go 1.19
 github.com/google/pprof/profile
-# github.com/honeycombio/libhoney-go v1.23.0
+# github.com/honeycombio/libhoney-go v1.23.1
 ## explicit; go 1.19
 github.com/honeycombio/libhoney-go
 github.com/honeycombio/libhoney-go/transmission
@@ -249,7 +249,7 @@ github.com/nats-io/nats-server/v2/server/certstore
 github.com/nats-io/nats-server/v2/server/pse
 github.com/nats-io/nats-server/v2/server/stree
 github.com/nats-io/nats-server/v2/server/sysmem
-# github.com/nats-io/nats.go v1.35.0
+# github.com/nats-io/nats.go v1.36.0
 ## explicit; go 1.20
 github.com/nats-io/nats.go
 github.com/nats-io/nats.go/encoders/builtin
