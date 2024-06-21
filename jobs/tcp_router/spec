@@ -10,6 +10,8 @@ templates:
   routing_api_client_certificate.crt.erb: config/certs/routing-api/client.crt
   routing_api_client_private.key.erb: config/keys/routing-api/client.key
   routing_api_ca_certificate.crt.erb: config/certs/routing-api/ca_cert.crt
+  tcp_router_backend_client_cert_and_key.pem.erb: config/keys/tcp-router/backend/client_cert_and_key.pem
+  tcp_router_backend_ca.crt.erb: config/certs/tcp-router/backend/ca.crt
   tcp_router_health_check_certificate.pem.erb: config/certs/health.pem
   haproxy.conf.erb: config/haproxy.conf
   haproxy.conf.template.erb: config/haproxy.conf.template
@@ -46,6 +48,12 @@ properties:
     default: "1m"
   tcp_router.oauth_secret:
     description: "OAuth client secret used to obtain token for Routing API from UAA."
+  tcp_router.backend_tls.client_cert:
+    description: "TCP Router's TLS client cert used for mTLS with route backends"
+  tcp_router.backend_tls.client_key:
+    description: "TCP Router's TLS client private key used for mTLS with route backends"
+  tcp_router.backend_tls.ca_cert:
+    description: "TCP Router's TLS CA used with route backends"
 
   routing_api.uri:
     description: "URL where the routing API can be reached internally"
