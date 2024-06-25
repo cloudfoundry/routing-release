@@ -600,8 +600,8 @@ code.cloudfoundry.org/clock v1.1.0 h1:XLzC6W3Ah/Y7ht1rmZ6+QfPdt1iGWEAAtIZXgiaj57
 code.cloudfoundry.org/clock v1.1.0/go.mod h1:yA3fxddT9RINQL2XHS7PS+OXxKCGhfrZmlNUCIM6AKo=
 code.cloudfoundry.org/debugserver v0.0.0-20240622173946-6ebc359d7f4f h1:1dhfcscc36GeXPnpqw+MSP89ji737/9pX8YOFpckw2s=
 code.cloudfoundry.org/debugserver v0.0.0-20240622173946-6ebc359d7f4f/go.mod h1:kX7wsNdiZ5Ug6Bkwdw4vym2oXdyMy9BCQrIf+0YCrNQ=
-code.cloudfoundry.org/diego-logging-client v0.0.0-20240622173949-f2ec4270dfa9 h1:+nLH41TXS0T7bi0W33I3CHUk0H25JN8k99PqZ0DUNgk=
-code.cloudfoundry.org/diego-logging-client v0.0.0-20240622173949-f2ec4270dfa9/go.mod h1:nqZHKXRugoxc+JxWioE5yKSD2KMMAK7FtXn7wNhfPME=
+code.cloudfoundry.org/diego-logging-client v0.0.0-20240624174153-027a6a0f439c h1:oUDQBopLux8dX3faltJQj1H/b+oVJrSXyfpLoLSHdwk=
+code.cloudfoundry.org/diego-logging-client v0.0.0-20240624174153-027a6a0f439c/go.mod h1:1+7krAm3FpNTkfoj9xcXPloDelRXb7ViRof0pjNbtk8=
 code.cloudfoundry.org/durationjson v0.0.0-20240622173936-69f1d911dfdb h1:WipPWdmSSX255ICB1+PkClq8+IcW0DILLYbmNwZaLLE=
 code.cloudfoundry.org/durationjson v0.0.0-20240622173936-69f1d911dfdb/go.mod h1:2su/STGmkQXiOq8/hLq2kADsf4Mw8ZfrbW+YxFuuH5Q=
 code.cloudfoundry.org/eventhub v0.0.0-20240622173931-a633c04601a6 h1:PrCeaPzqt4smgwkNL4fPgx7gMipGDF5nFLNdVZEtr6Y=
@@ -849,8 +849,8 @@ github.com/google/pprof v0.0.0-20210407192527-94a9f03dee38/go.mod h1:kpwsk12EmLe
 github.com/google/pprof v0.0.0-20210601050228-01bbb1931b22/go.mod h1:kpwsk12EmLew5upagYY7GY0pfYCcupk39gWOCRROcvE=
 github.com/google/pprof v0.0.0-20210609004039-a478d1d731e9/go.mod h1:kpwsk12EmLew5upagYY7GY0pfYCcupk39gWOCRROcvE=
 github.com/google/pprof v0.0.0-20210720184732-4bb14d4b1be1/go.mod h1:kpwsk12EmLew5upagYY7GY0pfYCcupk39gWOCRROcvE=
-github.com/google/pprof v0.0.0-20240622144329-c177fd99eaa9 h1:ouFdLLCOyCfnxGpQTMZKHLyHr/D1GFbQzEsJxumO16E=
-github.com/google/pprof v0.0.0-20240622144329-c177fd99eaa9/go.mod h1:K1liHPHnj73Fdn/EKuT8nrFqBihUSKXoLYU0BuatOYo=
+github.com/google/pprof v0.0.0-20240625030939-27f56978b8b0 h1:e+8XbKB6IMn8A4OAyZccO4pYfB3s7bt6azNIPE7AnPg=
+github.com/google/pprof v0.0.0-20240625030939-27f56978b8b0/go.mod h1:K1liHPHnj73Fdn/EKuT8nrFqBihUSKXoLYU0BuatOYo=
 github.com/google/renameio v0.1.0/go.mod h1:KWCgfxg9yswjAJkECMjeO8J8rahYeXnNhOm40UhjYkI=
 github.com/google/uuid v1.1.2/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=

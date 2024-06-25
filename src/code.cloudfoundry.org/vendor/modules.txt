@@ -16,7 +16,7 @@ code.cloudfoundry.org/clock/fakeclock
 # code.cloudfoundry.org/debugserver v0.0.0-20240622173946-6ebc359d7f4f
 ## explicit; go 1.19
 code.cloudfoundry.org/debugserver
-# code.cloudfoundry.org/diego-logging-client v0.0.0-20240622173949-f2ec4270dfa9
+# code.cloudfoundry.org/diego-logging-client v0.0.0-20240624174153-027a6a0f439c
 ## explicit; go 1.21
 code.cloudfoundry.org/diego-logging-client
 # code.cloudfoundry.org/durationjson v0.0.0-20240622173936-69f1d911dfdb
@@ -167,7 +167,7 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
-# github.com/google/pprof v0.0.0-20240622144329-c177fd99eaa9
+# github.com/google/pprof v0.0.0-20240625030939-27f56978b8b0
 ## explicit; go 1.19
 github.com/google/pprof/profile
 # github.com/honeycombio/libhoney-go v1.23.1
