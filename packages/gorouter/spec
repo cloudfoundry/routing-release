@@ -127,6 +127,7 @@ files:
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/zstd/*.s # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/zstd/internal/xxhash/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/zstd/internal/xxhash/*.s # gosub
+  - code.cloudfoundry.org/vendor/github.com/munnerz/goautoneg/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/encoders/builtin/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nats-io/nats.go/internal/parser/*.go # gosub
@@ -167,7 +168,6 @@ files:
   - code.cloudfoundry.org/vendor/github.com/prometheus/client_golang/prometheus/promhttp/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/prometheus/client_model/go/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/prometheus/common/expfmt/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/prometheus/common/model/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/prometheus/procfs/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/prometheus/procfs/internal/fs/*.go # gosub
