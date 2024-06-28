@@ -35,7 +35,7 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/kisielk/errcheck v1.7.0
 	github.com/lib/pq v1.10.9
-	github.com/nats-io/nats-server/v2 v2.10.16
+	github.com/nats-io/nats-server/v2 v2.10.17
 	github.com/nats-io/nats.go v1.36.0
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.19.0
