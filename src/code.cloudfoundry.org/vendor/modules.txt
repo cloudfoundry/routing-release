@@ -127,9 +127,9 @@ github.com/cloudfoundry/dropsonde/runtime_stats
 # github.com/cloudfoundry/sonde-go v0.0.0-20240620221854-09ef53324489
 ## explicit; go 1.18
 github.com/cloudfoundry/sonde-go/events
-# github.com/codegangsta/cli v1.22.15 => github.com/codegangsta/cli v1.6.0
-## explicit
-github.com/codegangsta/cli
+# github.com/cpuguy83/go-md2man/v2 v2.0.4
+## explicit; go 1.11
+github.com/cpuguy83/go-md2man/v2/md2man
 # github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a
 ## explicit
 github.com/facebookgo/clock
@@ -334,6 +334,9 @@ github.com/prometheus/procfs/internal/util
 # github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
 ## explicit
 github.com/rcrowley/go-metrics
+# github.com/russross/blackfriday/v2 v2.1.0
+## explicit
+github.com/russross/blackfriday/v2
 # github.com/square/certstrap v1.3.0
 ## explicit; go 1.18
 github.com/square/certstrap/pkix
@@ -353,6 +356,9 @@ github.com/uber-go/atomic
 # github.com/uber-go/zap v1.27.0 => github.com/uber-go/zap v0.0.0-20161222040304-a5783ee4b216
 ## explicit
 github.com/uber-go/zap
+# github.com/urfave/cli v1.22.15
+## explicit; go 1.11
+github.com/urfave/cli
 # github.com/urfave/negroni/v3 v3.1.1
 ## explicit; go 1.17
 github.com/urfave/negroni/v3
@@ -607,5 +613,4 @@ gopkg.in/yaml.v2
 gopkg.in/yaml.v3
 # github.com/uber-go/zap => github.com/uber-go/zap v0.0.0-20161222040304-a5783ee4b216
 # github.com/uber-go/atomic => github.com/uber-go/atomic v1.1.0
-# github.com/codegangsta/cli => github.com/codegangsta/cli v1.6.0
 # github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
