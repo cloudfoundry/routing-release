@@ -59,9 +59,9 @@ haproxy_pid_file: "/var/vcap/data/tcp_router/config/haproxy.pid"
 isolation_segments: <%= p("tcp_router.isolation_segments") %>
 reserved_system_component_ports: <%=  reserved_system_component_ports %>
 <%
-    ca_cert =     p('tcp_router.backend_tls.ca_cert', '')
-    client_cert = p('tcp_router.backend_tls.client_cert', '')
-    client_key =  p('tcp_router.backend_tls.client_key', '')
+    ca_cert =     p('tcp_router.backend_tls.ca_cert', '').strip
+    client_cert = p('tcp_router.backend_tls.client_cert', '').strip
+    client_key =  p('tcp_router.backend_tls.client_key', '').strip
 
     if ca_cert == '' and client_cert != ''
       raise 'tcp_router.backend_tls.client_cert was specified, but tcp_router.backend_tls.ca_cert was not provided'
