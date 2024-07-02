@@ -47,18 +47,18 @@ require (
 	github.com/uber-go/zap v1.27.0
 	github.com/urfave/negroni/v3 v3.1.1
 	github.com/vito/go-sse v1.0.0
-	go.step.sm/crypto v0.47.1
+	go.step.sm/crypto v0.48.0
 	golang.org/x/crypto v0.24.0
 	golang.org/x/net v0.26.0
 	golang.org/x/oauth2 v0.21.0
 	golang.org/x/tools v0.22.0
-	google.golang.org/grpc v1.64.0
+	google.golang.org/grpc v1.65.0
 	google.golang.org/protobuf v1.34.2
 	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.0.0-20240625174238-4fe2bbb2ac70 // indirect
+	code.cloudfoundry.org/diego-logging-client v0.0.0-20240701174920-416d5620bba2 // indirect
 	code.cloudfoundry.org/durationjson v0.0.0-20240625174233-9ff5003698bf // indirect
 	code.cloudfoundry.org/go-diodes v0.0.0-20240604201846-c756bfed2ed3 // indirect
 	code.cloudfoundry.org/go-loggregator/v9 v9.2.1 // indirect
