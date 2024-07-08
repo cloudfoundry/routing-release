@@ -59,28 +59,32 @@ haproxy_pid_file: "/var/vcap/data/tcp_router/config/haproxy.pid"
 isolation_segments: <%= p("tcp_router.isolation_segments") %>
 reserved_system_component_ports: <%=  reserved_system_component_ports %>
 <%
-    ca_cert =     p('tcp_router.backend_tls.ca_cert', '').strip
-    client_cert = p('tcp_router.backend_tls.client_cert', '').strip
-    client_key =  p('tcp_router.backend_tls.client_key', '').strip
+    backend_tls_enabled = p('tcp_router.backend_tls.enabled')
 
-    if ca_cert == '' and client_cert != ''
-      raise 'tcp_router.backend_tls.client_cert was specified, but tcp_router.backend_tls.ca_cert was not provided'
-    end
-    if ca_cert == '' and client_key != ''
-      raise 'tcp_router.backend_tls.client_key was specified, but tcp_router.backend_tls.ca_cert was not provided'
-    end
-    if client_cert == '' and client_key != ''
-      raise 'tcp_router.backend_tls.client_key was specified, but tcp_router.backend_tls.client_cert was not provided'
-    end
-    if client_key == '' and client_cert != ''
-      raise 'tcp_router.backend_tls.client_cert was specified, but tcp_router.backend_tls.client_key was not provided'
-    end
+    if backend_tls_enabled
+      ca_cert =     p('tcp_router.backend_tls.ca_cert', '').strip
+      client_cert = p('tcp_router.backend_tls.client_cert', '').strip
+      client_key =  p('tcp_router.backend_tls.client_key', '').strip
 
+      if ca_cert == ''
+        raise 'tcp_router.backend_tls.enabled was set to true, but tcp_router.backend_tls.ca_cert was not provided'
+      end
+
+      if client_cert == '' and client_key != ''
+        raise 'tcp_router.backend_tls.enabled was set to true, tcp_router.backend_tls.client_key was set, but tcp_router.backend_tls.client_cert was not provided'
+      end
+
+      if client_key == '' and client_cert != ''
+        raise 'tcp_router.backend_tls.enabled was set to true, tcp_router.backend_tls.client_cert was set, but tcp_router.backend_tls.client_key was not provided'
+      end
+    end
 -%>
-<% if ca_cert != '' -%>
+
 backend_tls:
+  enabled: <%= backend_tls_enabled %>
+<% if backend_tls_enabled %>
   ca_cert_path: "/var/vcap/jobs/tcp_router/config/certs/tcp-router/backend/ca.crt"
-<% if client_cert != '' -%>
+<% if client_cert != '' and client_key != '' %>
   client_cert_and_key_path: "/var/vcap/jobs/tcp_router/config/keys/tcp-router/backend/client_cert_and_key.pem"
-<% end -%>
+<% end %>
 <% end -%>
