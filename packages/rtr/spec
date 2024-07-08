@@ -22,13 +22,15 @@ files:
   - code.cloudfoundry.org/vendor/github.com/bmizerany/pat/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry-community/go-uaa/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry-community/go-uaa/passwordcredentials/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/codegangsta/cli/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/cpuguy83/go-md2man/v2/md2man/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/golang-jwt/jwt/v4/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nu7hatch/gouuid/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/openzipkin/zipkin-go/idgenerator/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/openzipkin/zipkin-go/model/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/pkg/errors/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/russross/blackfriday/v2/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/tedsuo/rata/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/urfave/cli/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/vito/go-sse/sse/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/oauth2/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/oauth2/clientcredentials/*.go # gosub

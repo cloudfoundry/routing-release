@@ -99,7 +99,7 @@ files:
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry/dropsonde/metrics/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry/dropsonde/runtime_stats/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry/sonde-go/events/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/codegangsta/cli/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/cpuguy83/go-md2man/v2/md2man/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/facebookgo/clock/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/facebookgo/limitgroup/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/facebookgo/muster/*.go # gosub
@@ -173,6 +173,7 @@ files:
   - code.cloudfoundry.org/vendor/github.com/prometheus/procfs/internal/fs/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/prometheus/procfs/internal/util/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/rcrowley/go-metrics/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/russross/blackfriday/v2/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/tedsuo/ifrit/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/tedsuo/ifrit/grouper/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/tedsuo/ifrit/http_server/*.go # gosub
@@ -180,6 +181,7 @@ files:
   - code.cloudfoundry.org/vendor/github.com/tedsuo/rata/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/uber-go/atomic/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/uber-go/zap/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/urfave/cli/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/urfave/negroni/v3/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/vito/go-sse/sse/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/vmihailenco/msgpack/v5/*.go # gosub
