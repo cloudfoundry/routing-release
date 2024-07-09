@@ -80,9 +80,9 @@ github.com/beorn7/perks/quantile
 # github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f
 ## explicit
 github.com/bmizerany/pat
-# github.com/cactus/go-statsd-client v3.2.1+incompatible => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
-## explicit
-github.com/cactus/go-statsd-client/statsd
+# github.com/cactus/go-statsd-client/v5 v5.1.0
+## explicit; go 1.11
+github.com/cactus/go-statsd-client/v5/statsd
 # github.com/cespare/xxhash/v2 v2.3.0
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
@@ -612,4 +612,3 @@ gopkg.in/yaml.v2
 gopkg.in/yaml.v3
 # github.com/uber-go/zap => github.com/uber-go/zap v0.0.0-20161222040304-a5783ee4b216
 # github.com/uber-go/atomic => github.com/uber-go/atomic v1.1.0
-# github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
