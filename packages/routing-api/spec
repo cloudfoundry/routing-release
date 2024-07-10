@@ -46,7 +46,7 @@ files:
   - code.cloudfoundry.org/vendor/filippo.io/edwards25519/field/*.go # gosub
   - code.cloudfoundry.org/vendor/filippo.io/edwards25519/field/*.s # gosub
   - code.cloudfoundry.org/vendor/github.com/bmizerany/pat/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/cactus/go-statsd-client/statsd/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/cactus/go-statsd-client/v5/statsd/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry-community/go-uaa/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry-community/go-uaa/passwordcredentials/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry/dropsonde/*.go # gosub
