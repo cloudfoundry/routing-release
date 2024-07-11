@@ -9,13 +9,11 @@ describe 'tcp_router' do
   let(:release_path) { File.join(File.dirname(__FILE__), '..') }
   let(:release) { Bosh::Template::Test::ReleaseDir.new(release_path) }
   let(:job) { release.job('tcp_router') }
-  let(:backend_tls) { {} }
 
   let(:merged_manifest_properties) do
     {
       'tcp_router' => {
-        'oauth_secret' => '',
-        'backend_tls' => backend_tls,
+        'oauth_secret' => ''
       },
       'uaa' => {
         'tls_port' => 1000
@@ -245,26 +243,6 @@ describe 'tcp_router' do
     end
   end
 
-  describe 'config/keys/tcp-router/client_cert_and_key.pem' do
-    let(:template) { job.template('config/keys/tcp-router/backend/client_cert_and_key.pem') }
-
-    it 'renders the client cert + key in a single PEM file' do
-      merged_manifest_properties['tcp_router']['backend_tls']['client_cert'] = "the backend client cert"
-      merged_manifest_properties['tcp_router']['backend_tls']['client_key'] = "the backend client key"
-      client_pem = template.render(merged_manifest_properties)
-      expect(client_pem).to eq("the backend client cert\nthe backend client key")
-    end
-  end
-
-  describe 'config/certs/tcp-router/ca.crt' do
-    let(:template) { job.template('config/certs/tcp-router/backend/ca.crt') }
-
-    it 'renders the ca.crt' do
-      merged_manifest_properties['tcp_router']['backend_tls']['ca_cert'] = "the backend ca cert"
-      expect(template.render(merged_manifest_properties)).to eq('the backend ca cert')
-    end
-  end
-
   describe 'tcp_router.yml' do
     let(:template) { job.template('config/tcp_router.yml') }
     let(:links) do
@@ -313,101 +291,6 @@ describe 'tcp_router' do
                                       'ca_cert_path' => '/var/vcap/jobs/tcp_router/config/certs/routing-api/ca_cert.crt',
                                       'client_private_key_path' => '/var/vcap/jobs/tcp_router/config/keys/routing-api/client.key'
                                     })
-    end
-
-    describe 'tcp_router.backend_tls' do
-      describe 'when a CA is provided' do
-          let :backend_tls do
-            {
-              'ca_cert' => 'ca cert',
-            }
-          end
-
-        it 'renders the backend_tls properties' do
-          expect(rendered_config['backend_tls']).to eq({
-            'ca_cert_path' => '/var/vcap/jobs/tcp_router/config/certs/tcp-router/backend/ca.crt',
-          })
-        end
-
-        describe 'when client cert/keys are provided' do
-          let :backend_tls do
-            {
-              'ca_cert' => 'ca cert',
-              'client_cert' => 'client cert',
-              'client_key' =>'client key',
-            }
-          end
-
-          it 'renders the backend_tls properties' do
-            expect(rendered_config['backend_tls']).to eq({
-              'ca_cert_path' => '/var/vcap/jobs/tcp_router/config/certs/tcp-router/backend/ca.crt',
-              'client_cert_and_key_path' => '/var/vcap/jobs/tcp_router/config/keys/tcp-router/backend/client_cert_and_key.pem',
-            })
-          end
-
-        end
-
-        describe 'when a client cert is provided but not a key' do
-          let :backend_tls do
-            {
-              'ca_cert' => 'ca cert',
-              'client_cert' => 'client cert',
-            }
-          end
-
-          it 'throws an error' do
-            expect { rendered_config }.to raise_error(
-              RuntimeError,
-              'tcp_router.backend_tls.client_cert was specified, but tcp_router.backend_tls.client_key was not provided',
-            )
-          end
-        end
-
-        describe 'when a client key is provided but not a cert' do
-          let :backend_tls do
-            {
-              'ca_cert' => 'ca cert',
-              'client_key' =>'client key',
-            }
-          end
-
-          it 'throws an error' do
-            expect { rendered_config }.to raise_error(
-              RuntimeError,
-              'tcp_router.backend_tls.client_key was specified, but tcp_router.backend_tls.client_cert was not provided',
-            )
-          end
-        end
-      end
-
-      describe 'when a client cert is provided but not the CA' do
-          let :backend_tls do
-            {
-              'client_cert' => 'client cert',
-            }
-          end
-
-          it 'throws an error' do
-            expect { rendered_config }.to raise_error(
-              RuntimeError,
-              'tcp_router.backend_tls.client_cert was specified, but tcp_router.backend_tls.ca_cert was not provided',
-            )
-          end
-      end
-      describe 'when a client key is provided but not the CA' do
-          let :backend_tls do
-            {
-              'client_key' =>'client key',
-            }
-          end
-
-          it 'throws an error' do
-            expect { rendered_config }.to raise_error(
-              RuntimeError,
-              'tcp_router.backend_tls.client_key was specified, but tcp_router.backend_tls.ca_cert was not provided',
-            )
-          end
-      end
     end
 
     describe 'routing_api.reserved_system_component_ports' do
