@@ -304,7 +304,6 @@ describe 'tcp_router' do
                                       'port' => 1000,
                                       'skip_ssl_validation' => false
                                     },
-                                    'backend_tls' => { 'enabled' => false },
                                     'reserved_system_component_ports' => [8080, 8081],
                                     'routing_api' => {
                                       'uri' => 'https://routing-api.service.cf.internal',
@@ -317,176 +316,57 @@ describe 'tcp_router' do
     end
 
     describe 'tcp_router.backend_tls' do
-      describe 'when disabled' do
-        let :backend_tls do
-          {
-            'enabled' => false,
-            'ca_cert' => 'meowca',
-            'client_cert' => 'meowcert',
-            'client_key' => 'meowkey',
-          }
-        end
-
-        it 'does not set the CA path or client cert/key path' do
-            expect(rendered_config['backend_tls']).to eq({
-              'enabled' => false,
-            })
-        end
-      end
-      describe 'when enabled' do
-        describe 'when CA is a whitespace-only string' do
+      describe 'when a CA is provided' do
           let :backend_tls do
             {
-              'enabled' => true,
-              'ca_cert' => ' ',
-            }
-          end
-          it 'throws an error' do
-              expect { rendered_config }.to raise_error(
-                RuntimeError,
-                'tcp_router.backend_tls.enabled was set to true, but tcp_router.backend_tls.ca_cert was not provided',
-              )
-          end
-        end
-        describe 'when CA is not provided' do
-          let :backend_tls do
-            {
-              'enabled' => true,
-            }
-          end
-          it 'throws an error' do
-              expect { rendered_config }.to raise_error(
-                RuntimeError,
-                'tcp_router.backend_tls.enabled was set to true, but tcp_router.backend_tls.ca_cert was not provided',
-              )
-          end
-        end
-
-
-        describe 'when a CA is provided' do
-          let :backend_tls do
-            {
-              'enabled' => true,
               'ca_cert' => 'ca cert',
+            }
+          end
+
+        it 'renders the backend_tls properties' do
+          expect(rendered_config['backend_tls']).to eq({
+            'ca_cert_path' => '/var/vcap/jobs/tcp_router/config/certs/tcp-router/backend/ca.crt',
+          })
+        end
+
+        describe 'when client cert/keys are provided' do
+          let :backend_tls do
+            {
+              'ca_cert' => 'ca cert',
+              'client_cert' => 'client cert',
+              'client_key' =>'client key',
             }
           end
 
           it 'renders the backend_tls properties' do
             expect(rendered_config['backend_tls']).to eq({
-              'enabled' => true,
               'ca_cert_path' => '/var/vcap/jobs/tcp_router/config/certs/tcp-router/backend/ca.crt',
+              'client_cert_and_key_path' => '/var/vcap/jobs/tcp_router/config/keys/tcp-router/backend/client_cert_and_key.pem',
             })
           end
 
-          describe 'when client cert/keys are provided' do
-            let :backend_tls do
-              {
-                'enabled' => true,
-                'ca_cert' => 'ca cert',
-                'client_cert' => 'client cert',
-                'client_key' =>'client key',
-              }
-            end
-
-            it 'renders the backend_tls properties' do
-              expect(rendered_config['backend_tls']).to eq({
-                'enabled' => true,
-                'ca_cert_path' => '/var/vcap/jobs/tcp_router/config/certs/tcp-router/backend/ca.crt',
-                'client_cert_and_key_path' => '/var/vcap/jobs/tcp_router/config/keys/tcp-router/backend/client_cert_and_key.pem',
-              })
-            end
-          end
-
-          describe 'when a client cert is provided but not a key' do
-            let :backend_tls do
-              {
-                'enabled' => true,
-                'ca_cert' => 'ca cert',
-                'client_cert' => 'client cert',
-              }
-            end
-
-            it 'throws an error' do
-              expect { rendered_config }.to raise_error(
-                RuntimeError,
-                'tcp_router.backend_tls.enabled was set to true, tcp_router.backend_tls.client_cert was set, but tcp_router.backend_tls.client_key was not provided',
-              )
-            end
-          end
-
-          describe 'when client cert is provided but key is a whitespace-only string' do
-            let :backend_tls do
-              {
-                'enabled' => true,
-                'ca_cert' => 'ca cert',
-                'client_cert' => 'client cert',
-                'client_key' => ' ',
-              }
-            end
-
-            it 'throws an error' do
-              expect { rendered_config }.to raise_error(
-                RuntimeError,
-                'tcp_router.backend_tls.enabled was set to true, tcp_router.backend_tls.client_cert was set, but tcp_router.backend_tls.client_key was not provided',
-              )
-            end
-          end
-
-          describe 'when a client key is provided but not a cert' do
-            let :backend_tls do
-              {
-                'enabled' => true,
-                'ca_cert' => 'ca cert',
-                'client_key' =>'client key',
-              }
-            end
-
-            it 'throws an error' do
-              expect { rendered_config }.to raise_error(
-                RuntimeError,
-                'tcp_router.backend_tls.enabled was set to true, tcp_router.backend_tls.client_key was set, but tcp_router.backend_tls.client_cert was not provided',
-              )
-            end
-          end
-
-          describe 'when client key is provided but cert is a whitespace-only string' do
-            let :backend_tls do
-              {
-                'enabled' => true,
-                'ca_cert' => 'ca cert',
-                'client_cert' => ' ',
-                'client_key' =>'client key',
-              }
-            end
-
-            it 'throws an error' do
-              expect { rendered_config }.to raise_error(
-                RuntimeError,
-                'tcp_router.backend_tls.enabled was set to true, tcp_router.backend_tls.client_key was set, but tcp_router.backend_tls.client_cert was not provided',
-              )
-            end
-          end
         end
 
-        describe 'when a client cert is provided but not the CA' do
-            let :backend_tls do
-              {
-                'enabled' => true,
-                'client_cert' => 'client cert',
-              }
-            end
-
-            it 'throws an error' do
-              expect { rendered_config }.to raise_error(
-                RuntimeError,
-                'tcp_router.backend_tls.enabled was set to true, but tcp_router.backend_tls.ca_cert was not provided',
-              )
-            end
-        end
-        describe 'when a client key is provided but not the CA' do
+        describe 'when a client cert is provided but not a key' do
           let :backend_tls do
             {
-              'enabled' => true,
+              'ca_cert' => 'ca cert',
+              'client_cert' => 'client cert',
+            }
+          end
+
+          it 'throws an error' do
+            expect { rendered_config }.to raise_error(
+              RuntimeError,
+              'tcp_router.backend_tls.client_cert was specified, but tcp_router.backend_tls.client_key was not provided',
+            )
+          end
+        end
+
+        describe 'when a client key is provided but not a cert' do
+          let :backend_tls do
+            {
+              'ca_cert' => 'ca cert',
               'client_key' =>'client key',
             }
           end
@@ -494,26 +374,39 @@ describe 'tcp_router' do
           it 'throws an error' do
             expect { rendered_config }.to raise_error(
               RuntimeError,
-              'tcp_router.backend_tls.enabled was set to true, but tcp_router.backend_tls.ca_cert was not provided',
+              'tcp_router.backend_tls.client_key was specified, but tcp_router.backend_tls.client_cert was not provided',
             )
           end
         end
-        describe 'when a client key is provided but the CA is whitespace-only ' do
+      end
+
+      describe 'when a client cert is provided but not the CA' do
           let :backend_tls do
             {
-              'enabled' => true,
-              'client_key' =>'client key',
-              'ca_cert' => ' ',
+              'client_cert' => 'client cert',
             }
           end
 
           it 'throws an error' do
             expect { rendered_config }.to raise_error(
               RuntimeError,
-              'tcp_router.backend_tls.enabled was set to true, but tcp_router.backend_tls.ca_cert was not provided',
+              'tcp_router.backend_tls.client_cert was specified, but tcp_router.backend_tls.ca_cert was not provided',
             )
           end
-        end
+      end
+      describe 'when a client key is provided but not the CA' do
+          let :backend_tls do
+            {
+              'client_key' =>'client key',
+            }
+          end
+
+          it 'throws an error' do
+            expect { rendered_config }.to raise_error(
+              RuntimeError,
+              'tcp_router.backend_tls.client_key was specified, but tcp_router.backend_tls.ca_cert was not provided',
+            )
+          end
       end
     end
 
