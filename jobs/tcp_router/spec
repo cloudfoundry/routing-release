@@ -48,12 +48,6 @@ properties:
     default: "1m"
   tcp_router.oauth_secret:
     description: "OAuth client secret used to obtain token for Routing API from UAA."
-  tcp_router.backend_tls.enabled:
-    description: |
-      Turns on support for TLS for TCP Router. Requires tcp_router.backend_tls.ca_cert to
-      be set. For mTLS also set tcp_router.backend_tls.client_cert and
-      tcp_router.backend_tls.client_key.
-    default: false
   tcp_router.backend_tls.client_cert:
     description: "TCP Router's TLS client cert used for mTLS with route backends"
   tcp_router.backend_tls.client_key:
