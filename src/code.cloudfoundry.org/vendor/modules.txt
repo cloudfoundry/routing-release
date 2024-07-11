@@ -64,8 +64,8 @@ code.cloudfoundry.org/locket/lock
 code.cloudfoundry.org/locket/metrics
 code.cloudfoundry.org/locket/metrics/helpers
 code.cloudfoundry.org/locket/models
-# code.cloudfoundry.org/tlsconfig v0.0.0-20240705175211-7a5a6eee6ef2
-## explicit; go 1.19
+# code.cloudfoundry.org/tlsconfig v0.0.0-20240710175717-1267031d8b88
+## explicit; go 1.21
 code.cloudfoundry.org/tlsconfig
 # filippo.io/edwards25519 v1.1.0
 ## explicit; go 1.20
@@ -167,7 +167,7 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
-# github.com/google/pprof v0.0.0-20240625030939-27f56978b8b0
+# github.com/google/pprof v0.0.0-20240711041743-f6c9dda6c6da
 ## explicit; go 1.19
 github.com/google/pprof/profile
 # github.com/honeycombio/libhoney-go v1.23.1
@@ -510,7 +510,7 @@ golang.org/x/tools/internal/stdlib
 golang.org/x/tools/internal/tokeninternal
 golang.org/x/tools/internal/typesinternal
 golang.org/x/tools/internal/versions
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20240709173604-40e1e62336c5
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20240711142825-46eb208f015d
 ## explicit; go 1.20
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.65.0
