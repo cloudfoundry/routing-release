@@ -12,11 +12,11 @@ require (
 	code.cloudfoundry.org/bbs v0.0.0-20240521125508-20d3971ce31b
 	code.cloudfoundry.org/cfhttp/v2 v2.1.0
 	code.cloudfoundry.org/clock v1.2.0
-	code.cloudfoundry.org/debugserver v0.0.0-20240708175632-eff029929d18
-	code.cloudfoundry.org/eventhub v0.0.0-20240708175634-449ba4954fae
+	code.cloudfoundry.org/debugserver v0.0.0-20240711175828-bd4bb5559e42
+	code.cloudfoundry.org/eventhub v0.0.0-20240711175829-9b6874164e5c
 	code.cloudfoundry.org/go-metric-registry v0.0.0-20240604201903-7cef498efb7a
 	code.cloudfoundry.org/lager/v3 v3.0.3
-	code.cloudfoundry.org/localip v0.0.0-20240708175626-6e4346bd9fee
+	code.cloudfoundry.org/localip v0.0.0-20240711175824-a1a2d50a2164
 	code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
 	code.cloudfoundry.org/tlsconfig v0.0.0-20240710175717-1267031d8b88
 	github.com/armon/go-proxyproto v0.1.0
@@ -45,7 +45,7 @@ require (
 	github.com/urfave/cli v1.22.15
 	github.com/urfave/negroni/v3 v3.1.1
 	github.com/vito/go-sse v1.0.0
-	go.step.sm/crypto v0.49.0
+	go.step.sm/crypto v0.50.0
 	golang.org/x/crypto v0.25.0
 	golang.org/x/net v0.27.0
 	golang.org/x/oauth2 v0.21.0
@@ -56,8 +56,8 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.0.0-20240709175802-904ac8cf53b0 // indirect
-	code.cloudfoundry.org/durationjson v0.0.0-20240708175642-5f5c6a0497f4 // indirect
+	code.cloudfoundry.org/diego-logging-client v0.0.0-20240711175830-8c315b151f27 // indirect
+	code.cloudfoundry.org/durationjson v0.0.0-20240711175827-ec11f50a5c9e // indirect
 	code.cloudfoundry.org/go-diodes v0.0.0-20240604201846-c756bfed2ed3 // indirect
 	code.cloudfoundry.org/go-loggregator/v9 v9.2.1 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
