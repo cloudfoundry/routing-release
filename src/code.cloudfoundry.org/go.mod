@@ -9,7 +9,7 @@ replace github.com/uber-go/atomic => github.com/uber-go/atomic v1.1.0
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
 
 require (
-	code.cloudfoundry.org/bbs v0.0.0-20240521125508-20d3971ce31b
+	code.cloudfoundry.org/bbs v0.0.0-20240715202719-b18910b06516
 	code.cloudfoundry.org/cfhttp/v2 v2.1.0
 	code.cloudfoundry.org/clock v1.2.0
 	code.cloudfoundry.org/debugserver v0.0.0-20240711175828-bd4bb5559e42

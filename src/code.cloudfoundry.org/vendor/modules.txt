@@ -1,4 +1,4 @@
-# code.cloudfoundry.org/bbs v0.0.0-20240521125508-20d3971ce31b
+# code.cloudfoundry.org/bbs v0.0.0-20240715202719-b18910b06516
 ## explicit
 code.cloudfoundry.org/bbs/db/sqldb/helpers
 code.cloudfoundry.org/bbs/db/sqldb/helpers/monitor
