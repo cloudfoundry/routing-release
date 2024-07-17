@@ -238,7 +238,7 @@ github.com/munnerz/goautoneg
 # github.com/nats-io/jwt/v2 v2.5.8
 ## explicit; go 1.18
 github.com/nats-io/jwt/v2
-# github.com/nats-io/nats-server/v2 v2.10.17
+# github.com/nats-io/nats-server/v2 v2.10.18
 ## explicit; go 1.21
 github.com/nats-io/nats-server/v2
 github.com/nats-io/nats-server/v2/conf
