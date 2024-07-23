@@ -58,6 +58,9 @@ routing_api:
 haproxy_pid_file: "/var/vcap/data/tcp_router/config/haproxy.pid"
 isolation_segments: <%= p("tcp_router.isolation_segments") %>
 reserved_system_component_ports: <%=  reserved_system_component_ports %>
+
+drain_wait: <%= p('tcp_router.drain_wait') %>s
+
 <%
     backend_tls_enabled = p('tcp_router.backend_tls.enabled')
 

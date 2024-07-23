@@ -13,9 +13,13 @@ templates:
   tcp_router_backend_client_cert_and_key.pem.erb: config/keys/tcp-router/backend/client_cert_and_key.pem
   tcp_router_backend_ca.crt.erb: config/certs/tcp-router/backend/ca.crt
   tcp_router_health_check_certificate.pem.erb: config/certs/health.pem
+  # config/haproxy.conf is used for initial haproxy config when starting up
   haproxy.conf.erb: config/haproxy.conf
-  haproxy.conf.template.erb: config/haproxy.conf.template
+  # config/haproxy.conf.template is rendered by tcp-router when routes are provided
+  haproxy.conf.template.erb: config/haproxy.conf.template 
   bpm.yml.erb: config/bpm.yml
+  drain.erb: bin/drain
+  post-start.erb: bin/post-start
 
 packages:
   - routing_utils
@@ -99,6 +103,19 @@ properties:
   tcp_router.fail_on_router_port_conflicts:
     description: "Fail the tcp router if routing_api.reserved_system_component_ports conflict with ports in existing router groups."
     default: "false"
+
+  tcp_router.drain_wait:
+    description: |
+      Delay in seconds after shut down is initiated before haproxy stops listening.
+      During this time haproxy will reject requests to the /health endpoint.
+      This accommodates requests forwarded by a load balancer until it considers the tcp_router unhealthy.
+    default: 20
+  tcp_router.load_balancer_healthy_threshold:
+    description: |
+      Time period in seconds to wait until declaring the tcp_router instance
+      started after starting the listener socket. This allows an external load
+      balancer time to register the instance as healthy."
+    default: 20
 
   uaa.token_endpoint:
     description: "UAA token endpoint host name. Do not include a scheme in this value; TCP Router will always use TLS to connect to UAA."

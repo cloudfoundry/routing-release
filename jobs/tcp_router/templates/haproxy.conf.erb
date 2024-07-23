@@ -20,9 +20,11 @@ listen health_check_http_url
     mode http
     bind :<%= p("tcp_router.health_check_port") %>
     monitor-uri /health
+    monitor fail if { env(IS_DRAINING) -m str true }
 <% end %>
 
 listen health_check_https_url
     mode http
     bind :<%= p("tcp_router.tls_health_check_port") %> ssl crt /var/vcap/jobs/tcp_router/config/certs/health.pem
     monitor-uri /health
+    monitor fail if { env(IS_DRAINING) -m str true }

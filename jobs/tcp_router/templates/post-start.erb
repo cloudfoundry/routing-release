@@ -1,0 +1,11 @@
+#!/bin/bash
+
+LOG_DIR=/var/vcap/sys/log/tcp_router
+source /var/vcap/packages/routing_utils/syslog_utils.sh
+<% lb_delay = p("tcp_router.load_balancer_healthy_threshold") %>
+
+tee_output_to_sys_log "${LOG_DIR}" "post-start" rfc3339
+
+echo "Waiting <%= lb_delay %> seconds to allow load balancer to consider tcp_router healthy..."
+sleep <%= lb_delay %>
+echo "tcp_tcp_router is ready."
