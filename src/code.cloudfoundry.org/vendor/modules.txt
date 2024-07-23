@@ -13,20 +13,20 @@ code.cloudfoundry.org/cfhttp/v2
 ## explicit; go 1.20
 code.cloudfoundry.org/clock
 code.cloudfoundry.org/clock/fakeclock
-# code.cloudfoundry.org/debugserver v0.0.0-20240721180531-bdf297309cfd
+# code.cloudfoundry.org/debugserver v0.0.0-20240722180655-b2525cf2b25a
 ## explicit; go 1.19
 code.cloudfoundry.org/debugserver
-# code.cloudfoundry.org/diego-logging-client v0.0.0-20240721180536-208b953dea93
+# code.cloudfoundry.org/diego-logging-client v0.0.0-20240722180708-300a9af1a755
 ## explicit; go 1.21
 code.cloudfoundry.org/diego-logging-client
-# code.cloudfoundry.org/durationjson v0.0.0-20240721180537-2928146efba5
+# code.cloudfoundry.org/durationjson v0.0.0-20240722180656-78c14651e997
 ## explicit; go 1.19
 code.cloudfoundry.org/durationjson
-# code.cloudfoundry.org/eventhub v0.0.0-20240721180530-98aefca47092
+# code.cloudfoundry.org/eventhub v0.0.0-20240722180726-ac5932e74e76
 ## explicit; go 1.19
 code.cloudfoundry.org/eventhub
-# code.cloudfoundry.org/go-diodes v0.0.0-20240604201846-c756bfed2ed3
-## explicit; go 1.21
+# code.cloudfoundry.org/go-diodes v0.0.0-20240723012033-bf559dd3d0b1
+## explicit; go 1.22
 code.cloudfoundry.org/go-diodes
 # code.cloudfoundry.org/go-loggregator/v9 v9.2.1
 ## explicit; go 1.21
@@ -46,7 +46,7 @@ code.cloudfoundry.org/lager/v3/internal/truncate
 code.cloudfoundry.org/lager/v3/lagerctx
 code.cloudfoundry.org/lager/v3/lagerflags
 code.cloudfoundry.org/lager/v3/lagertest
-# code.cloudfoundry.org/localip v0.0.0-20240721180538-4c37751a4ea9
+# code.cloudfoundry.org/localip v0.0.0-20240722180725-05cb35dd1d96
 ## explicit; go 1.20
 code.cloudfoundry.org/localip
 # code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03

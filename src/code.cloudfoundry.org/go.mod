@@ -1,6 +1,8 @@
 module code.cloudfoundry.org
 
-go 1.21.0
+go 1.22
+
+toolchain go1.22.3
 
 replace github.com/uber-go/zap => github.com/uber-go/zap v0.0.0-20161222040304-a5783ee4b216
 
@@ -12,11 +14,11 @@ require (
 	code.cloudfoundry.org/bbs v0.0.0-20240717173038-096d0e1a7e95
 	code.cloudfoundry.org/cfhttp/v2 v2.1.0
 	code.cloudfoundry.org/clock v1.2.0
-	code.cloudfoundry.org/debugserver v0.0.0-20240721180531-bdf297309cfd
-	code.cloudfoundry.org/eventhub v0.0.0-20240721180530-98aefca47092
+	code.cloudfoundry.org/debugserver v0.0.0-20240722180655-b2525cf2b25a
+	code.cloudfoundry.org/eventhub v0.0.0-20240722180726-ac5932e74e76
 	code.cloudfoundry.org/go-metric-registry v0.0.0-20240604201903-7cef498efb7a
 	code.cloudfoundry.org/lager/v3 v3.0.3
-	code.cloudfoundry.org/localip v0.0.0-20240721180538-4c37751a4ea9
+	code.cloudfoundry.org/localip v0.0.0-20240722180725-05cb35dd1d96
 	code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
 	code.cloudfoundry.org/tlsconfig v0.0.0-20240712175922-ffce9516cec8
 	github.com/armon/go-proxyproto v0.1.0
@@ -56,9 +58,9 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.0.0-20240721180536-208b953dea93 // indirect
-	code.cloudfoundry.org/durationjson v0.0.0-20240721180537-2928146efba5 // indirect
-	code.cloudfoundry.org/go-diodes v0.0.0-20240604201846-c756bfed2ed3 // indirect
+	code.cloudfoundry.org/diego-logging-client v0.0.0-20240722180708-300a9af1a755 // indirect
+	code.cloudfoundry.org/durationjson v0.0.0-20240722180656-78c14651e997 // indirect
+	code.cloudfoundry.org/go-diodes v0.0.0-20240723012033-bf559dd3d0b1 // indirect
 	code.cloudfoundry.org/go-loggregator/v9 v9.2.1 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
