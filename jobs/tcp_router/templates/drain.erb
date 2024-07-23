@@ -1,0 +1,35 @@
+#!/bin/bash
+# vim: set ft=sh
+
+set -e
+
+pidfile=/var/vcap/sys/run/bpm/tcp_router/tcp_router.pid
+log_file=/var/vcap/sys/log/tcp_router/drain.log
+mkdir -p "$(dirname ${log_file})"
+
+log() {
+  log_string=$1
+
+  echo "$(date +%Y-%m-%dT%H:%M:%S.%NZ): ${log_string}" >> ${log_file}
+}
+
+if [[ ! -f ${pidfile} ]]; then
+  log "pidfile does not exist"
+  echo 0
+  exit 0
+fi
+
+pid="$(cat ${pidfile})"
+
+if kill -SIGUSR2 "${pid}"; then
+  # per https://bosh.io/docs/drain/
+  # echoing -5 here tells BOSH to sleep 5 mins and call the drain script again.
+  log "triggering drain"
+  echo -5
+else
+  # we get here when tcp-router has exited and there's no pid to signal, catches race condition
+  # when pulling pid from pidfile + actually signalling
+  log "tcp-router exited"
+  rm ${pidfile}
+  echo 0
+fi

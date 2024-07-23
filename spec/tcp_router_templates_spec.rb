@@ -304,6 +304,7 @@ describe 'tcp_router' do
                                       'port' => 1000,
                                       'skip_ssl_validation' => false
                                     },
+                                    'drain_wait' => '20s',
                                     'backend_tls' => { 'enabled' => false },
                                     'reserved_system_component_ports' => [8080, 8081],
                                     'routing_api' => {
@@ -314,6 +315,16 @@ describe 'tcp_router' do
                                       'ca_cert_path' => '/var/vcap/jobs/tcp_router/config/certs/routing-api/ca_cert.crt',
                                       'client_private_key_path' => '/var/vcap/jobs/tcp_router/config/keys/routing-api/client.key'
                                     })
+    end
+
+    describe 'when overriding the default drain_wait' do
+      before do
+        merged_manifest_properties['tcp_router']['drain_wait'] = 30
+      end
+
+      it 'propagates to the yml' do
+        expect(rendered_config['drain_wait']).to eq('30s')
+      end
     end
 
     describe 'tcp_router.backend_tls' do
