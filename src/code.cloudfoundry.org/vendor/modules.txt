@@ -16,8 +16,8 @@ code.cloudfoundry.org/clock/fakeclock
 # code.cloudfoundry.org/debugserver v0.0.0-20240722180655-b2525cf2b25a
 ## explicit; go 1.19
 code.cloudfoundry.org/debugserver
-# code.cloudfoundry.org/diego-logging-client v0.0.0-20240722180708-300a9af1a755
-## explicit; go 1.21
+# code.cloudfoundry.org/diego-logging-client v0.0.0-20240723180750-86431d2f5b00
+## explicit; go 1.22
 code.cloudfoundry.org/diego-logging-client
 # code.cloudfoundry.org/durationjson v0.0.0-20240722180656-78c14651e997
 ## explicit; go 1.19
@@ -510,7 +510,7 @@ golang.org/x/tools/internal/stdlib
 golang.org/x/tools/internal/tokeninternal
 golang.org/x/tools/internal/typesinternal
 golang.org/x/tools/internal/versions
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20240722135656-d784300faade
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20240723171418-e6d459c13d2a
 ## explicit; go 1.20
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.65.0
