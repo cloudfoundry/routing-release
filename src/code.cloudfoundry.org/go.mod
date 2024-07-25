@@ -23,7 +23,7 @@ require (
 	code.cloudfoundry.org/tlsconfig v0.0.0-20240712175922-ffce9516cec8
 	github.com/armon/go-proxyproto v0.1.0
 	github.com/cactus/go-statsd-client v3.2.1+incompatible
-	github.com/cloudfoundry-community/go-uaa v0.3.2
+	github.com/cloudfoundry-community/go-uaa v0.3.3
 	github.com/cloudfoundry/cf-routing-test-helpers v0.0.0-20240304203209-3404f81a986b
 	github.com/cloudfoundry/cf-test-helpers/v2 v2.9.0
 	github.com/cloudfoundry/custom-cats-reporters v0.0.2
