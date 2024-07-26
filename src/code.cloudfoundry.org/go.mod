@@ -14,11 +14,11 @@ require (
 	code.cloudfoundry.org/bbs v0.0.0-20240717173038-096d0e1a7e95
 	code.cloudfoundry.org/cfhttp/v2 v2.1.0
 	code.cloudfoundry.org/clock v1.2.0
-	code.cloudfoundry.org/debugserver v0.0.0-20240722180655-b2525cf2b25a
-	code.cloudfoundry.org/eventhub v0.0.0-20240722180726-ac5932e74e76
+	code.cloudfoundry.org/debugserver v0.0.0-20240725181150-25b04d48c6b1
+	code.cloudfoundry.org/eventhub v0.0.0-20240725181136-eae28fcb43cc
 	code.cloudfoundry.org/go-metric-registry v0.0.0-20240604201903-7cef498efb7a
 	code.cloudfoundry.org/lager/v3 v3.0.3
-	code.cloudfoundry.org/localip v0.0.0-20240722180725-05cb35dd1d96
+	code.cloudfoundry.org/localip v0.0.0-20240725181137-6a3eb03fa8ed
 	code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
 	code.cloudfoundry.org/tlsconfig v0.0.0-20240712175922-ffce9516cec8
 	github.com/armon/go-proxyproto v0.1.0
@@ -37,8 +37,8 @@ require (
 	github.com/nats-io/nats-server/v2 v2.10.18
 	github.com/nats-io/nats.go v1.36.0
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo/v2 v2.19.0
-	github.com/onsi/gomega v1.33.1
+	github.com/onsi/ginkgo/v2 v2.19.1
+	github.com/onsi/gomega v1.34.0
 	github.com/openzipkin/zipkin-go v0.4.3
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
 	github.com/tedsuo/ifrit v0.0.0-20230516164442-7862c310ad26
@@ -58,8 +58,8 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.0.0-20240723180750-86431d2f5b00 // indirect
-	code.cloudfoundry.org/durationjson v0.0.0-20240722180656-78c14651e997 // indirect
+	code.cloudfoundry.org/diego-logging-client v0.0.0-20240725181144-da8b6d91a403 // indirect
+	code.cloudfoundry.org/durationjson v0.0.0-20240725181158-c1cf2082bda4 // indirect
 	code.cloudfoundry.org/go-diodes v0.0.0-20240723012033-bf559dd3d0b1 // indirect
 	code.cloudfoundry.org/go-loggregator/v9 v9.2.1 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
@@ -106,7 +106,7 @@ require (
 	golang.org/x/sys v0.22.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240723171418-e6d459c13d2a // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240725223205-93522f1f2a9f // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
