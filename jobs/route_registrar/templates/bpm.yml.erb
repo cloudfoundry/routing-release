@@ -19,7 +19,9 @@ bpm = {
 }
 
 paths = []
+unrestricted_volumes = []
 routes = p('route_registrar.routes')
+unsafe_privileged = false
 routes.each do |route|
   if route['health_check']
     # valid path is /var/vcap/jobs/JOB
@@ -27,19 +29,43 @@ routes.each do |route|
     if matched
       paths << matched[1]
     end
+
+    if route['health_check']['privileged']
+      unsafe_privileged = route['health_check']['privileged']
+    end
+
+    if route['health_check']['unrestricted_volumes']
+      unrestricted_volumes.concat(route['health_check']['unrestricted_volumes'].map { |unrestricted_volume|
+        {
+          "path" => unrestricted_volume["path"],
+          "writable" => unrestricted_volume["writable"] || false,
+        }
+      })
+    end
   end
 end
 
 unless paths.empty?
   unsafe = {
     "unsafe" => {
-      "unrestricted_volumes" => []
+      "privileged" => unsafe_privileged,
+      "unrestricted_volumes" => unrestricted_volumes
     }
   }
 
-   paths.each do |path|
-     unsafe['unsafe']['unrestricted_volumes'] << {"path" =>  path, "allow_executions" => true}
-     unsafe['unsafe']['unrestricted_volumes'] << {"path" => path.sub('jobs', 'data')}
+  paths.each do |path|
+    merge_on_path = ->(hash) {
+      existing_path = unsafe['unsafe']['unrestricted_volumes'].find { |unrestricted_volume| unrestricted_volume['path'] == hash['path'] }
+      if existing_path
+        existing_path.merge!(hash)
+      else
+        unsafe['unsafe']['unrestricted_volumes'] << hash
+      end
+    }
+
+    merge_on_path.call( {"path" =>  path, "allow_executions" => true} )
+    merge_on_path.call( {"path" => path.sub('jobs', 'data')} )
+
   end
 
   bpm['processes'][0].merge!(unsafe)
