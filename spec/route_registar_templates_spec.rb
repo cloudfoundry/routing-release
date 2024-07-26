@@ -4,6 +4,7 @@ require 'rspec'
 require 'bosh/template/test'
 require 'yaml'
 require 'json'
+require 'pp'
 
 describe 'route_registrar' do
   let(:release_path) { File.join(File.dirname(__FILE__), '..') }
@@ -569,6 +570,203 @@ describe 'route_registrar' do
           expect do
             template.render(merged_manifest_properties)
           end.not_to raise_error
+        end
+      end
+    end
+  end
+
+  describe 'config/bpm.yml' do
+    let(:template) { job.template('config/bpm.yml') }
+    let(:links) do
+      []
+    end
+    context 'when routes is provided' do
+      it 'should render' do
+        expected_template = {
+          "processes" => [
+            { "name" => "route_registrar",
+              "executable" => "/var/vcap/packages/route_registrar/bin/route-registrar",
+              "env" => {},
+              "args" => %w[--configPath /var/vcap/jobs/route_registrar/config/registrar_settings.json -timeFormat rfc3339 -logLevel info],
+              "unsafe" => {
+                "privileged" => false,
+                "unrestricted_volumes" => [
+                  {"path" => "/var/vcap/jobs/uaa", "allow_executions" => true},
+                  {"path" => "/var/vcap/data/uaa"},
+                ]
+              }
+            }
+          ]
+        }
+
+        rendered_template = YAML.load(template.render(merged_manifest_properties, consumes: links))
+
+        expect(expected_template.pretty_inspect).to eq(rendered_template.pretty_inspect)
+      end
+
+      context 'with extra unrestricted volumes' do
+        before do
+          merged_manifest_properties['route_registrar']['routes'].concat [
+          {
+            'name' => 'first_unrestricted_volume',
+            'health_check' => {
+              'name' => 'privileged_healthcheck',
+              'script_path' => '/var/vcap/jobs/first_unrestricted_volume/bin/health_check',
+              'unrestricted_volumes' => [
+                {
+                  "path" => "first_writable_path",
+                  "writable" => true
+                },
+                {
+                  "path" => "first_unwritable_path",
+                  "writable" => false
+                }
+              ]
+            },
+          },
+          {
+            'name' => 'second_unrestricted_volume',
+            'health_check' => {
+              'name' => 'privileged_healthcheck',
+              'script_path' => '/var/vcap/jobs/second_unrestricted_volume/bin/health_check',
+              'unrestricted_volumes' => [
+                {
+                  "path" => "second_writable_path",
+                  "writable" => true
+                },
+                {
+                  "path" => "second_unwritable_path",
+                }
+              ]
+            },
+          }]
+        end
+
+        it 'should render the extra unrestricted volumes' do
+          expected_template = {
+            "processes" => [
+              { "name" => "route_registrar",
+                "executable" => "/var/vcap/packages/route_registrar/bin/route-registrar",
+                "env" => {},
+                "args" => %w[--configPath /var/vcap/jobs/route_registrar/config/registrar_settings.json -timeFormat rfc3339 -logLevel info],
+                "unsafe" => {
+                  "privileged" => false,
+                  "unrestricted_volumes" => [
+                    {"path" => "first_writable_path", "writable" => true},
+                    {"path" => "first_unwritable_path", "writable" => false},
+                    {"path" => "second_writable_path", "writable" => true},
+                    {"path" => "second_unwritable_path", "writable" => false},
+                    {"path" => "/var/vcap/jobs/uaa", "allow_executions" => true},
+                    {"path" => "/var/vcap/data/uaa"},
+                    {"path" => "/var/vcap/jobs/first_unrestricted_volume", "allow_executions" => true},
+                    {"path" => "/var/vcap/data/first_unrestricted_volume"},
+                    {"path" => "/var/vcap/jobs/second_unrestricted_volume", "allow_executions" => true},
+                    {"path" => "/var/vcap/data/second_unrestricted_volume"},
+                  ]
+                }
+              }
+            ]
+          }
+
+          rendered_template = YAML.load(template.render(merged_manifest_properties, consumes: links))
+
+          expect(expected_template.pretty_inspect).to eq(rendered_template.pretty_inspect)
+        end
+      end
+
+      context 'with any privileged route' do
+        before do
+          merged_manifest_properties['route_registrar']['routes'].concat [
+          {
+            'name' => 'privileged_route',
+            'health_check' => {
+              'name' => 'privileged_healthcheck',
+              'script_path' => '/var/vcap/jobs/privileged/bin/health_check',
+              'privileged' => true
+            },
+          },
+          {
+            'name' => 'non_privileged_route',
+            'health_check' => {
+              'name' => 'non_privileged_healthcheck',
+              'script_path' => '/var/vcap/jobs/non_privileged/bin/health_check',
+              'privileged' => false
+            },
+          }]
+        end
+
+        it 'should render the privileged route' do
+          expected_template = {
+            "processes" => [
+              { "name" => "route_registrar",
+                "executable" => "/var/vcap/packages/route_registrar/bin/route-registrar",
+                "env" => {},
+                "args" => %w[--configPath /var/vcap/jobs/route_registrar/config/registrar_settings.json -timeFormat rfc3339 -logLevel info],
+                "unsafe" => {
+                  "privileged" => true,
+                  "unrestricted_volumes" => [
+                    {"path" => "/var/vcap/jobs/uaa", "allow_executions" => true},
+                    {"path" => "/var/vcap/data/uaa"},
+                    {"path" => "/var/vcap/jobs/privileged", "allow_executions" => true},
+                    {"path" => "/var/vcap/data/privileged"},
+                    {"path" => "/var/vcap/jobs/non_privileged", "allow_executions" => true},
+                    {"path" => "/var/vcap/data/non_privileged"},
+                  ]
+                }
+              }
+            ]
+          }
+
+          rendered_template = YAML.load(template.render(merged_manifest_properties, consumes: links))
+
+          expect(expected_template.pretty_inspect).to eq(rendered_template.pretty_inspect)
+        end
+      end
+
+      context 'with extra unrestricted volume that conflicts with script path' do
+        before do
+          merged_manifest_properties['route_registrar']['routes'].concat [
+           {
+             'name' => 'first_unrestricted_volume',
+             'health_check' => {
+               'name' => 'privileged_healthcheck',
+               'script_path' => '/var/vcap/jobs/conflict/bin/health_check',
+               'unrestricted_volumes' => [
+                 {
+                   "path" => "/var/vcap/jobs/conflict",
+                   "writable" => true
+                 },
+                 {
+                   "path" => "/var/vcap/data/conflict",
+                   "writable" => true
+                 }
+               ]
+             },
+           }]
+        end
+
+        it 'merges the conflicted paths' do
+          expected_template = {
+            "processes" => [
+              { "name" => "route_registrar",
+                "executable" => "/var/vcap/packages/route_registrar/bin/route-registrar",
+                "env" => {},
+                "args" => %w[--configPath /var/vcap/jobs/route_registrar/config/registrar_settings.json -timeFormat rfc3339 -logLevel info],
+                "unsafe" => {
+                  "privileged" => false,
+                  "unrestricted_volumes" => [
+                    {"path" => "/var/vcap/jobs/conflict", "writable" => true, "allow_executions" => true},
+                    {"path" => "/var/vcap/data/conflict", "writable" => true},
+                    {"path" => "/var/vcap/jobs/uaa", "allow_executions" => true},
+                    {"path" => "/var/vcap/data/uaa"},
+                  ]
+                }
+              }
+            ]
+          }
+          rendered_template = YAML.load(template.render(merged_manifest_properties, consumes: links))
+
+          expect(expected_template.pretty_inspect).to eq(rendered_template.pretty_inspect)
         end
       end
     end
