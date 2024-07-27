@@ -14,11 +14,11 @@ require (
 	code.cloudfoundry.org/bbs v0.0.0-20240717173038-096d0e1a7e95
 	code.cloudfoundry.org/cfhttp/v2 v2.1.0
 	code.cloudfoundry.org/clock v1.2.0
-	code.cloudfoundry.org/debugserver v0.0.0-20240725181150-25b04d48c6b1
-	code.cloudfoundry.org/eventhub v0.0.0-20240725181136-eae28fcb43cc
+	code.cloudfoundry.org/debugserver v0.0.0-20240726181222-599a5c45bf48
+	code.cloudfoundry.org/eventhub v0.0.0-20240726181227-84e26bd8e099
 	code.cloudfoundry.org/go-metric-registry v0.0.0-20240604201903-7cef498efb7a
 	code.cloudfoundry.org/lager/v3 v3.0.3
-	code.cloudfoundry.org/localip v0.0.0-20240725181137-6a3eb03fa8ed
+	code.cloudfoundry.org/localip v0.0.0-20240726181223-1b72a9d14527
 	code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
 	code.cloudfoundry.org/tlsconfig v0.0.0-20240712175922-ffce9516cec8
 	github.com/armon/go-proxyproto v0.1.0
@@ -58,8 +58,8 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.0.0-20240725181144-da8b6d91a403 // indirect
-	code.cloudfoundry.org/durationjson v0.0.0-20240725181158-c1cf2082bda4 // indirect
+	code.cloudfoundry.org/diego-logging-client v0.0.0-20240726181237-441fce0fff1f // indirect
+	code.cloudfoundry.org/durationjson v0.0.0-20240726181222-f51c53bcb3a2 // indirect
 	code.cloudfoundry.org/go-diodes v0.0.0-20240723012033-bf559dd3d0b1 // indirect
 	code.cloudfoundry.org/go-loggregator/v9 v9.2.1 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
@@ -76,7 +76,7 @@ require (
 	github.com/go-test/deep v1.0.7 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
-	github.com/google/pprof v0.0.0-20240722153945-304e4f0156b8 // indirect
+	github.com/google/pprof v0.0.0-20240727154555-813a5fbdbec8 // indirect
 	github.com/honeycombio/libhoney-go v1.23.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect

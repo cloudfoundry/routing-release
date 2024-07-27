@@ -13,16 +13,16 @@ code.cloudfoundry.org/cfhttp/v2
 ## explicit; go 1.20
 code.cloudfoundry.org/clock
 code.cloudfoundry.org/clock/fakeclock
-# code.cloudfoundry.org/debugserver v0.0.0-20240725181150-25b04d48c6b1
+# code.cloudfoundry.org/debugserver v0.0.0-20240726181222-599a5c45bf48
 ## explicit; go 1.19
 code.cloudfoundry.org/debugserver
-# code.cloudfoundry.org/diego-logging-client v0.0.0-20240725181144-da8b6d91a403
+# code.cloudfoundry.org/diego-logging-client v0.0.0-20240726181237-441fce0fff1f
 ## explicit; go 1.22
 code.cloudfoundry.org/diego-logging-client
-# code.cloudfoundry.org/durationjson v0.0.0-20240725181158-c1cf2082bda4
+# code.cloudfoundry.org/durationjson v0.0.0-20240726181222-f51c53bcb3a2
 ## explicit; go 1.19
 code.cloudfoundry.org/durationjson
-# code.cloudfoundry.org/eventhub v0.0.0-20240725181136-eae28fcb43cc
+# code.cloudfoundry.org/eventhub v0.0.0-20240726181227-84e26bd8e099
 ## explicit; go 1.19
 code.cloudfoundry.org/eventhub
 # code.cloudfoundry.org/go-diodes v0.0.0-20240723012033-bf559dd3d0b1
@@ -46,7 +46,7 @@ code.cloudfoundry.org/lager/v3/internal/truncate
 code.cloudfoundry.org/lager/v3/lagerctx
 code.cloudfoundry.org/lager/v3/lagerflags
 code.cloudfoundry.org/lager/v3/lagertest
-# code.cloudfoundry.org/localip v0.0.0-20240725181137-6a3eb03fa8ed
+# code.cloudfoundry.org/localip v0.0.0-20240726181223-1b72a9d14527
 ## explicit; go 1.20
 code.cloudfoundry.org/localip
 # code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
@@ -167,7 +167,7 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
-# github.com/google/pprof v0.0.0-20240722153945-304e4f0156b8
+# github.com/google/pprof v0.0.0-20240727154555-813a5fbdbec8
 ## explicit; go 1.19
 github.com/google/pprof/profile
 # github.com/honeycombio/libhoney-go v1.23.1
