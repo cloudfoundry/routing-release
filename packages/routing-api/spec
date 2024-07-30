@@ -96,6 +96,7 @@ files:
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/format/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/gbytes/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/gexec/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/onsi/gomega/ghttp/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/internal/gutil/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/gomega/matchers/*.go # gosub
@@ -138,6 +139,8 @@ files:
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/scrypt/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/ssh/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/ssh/internal/bcrypt_pbkdf/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/exp/constraints/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/exp/slices/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/context/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/html/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/html/atom/*.go # gosub
