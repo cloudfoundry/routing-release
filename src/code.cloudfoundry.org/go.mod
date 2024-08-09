@@ -14,13 +14,13 @@ require (
 	code.cloudfoundry.org/bbs v0.0.0-20240806230301-9be69c0199db
 	code.cloudfoundry.org/cfhttp/v2 v2.1.0
 	code.cloudfoundry.org/clock v1.2.0
-	code.cloudfoundry.org/debugserver v0.0.0-20240807182422-240e7d25a275
-	code.cloudfoundry.org/eventhub v0.0.0-20240806182324-a95129df2a8a
+	code.cloudfoundry.org/debugserver v0.0.0-20240808182508-aa80400f8069
+	code.cloudfoundry.org/eventhub v0.0.0-20240808182443-e0d0d76994a7
 	code.cloudfoundry.org/go-metric-registry v0.0.0-20240731205343-e778db45fec9
 	code.cloudfoundry.org/lager/v3 v3.0.3
-	code.cloudfoundry.org/localip v0.0.0-20240807182325-18b79b2b941e
+	code.cloudfoundry.org/localip v0.0.0-20240808182500-901907e2b652
 	code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
-	code.cloudfoundry.org/tlsconfig v0.0.0-20240806182125-2cf75882e274
+	code.cloudfoundry.org/tlsconfig v0.0.0-20240808182450-b1b581e211a2
 	github.com/armon/go-proxyproto v0.1.0
 	github.com/cactus/go-statsd-client v3.2.1+incompatible
 	github.com/cloudfoundry-community/go-uaa v0.3.3
@@ -59,8 +59,8 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.0.0-20240807182310-8a0d0ee10c9c // indirect
-	code.cloudfoundry.org/durationjson v0.0.0-20240807182350-04b9c1d46b5e // indirect
+	code.cloudfoundry.org/diego-logging-client v0.0.0-20240808182500-69e238999430 // indirect
+	code.cloudfoundry.org/durationjson v0.0.0-20240808182444-caf3082751ed // indirect
 	code.cloudfoundry.org/go-diodes v0.0.0-20240807231455-f9cf434a8c3e // indirect
 	code.cloudfoundry.org/go-loggregator/v9 v9.2.1 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
@@ -105,9 +105,9 @@ require (
 	golang.org/x/exp v0.0.0-20240808152545-0cdaa3abc0fa // indirect
 	golang.org/x/mod v0.20.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
-	golang.org/x/sys v0.23.0 // indirect
+	golang.org/x/sys v0.24.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
 	golang.org/x/time v0.6.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240805194559-2c9e96a0b5d4 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240808171019-573a1156607a // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 )
