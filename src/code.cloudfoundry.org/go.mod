@@ -59,7 +59,7 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.0.0-20240808182500-69e238999430 // indirect
+	code.cloudfoundry.org/diego-logging-client v0.0.0-20240809182614-9f67e858b86a // indirect
 	code.cloudfoundry.org/durationjson v0.0.0-20240808182444-caf3082751ed // indirect
 	code.cloudfoundry.org/go-diodes v0.0.0-20240807231455-f9cf434a8c3e // indirect
 	code.cloudfoundry.org/go-loggregator/v9 v9.2.1 // indirect
