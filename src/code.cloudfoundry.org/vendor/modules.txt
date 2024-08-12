@@ -16,7 +16,7 @@ code.cloudfoundry.org/clock/fakeclock
 # code.cloudfoundry.org/debugserver v0.0.0-20240808182508-aa80400f8069
 ## explicit; go 1.19
 code.cloudfoundry.org/debugserver
-# code.cloudfoundry.org/diego-logging-client v0.0.0-20240809182614-9f67e858b86a
+# code.cloudfoundry.org/diego-logging-client v0.0.0-20240812182854-b799b0fa092b
 ## explicit; go 1.22
 code.cloudfoundry.org/diego-logging-client
 # code.cloudfoundry.org/durationjson v0.0.0-20240808182444-caf3082751ed
