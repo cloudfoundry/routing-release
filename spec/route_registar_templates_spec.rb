@@ -419,6 +419,7 @@ describe 'route_registrar' do
             'ca_path' => '/var/vcap/jobs/route_registrar/config/nats/certs/server_ca.crt'
           },
           'availability_zone' => 'az1',
+          'dynamic_config_globs' => ['/var/vcap/jobs/*/config/route_registrar/config.yml'],
         )
       end
     end
@@ -593,6 +594,7 @@ describe 'route_registrar' do
                 "unrestricted_volumes" => [
                   {"path" => "/var/vcap/jobs/uaa", "allow_executions" => true},
                   {"path" => "/var/vcap/data/uaa"},
+                  {"path" => "/var/vcap/jobs/*/config/route_registrar", "mount_only" => true},
                 ]
               }
             }
@@ -652,16 +654,17 @@ describe 'route_registrar' do
                 "unsafe" => {
                   "privileged" => false,
                   "unrestricted_volumes" => [
-                    {"path" => "first_writable_path", "writable" => true},
-                    {"path" => "first_unwritable_path", "writable" => false},
-                    {"path" => "second_writable_path", "writable" => true},
-                    {"path" => "second_unwritable_path", "writable" => false},
+                    {"path" => "first_writable_path", "writable" => true, "allow_executions" => false},
+                    {"path" => "first_unwritable_path", "writable" => false, "allow_executions" => false},
+                    {"path" => "second_writable_path", "writable" => true, "allow_executions" => false},
+                    {"path" => "second_unwritable_path", "writable" => false, "allow_executions" => false},
                     {"path" => "/var/vcap/jobs/uaa", "allow_executions" => true},
                     {"path" => "/var/vcap/data/uaa"},
                     {"path" => "/var/vcap/jobs/first_unrestricted_volume", "allow_executions" => true},
                     {"path" => "/var/vcap/data/first_unrestricted_volume"},
                     {"path" => "/var/vcap/jobs/second_unrestricted_volume", "allow_executions" => true},
                     {"path" => "/var/vcap/data/second_unrestricted_volume"},
+                    {"path" => "/var/vcap/jobs/*/config/route_registrar", "mount_only" => true},
                   ]
                 }
               }
@@ -711,6 +714,7 @@ describe 'route_registrar' do
                     {"path" => "/var/vcap/data/privileged"},
                     {"path" => "/var/vcap/jobs/non_privileged", "allow_executions" => true},
                     {"path" => "/var/vcap/data/non_privileged"},
+                    {"path" => "/var/vcap/jobs/*/config/route_registrar", "mount_only" => true},
                   ]
                 }
               }
@@ -756,9 +760,40 @@ describe 'route_registrar' do
                   "privileged" => false,
                   "unrestricted_volumes" => [
                     {"path" => "/var/vcap/jobs/conflict", "writable" => true, "allow_executions" => true},
-                    {"path" => "/var/vcap/data/conflict", "writable" => true},
+                    {"path" => "/var/vcap/data/conflict", "writable" => true, "allow_executions" => false},
                     {"path" => "/var/vcap/jobs/uaa", "allow_executions" => true},
                     {"path" => "/var/vcap/data/uaa"},
+                    {"path" => "/var/vcap/jobs/*/config/route_registrar", "mount_only" => true},
+                  ]
+                }
+              }
+            ]
+          }
+          rendered_template = YAML.load(template.render(merged_manifest_properties, consumes: links))
+
+          expect(expected_template.pretty_inspect).to eq(rendered_template.pretty_inspect)
+        end
+      end
+
+      context 'dynamic config globs' do
+        before do
+          merged_manifest_properties['route_registrar']['dynamic_config_globs'] = ["/some-*/glob-1/config.yml", "/some-*/glob-2/config.yml"]
+        end
+
+        it 'merges the conflicted paths' do
+          expected_template = {
+            "processes" => [
+              { "name" => "route_registrar",
+                "executable" => "/var/vcap/packages/route_registrar/bin/route-registrar",
+                "env" => {},
+                "args" => %w[--configPath /var/vcap/jobs/route_registrar/config/registrar_settings.json -timeFormat rfc3339 -logLevel info],
+                "unsafe" => {
+                  "privileged" => false,
+                  "unrestricted_volumes" => [
+                    {"path" => "/var/vcap/jobs/uaa", "allow_executions" => true},
+                    {"path" => "/var/vcap/data/uaa"},
+                    {"path" => "/some-*/glob-1", "mount_only" => true},
+                    {"path" => "/some-*/glob-2", "mount_only" => true},
                   ]
                 }
               }

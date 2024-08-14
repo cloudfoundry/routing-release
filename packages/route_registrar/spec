@@ -66,3 +66,4 @@ files:
   - code.cloudfoundry.org/vendor/golang.org/x/oauth2/internal/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/sys/cpu/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/sys/cpu/*.s # gosub
+  - code.cloudfoundry.org/vendor/gopkg.in/yaml.v3/*.go # gosub

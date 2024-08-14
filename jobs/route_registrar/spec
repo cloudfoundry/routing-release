@@ -94,6 +94,10 @@ properties:
   route_registrar.routing_api.server_ca_cert:
     description: "Routing API Certificate Authority"
 
+  route_registrar.dynamic_config_globs:
+    description: "Files matching the globs contain routes configuration that will be loaded dynamically. Parent directory must exist for bpm to mount it."
+    default: [/var/vcap/jobs/*/config/route_registrar/config.yml]
+
   route_registrar.routes:
     description: |
       (required, array of objects): Routes that will be registered

@@ -22,12 +22,14 @@ paths = []
 unrestricted_volumes = []
 routes = p('route_registrar.routes')
 unsafe_privileged = false
+
 routes.each do |route|
   if route['health_check']
     # valid path is /var/vcap/jobs/JOB
     matched = /(^\/var\/vcap\/jobs\/[^\/]*)\/.*/.match(route['health_check']['script_path'])
     if matched
-      paths << matched[1]
+      paths.append({ "path" => matched[1], "allow_executions" => true })
+      paths.append({ "path" => matched[1].sub('jobs', 'data') })
     end
 
     if route['health_check']['privileged']
@@ -39,34 +41,35 @@ routes.each do |route|
         {
           "path" => unrestricted_volume["path"],
           "writable" => unrestricted_volume["writable"] || false,
+          "allow_executions" => unrestricted_volume["allow_executions"] || false,
         }
       })
     end
   end
 end
 
+if_p('route_registrar.dynamic_config_globs') do |globs|
+   globs.each do |glob|
+     paths.append({ "path" => File.dirname(glob), "mount_only" => true })
+   end
+ end
+
 unless paths.empty?
+  paths.each do |path|
+    existing_path = unrestricted_volumes.find { |unrestricted_volume| unrestricted_volume['path'] == path['path'] }
+    if existing_path
+      existing_path.merge!(path)
+    else
+      unrestricted_volumes << path
+    end
+  end
+
   unsafe = {
     "unsafe" => {
       "privileged" => unsafe_privileged,
       "unrestricted_volumes" => unrestricted_volumes
     }
   }
-
-  paths.each do |path|
-    merge_on_path = ->(hash) {
-      existing_path = unsafe['unsafe']['unrestricted_volumes'].find { |unrestricted_volume| unrestricted_volume['path'] == hash['path'] }
-      if existing_path
-        existing_path.merge!(hash)
-      else
-        unsafe['unsafe']['unrestricted_volumes'] << hash
-      end
-    }
-
-    merge_on_path.call( {"path" =>  path, "allow_executions" => true} )
-    merge_on_path.call( {"path" => path.sub('jobs', 'data')} )
-
-  end
 
   bpm['processes'][0].merge!(unsafe)
 end
