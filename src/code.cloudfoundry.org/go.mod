@@ -14,9 +14,9 @@ require (
 	code.cloudfoundry.org/bbs v0.0.0-20240806230301-9be69c0199db
 	code.cloudfoundry.org/cfhttp/v2 v2.2.0
 	code.cloudfoundry.org/clock v1.3.0
-	code.cloudfoundry.org/debugserver v0.1.0
+	code.cloudfoundry.org/debugserver v0.2.0
 	code.cloudfoundry.org/eventhub v0.1.0
-	code.cloudfoundry.org/go-metric-registry v0.0.0-20240731205343-e778db45fec9
+	code.cloudfoundry.org/go-metric-registry v0.0.0-20240813203836-dd62fec970e7
 	code.cloudfoundry.org/lager/v3 v3.1.0
 	code.cloudfoundry.org/localip v0.1.0
 	code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
@@ -59,9 +59,9 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.1.0 // indirect
+	code.cloudfoundry.org/diego-logging-client v0.2.0 // indirect
 	code.cloudfoundry.org/durationjson v0.1.0 // indirect
-	code.cloudfoundry.org/go-diodes v0.0.0-20240807231455-f9cf434a8c3e // indirect
+	code.cloudfoundry.org/go-diodes v0.0.0-20240813203737-5032edb05ceb // indirect
 	code.cloudfoundry.org/go-loggregator/v9 v9.2.1 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
@@ -91,7 +91,7 @@ require (
 	github.com/nats-io/nkeys v0.4.7 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/prometheus/client_golang v1.19.1 // indirect
+	github.com/prometheus/client_golang v1.20.0 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
