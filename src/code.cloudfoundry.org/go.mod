@@ -46,7 +46,7 @@ require (
 	github.com/uber-go/zap v1.27.0
 	github.com/urfave/cli v1.22.15
 	github.com/urfave/negroni/v3 v3.1.1
-	github.com/vito/go-sse v1.1.1
+	github.com/vito/go-sse v1.1.2
 	go.step.sm/crypto v0.51.1
 	golang.org/x/crypto v0.26.0
 	golang.org/x/net v0.28.0
@@ -91,7 +91,7 @@ require (
 	github.com/nats-io/nkeys v0.4.7 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/prometheus/client_golang v1.20.0 // indirect
+	github.com/prometheus/client_golang v1.20.1 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
@@ -108,6 +108,6 @@ require (
 	golang.org/x/sys v0.24.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
 	golang.org/x/time v0.6.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240814211410-ddb44dafa142 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240820151423-278611b39280 // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 )
