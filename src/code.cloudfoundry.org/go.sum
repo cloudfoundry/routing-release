@@ -600,8 +600,8 @@ code.cloudfoundry.org/clock v1.3.0 h1:0P9zWwt9eSCHYTFWSCT7FkX21x/dEDHKTlSbvJG80R
 code.cloudfoundry.org/clock v1.3.0/go.mod h1:U4uytQbm9TLDZh+pwNaIKBINM1FIgHPQuH0IewhtNMk=
 code.cloudfoundry.org/debugserver v0.2.0 h1:1cioXsMdjz/k4FpjxDAEVvv2WjHb0ZqsJqmYlNQWhH0=
 code.cloudfoundry.org/debugserver v0.2.0/go.mod h1:GcI+09yodWsRou4wDQkOaEf0Fl48q9xXqdJpHmblNp0=
-code.cloudfoundry.org/diego-logging-client v0.4.0 h1:NWuimWcE9dB9TRCqmIzIhTe4I+uuIeKQdL9fbF56Br8=
-code.cloudfoundry.org/diego-logging-client v0.4.0/go.mod h1:XMdGA4zzMfyY2/qdwyWPS7xQDok1yGHzIHn78VdnEJY=
+code.cloudfoundry.org/diego-logging-client v0.5.0 h1:h82eFiFLmu1m+5FVPHOfGL9RKg49ZO3aVPp6PmKz/lU=
+code.cloudfoundry.org/diego-logging-client v0.5.0/go.mod h1:jlPCKuBkvKlp4XewDpud2gwC711GpxTPnlBKGgIwiSs=
 code.cloudfoundry.org/durationjson v0.1.0 h1:S/ylgLAwRdCgCff99p0w5J46Pcn5Nfs+mSj1hLEJ3G0=
 code.cloudfoundry.org/durationjson v0.1.0/go.mod h1:3vKUTBFRGLvIVtat4aGSeVDoI/DWyAk4q8lRdCua0Z0=
 code.cloudfoundry.org/eventhub v0.1.0 h1:uByLutZ40qop36mcP6nASnu2KyUR733E8S+TEW9h/ic=
@@ -671,8 +671,8 @@ github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1/go.mod h1:Q3SI9o4m/ZMn
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cloudfoundry-community/go-uaa v0.3.3 h1:VvThn655xL/drEC0wA32dPOGO81GANgVobMpS1o9dj4=
 github.com/cloudfoundry-community/go-uaa v0.3.3/go.mod h1:6I8rkeZMpzdyG/SrAWlrnLs8WwO7j87BXT8njRkctTk=
-github.com/cloudfoundry/cf-routing-test-helpers v0.0.0-20240304203209-3404f81a986b h1:d2bEDGcrnDQzvkjetZy+VcHnUJxQ1J8Zr/daAJ5SbSE=
-github.com/cloudfoundry/cf-routing-test-helpers v0.0.0-20240304203209-3404f81a986b/go.mod h1:XigJMOXHcv+D+rPZ0pqcYEk4o2PZWG5CZ5mRycXzVcY=
+github.com/cloudfoundry/cf-routing-test-helpers v0.0.0-20240821054706-b28ee5fb37eb h1:lhcKCcr5qiqhzaTCHrkunejFJdiri8W13BydRZ3nWNI=
+github.com/cloudfoundry/cf-routing-test-helpers v0.0.0-20240821054706-b28ee5fb37eb/go.mod h1:XigJMOXHcv+D+rPZ0pqcYEk4o2PZWG5CZ5mRycXzVcY=
 github.com/cloudfoundry/cf-test-helpers/v2 v2.9.0 h1:TxmjLDCIopHVo8mhp7WrwKvgnsescsDKV/R5ATr8jgI=
 github.com/cloudfoundry/cf-test-helpers/v2 v2.9.0/go.mod h1:fESCQ1sbdTejVXy9l10zh15R+BhrslRbumYT6F+VtxI=
 github.com/cloudfoundry/custom-cats-reporters v0.0.2 h1:ySBjBh6I2an5FvbJ2egszOyiOYJkKqeOtpOmnU2RKiI=

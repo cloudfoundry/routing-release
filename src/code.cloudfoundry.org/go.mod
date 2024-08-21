@@ -24,7 +24,7 @@ require (
 	github.com/armon/go-proxyproto v0.1.0
 	github.com/cactus/go-statsd-client v3.2.1+incompatible
 	github.com/cloudfoundry-community/go-uaa v0.3.3
-	github.com/cloudfoundry/cf-routing-test-helpers v0.0.0-20240304203209-3404f81a986b
+	github.com/cloudfoundry/cf-routing-test-helpers v0.0.0-20240821054706-b28ee5fb37eb
 	github.com/cloudfoundry/cf-test-helpers/v2 v2.9.0
 	github.com/cloudfoundry/custom-cats-reporters v0.0.2
 	github.com/cloudfoundry/dropsonde v1.1.0
@@ -59,7 +59,7 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.4.0 // indirect
+	code.cloudfoundry.org/diego-logging-client v0.5.0 // indirect
 	code.cloudfoundry.org/durationjson v0.1.0 // indirect
 	code.cloudfoundry.org/go-diodes v0.0.0-20240813203737-5032edb05ceb // indirect
 	code.cloudfoundry.org/go-loggregator/v9 v9.2.1 // indirect
