@@ -36,7 +36,6 @@ files:
   - code.cloudfoundry.org/gorouter/handlers/*.go # gosub
   - code.cloudfoundry.org/gorouter/integration/*.go # gosub
   - code.cloudfoundry.org/gorouter/logger/*.go # gosub
-  - code.cloudfoundry.org/gorouter/logger/fakes/*.go # gosub
   - code.cloudfoundry.org/gorouter/mbus/*.go # gosub
   - code.cloudfoundry.org/gorouter/mbus/fakes/*.go # gosub
   - code.cloudfoundry.org/gorouter/metrics/*.go # gosub
@@ -181,8 +180,6 @@ files:
   - code.cloudfoundry.org/vendor/github.com/tedsuo/ifrit/http_server/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/tedsuo/ifrit/sigmon/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/tedsuo/rata/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/uber-go/atomic/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/uber-go/zap/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/urfave/cli/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/urfave/negroni/v3/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/vito/go-sse/sse/*.go # gosub
@@ -200,6 +197,17 @@ files:
   - code.cloudfoundry.org/vendor/go.step.sm/crypto/pemutil/*.go # gosub
   - code.cloudfoundry.org/vendor/go.step.sm/crypto/randutil/*.go # gosub
   - code.cloudfoundry.org/vendor/go.step.sm/crypto/x25519/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.uber.org/multierr/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.uber.org/zap/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.uber.org/zap/buffer/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.uber.org/zap/exp/zapslog/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.uber.org/zap/internal/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.uber.org/zap/internal/bufferpool/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.uber.org/zap/internal/color/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.uber.org/zap/internal/exit/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.uber.org/zap/internal/pool/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.uber.org/zap/internal/stacktrace/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.uber.org/zap/zapcore/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/blake2b/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/blake2b/*.s # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/blowfish/*.go # gosub

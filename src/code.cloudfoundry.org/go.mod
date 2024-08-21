@@ -2,10 +2,6 @@ module code.cloudfoundry.org
 
 go 1.23.0
 
-replace github.com/uber-go/zap => github.com/uber-go/zap v0.0.0-20161222040304-a5783ee4b216
-
-replace github.com/uber-go/atomic => github.com/uber-go/atomic v1.1.0
-
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
 
 require (
@@ -41,11 +37,12 @@ require (
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
 	github.com/tedsuo/ifrit v0.0.0-20230516164442-7862c310ad26
 	github.com/tedsuo/rata v1.0.0
-	github.com/uber-go/zap v1.27.0
 	github.com/urfave/cli v1.22.15
 	github.com/urfave/negroni/v3 v3.1.1
 	github.com/vito/go-sse v1.1.2
 	go.step.sm/crypto v0.52.0
+	go.uber.org/zap v1.27.0
+	go.uber.org/zap/exp v0.2.0
 	golang.org/x/crypto v0.27.0
 	golang.org/x/net v0.29.0
 	golang.org/x/oauth2 v0.23.0
@@ -94,11 +91,10 @@ require (
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/square/certstrap v1.3.0 // indirect
-	github.com/uber-go/atomic v1.11.0 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
-	go.uber.org/atomic v1.8.0 // indirect
 	go.uber.org/automaxprocs v1.6.0 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/mod v0.21.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.25.0 // indirect
