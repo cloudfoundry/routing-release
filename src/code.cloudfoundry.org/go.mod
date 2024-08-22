@@ -16,7 +16,7 @@ require (
 	code.cloudfoundry.org/clock v1.3.0
 	code.cloudfoundry.org/debugserver v0.2.0
 	code.cloudfoundry.org/eventhub v0.1.0
-	code.cloudfoundry.org/go-metric-registry v0.0.0-20240821231813-756f75a2fe8e
+	code.cloudfoundry.org/go-metric-registry v0.0.0-20240822165235-8c5a42e1ec33
 	code.cloudfoundry.org/lager/v3 v3.1.0
 	code.cloudfoundry.org/localip v0.1.0
 	code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
@@ -108,6 +108,6 @@ require (
 	golang.org/x/sys v0.24.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
 	golang.org/x/time v0.6.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240820151423-278611b39280 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240822170219-fc7c04adadcd // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 )
