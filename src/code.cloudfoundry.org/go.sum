@@ -610,8 +610,8 @@ code.cloudfoundry.org/go-diodes v0.0.0-20240813203737-5032edb05ceb h1:Last39ehN2
 code.cloudfoundry.org/go-diodes v0.0.0-20240813203737-5032edb05ceb/go.mod h1:PfkH7ePa4EhyC6VRisbZJOaIHhas7ofB0heANM//Z6Y=
 code.cloudfoundry.org/go-loggregator/v9 v9.2.1 h1:S6Lgg5UJbhh2bt2TGQxs6R00CF8PrUA3GFPYDxy56Fk=
 code.cloudfoundry.org/go-loggregator/v9 v9.2.1/go.mod h1:FTFFruqGeOhVCDFvyLgl8EV8YW63NNwRzLhxJcporu8=
-code.cloudfoundry.org/go-metric-registry v0.0.0-20240813203836-dd62fec970e7 h1:4lNirMx1BpssVwpFx0oSZENKjVDGMS+SI+kI5td299U=
-code.cloudfoundry.org/go-metric-registry v0.0.0-20240813203836-dd62fec970e7/go.mod h1:NuLRqpEgG8cq/4bYrqcWzFfDFQ7cjE90eorWhwf3wCk=
+code.cloudfoundry.org/go-metric-registry v0.0.0-20240821231813-756f75a2fe8e h1:31LIDQMN69hct0PIbJd3cDhk67Ngmdlhk5aTDfxutgM=
+code.cloudfoundry.org/go-metric-registry v0.0.0-20240821231813-756f75a2fe8e/go.mod h1:Z+camiUwKPPmwb26aNTdGXSDSOFyPZTTXJnhsxFYJSY=
 code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 h1:XVhLtnvbIlLQh7L0KADVFjd2dfgXVcOpqPLpMtg/IZA=
 code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5/go.mod h1:1ZB1JCh2FAp+SqX79ve6dc8YREvbsziULEOncAilX4Q=
 code.cloudfoundry.org/lager/v3 v3.1.0 h1:ZB4VXLSI0bIWhDSjKdEh/Jrs2SXFLX/9+z2WEZhAf2o=
@@ -974,8 +974,8 @@ github.com/onsi/ginkgo/v2 v2.9.0/go.mod h1:4xkjoL/tZv4SMWeww56BU5kAt19mVB47gTWxm
 github.com/onsi/ginkgo/v2 v2.9.1/go.mod h1:FEcmzVcCHl+4o9bQZVab+4dC9+j+91t2FHSzmGAPfuo=
 github.com/onsi/ginkgo/v2 v2.9.2/go.mod h1:WHcJJG2dIlcCqVfBAwUCrJxSPFb6v4azBwgxeMeDuts=
 github.com/onsi/ginkgo/v2 v2.9.4/go.mod h1:gCQYp2Q+kSoIj7ykSVb9nskRSsR6PUj4AiLywzIhbKM=
-github.com/onsi/ginkgo/v2 v2.20.0 h1:PE84V2mHqoT1sglvHc8ZdQtPcwmvvt29WLEEO3xmdZw=
-github.com/onsi/ginkgo/v2 v2.20.0/go.mod h1:lG9ey2Z29hR41WMVthyJBGUBcBhGOtoPF2VFMvBXFCI=
+github.com/onsi/ginkgo/v2 v2.20.1 h1:YlVIbqct+ZmnEph770q9Q7NVAz4wwIiVNahee6JyUzo=
+github.com/onsi/ginkgo/v2 v2.20.1/go.mod h1:lG9ey2Z29hR41WMVthyJBGUBcBhGOtoPF2VFMvBXFCI=
 github.com/onsi/gomega v1.5.0/go.mod h1:ex+gbHU/CVuBBDIJjb2X0qEXbFg53c61hWP/1CpauHY=
 github.com/onsi/gomega v1.7.1/go.mod h1:XdKZgCCFLUoM/7CFJVPcG8C1xQ1AJ0vpAezJrB7JYyY=
 github.com/onsi/gomega v1.10.1/go.mod h1:iN09h71vgCQne3DLsj+A5owkum+a2tYe+TOCB1ybHNo=

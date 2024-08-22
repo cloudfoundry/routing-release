@@ -16,7 +16,7 @@ require (
 	code.cloudfoundry.org/clock v1.3.0
 	code.cloudfoundry.org/debugserver v0.2.0
 	code.cloudfoundry.org/eventhub v0.1.0
-	code.cloudfoundry.org/go-metric-registry v0.0.0-20240813203836-dd62fec970e7
+	code.cloudfoundry.org/go-metric-registry v0.0.0-20240821231813-756f75a2fe8e
 	code.cloudfoundry.org/lager/v3 v3.1.0
 	code.cloudfoundry.org/localip v0.1.0
 	code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
@@ -37,7 +37,7 @@ require (
 	github.com/nats-io/nats-server/v2 v2.10.18
 	github.com/nats-io/nats.go v1.37.0
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo/v2 v2.20.0
+	github.com/onsi/ginkgo/v2 v2.20.1
 	github.com/onsi/gomega v1.34.1
 	github.com/openzipkin/zipkin-go v0.4.3
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
