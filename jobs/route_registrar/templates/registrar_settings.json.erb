@@ -157,6 +157,7 @@ TEXT
     nats_mtls_config: nats_mtls_config,
     host: host,
     routes: routes,
+    dynamic_config_globs: p('route_registrar.dynamic_config_globs'),
     routing_api: routing_api,
     availability_zone: spec.az,
   }
