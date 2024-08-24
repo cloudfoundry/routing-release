@@ -12,13 +12,13 @@ replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client
 
 require (
 	code.cloudfoundry.org/bbs v0.0.0-20240806230301-9be69c0199db
-	code.cloudfoundry.org/cfhttp/v2 v2.3.0
-	code.cloudfoundry.org/clock v1.4.0
-	code.cloudfoundry.org/debugserver v0.3.0
-	code.cloudfoundry.org/eventhub v0.2.0
+	code.cloudfoundry.org/cfhttp/v2 v2.4.0
+	code.cloudfoundry.org/clock v1.5.0
+	code.cloudfoundry.org/debugserver v0.4.0
+	code.cloudfoundry.org/eventhub v0.3.0
 	code.cloudfoundry.org/go-metric-registry v0.0.0-20240822165235-8c5a42e1ec33
-	code.cloudfoundry.org/lager/v3 v3.2.0
-	code.cloudfoundry.org/localip v0.2.0
+	code.cloudfoundry.org/lager/v3 v3.3.0
+	code.cloudfoundry.org/localip v0.3.0
 	code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
 	code.cloudfoundry.org/tlsconfig v0.1.0
 	github.com/armon/go-proxyproto v0.1.0
@@ -59,8 +59,8 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.6.0 // indirect
-	code.cloudfoundry.org/durationjson v0.2.0 // indirect
+	code.cloudfoundry.org/diego-logging-client v0.7.0 // indirect
+	code.cloudfoundry.org/durationjson v0.3.0 // indirect
 	code.cloudfoundry.org/go-diodes v0.0.0-20240813203737-5032edb05ceb // indirect
 	code.cloudfoundry.org/go-loggregator/v9 v9.2.1 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
@@ -91,7 +91,7 @@ require (
 	github.com/nats-io/nkeys v0.4.7 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/prometheus/client_golang v1.20.1 // indirect
+	github.com/prometheus/client_golang v1.20.2 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
@@ -108,6 +108,6 @@ require (
 	golang.org/x/sys v0.24.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
 	golang.org/x/time v0.6.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240822170219-fc7c04adadcd // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240823204242-4ba0660f739c // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 )
