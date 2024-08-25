@@ -14,7 +14,7 @@ require (
 	code.cloudfoundry.org/bbs v0.0.0-20240806230301-9be69c0199db
 	code.cloudfoundry.org/cfhttp/v2 v2.4.0
 	code.cloudfoundry.org/clock v1.5.0
-	code.cloudfoundry.org/debugserver v0.4.0
+	code.cloudfoundry.org/debugserver v0.5.0
 	code.cloudfoundry.org/eventhub v0.3.0
 	code.cloudfoundry.org/go-metric-registry v0.0.0-20240822165235-8c5a42e1ec33
 	code.cloudfoundry.org/lager/v3 v3.3.0
@@ -59,7 +59,7 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.7.0 // indirect
+	code.cloudfoundry.org/diego-logging-client v0.8.0 // indirect
 	code.cloudfoundry.org/durationjson v0.3.0 // indirect
 	code.cloudfoundry.org/go-diodes v0.0.0-20240813203737-5032edb05ceb // indirect
 	code.cloudfoundry.org/go-loggregator/v9 v9.2.1 // indirect
