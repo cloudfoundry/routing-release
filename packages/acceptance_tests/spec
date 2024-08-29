@@ -90,8 +90,6 @@ files:
   - code.cloudfoundry.org/vendor/github.com/pkg/errors/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/tedsuo/rata/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/vito/go-sse/sse/*.go # gosub
-  - code.cloudfoundry.org/vendor/golang.org/x/exp/constraints/*.go # gosub
-  - code.cloudfoundry.org/vendor/golang.org/x/exp/slices/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/context/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/html/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/html/atom/*.go # gosub

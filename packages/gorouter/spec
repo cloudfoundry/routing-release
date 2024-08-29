@@ -218,8 +218,6 @@ files:
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/scrypt/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/ssh/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/crypto/ssh/internal/bcrypt_pbkdf/*.go # gosub
-  - code.cloudfoundry.org/vendor/golang.org/x/exp/constraints/*.go # gosub
-  - code.cloudfoundry.org/vendor/golang.org/x/exp/slices/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/context/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/html/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/net/html/atom/*.go # gosub
@@ -252,8 +250,8 @@ files:
   - code.cloudfoundry.org/vendor/golang.org/x/text/transform/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/grpc/connectivity/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/grpc/grpclog/*.go # gosub
+  - code.cloudfoundry.org/vendor/google.golang.org/grpc/grpclog/internal/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/grpc/internal/*.go # gosub
-  - code.cloudfoundry.org/vendor/google.golang.org/grpc/internal/grpclog/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/grpc/metadata/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/grpc/serviceconfig/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/protobuf/encoding/protodelim/*.go # gosub
