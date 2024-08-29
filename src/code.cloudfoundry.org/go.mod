@@ -12,13 +12,13 @@ replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client
 
 require (
 	code.cloudfoundry.org/bbs v0.0.0-20240806230301-9be69c0199db
-	code.cloudfoundry.org/cfhttp/v2 v2.4.0
-	code.cloudfoundry.org/clock v1.5.0
-	code.cloudfoundry.org/debugserver v0.5.0
-	code.cloudfoundry.org/eventhub v0.3.0
-	code.cloudfoundry.org/go-metric-registry v0.0.0-20240826183307-0f068571a61f
+	code.cloudfoundry.org/cfhttp/v2 v2.6.0
+	code.cloudfoundry.org/clock v1.7.0
+	code.cloudfoundry.org/debugserver v0.7.0
+	code.cloudfoundry.org/eventhub v0.4.0
+	code.cloudfoundry.org/go-metric-registry v0.0.0-20240828184116-9710cd731bb8
 	code.cloudfoundry.org/lager/v3 v3.3.0
-	code.cloudfoundry.org/localip v0.3.0
+	code.cloudfoundry.org/localip v0.5.0
 	code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
 	code.cloudfoundry.org/tlsconfig v0.1.0
 	github.com/armon/go-proxyproto v0.1.0
@@ -34,11 +34,11 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/kisielk/errcheck v1.7.0
 	github.com/lib/pq v1.10.9
-	github.com/nats-io/nats-server/v2 v2.10.18
+	github.com/nats-io/nats-server/v2 v2.10.19
 	github.com/nats-io/nats.go v1.37.0
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo/v2 v2.20.1
-	github.com/onsi/gomega v1.34.1
+	github.com/onsi/ginkgo/v2 v2.20.2
+	github.com/onsi/gomega v1.34.2
 	github.com/openzipkin/zipkin-go v0.4.3
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
 	github.com/tedsuo/ifrit v0.0.0-20230516164442-7862c310ad26
@@ -52,15 +52,15 @@ require (
 	golang.org/x/net v0.28.0
 	golang.org/x/oauth2 v0.22.0
 	golang.org/x/tools v0.24.0
-	google.golang.org/grpc v1.65.0
+	google.golang.org/grpc v1.66.0
 	google.golang.org/protobuf v1.34.2
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.8.0 // indirect
-	code.cloudfoundry.org/durationjson v0.3.0 // indirect
+	code.cloudfoundry.org/diego-logging-client v0.10.0 // indirect
+	code.cloudfoundry.org/durationjson v0.5.0 // indirect
 	code.cloudfoundry.org/go-diodes v0.0.0-20240813203737-5032edb05ceb // indirect
 	code.cloudfoundry.org/go-loggregator/v9 v9.2.1 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
@@ -77,7 +77,7 @@ require (
 	github.com/go-test/deep v1.0.7 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
-	github.com/google/pprof v0.0.0-20240827171923-fa2c70bbbfe5 // indirect
+	github.com/google/pprof v0.0.0-20240829160300-da1f7e9f2b25 // indirect
 	github.com/honeycombio/libhoney-go v1.23.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
@@ -93,7 +93,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_golang v1.20.2 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
-	github.com/prometheus/common v0.55.0 // indirect
+	github.com/prometheus/common v0.57.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/square/certstrap v1.3.0 // indirect
@@ -102,7 +102,6 @@ require (
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	go.uber.org/atomic v1.8.0 // indirect
 	go.uber.org/automaxprocs v1.5.3 // indirect
-	golang.org/x/exp v0.0.0-20240823005443-9b4947da3948 // indirect
 	golang.org/x/mod v0.20.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.24.0 // indirect
