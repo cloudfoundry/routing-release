@@ -12,13 +12,13 @@ replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client
 
 require (
 	code.cloudfoundry.org/bbs v0.0.0-20240806230301-9be69c0199db
-	code.cloudfoundry.org/cfhttp/v2 v2.6.0
-	code.cloudfoundry.org/clock v1.7.0
-	code.cloudfoundry.org/debugserver v0.7.0
-	code.cloudfoundry.org/eventhub v0.4.0
+	code.cloudfoundry.org/cfhttp/v2 v2.7.0
+	code.cloudfoundry.org/clock v1.8.0
+	code.cloudfoundry.org/debugserver v0.8.0
+	code.cloudfoundry.org/eventhub v0.5.0
 	code.cloudfoundry.org/go-metric-registry v0.0.0-20240828184116-9710cd731bb8
 	code.cloudfoundry.org/lager/v3 v3.3.0
-	code.cloudfoundry.org/localip v0.5.0
+	code.cloudfoundry.org/localip v0.6.0
 	code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
 	code.cloudfoundry.org/tlsconfig v0.1.0
 	github.com/armon/go-proxyproto v0.1.0
@@ -34,7 +34,7 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/kisielk/errcheck v1.7.0
 	github.com/lib/pq v1.10.9
-	github.com/nats-io/nats-server/v2 v2.10.19
+	github.com/nats-io/nats-server/v2 v2.10.20
 	github.com/nats-io/nats.go v1.37.0
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.20.2
@@ -59,8 +59,8 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.10.0 // indirect
-	code.cloudfoundry.org/durationjson v0.5.0 // indirect
+	code.cloudfoundry.org/diego-logging-client v0.11.0 // indirect
+	code.cloudfoundry.org/durationjson v0.6.0 // indirect
 	code.cloudfoundry.org/go-diodes v0.0.0-20240813203737-5032edb05ceb // indirect
 	code.cloudfoundry.org/go-loggregator/v9 v9.2.1 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
