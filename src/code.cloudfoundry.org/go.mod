@@ -47,7 +47,7 @@ require (
 	github.com/urfave/cli v1.22.15
 	github.com/urfave/negroni/v3 v3.1.1
 	github.com/vito/go-sse v1.1.2
-	go.step.sm/crypto v0.51.1
+	go.step.sm/crypto v0.51.2
 	golang.org/x/crypto v0.26.0
 	golang.org/x/net v0.28.0
 	golang.org/x/oauth2 v0.22.0
