@@ -22,7 +22,7 @@ files:
   - code.cloudfoundry.org/route-registrar/healthchecker/fakes/*.go # gosub
   - code.cloudfoundry.org/route-registrar/integration/*.go # gosub
   - code.cloudfoundry.org/route-registrar/messagebus/*.go # gosub
-  - code.cloudfoundry.org/route-registrar/messagebus/fakes/*.go # gosub
+  - code.cloudfoundry.org/route-registrar/messagebus/messagebusfakes/*.go # gosub
   - code.cloudfoundry.org/route-registrar/registrar/*.go # gosub
   - code.cloudfoundry.org/route-registrar/routingapi/*.go # gosub
   - code.cloudfoundry.org/route-registrar/routingapi/routingapifakes/*.go # gosub
