@@ -20,7 +20,7 @@ require (
 	code.cloudfoundry.org/lager/v3 v3.3.0
 	code.cloudfoundry.org/localip v0.6.0
 	code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
-	code.cloudfoundry.org/tlsconfig v0.1.0
+	code.cloudfoundry.org/tlsconfig v0.2.0
 	github.com/armon/go-proxyproto v0.1.0
 	github.com/cactus/go-statsd-client v3.2.1+incompatible
 	github.com/cloudfoundry-community/go-uaa v0.3.3
