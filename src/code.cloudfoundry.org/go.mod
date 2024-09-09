@@ -17,7 +17,7 @@ require (
 	code.cloudfoundry.org/debugserver v0.11.0
 	code.cloudfoundry.org/eventhub v0.8.0
 	code.cloudfoundry.org/go-metric-registry v0.0.0-20240828184116-9710cd731bb8
-	code.cloudfoundry.org/lager/v3 v3.3.0
+	code.cloudfoundry.org/lager/v3 v3.4.0
 	code.cloudfoundry.org/localip v0.9.0
 	code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
 	code.cloudfoundry.org/tlsconfig v0.4.0
@@ -51,7 +51,7 @@ require (
 	golang.org/x/crypto v0.27.0
 	golang.org/x/net v0.29.0
 	golang.org/x/oauth2 v0.23.0
-	golang.org/x/tools v0.24.0
+	golang.org/x/tools v0.25.0
 	google.golang.org/grpc v1.66.0
 	google.golang.org/protobuf v1.34.2
 	gopkg.in/yaml.v3 v3.0.1

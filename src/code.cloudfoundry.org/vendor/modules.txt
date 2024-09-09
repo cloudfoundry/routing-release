@@ -39,8 +39,8 @@ code.cloudfoundry.org/go-metric-registry
 code.cloudfoundry.org/go-metric-registry/testhelpers
 # code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5
 ## explicit
-# code.cloudfoundry.org/lager/v3 v3.3.0
-## explicit; go 1.20
+# code.cloudfoundry.org/lager/v3 v3.4.0
+## explicit; go 1.22
 code.cloudfoundry.org/lager/v3
 code.cloudfoundry.org/lager/v3/internal/truncate
 code.cloudfoundry.org/lager/v3/lagerctx
@@ -479,8 +479,8 @@ golang.org/x/text/width
 # golang.org/x/time v0.6.0
 ## explicit; go 1.18
 golang.org/x/time/rate
-# golang.org/x/tools v0.24.0
-## explicit; go 1.19
+# golang.org/x/tools v0.25.0
+## explicit; go 1.22.0
 golang.org/x/tools/cover
 golang.org/x/tools/go/analysis
 golang.org/x/tools/go/analysis/internal/analysisflags
