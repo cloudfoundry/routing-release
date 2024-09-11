@@ -13,10 +13,10 @@ code.cloudfoundry.org/cfhttp/v2
 ## explicit; go 1.22.0
 code.cloudfoundry.org/clock
 code.cloudfoundry.org/clock/fakeclock
-# code.cloudfoundry.org/debugserver v0.13.0
+# code.cloudfoundry.org/debugserver v0.14.0
 ## explicit; go 1.22.0
 code.cloudfoundry.org/debugserver
-# code.cloudfoundry.org/diego-logging-client v0.18.0
+# code.cloudfoundry.org/diego-logging-client v0.19.0
 ## explicit; go 1.22.0
 code.cloudfoundry.org/diego-logging-client
 # code.cloudfoundry.org/durationjson v0.11.0
@@ -516,7 +516,7 @@ golang.org/x/tools/internal/versions
 # google.golang.org/genproto/googleapis/rpc v0.0.0-20240903143218-8af14fe29dc1
 ## explicit; go 1.21
 google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.66.1
+# google.golang.org/grpc v1.66.2
 ## explicit; go 1.21
 google.golang.org/grpc
 google.golang.org/grpc/attributes
