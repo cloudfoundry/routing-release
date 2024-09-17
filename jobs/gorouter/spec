@@ -364,6 +364,9 @@ properties:
       Generally, this timeout must be greater than that of the load balancer. As examples, GCP HTTP(S) load balancer has a default timeout of 600 seconds so a value greater than 600 is recommended and AWS ELB has a default timeout of 60 seconds so a value greater than 60 is recommended.
       However, depending on the IaaS, this timeout may need to be shorter than the load balancer's timeout, e.g., Azure's load balancer times out at 240 seconds (by default) and GCP TCP load balancer times out at 600 seconds without sending a TCP RST to clients, so a value lower than this is recommended in order to force it to send the TCP RST.
     default: 900
+  router.read_header_timeout:
+    description: "The amount of time allowed to read request headers."
+    default: 0
   router.backends.max_conns:
     description: "Maximum concurrent TCP connections per backend. When set to 0 there is no limit"
     default: 500
