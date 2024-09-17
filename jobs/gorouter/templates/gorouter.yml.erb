@@ -119,6 +119,7 @@ params = {
   'suspend_pruning_if_nats_unavailable' => p("router.suspend_pruning_if_nats_unavailable"),
   'route_latency_metric_muzzle_duration' => '30s',
   'frontend_idle_timeout' => "#{p('router.frontend_idle_timeout')}s",
+  'read_header_timeout' => "#{p('router.read_header_timeout')}s",
   'drain_wait' => "#{p('router.drain_wait')}s",
   'drain_timeout' => "#{p('router.drain_timeout')}s",
   'healthcheck_user_agent' => p('router.healthcheck_user_agent'),
