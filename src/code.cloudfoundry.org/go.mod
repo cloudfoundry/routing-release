@@ -11,12 +11,12 @@ replace github.com/uber-go/atomic => github.com/uber-go/atomic v1.1.0
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
 
 require (
-	code.cloudfoundry.org/bbs v0.0.0-20240806230301-9be69c0199db
+	code.cloudfoundry.org/bbs v0.0.0-20240913174222-4b574f98c713
 	code.cloudfoundry.org/cfhttp/v2 v2.12.0
 	code.cloudfoundry.org/clock v1.13.0
 	code.cloudfoundry.org/debugserver v0.14.0
 	code.cloudfoundry.org/eventhub v0.10.0
-	code.cloudfoundry.org/go-metric-registry v0.0.0-20240828184116-9710cd731bb8
+	code.cloudfoundry.org/go-metric-registry v0.0.0-20240911230103-8810864fa5d2
 	code.cloudfoundry.org/lager/v3 v3.6.0
 	code.cloudfoundry.org/localip v0.11.0
 	code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
@@ -24,7 +24,7 @@ require (
 	github.com/armon/go-proxyproto v0.1.0
 	github.com/cactus/go-statsd-client v3.2.1+incompatible
 	github.com/cloudfoundry-community/go-uaa v0.3.3
-	github.com/cloudfoundry/cf-routing-test-helpers v0.0.0-20240821054706-b28ee5fb37eb
+	github.com/cloudfoundry/cf-routing-test-helpers v0.0.0-20240913174203-3d9b0221d609
 	github.com/cloudfoundry/cf-test-helpers/v2 v2.9.0
 	github.com/cloudfoundry/custom-cats-reporters v0.0.2
 	github.com/cloudfoundry/dropsonde v1.1.0
@@ -60,14 +60,14 @@ require (
 require (
 	code.cloudfoundry.org/diego-logging-client v0.19.0 // indirect
 	code.cloudfoundry.org/durationjson v0.11.0 // indirect
-	code.cloudfoundry.org/go-diodes v0.0.0-20240813203737-5032edb05ceb // indirect
+	code.cloudfoundry.org/go-diodes v0.0.0-20240911205836-e7f77fdf9650 // indirect
 	code.cloudfoundry.org/go-loggregator/v9 v9.2.1 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
+	github.com/cpuguy83/go-md2man/v2 v2.0.5 // indirect
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/facebookgo/limitgroup v0.0.0-20150612190941-6abd8d71ec01 // indirect
 	github.com/facebookgo/muster v0.0.0-20150708232844-fd3d7953fd52 // indirect
@@ -86,11 +86,11 @@ require (
 	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/minio/highwayhash v1.0.3 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
-	github.com/nats-io/jwt/v2 v2.6.0 // indirect
+	github.com/nats-io/jwt/v2 v2.7.0 // indirect
 	github.com/nats-io/nkeys v0.4.7 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/prometheus/client_golang v1.20.3 // indirect
+	github.com/prometheus/client_golang v1.20.4 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.59.1 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
