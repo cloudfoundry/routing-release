@@ -12,11 +12,11 @@ replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client
 
 require (
 	code.cloudfoundry.org/bbs v0.0.0-20240913174222-4b574f98c713
-	code.cloudfoundry.org/cfhttp/v2 v2.12.0
+	code.cloudfoundry.org/cfhttp/v2 v2.13.0
 	code.cloudfoundry.org/clock v1.13.0
-	code.cloudfoundry.org/debugserver v0.14.0
+	code.cloudfoundry.org/debugserver v0.15.0
 	code.cloudfoundry.org/eventhub v0.10.0
-	code.cloudfoundry.org/go-metric-registry v0.0.0-20240911230103-8810864fa5d2
+	code.cloudfoundry.org/go-metric-registry v0.0.0-20240924162441-23e55bf8b6be
 	code.cloudfoundry.org/lager/v3 v3.6.0
 	code.cloudfoundry.org/localip v0.11.0
 	code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
@@ -24,7 +24,7 @@ require (
 	github.com/armon/go-proxyproto v0.1.0
 	github.com/cactus/go-statsd-client v3.2.1+incompatible
 	github.com/cloudfoundry-community/go-uaa v0.3.3
-	github.com/cloudfoundry/cf-routing-test-helpers v0.0.0-20240913174203-3d9b0221d609
+	github.com/cloudfoundry/cf-routing-test-helpers v0.0.0-20240920121531-99a9a4bd418e
 	github.com/cloudfoundry/cf-test-helpers/v2 v2.9.0
 	github.com/cloudfoundry/custom-cats-reporters v0.0.2
 	github.com/cloudfoundry/dropsonde v1.1.0
@@ -52,13 +52,13 @@ require (
 	golang.org/x/net v0.29.0
 	golang.org/x/oauth2 v0.23.0
 	golang.org/x/tools v0.25.0
-	google.golang.org/grpc v1.66.2
+	google.golang.org/grpc v1.67.0
 	google.golang.org/protobuf v1.34.2
 	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
-	code.cloudfoundry.org/diego-logging-client v0.19.0 // indirect
+	code.cloudfoundry.org/diego-logging-client v0.21.0 // indirect
 	code.cloudfoundry.org/durationjson v0.11.0 // indirect
 	code.cloudfoundry.org/go-diodes v0.0.0-20240911205836-e7f77fdf9650 // indirect
 	code.cloudfoundry.org/go-loggregator/v9 v9.2.1 // indirect
@@ -83,7 +83,7 @@ require (
 	github.com/jackc/pgx/v5 v5.7.1 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
-	github.com/klauspost/compress v1.17.9 // indirect
+	github.com/klauspost/compress v1.17.10 // indirect
 	github.com/minio/highwayhash v1.0.3 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/nats-io/jwt/v2 v2.7.0 // indirect
@@ -100,12 +100,12 @@ require (
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	go.uber.org/atomic v1.8.0 // indirect
-	go.uber.org/automaxprocs v1.5.3 // indirect
+	go.uber.org/automaxprocs v1.6.0 // indirect
 	golang.org/x/mod v0.21.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.25.0 // indirect
 	golang.org/x/text v0.18.0 // indirect
 	golang.org/x/time v0.6.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240903143218-8af14fe29dc1 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240924160255-9d4c2d233b61 // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 )
