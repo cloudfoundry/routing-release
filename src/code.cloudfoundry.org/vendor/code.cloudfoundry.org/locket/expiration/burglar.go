@@ -74,8 +74,14 @@ func (b burglar) Run(signals <-chan os.Signal, ready chan<- struct{}) error {
 			}
 		case <-expirationCheck.C():
 			locksExpired, presencesExpired := b.lockPick.ExpirationCounts()
-			b.metronClient.SendMetric(locksExpiredCounter, int(locksExpired))
-			b.metronClient.SendMetric(presenceExpiredCounter, int(presencesExpired))
+			err := b.metronClient.SendMetric(locksExpiredCounter, int(locksExpired))
+			if err != nil {
+				logger.Debug("failed-to-send-locks-expired-metric", lager.Data{"error": err})
+			}
+			err = b.metronClient.SendMetric(presenceExpiredCounter, int(presencesExpired))
+			if err != nil {
+				logger.Debug("failed-to-send-presences-expired-metric", lager.Data{"error": err})
+			}
 		}
 	}
 }

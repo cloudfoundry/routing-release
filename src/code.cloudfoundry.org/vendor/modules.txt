@@ -49,7 +49,7 @@ code.cloudfoundry.org/lager/v3/lagertest
 # code.cloudfoundry.org/localip v0.11.0
 ## explicit; go 1.22.0
 code.cloudfoundry.org/localip
-# code.cloudfoundry.org/locket v0.0.0-20240521151413-b344fdd15d03
+# code.cloudfoundry.org/locket v0.0.0-20240925200640-9ed239545eb0
 ## explicit
 code.cloudfoundry.org/locket
 code.cloudfoundry.org/locket/cmd/locket
@@ -167,7 +167,7 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
-# github.com/google/pprof v0.0.0-20240910150728-a0b0bb1d4134
+# github.com/google/pprof v0.0.0-20240925223930-fa3061bff0bc
 ## explicit; go 1.22
 github.com/google/pprof/profile
 # github.com/honeycombio/libhoney-go v1.23.1
@@ -238,7 +238,7 @@ github.com/munnerz/goautoneg
 # github.com/nats-io/jwt/v2 v2.7.0
 ## explicit; go 1.18
 github.com/nats-io/jwt/v2
-# github.com/nats-io/nats-server/v2 v2.10.20
+# github.com/nats-io/nats-server/v2 v2.10.21
 ## explicit; go 1.21.0
 github.com/nats-io/nats-server/v2
 github.com/nats-io/nats-server/v2/conf

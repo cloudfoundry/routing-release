@@ -71,7 +71,8 @@ func NewLocketRunner(locketBinPath string, fs ...func(cfg *config.LocketConfig))
 		StartCheckTimeout: 10 * time.Second,
 		Command:           exec.Command(locketBinPath, "-config="+locketConfigFilePath),
 		Cleanup: func() {
-			os.RemoveAll(locketConfigFilePath)
+			err := os.RemoveAll(locketConfigFilePath)
+			Expect(err).NotTo(HaveOccurred())
 		},
 	})
 }
