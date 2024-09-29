@@ -1,4 +1,4 @@
-# code.cloudfoundry.org/bbs v0.0.0-20240913174222-4b574f98c713
+# code.cloudfoundry.org/bbs v0.0.0-20240926175252-155fe390caad
 ## explicit
 code.cloudfoundry.org/bbs/db/sqldb/helpers
 code.cloudfoundry.org/bbs/db/sqldb/helpers/monitor
@@ -167,7 +167,7 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
-# github.com/google/pprof v0.0.0-20240925223930-fa3061bff0bc
+# github.com/google/pprof v0.0.0-20240927233043-f3f46ee36851
 ## explicit; go 1.22
 github.com/google/pprof/profile
 # github.com/honeycombio/libhoney-go v1.23.1
@@ -371,7 +371,7 @@ github.com/vmihailenco/msgpack/v5/msgpcode
 github.com/vmihailenco/tagparser/v2
 github.com/vmihailenco/tagparser/v2/internal
 github.com/vmihailenco/tagparser/v2/internal/parser
-# go.step.sm/crypto v0.52.0
+# go.step.sm/crypto v0.53.0
 ## explicit; go 1.22
 go.step.sm/crypto/fingerprint
 go.step.sm/crypto/internal/bcrypt_pbkdf
