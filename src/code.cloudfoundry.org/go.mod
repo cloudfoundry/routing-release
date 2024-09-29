@@ -9,7 +9,7 @@ replace github.com/uber-go/atomic => github.com/uber-go/atomic v1.1.0
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
 
 require (
-	code.cloudfoundry.org/bbs v0.0.0-20240913174222-4b574f98c713
+	code.cloudfoundry.org/bbs v0.0.0-20240926175252-155fe390caad
 	code.cloudfoundry.org/cfhttp/v2 v2.13.0
 	code.cloudfoundry.org/clock v1.13.0
 	code.cloudfoundry.org/debugserver v0.15.0
@@ -45,7 +45,7 @@ require (
 	github.com/urfave/cli v1.22.15
 	github.com/urfave/negroni/v3 v3.1.1
 	github.com/vito/go-sse v1.1.2
-	go.step.sm/crypto v0.52.0
+	go.step.sm/crypto v0.53.0
 	golang.org/x/crypto v0.27.0
 	golang.org/x/net v0.29.0
 	golang.org/x/oauth2 v0.23.0
@@ -74,7 +74,7 @@ require (
 	github.com/go-test/deep v1.0.7 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
-	github.com/google/pprof v0.0.0-20240925223930-fa3061bff0bc // indirect
+	github.com/google/pprof v0.0.0-20240927233043-f3f46ee36851 // indirect
 	github.com/honeycombio/libhoney-go v1.23.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
