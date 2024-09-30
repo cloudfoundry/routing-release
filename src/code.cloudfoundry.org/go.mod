@@ -2,10 +2,6 @@ module code.cloudfoundry.org
 
 go 1.23.0
 
-replace github.com/uber-go/zap => github.com/uber-go/zap v0.0.0-20161222040304-a5783ee4b216
-
-replace github.com/uber-go/atomic => github.com/uber-go/atomic v1.1.0
-
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
 
 require (
