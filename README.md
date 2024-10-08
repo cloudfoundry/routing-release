@@ -1,3 +1,12 @@
+# Routing Release
+
+This repository is a [BOSH](https://github.com/cloudfoundry/bosh)
+release for deploying Gorouter, TCP Routing, and other associated tasks
+that provide HTTP and TCP routing in Cloud Foundry foundations.
+
+For information on getting started with Cloud Foundry look at the docs
+for [CF Deployment](https://github.com/cloudfoundry/cf-deployment).
+
 # Contributing
 
 See the [Contributing.md](./.github/CONTRIBUTING.md) for more
@@ -8,15 +17,6 @@ information on how to contribute.
 This repository is maintained by [App Runtime
 Platform](https://github.com/cloudfoundry/community/blob/main/toc/working-groups/app-runtime-platform.md)
 under `Networking` area.
-
-# Routing Release
-
-This repository is a [BOSH](https://github.com/cloudfoundry/bosh)
-release for deploying Gorouter, TCP Routing, and other associated tasks
-that provide HTTP and TCP routing in Cloud Foundry foundations.
-
-For information on getting started with Cloud Foundry look at the docs
-for [CF Deployment](https://github.com/cloudfoundry/cf-deployment).
 
 # Docs
 
