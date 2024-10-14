@@ -353,7 +353,7 @@ github.com/tedsuo/ifrit/test_helpers
 # github.com/tedsuo/rata v1.0.0
 ## explicit
 github.com/tedsuo/rata
-# github.com/urfave/cli v1.22.15
+# github.com/urfave/cli v1.22.16
 ## explicit; go 1.11
 github.com/urfave/cli
 # github.com/urfave/negroni/v3 v3.1.1
