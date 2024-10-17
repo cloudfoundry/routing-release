@@ -13,11 +13,11 @@ end
 
 def reserved_system_component_ports
   if_p('reserved_system_component_ports') do |prop|
-    return prop
+    return prop.map(&:to_i)
   end.else do
     if_link('routing_api') do |link|
       link.if_p('routing_api.reserved_system_component_ports') do |prop|
-        return prop
+        return prop.map(&:to_i)
       end
     end
   end
