@@ -1,9 +1,1 @@
-<%=
-  def server_ca_cert
-    if_p('tcp_router.backend_tls.ca_cert') do |prop|
-      return prop
-    end
-  end
-
-  server_ca_cert
--%>
+<%= p('tcp_router.backend_tls.ca_cert', "") -%>
