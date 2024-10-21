@@ -323,16 +323,24 @@ describe 'route_registrar' do
 
     describe 'routing_api' do
       context 'when routing_api is mtls only' do
+        let(:routing_api_link_properties) do
+           {
+                'enabled_api_endpoints' => 'mtls',
+           }
+        end
+
+        let(:routing_api_link) do
+          Bosh::Template::Test::Link.new(
+            name: 'routing_api',
+            properties: {
+              'routing_api' => routing_api_link_properties,
+            }
+          )
+        end
+
         let(:links) do
           [
-            Bosh::Template::Test::Link.new(
-              name: 'routing_api',
-              properties: {
-                'routing_api' => {
-                  'enabled_api_endpoints' => 'mtls'
-                }
-              }
-            ),
+            routing_api_link,
             Bosh::Template::Test::Link.new(
               name: 'nats-tls',
               properties: {
@@ -364,6 +372,60 @@ describe 'route_registrar' do
             merged_manifest_properties['route_registrar']['routing_api']['api_url'] = 'https://other-routing-api.service.cf.internal:3001'
             rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
             expect(rendered_hash['routing_api']['api_url']).to eq('https://other-routing-api.service.cf.internal:3001')
+          end
+        end
+
+        context 'when routing_api clients are provided in the link' do
+          let(:routing_api_link_properties) do
+            {
+              'enabled_api_endpoints' => 'mtls',
+              'clients' => {
+                'link-client' => {
+                  'secret' => 'link-secret',
+                }
+              }
+            }
+          end
+            it 'uses the link value' do
+              rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+              expect(rendered_hash['routing_api']['client_id']).to eq('link-client')
+              expect(rendered_hash['routing_api']['client_secret']).to eq('link-secret')
+            end
+          context 'and routing_api.client_id is set' do
+            it 'uses the provided client' do
+              merged_manifest_properties['route_registrar']['routing_api']['client_id'] = 'override-client'
+              rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+              expect(rendered_hash['routing_api']['client_id']).to eq('override-client')
+            end
+          end
+          context 'and routing_api.client_secret is set' do
+            it 'prefers the provided properties' do
+              merged_manifest_properties['route_registrar']['routing_api']['client_secret'] = 'override-secret'
+              rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+              expect(rendered_hash['routing_api']['client_secret']).to eq('override-secret')
+            end
+          end
+        end
+
+        context 'when routing_api clients are not provided in the link' do
+            it 'uses the default routing_api_client, and does not set client_secret' do
+              rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+              expect(rendered_hash['routing_api']['client_id']).to eq('routing_api_client')
+              expect(rendered_hash['routing_api'].key?('client_secret')).to be false
+            end
+          context 'and routing_api.client_id is set' do
+            it 'uses the provided client' do
+              merged_manifest_properties['route_registrar']['routing_api']['client_id'] = 'override-client'
+              rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+              expect(rendered_hash['routing_api']['client_id']).to eq('override-client')
+            end
+          end
+          context 'and routing_api.client_secret is set' do
+            it 'prefers the provided properties' do
+              merged_manifest_properties['route_registrar']['routing_api']['client_secret'] = 'override-secret'
+              rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+              expect(rendered_hash['routing_api']['client_secret']).to eq('override-secret')
+            end
           end
         end
 

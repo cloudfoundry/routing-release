@@ -77,10 +77,9 @@ properties:
     description: (optional, string) The OAuth server's URL. This is required to register any TCP routes.
     default: https://uaa.service.cf.internal:8443
   route_registrar.routing_api.client_id:
-    description: (optional, string) An OAuth client ID for a client that is permitted to add new TCP routes. This is required to register any TCP routes.
-    default: routing_api_client
+    description: (optional, string) An OAuth client ID for a client that is permitted to add new TCP routes. This is required to register any TCP routes. If set, overrides values provided via routing_api's link. If not provided via link or property, defaults to 'routing_api_client'.
   route_registrar.routing_api.client_secret:
-    description: (optional, string) The OAuth client secret for the above client. This is required to register any TCP routes.
+    description: (optional, string) The OAuth client secret for the above client. This is required to register any TCP routes. If set, overrides values provided via routing_api's link. If not provided via link, this must be set when registering TCP routes.
   route_registrar.routing_api.ca_certs:
     description: (optional, array of strings) The certificate authority certificates for any APIs that the route registrar is communicating with over HTTPS, e.g., the OAuth server. This is required to register any TCP routes.
   route_registrar.routing_api.skip_ssl_validation:

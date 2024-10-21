@@ -117,10 +117,18 @@ TEXT
     client_private_key_path: '/var/vcap/jobs/route_registrar/config/routing_api/keys/client_private.key',
     server_ca_cert_path: '/var/vcap/jobs/route_registrar/config/routing_api/certs/server_ca.crt',
     max_ttl: '120s',
+    client_id: 'routing_api_client',
   }
   if_link('routing_api') do |link|
     link.if_p('routing_api.max_ttl') do |prop|
       routing_api[:max_ttl] = prop
+    end
+
+
+    link.if_p('routing_api.clients') do |clients|
+      client_id = clients.keys.sort.first
+      routing_api[:client_id] = client_id
+      routing_api[:client_secret] = clients[client_id]['secret']
     end
   end
 
@@ -137,10 +145,10 @@ TEXT
     routing_api['oauth_url'] = prop
   end
   if_p('route_registrar.routing_api.client_id') do |prop|
-    routing_api['client_id'] = prop
+    routing_api[:client_id] = prop
   end
   if_p('route_registrar.routing_api.client_secret') do |prop|
-    routing_api['client_secret'] = prop
+    routing_api[:client_secret] = prop
   end
 
   routing_api['skip_ssl_validation'] = p('route_registrar.routing_api.skip_ssl_validation')
