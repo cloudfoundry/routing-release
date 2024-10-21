@@ -47,6 +47,8 @@ provides:
   - routing_api.reserved_system_component_ports
   - routing_api.enabled_api_endpoints
   - routing_api.max_ttl
+  - uaa.token_endpoint
+  - uaa.tls_port
   - uaa.ca_cert
   - skip_ssl_validation
 - name: routing_api_db

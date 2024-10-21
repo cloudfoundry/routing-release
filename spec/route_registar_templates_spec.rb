@@ -146,6 +146,63 @@ describe 'route_registrar' do
     end
   end
 
+  describe 'config/certs/ca.crt' do
+    let(:template) { job.template('config/certs/ca.crt') }
+    let(:links) do
+      [
+        Bosh::Template::Test::Link.new(
+          name: 'routing_api',
+          properties: {
+            'uaa' => {
+              'ca_cert' => 'the uaa ca from link'
+            }
+          }
+        )
+      ]
+    end
+
+    context 'when properties and link is provided' do
+      before do
+        merged_manifest_properties['route_registrar']['routing_api']['ca_certs'] = ['the uaa ca cert from properties']
+      end
+
+      it 'should prefer the value in the properties' do
+        rendered_template = template.render(merged_manifest_properties, consumes: links)
+        expect(rendered_template).to eq('the uaa ca cert from properties')
+      end
+    end
+
+    context 'when no properties and link is provided' do
+      it 'should render the value from the link' do
+        rendered_template = template.render({}, consumes: links)
+        expect(rendered_template).to eq('the uaa ca from link')
+      end
+    end
+
+    context 'when properties and no link is provided' do
+      before do
+        merged_manifest_properties['route_registrar']['routing_api']['ca_certs'] = ['the uaa ca cert from properties']
+      end
+
+      it 'should prefer the value in the properties' do
+        rendered_template = template.render(merged_manifest_properties)
+        expect(rendered_template).to eq('the uaa ca cert from properties')
+      end
+    end
+
+    context 'when no properties and no link is provided' do
+      it 'should not error' do
+        expect do
+          template.render(merged_manifest_properties)
+        end.not_to raise_error
+      end
+      it 'should be empty' do
+        rendered_template = template.render(merged_manifest_properties)
+        expect(rendered_template).to eq('')
+      end
+    end
+  end
+
   describe 'config/routing_api/certs/server_ca.crt' do
     let(:template) { job.template('config/routing_api/certs/server_ca.crt') }
     let(:links) do
@@ -322,35 +379,60 @@ describe 'route_registrar' do
     end
 
     describe 'routing_api' do
-      context 'when routing_api is mtls only' do
-        let(:links) do
-          [
-            Bosh::Template::Test::Link.new(
-              name: 'routing_api',
-              properties: {
-                'routing_api' => {
-                  'enabled_api_endpoints' => 'mtls'
-                }
+      let (:routing_api_endpoint_type) { 'mtls' }
+      let(:routing_api_link_properties) do
+         {
+              'enabled_api_endpoints' => routing_api_endpoint_type,
+         }
+      end
+      let(:uaa_link_properties) do
+        {}
+      end
+      let(:routing_api_link) do
+        Bosh::Template::Test::Link.new(
+          name: 'routing_api',
+          properties: {
+            'routing_api' => routing_api_link_properties,
+            'uaa' => uaa_link_properties,
+          }
+        )
+      end
+      let(:links) do
+        [
+          routing_api_link,
+          Bosh::Template::Test::Link.new(
+            name: 'nats-tls',
+            properties: {
+              'nats' => {
+                'hostname' => 'nats-tls-host', 'user' => 'nats-tls-user', 'password' => 'nats-tls-password', 'port' => 9090
               }
-            ),
-            Bosh::Template::Test::Link.new(
-              name: 'nats-tls',
-              properties: {
-                'nats' => {
-                  'hostname' => 'nats-tls-host', 'user' => 'nats-tls-user', 'password' => 'nats-tls-password', 'port' => 9090
-                }
-              },
-              instances: [Bosh::Template::Test::LinkInstance.new(address: 'my-nats-tls-ip')]
-            )
-          ]
-        end
-        before do
-          merged_manifest_properties['nats'] = { 'tls' => { 'enabled' => true } }
-        end
+            },
+            instances: [Bosh::Template::Test::LinkInstance.new(address: 'my-nats-tls-ip')]
+          )
+        ]
+      end
+
+      before do
+        merged_manifest_properties['nats'] = { 'tls' => { 'enabled' => true } }
+      end
+
+      context 'when routing_api is mtls only' do
         context 'when routing_api_url is not provided' do
           it 'renders with the default' do
             rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
             expect(rendered_hash['routing_api']['api_url']).to eq('https://routing-api.service.cf.internal:3001')
+          end
+          context 'when routing_api.tls_port is provided in the link' do
+            let(:routing_api_link_properties) do
+               {
+                    'enabled_api_endpoints' => routing_api_endpoint_type,
+                    'tls_port' => 3443,
+               }
+            end
+            it 'uses the link tls port' do
+              rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+              expect(rendered_hash['routing_api']['api_url']).to eq('https://routing-api.service.cf.internal:3443')
+            end
           end
         end
         context 'when routing_api_url is provided' do
@@ -366,19 +448,158 @@ describe 'route_registrar' do
             expect(rendered_hash['routing_api']['api_url']).to eq('https://other-routing-api.service.cf.internal:3001')
           end
         end
+      end
 
-        context 'when max_ttl is not provided in the link' do
-          it 'renders with the default' do
-            rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
-            expect(rendered_hash['routing_api']['max_ttl']).to eq('120s')
+      context 'when routing_api is mtls + http' do
+        let(:routing_api_endpoint_type) { 'both' }
+        context 'when routing_api_url is not provided' do
+          context 'when tls_port is provided via the link' do
+            let(:routing_api_link_properties) do
+               {
+                    'enabled_api_endpoints' => routing_api_endpoint_type,
+                    'tls_port' => 3443,
+               }
+            end
+            it 'uses https, and the link-provided tls_port' do
+              rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+              expect(rendered_hash['routing_api']['api_url']).to eq('https://routing-api.service.cf.internal:3443')
+            end
+          end
+          context 'when tls_port is not provided via the link' do
+            it 'uses https and the default tls_port' do
+              rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+              expect(rendered_hash['routing_api']['api_url']).to eq('https://routing-api.service.cf.internal:3001')
+            end
           end
         end
-        context 'when max_ttl is provided in the link' do
-          it 'uses the link value' do
-            links[0].properties['routing_api']['max_ttl'] = '100s'
-            rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
-            expect(rendered_hash['routing_api']['max_ttl']).to eq('100s')
+        context 'when routing_api_url is provided' do
+          it 'uses the configured url' do
+            merged_manifest_properties['route_registrar']['routing_api']['api_url'] = 'http://other-routing-api.service.cf.internal:3080'
+              rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+            expect(rendered_hash['routing_api']['api_url']).to eq('http://other-routing-api.service.cf.internal:3080')
           end
+          it 'is ok with http schemes' do
+            merged_manifest_properties['route_registrar']['routing_api']['api_url'] = 'http://routing-api.service.cf.internal:3001'
+            expect {template.render(merged_manifest_properties, consumes: links) }.to_not raise_error
+          end
+          it 'is ok with https schemes' do
+            merged_manifest_properties['route_registrar']['routing_api']['api_url'] = 'https://routing-api.service.cf.internal:3001'
+            expect {template.render(merged_manifest_properties, consumes: links) }.to_not raise_error
+          end
+        end
+      end
+
+      context 'when uaa.tls_port is provided in the link' do
+        let(:uaa_link_properties) do
+          {
+             'tls_port' => 9443, 
+          }
+        end
+        it 'uses the link value' do
+          rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+          expect(rendered_hash['routing_api']['oauth_url']).to eq('https://uaa.service.cf.internal:9443')
+        end
+        context 'when oauth_url is set' do
+          it 'uses the oauth url' do
+            merged_manifest_properties['route_registrar']['routing_api']['oauth_url'] = 'https://other-uaa.service.cf.internal:6443'
+            rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+            expect(rendered_hash['routing_api']['oauth_url']).to eq('https://other-uaa.service.cf.internal:6443')
+          end
+        end
+      end
+
+      context 'when uaa.token_endpoint is provided in the link' do
+        let(:uaa_link_properties) do
+          {
+            'token_endpoint' => 'link-uaa.service.cf.internal', 
+          }
+        end
+        it 'uses the link value' do
+          rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+          expect(rendered_hash['routing_api']['oauth_url']).to eq('https://link-uaa.service.cf.internal:8443')
+        end
+        context 'when oauth_url is set' do
+          it 'uses the oauth url' do
+            merged_manifest_properties['route_registrar']['routing_api']['oauth_url'] = 'https://other-uaa.service.cf.internal:6443'
+            rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+            expect(rendered_hash['routing_api']['oauth_url']).to eq('https://other-uaa.service.cf.internal:6443')
+          end
+        end
+      end
+
+      context 'when no uaa port or oauth url are provided' do
+        it 'uses the default' do
+          rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+          expect(rendered_hash['routing_api']['oauth_url']).to eq('https://uaa.service.cf.internal:8443')
+        end
+      end
+
+
+      context 'when routing_api clients are provided in the link' do
+        let(:routing_api_link_properties) do
+          {
+            'enabled_api_endpoints' => 'mtls',
+            'clients' => {
+              'link-client' => {
+                'secret' => 'link-secret',
+              }
+            }
+          }
+        end
+          it 'uses the link value' do
+            rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+            expect(rendered_hash['routing_api']['client_id']).to eq('link-client')
+            expect(rendered_hash['routing_api']['client_secret']).to eq('link-secret')
+          end
+        context 'and routing_api.client_id is set' do
+          it 'uses the provided client' do
+            merged_manifest_properties['route_registrar']['routing_api']['client_id'] = 'override-client'
+            rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+            expect(rendered_hash['routing_api']['client_id']).to eq('override-client')
+          end
+        end
+        context 'and routing_api.client_secret is set' do
+          it 'prefers the provided properties' do
+            merged_manifest_properties['route_registrar']['routing_api']['client_secret'] = 'override-secret'
+            rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+            expect(rendered_hash['routing_api']['client_secret']).to eq('override-secret')
+          end
+        end
+      end
+
+      context 'when routing_api clients are not provided in the link' do
+          it 'uses the default routing_api_client, and does not set client_secret' do
+            rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+            expect(rendered_hash['routing_api']['client_id']).to eq('routing_api_client')
+            expect(rendered_hash['routing_api'].key?('client_secret')).to be false
+          end
+        context 'and routing_api.client_id is set' do
+          it 'uses the provided client' do
+            merged_manifest_properties['route_registrar']['routing_api']['client_id'] = 'override-client'
+            rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+            expect(rendered_hash['routing_api']['client_id']).to eq('override-client')
+          end
+        end
+        context 'and routing_api.client_secret is set' do
+          it 'prefers the provided properties' do
+            merged_manifest_properties['route_registrar']['routing_api']['client_secret'] = 'override-secret'
+            rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+            expect(rendered_hash['routing_api']['client_secret']).to eq('override-secret')
+          end
+        end
+      end
+
+      context 'when max_ttl is not provided in the link' do
+        it 'renders with the default' do
+          rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+          expect(rendered_hash['routing_api']['max_ttl']).to eq('120s')
+        end
+      end
+      context 'when max_ttl is provided in the link' do
+        it 'uses the link value' do
+          links[0].properties['routing_api']['max_ttl'] = '100s'
+          rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+          expect(rendered_hash['routing_api']['max_ttl']).to eq('100s')
         end
       end
     end
