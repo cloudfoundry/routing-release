@@ -1,3 +1,15 @@
-<% if_p('route_registrar.routing_api.ca_certs') do |value| %>
-<%= value.join("\n") %>
-<% end %>
+<%=
+  def ca_certs
+    if_p('route_registrar.routing_api.ca_certs') do |value|
+      return value.join("\n")
+    end.else do
+      if_link('routing_api') do |link|
+        return link.p('uaa.ca_cert')
+      end
+    end
+
+    return ''
+  end
+
+  ca_certs
+-%>
