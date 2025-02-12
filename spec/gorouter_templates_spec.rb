@@ -665,6 +665,22 @@ describe 'gorouter' do
         end
       end
 
+      describe 'envelope v1 metrics' do
+        context 'by default' do
+          it 'should be enabled' do
+            expect(parsed_yaml['enable_envelope_v1_metrics']).to be true
+          end
+        end
+        context 'when disabled in configuration' do
+          before do
+            deployment_manifest_fragment['router']['enable_envelope_v1_metrics'] = false
+          end
+          it 'should set prometheus configuration' do
+            expect(parsed_yaml['enable_envelope_v1_metrics']).to be false
+          end
+        end
+      end
+
       describe 'prometheus metrics' do
         context 'by default' do
           it 'should not be configured' do
@@ -679,10 +695,15 @@ describe 'gorouter' do
           end
           it 'should set prometheus configuration' do
             expect(parsed_yaml['per_app_prometheus_http_metrics_reporting']).to be true
+            expect(parsed_yaml['prometheus']['enabled']).to eq(true)
             expect(parsed_yaml['prometheus']['port']).to eq(9090)
             expect(parsed_yaml['prometheus']['cert_path']).to eq('/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.crt')
             expect(parsed_yaml['prometheus']['key_path']).to eq('/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.key')
             expect(parsed_yaml['prometheus']['ca_path']).to eq('/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus_ca.crt')
+          end
+          it 'should enable envelope v1 per default' do
+            expect(parsed_yaml['enable_envelope_v1_metrics']).to be true
+            expect(parsed_yaml['prometheus']['enabled']).to eq(true)
           end
         end
         context 'when per app metrics is configured but prometheus port is not' do
@@ -691,6 +712,22 @@ describe 'gorouter' do
           end
           it 'should error' do
             expect { raise parsed_yaml }.to raise_error(RuntimeError, 'per_app_prometheus_http_metrics_reporting should not be set without configuring prometheus')
+          end
+        end
+        context 'when prometheus is configured and envelope v1 disabled explicitly' do
+          before do
+            deployment_manifest_fragment['router']['per_app_prometheus_http_metrics_reporting'] = true
+            deployment_manifest_fragment['router']['prometheus'] = { 'port' => 9090 }
+            deployment_manifest_fragment['router']['enable_envelope_v1_metrics'] = false
+          end
+          it 'should set prometheus configuration' do
+            expect(parsed_yaml['enable_envelope_v1_metrics']).to be false
+            expect(parsed_yaml['per_app_prometheus_http_metrics_reporting']).to be true
+            expect(parsed_yaml['prometheus']['enabled']).to eq(true)
+            expect(parsed_yaml['prometheus']['port']).to eq(9090)
+            expect(parsed_yaml['prometheus']['cert_path']).to eq('/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.crt')
+            expect(parsed_yaml['prometheus']['key_path']).to eq('/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.key')
+            expect(parsed_yaml['prometheus']['ca_path']).to eq('/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus_ca.crt')
           end
         end
       end

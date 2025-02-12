@@ -76,8 +76,11 @@ properties:
     description: "TLS Certificate used for the TLS listener of the LB healthcheck endpoint"
   router.status.tls.key:
     description: "Private Key used for the TLS listener of the LB healthcheck endpoint"
+  router.enable_envelope_v1_metrics:
+      description: "Enables support for metrics reported via Envelope."
+      default: true
   router.prometheus.port:
-    description: "Port for the prometheus endpoint."
+    description: "Port for the prometheus endpoint, automatically enables Prometheus support."
   router.prometheus.server_name:
     description: "The server name used in the certificate for the metrics endpoint."
   router.prometheus.ca_cert:
