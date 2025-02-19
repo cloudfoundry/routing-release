@@ -187,7 +187,8 @@ if_p('router.prometheus.port') do |port|
     'port' => port,
     'cert_path' => '/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.crt',
     'key_path' => '/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.key',
-    'ca_path' => '/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus_ca.crt'
+    'ca_path' => '/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus_ca.crt',
+    'meters' => p('router.prometheus.meters')
   }
 end.else do
   if p('router.per_app_prometheus_http_metrics_reporting')
