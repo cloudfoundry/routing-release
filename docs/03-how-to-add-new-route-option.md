@@ -7,7 +7,7 @@ tags: [routing-release]
 ## What are Per-Route Features?
 Before this feature was implemented, the Cloud Foundry routing stack did not support configuring features for specific routes. Most features could only be defined at the platform level. The generic per-route features allow for defining specific options on a per-route basis. 
 
-The introduction of the generic per-route features was detailed in [RFC-0027](https://github.com/cloudfoundry/community/blob/main/toc/rfc/rfc-0027-generic-per-route-features.md) and referenced in the [community implementation issue](https://github.com/cloudfoundry/community/issues/909). The implementation became available since routing-release/v0.329 and capi-release/1.198.0.
+The introduction of the generic per-route features was detailed in [RFC-0027](https://github.com/cloudfoundry/community/blob/main/toc/rfc/rfc-0027-generic-per-route-features.md) and referenced in the [community implementation issue](https://github.com/cloudfoundry/community/issues/909). The implementation became available since routing-release/v0.329 and capi-release/1.202.0.
 
 The first per-route feature implemented is the load balancing algorithm, which defines how the load is distributed between Gorouters and backends. The algorithm can be configured on the route level via the application manifest:
 ```
