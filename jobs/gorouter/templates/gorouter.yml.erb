@@ -182,14 +182,25 @@ params = {
 }
 
 if_p('router.prometheus.port') do |port|
-  params['prometheus'] = {
+   params['prometheus'] = {
     'enabled' => true,
     'port' => port,
-    'cert_path' => '/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.crt',
-    'key_path' => '/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.key',
-    'ca_path' => '/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus_ca.crt',
     'meters' => p('router.prometheus.meters')
-  }
+   }
+
+  cert_set = p('router.prometheus.cert') != ''
+  key_set = p('router.prometheus.key') != ''
+  ca_cert_set = p('router.prometheus.ca_cert') != ''
+
+  unless (cert_set && key_set && ca_cert_set) || (!cert_set && !key_set && !ca_cert_set)
+    raise 'either provide all of router.prometheus.cert, router.prometheus.key, and router.prometheus.ca_cert, or none of them'
+  end
+
+  if cert_set && key_set && ca_cert_set
+    params['prometheus']['cert_path'] = '/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.crt'
+    params['prometheus']['key_path'] = '/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.key'
+    params['prometheus']['ca_path'] = '/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus_ca.crt'
+  end
 end.else do
   if p('router.per_app_prometheus_http_metrics_reporting')
     raise 'per_app_prometheus_http_metrics_reporting should not be set without configuring prometheus'

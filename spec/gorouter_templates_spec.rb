@@ -693,17 +693,41 @@ describe 'gorouter' do
             deployment_manifest_fragment['router']['per_app_prometheus_http_metrics_reporting'] = true
             deployment_manifest_fragment['router']['prometheus'] = { 'port' => 9090 }
           end
-          it 'should set prometheus configuration' do
-            expect(parsed_yaml['per_app_prometheus_http_metrics_reporting']).to be true
-            expect(parsed_yaml['prometheus']['enabled']).to eq(true)
-            expect(parsed_yaml['prometheus']['port']).to eq(9090)
-            expect(parsed_yaml['prometheus']['cert_path']).to eq('/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.crt')
-            expect(parsed_yaml['prometheus']['key_path']).to eq('/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.key')
-            expect(parsed_yaml['prometheus']['ca_path']).to eq('/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus_ca.crt')
+          context 'without TLS' do
+            it 'should set prometheus configuration without certificates' do
+              expect(parsed_yaml['per_app_prometheus_http_metrics_reporting']).to be true
+              expect(parsed_yaml['prometheus']['enabled']).to eq(true)
+              expect(parsed_yaml['prometheus']['port']).to eq(9090)
+              expect(parsed_yaml['prometheus']['cert_path']).to be_nil
+              expect(parsed_yaml['prometheus']['key_path']).to be_nil
+              expect(parsed_yaml['prometheus']['ca_path']).to be_nil
+            end
+            it 'should enable envelope v1 per default' do
+              expect(parsed_yaml['enable_envelope_v1_metrics']).to be true
+            end
           end
-          it 'should enable envelope v1 per default' do
-            expect(parsed_yaml['enable_envelope_v1_metrics']).to be true
-            expect(parsed_yaml['prometheus']['enabled']).to eq(true)
+          context 'when certificates are configured' do
+            before do
+              deployment_manifest_fragment['router']['prometheus']['cert'] = TEST_CERT
+              deployment_manifest_fragment['router']['prometheus']['key'] = TEST_KEY
+              deployment_manifest_fragment['router']['prometheus']['ca_cert'] = TEST_CERT2
+            end
+            it 'should set prometheus configuration with certificates' do
+              expect(parsed_yaml['per_app_prometheus_http_metrics_reporting']).to be true
+              expect(parsed_yaml['prometheus']['enabled']).to eq(true)
+              expect(parsed_yaml['prometheus']['port']).to eq(9090)
+              expect(parsed_yaml['prometheus']['cert_path']).to eq('/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.crt')
+              expect(parsed_yaml['prometheus']['key_path']).to eq('/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.key')
+              expect(parsed_yaml['prometheus']['ca_path']).to eq('/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus_ca.crt')
+            end
+          end
+          context 'when certificates are configured incorrectly' do
+            before do
+              deployment_manifest_fragment['router']['prometheus']['cert'] = TEST_CERT
+            end
+            it 'should error when only one cert or key is configured' do
+              expect { raise parsed_yaml }.to raise_error(RuntimeError, 'either provide all of router.prometheus.cert, router.prometheus.key, and router.prometheus.ca_cert, or none of them')
+            end
           end
         end
         context 'when per app metrics is configured but prometheus port is not' do
@@ -725,9 +749,6 @@ describe 'gorouter' do
             expect(parsed_yaml['per_app_prometheus_http_metrics_reporting']).to be true
             expect(parsed_yaml['prometheus']['enabled']).to eq(true)
             expect(parsed_yaml['prometheus']['port']).to eq(9090)
-            expect(parsed_yaml['prometheus']['cert_path']).to eq('/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.crt')
-            expect(parsed_yaml['prometheus']['key_path']).to eq('/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus.key')
-            expect(parsed_yaml['prometheus']['ca_path']).to eq('/var/vcap/jobs/gorouter/config/certs/prometheus/prometheus_ca.crt')
           end
         end
         context 'when prometheus meters are configured' do
@@ -1727,22 +1748,40 @@ describe 'gorouter' do
     end
 
     context 'when gorouter prometheus support is enabled' do
-      before do
-        deployment_manifest_fragment['router'] = {
-          'prometheus' => {
-            'port' => 9090,
-            'server_name' => 'example.org'
+      context 'with certificates' do
+        before do
+          deployment_manifest_fragment['router'] = {
+            'prometheus' => {
+              'port' => 9090,
+              'server_name' => 'example.org',
+              'cert' => TEST_CERT,
+              'key' => TEST_KEY,
+              'ca_cert' => TEST_CERT2,
+            }
           }
-        }
+        end
+        it 'configures the prom scraper to scrape the gorouter prometheus endpoint' do
+          expect(parsed_yaml['port']).to eq(9090)
+          expect(parsed_yaml['scheme']).to eq('https')
+          expect(parsed_yaml['server_name']).to eq('example.org')
+        end
+        it 'configures the prom scraper to emit events with source_id and instance_id tags' do
+          expect(parsed_yaml['source_id']).to eq('gorouter')
+          expect(parsed_yaml['instance_id']).to_not be_empty
+        end
       end
-      it 'configures the prom scraper to scrape the gorouter prometheus endpoint' do
-        expect(parsed_yaml['port']).to eq(9090)
-        expect(parsed_yaml['scheme']).to eq('https')
-        expect(parsed_yaml['server_name']).to eq('example.org')
-      end
-      it 'configures the prom scraper to emit events with source_id and instance_id tags' do
-        expect(parsed_yaml['source_id']).to eq('gorouter')
-        expect(parsed_yaml['instance_id']).to_not be_empty
+      context 'without certificates' do
+        before do
+          deployment_manifest_fragment['router'] = {
+            'prometheus' => {
+              'port' => 9090,
+            }
+          }
+        end
+        it 'configures the prom scraper to talk to prometheus without tls by default' do
+          expect(parsed_yaml['scheme']).to be_nil
+          expect(parsed_yaml['server_name']).to be_nil
+        end
       end
     end
   end

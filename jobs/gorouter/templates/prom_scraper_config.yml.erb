@@ -2,6 +2,11 @@
 port: <%= p("router.prometheus.port") %>
 source_id: "gorouter"
 instance_id: <%= spec.id || spec.index.to_s %>
+<% if p('router.prometheus.cert') != '' && p('router.prometheus.key') != '' && p('router.prometheus.ca_cert') != '' %>
 scheme: https
 server_name: <%= p("router.prometheus.server_name") %>
+<% end %>
+labels:
+  metrics_version: "2.0"
+  origin: gorouter
 <% end %>
