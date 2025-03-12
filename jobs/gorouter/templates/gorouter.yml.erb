@@ -182,6 +182,10 @@ params = {
 }
 
 if_p('router.prometheus.port') do |port|
+   if port.to_i <= 0
+     raise 'router.prometheus.port must be a positive integer'
+   end
+   
    params['prometheus'] = {
     'enabled' => true,
     'port' => port,

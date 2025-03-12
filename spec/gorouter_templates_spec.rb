@@ -729,6 +729,14 @@ describe 'gorouter' do
               expect { raise parsed_yaml }.to raise_error(RuntimeError, 'either provide all of router.prometheus.cert, router.prometheus.key, and router.prometheus.ca_cert, or none of them')
             end
           end
+          context 'when port configure incorrectly' do
+            before do
+              deployment_manifest_fragment['router']['prometheus']['port'] = '0'
+            end
+            it 'should error' do
+              expect { raise parsed_yaml }.to raise_error(RuntimeError, 'router.prometheus.port must be a positive integer')
+            end
+          end
         end
         context 'when per app metrics is configured but prometheus port is not' do
           before do
@@ -1748,39 +1756,60 @@ describe 'gorouter' do
     end
 
     context 'when gorouter prometheus support is enabled' do
-      context 'with certificates' do
-        before do
-          deployment_manifest_fragment['router'] = {
-            'prometheus' => {
-              'port' => 9090,
-              'server_name' => 'example.org',
-              'cert' => TEST_CERT,
-              'key' => TEST_KEY,
-              'ca_cert' => TEST_CERT2,
-            }
+      before do
+        deployment_manifest_fragment['router'] = {
+          'prometheus' => {
+            'port' => 9090,
           }
+        }
+      end
+      it 'scraper enabled by default' do
+        expect(parsed_yaml).to_not be_nil
+      end
+
+      context 'with enable_scraper set to false' do
+        before do
+          deployment_manifest_fragment['router']['prometheus']['enable_scraper'] = false
         end
-        it 'configures the prom scraper to scrape the gorouter prometheus endpoint' do
-          expect(parsed_yaml['port']).to eq(9090)
-          expect(parsed_yaml['scheme']).to eq('https')
-          expect(parsed_yaml['server_name']).to eq('example.org')
-        end
-        it 'configures the prom scraper to emit events with source_id and instance_id tags' do
-          expect(parsed_yaml['source_id']).to eq('gorouter')
-          expect(parsed_yaml['instance_id']).to_not be_empty
+        it 'scraper disabled' do
+          expect(parsed_yaml).to be_nil
         end
       end
-      context 'without certificates' do
-        before do
-          deployment_manifest_fragment['router'] = {
-            'prometheus' => {
-              'port' => 9090,
+      context 'with default enable_scraper' do
+        context 'with certificates' do
+          before do
+            deployment_manifest_fragment['router'] = {
+              'prometheus' => {
+                'port' => 9090,
+                'server_name' => 'example.org',
+                'cert' => TEST_CERT,
+                'key' => TEST_KEY,
+                'ca_cert' => TEST_CERT2,
+              }
             }
-          }
+          end
+          it 'configures the prom scraper to scrape the gorouter prometheus endpoint' do
+            expect(parsed_yaml['port']).to eq(9090)
+            expect(parsed_yaml['scheme']).to eq('https')
+            expect(parsed_yaml['server_name']).to eq('example.org')
+          end
+          it 'configures the prom scraper to emit events with source_id and instance_id tags' do
+            expect(parsed_yaml['source_id']).to eq('gorouter')
+            expect(parsed_yaml['instance_id']).to_not be_empty
+          end
         end
-        it 'configures the prom scraper to talk to prometheus without tls by default' do
-          expect(parsed_yaml['scheme']).to be_nil
-          expect(parsed_yaml['server_name']).to be_nil
+        context 'without certificates' do
+          before do
+            deployment_manifest_fragment['router'] = {
+              'prometheus' => {
+                'port' => 9090,
+              }
+            }
+          end
+          it 'configures the prom scraper to talk to prometheus without tls by default' do
+            expect(parsed_yaml['scheme']).to be_nil
+            expect(parsed_yaml['server_name']).to be_nil
+          end
         end
       end
     end
