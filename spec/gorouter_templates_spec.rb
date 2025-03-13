@@ -767,7 +767,8 @@ describe 'gorouter' do
               'meters' => {
                 'route_lookup_time_histogram_buckets' => [0, 100, 10000],
                 'route_registration_latency_histogram_buckets' => [-10, 0, 10],
-                'routing_response_latency_histogram_buckets' => [0.1, 0.5, 1]
+                'routing_response_latency_histogram_buckets' => [0.1, 0.5, 1],
+                'http_latency_histogram_buckets' => [0.1, 0.2, 0.4, 0.8, 1],
               }
             }
           end
@@ -775,6 +776,7 @@ describe 'gorouter' do
             expect(parsed_yaml['prometheus']['meters']['route_lookup_time_histogram_buckets']).to eq([0, 100, 10000])
             expect(parsed_yaml['prometheus']['meters']['route_registration_latency_histogram_buckets']).to eq([-10, 0, 10])
             expect(parsed_yaml['prometheus']['meters']['routing_response_latency_histogram_buckets']).to eq([0.1, 0.5, 1])
+            expect(parsed_yaml['prometheus']['meters']['http_latency_histogram_buckets']).to eq([0.1, 0.2, 0.4, 0.8, 1])
           end
         end
       end
