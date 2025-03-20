@@ -8,6 +8,45 @@ require 'bosh/template/evaluation_context'
 require 'spec_helper'
 require 'openssl'
 
+ECDSA_TEST_CERT = '-----BEGIN CERTIFICATE-----
+MIICTzCCAfagAwIBAgIUHXOUdv7Ib4HHvvlCzkiYGKYn62YwCgYIKoZIzj0EAwIw
+ajELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoMGElu
+dGVybmV0IFdpZGdpdHMgUHR5IEx0ZDEjMCEGA1UEAwwaKi56OTcwNTcyOGIuc2hl
+cGhlcmQubGVhc2UwHhcNMjUwMzIwMTYwNzIzWhcNMjYwMzIwMTYwNzIzWjBqMQsw
+CQYDVQQGEwJBVTETMBEGA1UECAwKU29tZS1TdGF0ZTEhMB8GA1UECgwYSW50ZXJu
+ZXQgV2lkZ2l0cyBQdHkgTHRkMSMwIQYDVQQDDBoqLno5NzA1NzI4Yi5zaGVwaGVy
+ZC5sZWFzZTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABAWM1wNSaLYzu3xvROr0
+BWxKqQPq4HVejw8OZ+5D7I/BalyhUKEbbpET7KGMd5rwiBh2PRpIXnGgjdpaLuqn
+ut2jejB4MB0GA1UdDgQWBBSxJa8V6KgsUDwjjl68deUz98BNKjAfBgNVHSMEGDAW
+gBSxJa8V6KgsUDwjjl68deUz98BNKjAPBgNVHRMBAf8EBTADAQH/MCUGA1UdEQQe
+MByCGiouejk3MDU3MjhiLnNoZXBoZXJkLmxlYXNlMAoGCCqGSM49BAMCA0cAMEQC
+IEYqUOHHGLkKpa5inece1jtS0YJyjTR9uchjwfyyhuG1AiAk5cqon5PIrHOJ61S7
+PwsBw9/HfJTWtl90CGdpaa6T2g==
+-----END CERTIFICATE-----'
+
+ECDSA_TEST_KEY = '-----BEGIN EC PARAMETERS-----
+BggqhkjOPQMBBw==
+-----END EC PARAMETERS-----
+-----BEGIN EC PRIVATE KEY-----
+MHcCAQEEIHOaIrCtnTGAIaRs8CckSYIm9Il5i86pr8FvVBSHCjrCoAoGCCqGSM49
+AwEHoUQDQgAEBYzXA1JotjO7fG9E6vQFbEqpA+rgdV6PDw5n7kPsj8FqXKFQoRtu
+kRPsoYx3mvCIGHY9GkhecaCN2lou6qe63Q==
+-----END EC PRIVATE KEY-----'
+
+ECDSA_TEST_CERT_WITHOUT_CN = '-----BEGIN CERTIFICATE-----
+MIIB3jCCAYWgAwIBAgIUZ4+ULu0PK+bViL2mSnj5R2PVO2QwCgYIKoZIzj0EAwIw
+RTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoMGElu
+dGVybmV0IFdpZGdpdHMgUHR5IEx0ZDAeFw0yNTAzMjAxNzExMjRaFw0yNjAzMjAx
+NzExMjRaMEUxCzAJBgNVBAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMSEwHwYD
+VQQKDBhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQwWTATBgcqhkjOPQIBBggqhkjO
+PQMBBwNCAASEpE+Nx/Aj47wTHqpIxlVp/RwxVFJ1srve2ylaZcrxIMkPj1drA44E
+ykqm9kuBW5tNJTdhNmJxfrh/Eje7mCGzo1MwUTAdBgNVHQ4EFgQUG11Fg84Sfzk/
+YJicKftofRKTBmQwHwYDVR0jBBgwFoAUG11Fg84Sfzk/YJicKftofRKTBmQwDwYD
+VR0TAQH/BAUwAwEB/zAKBggqhkjOPQQDAgNHADBEAiAKwgst7sF2hXDtUSm8H3SR
+5WabhkcZ09zvYc0h+EIf5gIgFGfTb2Ebt1MneUeqeOaKrflsvJDzntvqCg1RMZz6
+6BY=
+-----END CERTIFICATE-----'
+
 TEST_CERT = '-----BEGIN CERTIFICATE-----
 MIIESjCCAjKgAwIBAgIRAMLNrkeAdcANSxOHGdVhsfowDQYJKoZIhvcNAQELBQAw
 EjEQMA4GA1UEAxMHdGVzdC1jYTAeFw0yMTEwMjExNzA0MDFaFw0yMzA0MjExNjI5
@@ -593,48 +632,76 @@ describe 'gorouter' do
       end
 
       context 'tls_pem' do
-        context 'when correct tls_pem is provided' do
-          it 'should configure the property' do
-            expect(parsed_yaml['tls_pem'].length).to eq(2)
-            expect(parsed_yaml['tls_pem'][0]).to eq('cert_chain' => TEST_CERT,
-                                                    'private_key' => 'test-key')
-            expect(parsed_yaml['tls_pem'][1]).to eq('cert_chain' => TEST_CERT2,
-                                                    'private_key' => 'test-key2')
+        context 'RSA certs' do
+          context 'when correct tls_pem is provided' do
+            it 'should configure the property' do
+              expect(parsed_yaml['tls_pem'].length).to eq(2)
+              expect(parsed_yaml['tls_pem'][0]).to eq('cert_chain' => TEST_CERT,
+                                                      'private_key' => 'test-key')
+              expect(parsed_yaml['tls_pem'][1]).to eq('cert_chain' => TEST_CERT2,
+                                                      'private_key' => 'test-key2')
+            end
+          end
+
+          context 'when a tls_pem does not have a SAN' do
+            before do
+              deployment_manifest_fragment['router']['tls_pem'][1]['cert_chain'] = CERT_WITHOUT_CN
+            end
+            it 'should error' do
+              expect { raise parsed_yaml }.to raise_error(RuntimeError, 'tls_pem[1].cert_chain must include a subjectAltName extension')
+            end
           end
         end
 
-        context 'when an incorrect tls_pem value is provided with missing cert' do
-          before do
-            deployment_manifest_fragment['router']['tls_pem'] = [{ 'private_key' => 'test-key' }]
+        context 'ECDSA certs' do
+          context 'when correct tls_pem is provided' do
+            before do
+              deployment_manifest_fragment['router']['tls_pem'][0]['cert_chain'] = ECDSA_TEST_CERT
+              deployment_manifest_fragment['router']['tls_pem'][0]['private_key'] = ECDSA_TEST_KEY
+            end
+            it 'should configure the property' do
+              expect(parsed_yaml['tls_pem'].length).to eq(2)
+              expect(parsed_yaml['tls_pem'][0]).to eq('cert_chain' => ECDSA_TEST_CERT,
+                                                      'private_key' => ECDSA_TEST_KEY)
+            end
           end
-          it 'should error' do
-            expect { raise parsed_yaml }.to raise_error(RuntimeError, 'must provide cert_chain and private_key with tls_pem')
+
+          context 'when a tls_pem does not have a SAN' do
+            before do
+              deployment_manifest_fragment['router']['tls_pem'][0]['cert_chain'] = ECDSA_TEST_CERT_WITHOUT_CN
+            end
+            it 'should error' do
+              expect { raise parsed_yaml }.to raise_error(RuntimeError, 'tls_pem[0].cert_chain must include a subjectAltName extension')
+            end
           end
         end
 
-        context 'when an incorrect tls_pem value is provided with missing key' do
-          before do
-            deployment_manifest_fragment['router']['tls_pem'] = [{ 'cert_chain' => 'test-chain' }]
+        context 'invalid certs' do
+          context 'when an incorrect tls_pem value is provided with missing cert' do
+            before do
+              deployment_manifest_fragment['router']['tls_pem'] = [{ 'private_key' => 'test-key' }]
+            end
+            it 'should error' do
+              expect { raise parsed_yaml }.to raise_error(RuntimeError, 'must provide cert_chain and private_key with tls_pem')
+            end
           end
-          it 'should error' do
-            expect { raise parsed_yaml }.to raise_error(RuntimeError, 'must provide cert_chain and private_key with tls_pem')
-          end
-        end
 
-        context 'when an incorrect tls_pem value is provided as wrong format' do
-          before do
-            deployment_manifest_fragment['router']['tls_pem'] = ['cert']
+          context 'when an incorrect tls_pem value is provided with missing key' do
+            before do
+              deployment_manifest_fragment['router']['tls_pem'] = [{ 'cert_chain' => 'test-chain' }]
+            end
+            it 'should error' do
+              expect { raise parsed_yaml }.to raise_error(RuntimeError, 'must provide cert_chain and private_key with tls_pem')
+            end
           end
-          it 'should error' do
-            expect { raise parsed_yaml }.to raise_error(RuntimeError, 'must provide cert_chain and private_key with tls_pem')
-          end
-        end
-        context 'when a tls_pem does not have a SAN' do
-          before do
-            deployment_manifest_fragment['router']['tls_pem'][1]['cert_chain'] = CERT_WITHOUT_CN
-          end
-          it 'should error' do
-            expect { raise parsed_yaml }.to raise_error(RuntimeError, 'tls_pem[1].cert_chain must include a subjectAltName extension')
+
+          context 'when an incorrect tls_pem value is provided as wrong format' do
+            before do
+              deployment_manifest_fragment['router']['tls_pem'] = ['cert']
+            end
+            it 'should error' do
+              expect { raise parsed_yaml }.to raise_error(RuntimeError, 'must provide cert_chain and private_key with tls_pem')
+            end
           end
         end
       end
