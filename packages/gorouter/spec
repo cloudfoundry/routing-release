@@ -42,6 +42,7 @@ files:
   - code.cloudfoundry.org/gorouter/metrics/*.go # gosub
   - code.cloudfoundry.org/gorouter/metrics/fakes/*.go # gosub
   - code.cloudfoundry.org/gorouter/metrics/monitor/*.go # gosub
+  - code.cloudfoundry.org/gorouter/metrics_prometheus/*.go # gosub
   - code.cloudfoundry.org/gorouter/proxy/*.go # gosub
   - code.cloudfoundry.org/gorouter/proxy/fails/*.go # gosub
   - code.cloudfoundry.org/gorouter/proxy/fails/fakes/*.go # gosub
