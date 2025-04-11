@@ -578,7 +578,7 @@ if_p('router.enable_verify_client_certificate_metadata', 'router.verify_client_c
       unless [rule].intersect?(cert_subjects) then
         raise <<~EOF
           no CA certificate subjects in `client_ca_certs` matches the rule's subject: #{rule}. \
-          `ca_client_certs` subjects: #{cert_subjects.map { |c| c.to_s }.join(", ")}"
+          `client_ca_certs` subjects: #{cert_subjects.map { |c| c.to_s }.join(", ")}"
         EOF
       end
     }
