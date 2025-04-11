@@ -16,13 +16,13 @@ fi
 
 CONTAINER_NAME="$REPO_NAME-$DB-docker-container"
 if [[ "${DB}" == "mysql" ]] || [[ "${DB}" == "mysql-8.0" ]]; then
-  IMAGE="cloudfoundry/tas-runtime-mysql-8.0"
+  IMAGE="docker.io/cloudfoundry/tas-runtime-mysql-8.0"
   DB="mysql"
 elif [[ "${DB}" == "mysql-5.7" ]]; then
-  IMAGE="cloudfoundry/tas-runtime-mysql-5.7"
+  IMAGE="docker.io/cloudfoundry/tas-runtime-mysql-5.7"
   DB="mysql"
 elif [[ "${DB}" == "postgres" ]]; then
-  IMAGE="cloudfoundry/tas-runtime-postgres"
+  IMAGE="docker.io/cloudfoundry/tas-runtime-postgres"
 else
   echo "Unsupported DB flavor"
   exit 1
@@ -35,7 +35,7 @@ else
 fi
 
 docker pull "${IMAGE}"
-docker rm -f $CONTAINER_NAME
+docker rm -f "${CONTAINER_NAME}" || true # needed for compatibility with podman
 docker run -it \
   --env "DB=${DB}" \
   --env "REPO_NAME=$REPO_NAME" \
