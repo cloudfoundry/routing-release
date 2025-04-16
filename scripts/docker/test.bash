@@ -14,7 +14,7 @@ function test() {
 
   export GOFLAGS="-buildvcs=false"
   export DB="${DB}"
-  /ci/shared/tasks/run-bin-test/task.bash "${sub_package}"
+  /ci/shared/tasks/run-bin-test/task.bash "${sub_package}" --nodes="${SAFE_CPU}"
 }
 
 pushd /repo > /dev/null
@@ -22,6 +22,9 @@ git_configure_safe_directory
 REPO_NAME=$(git_get_remote_name)
 export DEFAULT_PARAMS="/ci/$REPO_NAME/default-params/run-bin-test/linux.yml"
 popd > /dev/null
+
+SAFE_CPU=$(( $(getconf _NPROCESSORS_ONLN) - 1 ))   # Leave one thread unloaded for background tasks
+[[ $SAFE_CPU == 0 ]] && SAFE_CPU=1                 # Still do run on a single thread machine
 
 pushd / > /dev/null
 if [[ -n "${1:-}" ]]; then
