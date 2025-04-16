@@ -18,3 +18,6 @@ docker exec $CONTAINER_NAME '/repo/scripts/docker/build-binaries.bash'
 docker exec $CONTAINER_NAME '/repo/scripts/docker/tests-templates.bash'
 docker exec $CONTAINER_NAME '/repo/scripts/docker/test.bash' "$@"
 docker exec $CONTAINER_NAME '/repo/scripts/docker/lint.bash'
+
+# Cleanup if all tests succeed, otherwise -e prevents script from reaching this
+docker rm -f "${CONTAINER_NAME}" || true # needed for compatibility with podman
