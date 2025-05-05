@@ -5,6 +5,7 @@ dependencies:
 - golang-1.24-linux
 
 files:
+  - jq/jq-*-linux-amd64.tgz
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/cfhttp/v2/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/clock/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/debugserver/*.go # gosub
