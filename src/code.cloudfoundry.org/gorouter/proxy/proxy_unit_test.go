@@ -64,6 +64,7 @@ var _ = Describe("Proxy Unit tests", func() {
 				cryptoPrev,
 				false,
 				false,
+				conf.RouteServiceConfig.EnableWebsockets,
 			)
 			varz := test_helpers.NullVarz{}
 			sender := new(fakes.MetricSender)

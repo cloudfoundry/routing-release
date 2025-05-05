@@ -28,6 +28,7 @@ type RouteServiceConfig struct {
 	logger                           *slog.Logger
 	recommendHttps                   bool
 	strictSignatureValidation        bool
+	enableWebsockets                 bool
 }
 
 type RequestToSendToRouteService struct {
@@ -55,6 +56,7 @@ func NewRouteServiceConfig(
 	cryptoPrev secure.Crypto,
 	recommendHttps bool,
 	strictSignatureValidation bool,
+	enableWebsockets bool,
 ) *RouteServiceConfig {
 	return &RouteServiceConfig{
 		routeServiceEnabled:              enabled,
@@ -66,11 +68,16 @@ func NewRouteServiceConfig(
 		logger:                           logger,
 		recommendHttps:                   recommendHttps,
 		strictSignatureValidation:        strictSignatureValidation,
+		enableWebsockets:                 enableWebsockets,
 	}
 }
 
 func (rs *RouteServiceConfig) RouteServiceEnabled() bool {
 	return rs.routeServiceEnabled
+}
+
+func (rs *RouteServiceConfig) EnableWebsockets() bool {
+	return rs.enableWebsockets
 }
 
 func (rs *RouteServiceConfig) RouteServiceRecommendHttps() bool {

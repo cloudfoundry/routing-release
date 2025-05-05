@@ -194,6 +194,7 @@ type RouteServiceConfig struct {
 	MaxAttempts               int              `yaml:"max_attempts"`
 	StrictSignatureValidation bool             `yaml:"strict_signature_validation"`
 	TLSPem                    `yaml:",inline"` // embed to get cert_chain and private_key for client authentication
+	EnableWebsockets          bool             `yaml:"enable_websockets"`
 }
 
 type LoggingConfig struct {

@@ -458,7 +458,7 @@ var _ = Describe("Router", func() {
 	})
 
 	Context("when websocket request is bound to RouteService URL", func() {
-		It("the request should respond with a 503", func() {
+		It("the request should respond with a 502 when route services are disabled by default", func() {
 			app := test.NewWebSocketApp(
 				[]route.Uri{"ws-app." + test_util.LocalhostDNS},
 				config.Port,
@@ -483,8 +483,7 @@ var _ = Describe("Router", func() {
 			x.WriteRequest(req)
 
 			resp, _ := x.ReadResponse()
-			Expect(resp.StatusCode).To(Equal(http.StatusServiceUnavailable))
-			// verify the app handler never got invoked.
+			Expect(resp.StatusCode).To(Equal(http.StatusBadGateway))
 			x.Close()
 		})
 	})
@@ -2474,7 +2473,7 @@ func initializeRouter(config *cfg.Config, backendIdleTimeout, requestTimeout tim
 	batcher := new(fakeMetrics.MetricBatcher)
 	metricReporter := &metrics.Metrics{Sender: sender, Batcher: batcher}
 	combinedReporter := &metrics.CompositeReporter{VarzReporter: varz, MetricReporter: metricReporter}
-	routeServiceConfig := routeservice.NewRouteServiceConfig(logger, true, config.RouteServicesHairpinning, config.RouteServicesHairpinningAllowlist, config.EndpointTimeout, nil, nil, false, false)
+	routeServiceConfig := routeservice.NewRouteServiceConfig(logger, true, config.RouteServicesHairpinning, config.RouteServicesHairpinningAllowlist, config.EndpointTimeout, nil, nil, false, false, true)
 
 	ew := errorwriter.NewPlaintextErrorWriter()
 

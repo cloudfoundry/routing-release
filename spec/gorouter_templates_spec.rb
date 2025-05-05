@@ -228,7 +228,8 @@ describe 'gorouter' do
             'max_attempts' => 3,
             'cert_chain' => ROUTE_SERVICES_CLIENT_TEST_CERT,
             'private_key' => ROUTE_SERVICES_CLIENT_TEST_KEY,
-            'strict_signature_validation' => false
+            'strict_signature_validation' => false,
+            'enable_websockets' => true,
           },
           'frontend_idle_timeout' => 5,
           'ip_local_port_range' => '1024 65535',
@@ -919,6 +920,27 @@ describe 'gorouter' do
             expect(parsed_yaml['route_services']['strict_signature_validation']).to eq(true)
           end
         end
+        context 'when enable_websockets not set' do
+          it 'defaults to true' do
+            expect(parsed_yaml['route_services']['enable_websockets']).to eq(true)
+          end
+        end
+        context 'when enable_websockets is enabled' do
+          before do
+            deployment_manifest_fragment['router']['route_services']['enable_websockets'] = true
+          end
+          it 'parses to true' do
+            expect(parsed_yaml['route_services']['enable_websockets']).to eq(true)
+          end
+        end
+        context 'when enable_websockets is disabled' do
+              before do
+                deployment_manifest_fragment['router']['route_services']['enable_websockets'] = false
+              end
+              it 'parses to true' do
+                expect(parsed_yaml['route_services']['enable_websockets']).to eq(false)
+              end
+            end
       end
 
       describe 'backends' do

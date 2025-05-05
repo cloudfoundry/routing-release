@@ -104,8 +104,7 @@ func (r *RouteService) ServeHTTP(rw http.ResponseWriter, req *http.Request, next
 		)
 		return
 	}
-
-	if IsWebSocketUpgrade(req) {
+	if IsWebSocketUpgrade(req) && !r.config.EnableWebsockets() {
 		logger.Info("route-service-unsupported")
 		AddRouterErrorHeader(rw, "route_service_unsupported")
 		r.errorWriter.WriteError(

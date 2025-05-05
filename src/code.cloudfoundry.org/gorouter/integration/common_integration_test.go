@@ -83,6 +83,8 @@ func NewTestState() *testState {
 	cfg.SuspendPruningIfNatsUnavailable = true
 
 	cfg.DisableKeepAlives = false
+	cfg.RouteServiceEnabled = true
+	cfg.RouteServiceConfig.EnableWebsockets = true
 
 	externalRouteServiceHostname := "external-route-service.localhost.routing.cf-app.com"
 	routeServiceKey, routeServiceCert := test_util.CreateKeyPair(externalRouteServiceHostname)

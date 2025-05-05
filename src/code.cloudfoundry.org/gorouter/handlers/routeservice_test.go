@@ -99,8 +99,7 @@ var _ = Describe("Route Service Handler", func() {
 		crypto, err = secure.NewAesGCM([]byte("ABCDEFGHIJKLMNOP"))
 		Expect(err).NotTo(HaveOccurred())
 		config = routeservice.NewRouteServiceConfig(
-			logger.Logger, true, true, nil, 60*time.Second, crypto, nil, true, false,
-		)
+			logger.Logger, true, true, nil, 60*time.Second, crypto, nil, true, false, true)
 
 		nextCalled = false
 		prevHandler = &PrevHandler{}
@@ -121,7 +120,7 @@ var _ = Describe("Route Service Handler", func() {
 
 	Context("with route services disabled", func() {
 		BeforeEach(func() {
-			config = routeservice.NewRouteServiceConfig(logger.Logger, false, false, nil, 0, nil, nil, false, false)
+			config = routeservice.NewRouteServiceConfig(logger.Logger, false, false, nil, 0, nil, nil, false, false, true)
 		})
 
 		Context("for normal routes", func() {
@@ -192,7 +191,7 @@ var _ = Describe("Route Service Handler", func() {
 			Context("with strictSignatureValidation enabled", func() {
 				BeforeEach(func() {
 					config = routeservice.NewRouteServiceConfig(
-						logger.Logger, true, false, nil, 60*time.Second, crypto, nil, false, true,
+						logger.Logger, true, false, nil, 60*time.Second, crypto, nil, false, true, true,
 					)
 				})
 
@@ -274,7 +273,7 @@ var _ = Describe("Route Service Handler", func() {
 					BeforeEach(func() {
 						hairpinning := false
 						config = routeservice.NewRouteServiceConfig(
-							logger.Logger, true, hairpinning, nil, 60*time.Second, crypto, nil, true, false,
+							logger.Logger, true, hairpinning, nil, 60*time.Second, crypto, nil, true, false, true,
 						)
 					})
 
@@ -305,7 +304,7 @@ var _ = Describe("Route Service Handler", func() {
 					BeforeEach(func() {
 						hairpinning := true
 						config = routeservice.NewRouteServiceConfig(
-							logger.Logger, true, hairpinning, nil, 60*time.Second, crypto, nil, true, false,
+							logger.Logger, true, hairpinning, nil, 60*time.Second, crypto, nil, true, false, true,
 						)
 					})
 
@@ -336,7 +335,7 @@ var _ = Describe("Route Service Handler", func() {
 					BeforeEach(func() {
 						hairpinning := true
 						config = routeservice.NewRouteServiceConfig(
-							logger.Logger, true, hairpinning, []string{"route-service.com"}, 60*time.Second, crypto, nil, true, false,
+							logger.Logger, true, hairpinning, []string{"route-service.com"}, 60*time.Second, crypto, nil, true, false, true,
 						)
 					})
 
@@ -368,7 +367,7 @@ var _ = Describe("Route Service Handler", func() {
 					BeforeEach(func() {
 						hairpinning := true
 						config = routeservice.NewRouteServiceConfig(
-							logger.Logger, true, hairpinning, []string{"example.com"}, 60*time.Second, crypto, nil, true, false,
+							logger.Logger, true, hairpinning, []string{"example.com"}, 60*time.Second, crypto, nil, true, false, true,
 						)
 					})
 
@@ -400,7 +399,7 @@ var _ = Describe("Route Service Handler", func() {
 					BeforeEach(func() {
 						hairpinning := true
 						config = routeservice.NewRouteServiceConfig(
-							logger.Logger, true, hairpinning, generateHugeAllowlist(1000000), 60*time.Second, crypto, nil, true, false,
+							logger.Logger, true, hairpinning, generateHugeAllowlist(1000000), 60*time.Second, crypto, nil, true, false, true,
 						)
 					})
 
@@ -438,7 +437,7 @@ var _ = Describe("Route Service Handler", func() {
 			Context("when recommendHttps is set to false", func() {
 				BeforeEach(func() {
 					config = routeservice.NewRouteServiceConfig(
-						logger.Logger, true, false, nil, 60*time.Second, crypto, nil, false, false,
+						logger.Logger, true, false, nil, 60*time.Second, crypto, nil, false, false, true,
 					)
 				})
 				It("sends the request to the route service with X-CF-Forwarded-Url using http scheme", func() {
@@ -609,7 +608,7 @@ var _ = Describe("Route Service Handler", func() {
 					cryptoPrev, err = secure.NewAesGCM([]byte("QRSTUVWXYZ123456"))
 					Expect(err).ToNot(HaveOccurred())
 					config = routeservice.NewRouteServiceConfig(
-						logger.Logger, true, false, nil, 60*time.Second, crypto, cryptoPrev, true, false,
+						logger.Logger, true, false, nil, 60*time.Second, crypto, cryptoPrev, true, false, true,
 					)
 				})
 
@@ -704,13 +703,17 @@ var _ = Describe("Route Service Handler", func() {
 				req.Header.Set("upgrade", "websocket")
 
 			})
-			It("returns a 503", func() {
+			It("request contains correct route service URL", func() {
 				handler.ServeHTTP(resp, req)
 
-				Expect(resp.Code).To(Equal(http.StatusServiceUnavailable))
-				Expect(resp.Body.String()).To(ContainSubstring("Websocket requests are not supported for routes bound to Route Services."))
+				var passedReq *http.Request
+				Eventually(reqChan).Should(Receive(&passedReq))
 
-				Expect(nextCalled).To(BeFalse())
+				reqInfo, err := handlers.ContextRequestInfo(passedReq)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(reqInfo.RouteServiceURL.Scheme).To(Equal("https"))
+				Expect(reqInfo.RouteServiceURL.Host).To(Equal("goodrouteservice.com"))
+				Expect(nextCalled).To(BeTrue(), "Expected the next handler to be called.")
 			})
 		})
 
@@ -888,7 +891,7 @@ var _ = Describe("Route Service Handler", func() {
 				By(testCase.name)
 
 				config = routeservice.NewRouteServiceConfig(
-					logger.Logger, true, true, testCase.allowlist, 60*time.Second, crypto, nil, true, false,
+					logger.Logger, true, true, testCase.allowlist, 60*time.Second, crypto, nil, true, false, true,
 				)
 
 				if testCase.err {

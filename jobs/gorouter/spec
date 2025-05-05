@@ -255,6 +255,10 @@ properties:
       Maximum number of attempts on failing requests against route service URLs.
       The minimum value for this setting is 1. This prevents gorouter from getting blocked by indefinite retries.
     default: 3
+  router.route_services.enable_websockets:
+    description: |
+      Enable websocket connections for application routes bound to Route Services.
+    default: true
   router.route_services.cert_chain:
     description: Certificate chain used for client authentication to TLS-registered route services.  In PEM format.
   router.route_services.private_key:

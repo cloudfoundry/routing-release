@@ -345,12 +345,14 @@ if (route_service_attempts < 1 )
 end
 
 strict_signature_validation = p('router.route_services_strict_signature_validation')
+enable_websockets = p('router.route_services.enable_websockets')
 
 route_services = {
   'max_attempts' => route_service_attempts,
   'cert_chain' => route_services_cert_chain,
   'private_key' => route_services_private_key,
   'strict_signature_validation' => strict_signature_validation,
+  'enable_websockets' => enable_websockets,
 }
 
 params['route_services'] = route_services

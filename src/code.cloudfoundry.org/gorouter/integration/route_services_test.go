@@ -4,29 +4,52 @@ import (
 	"crypto/tls"
 	"fmt"
 	"io"
+	"log"
+	"net"
 	"net/http"
 	"net/http/httptest"
+	"net/http/httputil"
+	"net/url"
+	"os"
 	"strings"
 	"time"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"golang.org/x/net/websocket"
 
 	"code.cloudfoundry.org/gorouter/route"
 	"code.cloudfoundry.org/gorouter/test/common"
 )
+
+func wsClient(conn net.Conn, urlStr string) (*websocket.Conn, error) {
+	wsUrl, err := url.ParseRequestURI(urlStr)
+	Expect(err).NotTo(HaveOccurred())
+
+	cfg := &websocket.Config{
+		Location: wsUrl,
+		Origin:   wsUrl,
+		Version:  websocket.ProtocolVersionHybi13,
+	}
+
+	wsConn, err := websocket.NewClient(cfg, conn)
+	return wsConn, err
+}
 
 var _ = Describe("Route services", func() {
 
 	var testState *testState
 
 	const (
-		appHostname = "app-with-route-service.some.domain"
+		appHostname   = "app-with-route-service.some.domain"
+		wsAppHostname = "ws-app-with-route-service.some.domain"
 	)
 
 	var (
-		testApp      *httptest.Server
-		routeService *httptest.Server
+		testApp        *httptest.Server
+		routeService   *httptest.Server
+		wsTestApp      *httptest.Server
+		wsRouteService *httptest.Server
 	)
 
 	BeforeEach(func() {
@@ -69,6 +92,30 @@ var _ = Describe("Route services", func() {
 					Expect(err).ToNot(HaveOccurred())
 				}))
 
+		wsRouteService = httptest.NewUnstartedServer(
+			&httputil.ReverseProxy{
+				Director: func(req *http.Request) {
+					forwardedURLStr := req.Header.Get("X-Cf-Forwarded-Url")
+
+					forwardedURL, err := url.Parse(forwardedURLStr)
+					if err != nil {
+						log.Printf("ERROR: X-Cf-Forwarded-Url unparseable: %s\n", err.Error())
+						return
+					}
+
+					req.URL = &url.URL{
+						Scheme: "http",
+						Host:   fmt.Sprintf("127.0.0.1:%d", testState.cfg.Port),
+					}
+					req.Host = forwardedURL.Host
+				},
+				Transport: &http.Transport{
+					TLSClientConfig: &tls.Config{
+						MinVersion:         tls.VersionTLS12,
+						InsecureSkipVerify: true,
+					},
+				},
+			})
 	})
 
 	AfterEach(func() {
@@ -83,6 +130,57 @@ var _ = Describe("Route services", func() {
 		port := strings.Split(routeService.Listener.Addr().String(), ":")[1]
 		return fmt.Sprintf("https://%s:%s", testState.trustedExternalServiceHostname, port)
 	}
+
+	Context("Happy Path with a web socket app with a route service", func() {
+		Context("When an app is registered with a simple route service", func() {
+			BeforeEach(func() {
+				testState.EnableAccessLog()
+				testState.StartGorouterOrFail()
+				wsRouteService.Start()
+				nilHandshake := func(c *websocket.Config, request *http.Request) error { return nil }
+				wsHandler := websocket.Server{Handler: func(conn *websocket.Conn) {
+					msgBuf := make([]byte, 100)
+					n, err := conn.Read(msgBuf)
+					Expect(err).NotTo(HaveOccurred())
+					Expect(string(msgBuf[:n])).To(Equal("HELLO WEBSOCKET"))
+
+					_, _ = conn.Write([]byte("WEBSOCKET OK"))
+					conn.Close()
+				}, Handshake: nilHandshake}
+
+				wsTestApp = httptest.NewServer(wsHandler)
+
+				testState.registerWithInternalRouteService(
+					wsTestApp,
+					wsRouteService,
+					wsAppHostname,
+					testState.cfg.SSLPort,
+				)
+			})
+
+			It("succeeds", func() {
+				conn, err := net.Dial("tcp", fmt.Sprintf("127.0.0.1:%d", testState.cfg.Port))
+				Expect(err).NotTo(HaveOccurred())
+
+				wsConn, err := wsClient(conn, "ws://"+wsAppHostname)
+				Expect(err).NotTo(HaveOccurred())
+
+				num, err := wsConn.Write([]byte("HELLO WEBSOCKET"))
+				Expect(err).NotTo(HaveOccurred())
+				Expect(num).To(Equal(len([]byte("HELLO WEBSOCKET"))))
+
+				msgBuf := make([]byte, 100)
+				num2, err := wsConn.Read(msgBuf)
+
+				Expect(err).NotTo(HaveOccurred())
+				Expect(string(msgBuf[:num2])).To(Equal("WEBSOCKET OK"))
+
+				Eventually(func() ([]byte, error) {
+					return os.ReadFile(testState.AccessLogFilePath())
+				}).Should(ContainSubstring(`"GET / HTTP/1.1" 101 0 0`))
+			})
+		})
+	})
 
 	Context("Happy Path", func() {
 		Context("When an app is registered with a simple route service", func() {
@@ -102,7 +200,6 @@ var _ = Describe("Route services", func() {
 				req := testState.newGetRequest(
 					fmt.Sprintf("https://%s", appHostname),
 				)
-
 				res, err := testState.client.Do(req)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(res.StatusCode).To(Equal(http.StatusOK))
