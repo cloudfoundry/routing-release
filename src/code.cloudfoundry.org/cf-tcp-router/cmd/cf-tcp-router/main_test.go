@@ -13,7 +13,7 @@ import (
 	"syscall"
 	"time"
 
-	"code.cloudfoundry.org/cf-tcp-router/testrunner"
+	"code.cloudfoundry.org/cf-tcp-router/cmd/cf-tcp-router/testrunner"
 	"code.cloudfoundry.org/lager/v3"
 	"code.cloudfoundry.org/lager/v3/lagertest"
 	routingtestrunner "code.cloudfoundry.org/routing-api/cmd/routing-api/testrunner"

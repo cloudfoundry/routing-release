@@ -76,7 +76,7 @@ func TestTCPRouter(t *testing.T) {
 }
 
 var _ = SynchronizedBeforeSuite(func() []byte {
-	tcpRouter, err := gexec.Build("code.cloudfoundry.org/cf-tcp-router", "-race")
+	tcpRouter, err := gexec.Build("code.cloudfoundry.org/cf-tcp-router/cmd/cf-tcp-router", "-race")
 	Expect(err).NotTo(HaveOccurred())
 	routingAPIBin, err := gexec.Build("code.cloudfoundry.org/routing-api/cmd/routing-api", "-race")
 	Expect(err).NotTo(HaveOccurred())

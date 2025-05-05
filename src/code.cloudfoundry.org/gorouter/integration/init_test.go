@@ -34,7 +34,7 @@ type Path struct {
 }
 
 var _ = SynchronizedBeforeSuite(func() []byte {
-	path, err := gexec.Build("code.cloudfoundry.org/gorouter", "-race")
+	path, err := gexec.Build("code.cloudfoundry.org/gorouter/cmd/gorouter", "-race")
 	Expect(err).ToNot(HaveOccurred())
 	test, err := os.MkdirTemp("", "test")
 	Expect(err).ToNot(HaveOccurred())

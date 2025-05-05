@@ -12,7 +12,8 @@ mkdir ${BOSH_INSTALL_TARGET}/bin
 export GOBIN=${BOSH_INSTALL_TARGET}/bin
 
 pushd src/code.cloudfoundry.org
-  go install code.cloudfoundry.org/gorouter
+  go build -o "${BOSH_INSTALL_TARGET}/bin/gorouter" code.cloudfoundry.org/gorouter/cmd/gorouter
+  go build -o "${BOSH_INSTALL_TARGET}/bin/config-validator" code.cloudfoundry.org/gorouter/cmd/config-validator
 popd
 
 # install jq

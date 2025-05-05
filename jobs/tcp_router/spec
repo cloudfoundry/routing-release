@@ -19,6 +19,7 @@ templates:
   haproxy.conf.template.erb: config/haproxy.conf.template 
   bpm.yml.erb: config/bpm.yml
   drain.erb: bin/drain
+  pre-start.erb: bin/pre-start
   post-start.erb: bin/post-start
 
 packages:

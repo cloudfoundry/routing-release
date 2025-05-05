@@ -90,3 +90,7 @@ ulimit -n <%= p("router.max_open_files") %>
 # Add jq to path
 cp /var/vcap/jobs/gorouter/bin/setup-jq /etc/profile.d/jq.sh
 chown root:vcap /etc/profile.d/jq.sh
+
+<% if spec.bootstrap == true %>
+/var/vcap/packages/gorouter/bin/config-validator -c /var/vcap/jobs/gorouter/config/gorouter.yml
+<% end %>

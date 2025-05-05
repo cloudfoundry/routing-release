@@ -10,5 +10,6 @@ mkdir ${BOSH_INSTALL_TARGET}/bin
 export GOBIN=${BOSH_INSTALL_TARGET}/bin
 
 pushd src/code.cloudfoundry.org
-go install code.cloudfoundry.org/routing-api/cmd/routing-api
+  go build -o "${BOSH_INSTALL_TARGET}/bin/routing-api" code.cloudfoundry.org/routing-api/cmd/routing-api
+  go build -o "${BOSH_INSTALL_TARGET}/bin/config-validator" code.cloudfoundry.org/routing-api/cmd/config-validator
 popd

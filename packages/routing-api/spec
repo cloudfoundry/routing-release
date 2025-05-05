@@ -8,6 +8,7 @@ files:
   - code.cloudfoundry.org/go.mod
   - code.cloudfoundry.org/go.sum
   - code.cloudfoundry.org/vendor/modules.txt
+  - code.cloudfoundry.org/cf-tcp-router/config/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/utils/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/cfhttp/v2/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/clock/*.go # gosub
@@ -29,6 +30,7 @@ files:
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/locket/models/*.go # gosub
   - code.cloudfoundry.org/routing-api/*.go # gosub
   - code.cloudfoundry.org/routing-api/admin/*.go # gosub
+  - code.cloudfoundry.org/routing-api/cmd/config-validator/*.go # gosub
   - code.cloudfoundry.org/routing-api/cmd/routing-api/*.go # gosub
   - code.cloudfoundry.org/routing-api/cmd/routing-api/testrunner/*.go # gosub
   - code.cloudfoundry.org/routing-api/config/*.go # gosub

@@ -1,0 +1,5 @@
+#!/bin/bash -e
+
+<% if spec.bootstrap == true %>
+/var/vcap/packages/tcp_router/bin/config-validator -config /var/vcap/jobs/tcp_router/config/tcp_router.yml
+<% end %>

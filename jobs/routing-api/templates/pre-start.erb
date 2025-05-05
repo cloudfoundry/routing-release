@@ -1,0 +1,5 @@
+#!/bin/bash -e
+
+<% if spec.bootstrap == true %>
+/var/vcap/packages/rouitng-api/bin/config-validator -config /var/vcap/jobs/routing-api/config/routing-api.yml
+<% end %>

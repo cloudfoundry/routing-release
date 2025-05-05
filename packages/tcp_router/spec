@@ -9,7 +9,9 @@ files:
   - code.cloudfoundry.org/go.sum
   - code.cloudfoundry.org/vendor/modules.txt
   - code.cloudfoundry.org/cf-tcp-router/router_group_port_checker/*.go #gosub
-  - code.cloudfoundry.org/cf-tcp-router/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/cmd/cf-tcp-router/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/cmd/cf-tcp-router/testrunner/*.go # gosub
+  - code.cloudfoundry.org/cf-tcp-router/cmd/config-validator/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/config/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/configurer/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/configurer/fakes/*.go # gosub
@@ -26,7 +28,6 @@ files:
   - code.cloudfoundry.org/cf-tcp-router/routing_table/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/routing_table/fakes/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/syncer/*.go # gosub
-  - code.cloudfoundry.org/cf-tcp-router/testrunner/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/testutil/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/utils/*.go # gosub
   - code.cloudfoundry.org/cf-tcp-router/watcher/*.go # gosub

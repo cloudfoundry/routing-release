@@ -10,5 +10,6 @@ mkdir ${BOSH_INSTALL_TARGET}/bin
 export GOBIN=${BOSH_INSTALL_TARGET}/bin
 
 pushd src/code.cloudfoundry.org
-go install code.cloudfoundry.org/cf-tcp-router
+  go build -o "${BOSH_INSTALL_TARGET}/bin/cf-tcp-router" code.cloudfoundry.org/cf-tcp-router/cmd/cf-tcp-router
+  go build -o "${BOSH_INSTALL_TARGET}/bin/config-validator" code.cloudfoundry.org/cf-tcp-router/cmd/config-validator
 popd
