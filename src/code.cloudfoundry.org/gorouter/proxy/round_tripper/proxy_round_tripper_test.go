@@ -418,11 +418,11 @@ var _ = Describe("ProxyRoundTripper", func() {
 								if transport.RoundTripCallCount() == 1 {
 									endpoint := endpointFor(4)
 									updated := routePool.Put(endpoint)
-									Expect(updated).To(Equal(route.UPDATED))
+									Expect(updated).To(Equal(route.REFRESHED))
 
 									endpoint = endpointFor(5)
 									updated = routePool.Put(endpoint)
-									Expect(updated).To(Equal(route.UPDATED))
+									Expect(updated).To(Equal(route.REFRESHED))
 								}
 
 								return nil, &net.OpError{Op: "dial", Err: errors.New("connection refused")}

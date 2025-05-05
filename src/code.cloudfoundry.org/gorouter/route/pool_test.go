@@ -152,7 +152,7 @@ var _ = Describe("EndpointPool", func() {
 			pool.MarkUpdated(time.Now().Add(-(10 * time.Minute)))
 
 			b := pool.Put(endpoint)
-			Expect(b).To(Equal(route.UPDATED))
+			Expect(b).To(Equal(route.REFRESHED))
 
 			prunedEndpoints := pool.PruneEndpoints()
 			Expect(prunedEndpoints).To(BeEmpty())
@@ -163,7 +163,7 @@ var _ = Describe("EndpointPool", func() {
 			endpoint2 := route.NewEndpoint(&route.EndpointOpts{Host: "1.2.3.4", Port: 5678})
 
 			pool.Put(endpoint1)
-			Expect(pool.Put(endpoint2)).To(Equal(route.UPDATED))
+			Expect(pool.Put(endpoint2)).To(Equal(route.REFRESHED))
 		})
 
 		Context("with modification tags", func() {
@@ -189,7 +189,7 @@ var _ = Describe("EndpointPool", func() {
 				BeforeEach(func() {
 					modTag2.Increment()
 					endpoint := route.NewEndpoint(&route.EndpointOpts{Host: "1.2.3.4", Port: 5678, ModificationTag: modTag2})
-					pool.Put(endpoint)
+					Expect(pool.Put(endpoint)).To(Equal(route.UPDATED))
 				})
 
 				It("doesnt update an endpoint", func() {
@@ -387,7 +387,9 @@ var _ = Describe("EndpointPool", func() {
 		Context("when any endpoint updates its route_service_url", func() {
 			It("returns the route_service_url most recently updated in the pool", func() {
 				endpointRS1 := route.NewEndpoint(&route.EndpointOpts{Host: "host-1", Port: 1234, RouteServiceUrl: "first-url"})
+				endpointRS1Updated := route.NewEndpoint(&route.EndpointOpts{Host: "host-1", Port: 1234, RouteServiceUrl: "third-url"})
 				endpointRS2 := route.NewEndpoint(&route.EndpointOpts{Host: "host-2", Port: 2234, RouteServiceUrl: "second-url"})
+				endpointRS2Updated := route.NewEndpoint(&route.EndpointOpts{Host: "host-2", Port: 2234, RouteServiceUrl: "fourth-url"})
 				b := pool.Put(endpointRS1)
 				Expect(b).To(Equal(route.ADDED))
 
@@ -399,14 +401,12 @@ var _ = Describe("EndpointPool", func() {
 				url = pool.RouteServiceUrl()
 				Expect(url).To(Equal("second-url"))
 
-				endpointRS1.RouteServiceUrl = "third-url"
-				b = pool.Put(endpointRS1)
+				b = pool.Put(endpointRS1Updated)
 				Expect(b).To(Equal(route.UPDATED))
 				url = pool.RouteServiceUrl()
 				Expect(url).To(Equal("third-url"))
 
-				endpointRS2.RouteServiceUrl = "fourth-url"
-				b = pool.Put(endpointRS2)
+				b = pool.Put(endpointRS2Updated)
 				Expect(b).To(Equal(route.UPDATED))
 				url = pool.RouteServiceUrl()
 				Expect(url).To(Equal("fourth-url"))

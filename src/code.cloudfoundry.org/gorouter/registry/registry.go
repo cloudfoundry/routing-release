@@ -88,29 +88,32 @@ func (r *RouteRegistry) Register(uri route.Uri, endpoint *route.Endpoint) {
 		return
 	}
 
-	endpointAdded := r.register(uri, endpoint)
+	poolPutResult := r.register(uri, endpoint)
 
-	r.reporter.CaptureRegistryMessage(endpoint, endpointAdded.String())
+	r.reporter.CaptureRegistryMessage(endpoint, poolPutResult.String())
 
-	if endpointAdded == route.ADDED && !endpoint.UpdatedAt.IsZero() {
+	if poolPutResult == route.ADDED && !endpoint.UpdatedAt.IsZero() {
 		r.reporter.CaptureRouteRegistrationLatency(time.Since(endpoint.UpdatedAt))
 	}
 
-	switch endpointAdded {
+	switch poolPutResult {
 	case route.ADDED:
 		if r.logger.Enabled(context.Background(), slog.LevelInfo) {
 			r.logger.Info("endpoint-registered", buildSlogAttrs(uri, endpoint)...)
 		}
 	case route.UPDATED:
-		if r.logger.Enabled(context.Background(), slog.LevelDebug) {
-			r.logger.Debug("endpoint-registered", buildSlogAttrs(uri, endpoint)...)
+		if r.logger.Enabled(context.Background(), slog.LevelInfo) {
+			r.logger.Info("endpoint-registered", buildSlogAttrs(uri, endpoint)...)
 		}
-	default:
+	case route.UNMODIFIED:
 		if r.logger.Enabled(context.Background(), slog.LevelDebug) {
 			r.logger.Debug("endpoint-not-registered", buildSlogAttrs(uri, endpoint)...)
 		}
+	case route.REFRESHED:
+		if r.logger.Enabled(context.Background(), slog.LevelDebug) {
+			r.logger.Debug("endpoint-refreshed", buildSlogAttrs(uri, endpoint)...)
+		}
 	}
-
 }
 
 func (r *RouteRegistry) register(uri route.Uri, endpoint *route.Endpoint) route.PoolPutResult {
@@ -132,11 +135,11 @@ func (r *RouteRegistry) register(uri route.Uri, endpoint *route.Endpoint) route.
 		endpoint.StaleThreshold = r.dropletStaleThreshold
 	}
 
-	endpointAdded := pool.Put(endpoint)
+	poolPutResult := pool.Put(endpoint)
 	// Overwrites the load balancing algorithm of a pool by that of a specified endpoint, if that is valid.
 	r.SetTimeOfLastUpdate(t)
 
-	return endpointAdded
+	return poolPutResult
 }
 
 // insertRouteKey acquires a write lock, inserts the route key into the registry and releases the write lock.
