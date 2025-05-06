@@ -172,43 +172,56 @@ func (r *RouteRegistry) Unregister(uri route.Uri, endpoint *route.Endpoint) {
 		return
 	}
 
-	r.unregister(uri, endpoint)
+	endpointRemoved, routeRemoved := r.unregister(uri, endpoint)
 
 	r.reporter.CaptureUnregistryMessage(endpoint)
 
+	if routeRemoved {
+		r.logger.Info("route-unregistered", slog.Any("uri", uri))
+	} else {
+		r.logger.Info("route-not-unregistered", slog.Any("uri", uri))
+	}
+
+	var logMsg string
+	if endpointRemoved {
+		logMsg = "endpoint-unregistered"
+	} else {
+		logMsg = "endpoint-not-unregistered"
+	}
+
+	if r.logger.Enabled(context.Background(), slog.LevelInfo) {
+		r.logger.Info(logMsg, buildSlogAttrs(uri, endpoint)...)
+	}
 }
 
-func (r *RouteRegistry) unregister(uri route.Uri, endpoint *route.Endpoint) {
+func (r *RouteRegistry) unregister(uri route.Uri, endpoint *route.Endpoint) (endpointRemoved, routeRemoved bool) {
 	r.Lock()
 	defer r.Unlock()
 
 	uri = uri.RouteKey()
 
 	pool := r.byURI.Find(uri)
-	if pool != nil {
-		endpointRemoved := pool.Remove(endpoint)
-		if endpointRemoved {
-			if r.logger.Enabled(context.Background(), slog.LevelInfo) {
-				r.logger.Info("endpoint-unregistered", buildSlogAttrs(uri, endpoint)...)
-			}
-		} else {
-			if r.logger.Enabled(context.Background(), slog.LevelInfo) {
-				r.logger.Info("endpoint-not-unregistered", buildSlogAttrs(uri, endpoint)...)
-			}
-		}
-
-		if pool.IsEmpty() {
-			if r.EmptyPoolResponseCode503 && r.EmptyPoolTimeout > 0 {
-				if time.Since(pool.LastUpdated()) > r.EmptyPoolTimeout {
-					r.byURI.Delete(uri)
-					r.logger.Info("route-unregistered", slog.Any("uri", uri))
-				}
-			} else {
-				r.byURI.Delete(uri)
-				r.logger.Info("route-unregistered", slog.Any("uri", uri))
-			}
-		}
+	if pool == nil {
+		return false, false
 	}
+
+	endpointRemoved = pool.Remove(endpoint)
+	if !endpointRemoved {
+		return false, false
+	}
+
+	if !pool.IsEmpty() {
+		return true, false
+	}
+
+	// If we have empty pool responses, the timeout for empty pools is greater than zero and the
+	// timeout of this pool has not yet expired, don't remove it yet.
+	if r.EmptyPoolResponseCode503 && r.EmptyPoolTimeout > 0 && time.Since(pool.LastUpdated()) <= r.EmptyPoolTimeout {
+		return true, false
+	}
+
+	r.byURI.Delete(uri)
+	return true, true
 }
 
 func (r *RouteRegistry) Lookup(uri route.Uri) *route.EndpointPool {

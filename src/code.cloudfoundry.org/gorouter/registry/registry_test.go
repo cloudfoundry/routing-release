@@ -650,7 +650,12 @@ var _ = Describe("RouteRegistry", func() {
 			Context("EmptyPoolResponseCode503 is true and EmptyPoolTimeout greater than 0", func() {
 				JustBeforeEach(func() {
 					r.EmptyPoolResponseCode503 = true
-					r.EmptyPoolTimeout = 5 * time.Second
+					r.EmptyPoolTimeout = 1 * time.Second
+					r.StartPruningCycle()
+				})
+
+				JustAfterEach(func() {
+					r.StopPruningCycle()
 				})
 
 				It("Removes the route after EmptyPoolTimeout period of time is passed", func() {
@@ -659,10 +664,7 @@ var _ = Describe("RouteRegistry", func() {
 
 					r.Unregister("bar", barEndpoint)
 					Expect(r.NumUris()).To(Equal(1))
-					time.Sleep(r.EmptyPoolTimeout)
-					r.Unregister("bar", barEndpoint)
-					Expect(r.NumUris()).To(Equal(0))
-
+					Eventually(r.NumUris).WithTimeout(r.EmptyPoolTimeout + time.Second).Should(Equal(0))
 				})
 			})
 
