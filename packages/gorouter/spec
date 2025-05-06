@@ -16,7 +16,6 @@ files:
   - code.cloudfoundry.org/gorouter/accesslog/schema/*.go # gosub
   - code.cloudfoundry.org/gorouter/accesslog/schema/fakes/*.go # gosub
   - code.cloudfoundry.org/gorouter/accesslog/syslog/*.go # gosub
-  - code.cloudfoundry.org/gorouter/cmd/gorouter/*.go # gosub
   - code.cloudfoundry.org/gorouter/common/*.go # gosub
   - code.cloudfoundry.org/gorouter/common/health/*.go # gosub
   - code.cloudfoundry.org/gorouter/common/http/*.go # gosub
