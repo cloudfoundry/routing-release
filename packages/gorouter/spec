@@ -6,6 +6,9 @@ dependencies:
 
 files:
   - jq/jq-*-linux-amd64.tgz
+  - code.cloudfoundry.org/go.mod
+  - code.cloudfoundry.org/go.sum
+  - code.cloudfoundry.org/vendor/modules.txt
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/cfhttp/v2/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/clock/*.go # gosub
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/debugserver/*.go # gosub
