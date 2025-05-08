@@ -467,7 +467,7 @@ var _ = Describe("MetricsReporter", func() {
 
 		It("sends number of nats messages received from each component", func() {
 			endpoint.Tags = map[string]string{}
-			metricReporter.CaptureRegistryMessage(endpoint, route.ADDED.String())
+			metricReporter.CaptureRegistryMessage(endpoint, route.EndpointAdded.String())
 
 			Expect(batcher.BatchIncrementCounterCallCount()).To(Equal(1))
 			Expect(batcher.BatchIncrementCounterArgsForCall(0)).To(Equal("registry_message"))
@@ -475,10 +475,10 @@ var _ = Describe("MetricsReporter", func() {
 
 		It("sends number of nats messages received from each component", func() {
 			endpoint.Tags = map[string]string{"component": "uaa"}
-			metricReporter.CaptureRegistryMessage(endpoint, route.ADDED.String())
+			metricReporter.CaptureRegistryMessage(endpoint, route.EndpointAdded.String())
 
 			endpoint.Tags = map[string]string{"component": "route-emitter"}
-			metricReporter.CaptureRegistryMessage(endpoint, route.ADDED.String())
+			metricReporter.CaptureRegistryMessage(endpoint, route.EndpointAdded.String())
 
 			Expect(batcher.BatchIncrementCounterCallCount()).To(Equal(2))
 			Expect(batcher.BatchIncrementCounterArgsForCall(0)).To(Equal("registry_message.uaa"))

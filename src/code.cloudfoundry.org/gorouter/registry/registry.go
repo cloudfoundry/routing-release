@@ -92,24 +92,24 @@ func (r *RouteRegistry) Register(uri route.Uri, endpoint *route.Endpoint) {
 
 	r.reporter.CaptureRegistryMessage(endpoint, poolPutResult.String())
 
-	if poolPutResult == route.ADDED && !endpoint.UpdatedAt.IsZero() {
+	if poolPutResult == route.EndpointAdded && !endpoint.UpdatedAt.IsZero() {
 		r.reporter.CaptureRouteRegistrationLatency(time.Since(endpoint.UpdatedAt))
 	}
 
 	switch poolPutResult {
-	case route.ADDED:
+	case route.EndpointAdded:
 		if r.logger.Enabled(context.Background(), slog.LevelInfo) {
 			r.logger.Info("endpoint-registered", buildSlogAttrs(uri, endpoint)...)
 		}
-	case route.UPDATED:
+	case route.EndpointUpdated:
 		if r.logger.Enabled(context.Background(), slog.LevelInfo) {
 			r.logger.Info("endpoint-registered", buildSlogAttrs(uri, endpoint)...)
 		}
-	case route.UNMODIFIED:
+	case route.EndpointUnmodified:
 		if r.logger.Enabled(context.Background(), slog.LevelDebug) {
 			r.logger.Debug("endpoint-not-registered", buildSlogAttrs(uri, endpoint)...)
 		}
-	case route.REFRESHED:
+	case route.EndpointRefreshed:
 		if r.logger.Enabled(context.Background(), slog.LevelDebug) {
 			r.logger.Debug("endpoint-refreshed", buildSlogAttrs(uri, endpoint)...)
 		}

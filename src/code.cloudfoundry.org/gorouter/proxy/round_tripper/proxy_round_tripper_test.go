@@ -160,7 +160,7 @@ var _ = Describe("ProxyRoundTripper", func() {
 				})
 
 				added := routePool.Put(endpoint)
-				Expect(added).To(Equal(route.ADDED))
+				Expect(added).To(Equal(route.EndpointAdded))
 			}
 
 			proxyRoundTripper = round_tripper.NewProxyRoundTripper(
@@ -418,11 +418,11 @@ var _ = Describe("ProxyRoundTripper", func() {
 								if transport.RoundTripCallCount() == 1 {
 									endpoint := endpointFor(4)
 									updated := routePool.Put(endpoint)
-									Expect(updated).To(Equal(route.REFRESHED))
+									Expect(updated).To(Equal(route.EndpointRefreshed))
 
 									endpoint = endpointFor(5)
 									updated = routePool.Put(endpoint)
-									Expect(updated).To(Equal(route.REFRESHED))
+									Expect(updated).To(Equal(route.EndpointRefreshed))
 								}
 
 								return nil, &net.OpError{Op: "dial", Err: errors.New("connection refused")}
@@ -445,7 +445,7 @@ var _ = Describe("ProxyRoundTripper", func() {
 									for i := 6; i <= 7; i++ {
 										endpoint := endpointFor(i)
 										added := routePool.Put(endpoint)
-										Expect(added).To(Equal(route.ADDED))
+										Expect(added).To(Equal(route.EndpointAdded))
 									}
 								}
 
@@ -467,7 +467,7 @@ var _ = Describe("ProxyRoundTripper", func() {
 							transport.RoundTripStub = func(*http.Request) (*http.Response, error) {
 								if transport.RoundTripCallCount() == 2 {
 									added := routePool.Put(endpointFor(6))
-									Expect(added).To(Equal(route.ADDED))
+									Expect(added).To(Equal(route.EndpointAdded))
 
 									removed := routePool.Remove(endpointFor(2))
 									Expect(removed).To(BeTrue())
@@ -495,7 +495,7 @@ var _ = Describe("ProxyRoundTripper", func() {
 							transport.RoundTripStub = func(*http.Request) (*http.Response, error) {
 								if transport.RoundTripCallCount() == 5 {
 									added := routePool.Put(endpointFor(6))
-									Expect(added).To(Equal(route.ADDED))
+									Expect(added).To(Equal(route.EndpointAdded))
 
 									removed := routePool.Remove(endpointFor(2))
 									Expect(removed).To(BeTrue())
@@ -603,7 +603,7 @@ var _ = Describe("ProxyRoundTripper", func() {
 					})
 
 					added := routePool.Put(endpoint)
-					Expect(added).To(Equal(route.ADDED))
+					Expect(added).To(Equal(route.EndpointAdded))
 
 					_, err := proxyRoundTripper.RoundTrip(req)
 					Expect(err).To(MatchError(ContainSubstring("tls: handshake failure")))
@@ -797,14 +797,14 @@ var _ = Describe("ProxyRoundTripper", func() {
 						Port:   20222,
 						UseTLS: true,
 					})
-					Expect(routePool.Put(tlsEndpoint)).To(Equal(route.ADDED))
+					Expect(routePool.Put(tlsEndpoint)).To(Equal(route.EndpointAdded))
 
 					nonTLSEndpoint := route.NewEndpoint(&route.EndpointOpts{
 						Host:   "3.3.3.3",
 						Port:   30333,
 						UseTLS: false,
 					})
-					Expect(routePool.Put(nonTLSEndpoint)).To(Equal(route.ADDED))
+					Expect(routePool.Put(nonTLSEndpoint)).To(Equal(route.EndpointAdded))
 				})
 
 				Context("when retrying different backends", func() {
@@ -858,7 +858,7 @@ var _ = Describe("ProxyRoundTripper", func() {
 					})
 
 					added := routePool.Put(endpoint)
-					Expect(added).To(Equal(route.ADDED))
+					Expect(added).To(Equal(route.EndpointAdded))
 					transport.RoundTripReturns(
 						&http.Response{StatusCode: http.StatusTeapot}, nil,
 					)
@@ -881,7 +881,7 @@ var _ = Describe("ProxyRoundTripper", func() {
 						})
 
 						added := routePool.Put(endpoint)
-						Expect(added).To(Equal(route.UPDATED))
+						Expect(added).To(Equal(route.EndpointUpdated))
 						transport.RoundTripReturns(
 							&http.Response{StatusCode: http.StatusTeapot}, nil,
 						)
@@ -918,7 +918,7 @@ var _ = Describe("ProxyRoundTripper", func() {
 						Host: "1.1.1.1", Port: 9091, UseTLS: true, PrivateInstanceId: "instanceId-2",
 					})
 					added := routePool.Put(endpoint)
-					Expect(added).To(Equal(route.ADDED))
+					Expect(added).To(Equal(route.EndpointAdded))
 
 					_, err := proxyRoundTripper.RoundTrip(req)
 					Expect(err).ToNot(HaveOccurred())
@@ -1202,9 +1202,9 @@ var _ = Describe("ProxyRoundTripper", func() {
 					})
 
 					added := routePool.Put(endpoint1)
-					Expect(added).To(Equal(route.ADDED))
+					Expect(added).To(Equal(route.EndpointAdded))
 					added = routePool.Put(endpoint2)
-					Expect(added).To(Equal(route.ADDED))
+					Expect(added).To(Equal(route.EndpointAdded))
 					removed := routePool.Remove(endpoint)
 					Expect(removed).To(BeTrue())
 				})
@@ -1505,7 +1505,7 @@ var _ = Describe("ProxyRoundTripper", func() {
 
 								new_endpoint := route.NewEndpoint(&route.EndpointOpts{PrivateInstanceId: "id-5"})
 								added := routePool.Put(new_endpoint)
-								Expect(added).To(Equal(route.ADDED))
+								Expect(added).To(Equal(route.EndpointAdded))
 							})
 
 							Context("when route service headers are not on the request", func() {
@@ -1568,7 +1568,7 @@ var _ = Describe("ProxyRoundTripper", func() {
 
 								new_endpoint := route.NewEndpoint(&route.EndpointOpts{PrivateInstanceId: "id-5"})
 								added := routePool.Put(new_endpoint)
-								Expect(added).To(Equal(route.ADDED))
+								Expect(added).To(Equal(route.EndpointAdded))
 							})
 
 							Context("when route service headers are not on the request", func() {
@@ -1634,7 +1634,7 @@ var _ = Describe("ProxyRoundTripper", func() {
 
 								new_endpoint := route.NewEndpoint(&route.EndpointOpts{PrivateInstanceId: "id-5"})
 								added := routePool.Put(new_endpoint)
-								Expect(added).To(Equal(route.ADDED))
+								Expect(added).To(Equal(route.EndpointAdded))
 							})
 
 							Context("when route service headers are not on the request", func() {

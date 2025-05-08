@@ -35,12 +35,12 @@ var _ = Describe("Metrics", func() {
 
 		It("sends number of nats messages received from each component", func() {
 			endpoint.Tags = map[string]string{}
-			m.CaptureRegistryMessage(endpoint, route.UPDATED.String())
-			expected := fmt.Sprintf("registry_message{action=\"%s\",component=\"\"} 1", route.UPDATED.String())
+			m.CaptureRegistryMessage(endpoint, route.EndpointUpdated.String())
+			expected := fmt.Sprintf("registry_message{action=\"%s\",component=\"\"} 1", route.EndpointUpdated.String())
 			Expect(getMetrics(r.Port())).To(ContainSubstring(expected))
 
-			m.CaptureRegistryMessage(endpoint, route.UPDATED.String())
-			expected = fmt.Sprintf("registry_message{action=\"%s\",component=\"\"} 2", route.UPDATED.String())
+			m.CaptureRegistryMessage(endpoint, route.EndpointUpdated.String())
+			expected = fmt.Sprintf("registry_message{action=\"%s\",component=\"\"} 2", route.EndpointUpdated.String())
 			Expect(getMetrics(r.Port())).To(ContainSubstring(expected))
 		})
 

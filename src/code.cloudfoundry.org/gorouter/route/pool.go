@@ -25,13 +25,13 @@ type PoolPutResult int
 
 func (p PoolPutResult) String() string {
 	switch p {
-	case UNMODIFIED:
+	case EndpointUnmodified:
 		return "unmodified"
-	case UPDATED:
+	case EndpointUpdated:
 		return "updated"
-	case ADDED:
+	case EndpointAdded:
 		return "added"
-	case REFRESHED:
+	case EndpointRefreshed:
 		return "refreshed"
 	default:
 		panic("invalid PoolPutResult")
@@ -39,10 +39,10 @@ func (p PoolPutResult) String() string {
 }
 
 const (
-	UNMODIFIED = PoolPutResult(iota)
-	UPDATED
-	ADDED
-	REFRESHED
+	EndpointUnmodified = PoolPutResult(iota)
+	EndpointUpdated
+	EndpointAdded
+	EndpointRefreshed
 )
 
 func NewCounter(initial int64) *Counter {
@@ -294,12 +294,12 @@ func (p *EndpointPool) Put(endpoint *Endpoint) PoolPutResult {
 		e.updated = time.Now()
 		p.Update()
 
-		return REFRESHED
+		return EndpointRefreshed
 
 	case found && !e.endpoint.ModificationTag.SucceededBy(&endpoint.ModificationTag):
 		// This exists to protect against flapping when a route receives a change (e.g. a new
 		// route-service URL) and messages for the old and new config are still floating around.
-		return UNMODIFIED
+		return EndpointUnmodified
 
 	case found && !equal:
 		// The same endpoint was announced with different data, replace the old endpoint with the
@@ -324,7 +324,7 @@ func (p *EndpointPool) Put(endpoint *Endpoint) PoolPutResult {
 		e.updated = time.Now()
 		p.Update()
 
-		return UPDATED
+		return EndpointUpdated
 
 	case !found:
 		// New endpoint.
@@ -344,7 +344,7 @@ func (p *EndpointPool) Put(endpoint *Endpoint) PoolPutResult {
 		p.setPoolLoadBalancingAlgorithm(e.endpoint)
 		p.Update()
 
-		return ADDED
+		return EndpointAdded
 
 	default:
 		panic("quantum state discovered")
