@@ -88,12 +88,18 @@ func (r *RouteRegistry) Register(uri route.Uri, endpoint *route.Endpoint) {
 		return
 	}
 
-	poolPutResult := r.register(uri, endpoint)
+	poolPutResult, routeAdded := r.register(uri, endpoint)
 
 	r.reporter.CaptureRegistryMessage(endpoint, poolPutResult.String())
 
 	if poolPutResult == route.EndpointAdded && !endpoint.UpdatedAt.IsZero() {
 		r.reporter.CaptureRouteRegistrationLatency(time.Since(endpoint.UpdatedAt))
+	}
+
+	if routeAdded {
+		r.logger.Info("route-registered", slog.Any("uri", uri))
+		// for backward compatibility:
+		r.logger.Debug("uri-added", slog.Any("uri", uri))
 	}
 
 	switch poolPutResult {
@@ -116,7 +122,7 @@ func (r *RouteRegistry) Register(uri route.Uri, endpoint *route.Endpoint) {
 	}
 }
 
-func (r *RouteRegistry) register(uri route.Uri, endpoint *route.Endpoint) route.PoolPutResult {
+func (r *RouteRegistry) register(uri route.Uri, endpoint *route.Endpoint) (putResult route.PoolPutResult, routeAdded bool) {
 	r.RLock()
 	defer r.RUnlock()
 
@@ -127,7 +133,7 @@ func (r *RouteRegistry) register(uri route.Uri, endpoint *route.Endpoint) route.
 	if pool == nil {
 		// release read lock, insertRouteKey() will acquire a write lock.
 		r.RUnlock()
-		pool = r.insertRouteKey(routekey, uri)
+		pool, routeAdded = r.insertRouteKey(routekey, uri)
 		r.RLock()
 	}
 
@@ -135,36 +141,37 @@ func (r *RouteRegistry) register(uri route.Uri, endpoint *route.Endpoint) route.
 		endpoint.StaleThreshold = r.dropletStaleThreshold
 	}
 
-	poolPutResult := pool.Put(endpoint)
+	putResult = pool.Put(endpoint)
 	// Overwrites the load balancing algorithm of a pool by that of a specified endpoint, if that is valid.
 	r.SetTimeOfLastUpdate(t)
 
-	return poolPutResult
+	return putResult, routeAdded
 }
 
-// insertRouteKey acquires a write lock, inserts the route key into the registry and releases the write lock.
-func (r *RouteRegistry) insertRouteKey(routekey route.Uri, uri route.Uri) *route.EndpointPool {
+// insertRouteKey acquires a write lock, inserts the route key into the registry and releases the
+// write lock. If a pool already exists it returns that instead.
+func (r *RouteRegistry) insertRouteKey(routekey route.Uri, uri route.Uri) (pool *route.EndpointPool, poolAdded bool) {
 	r.Lock()
 	defer r.Unlock()
 
 	// double check that the route key is still not found, now with the write lock.
-	pool := r.byURI.Find(routekey)
-	if pool == nil {
-		host, contextPath := splitHostAndContextPath(uri)
-		pool = route.NewPool(&route.PoolOpts{
-			Logger:                 r.logger,
-			RetryAfterFailure:      r.dropletStaleThreshold / 4,
-			Host:                   host,
-			ContextPath:            contextPath,
-			MaxConnsPerBackend:     r.maxConnsPerBackend,
-			LoadBalancingAlgorithm: r.DefaultLoadBalancingAlgorithm,
-		})
-		r.byURI.Insert(routekey, pool)
-		r.logger.Info("route-registered", slog.Any("uri", routekey))
-		// for backward compatibility:
-		r.logger.Debug("uri-added", slog.Any("uri", routekey))
+	pool = r.byURI.Find(routekey)
+	if pool != nil {
+		return pool, false
 	}
-	return pool
+
+	host, contextPath := splitHostAndContextPath(uri)
+	pool = route.NewPool(&route.PoolOpts{
+		Logger:                 r.logger,
+		RetryAfterFailure:      r.dropletStaleThreshold / 4,
+		Host:                   host,
+		ContextPath:            contextPath,
+		MaxConnsPerBackend:     r.maxConnsPerBackend,
+		LoadBalancingAlgorithm: r.DefaultLoadBalancingAlgorithm,
+	})
+	r.byURI.Insert(routekey, pool)
+
+	return pool, true
 }
 
 func (r *RouteRegistry) Unregister(uri route.Uri, endpoint *route.Endpoint) {
