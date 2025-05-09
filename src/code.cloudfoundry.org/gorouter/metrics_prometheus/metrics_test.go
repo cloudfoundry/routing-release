@@ -99,6 +99,15 @@ var _ = Describe("Metrics", func() {
 			Expect(getMetrics(r.Port())).To(ContainSubstring(`routes_pruned 50`))
 		})
 
+		It("increments the routes added metric", func() {
+			m.CaptureRouteAdded()
+			Expect(getMetrics(r.Port())).To(ContainSubstring(`routes_added 1`))
+		})
+		It("increments the routes deleted metric", func() {
+			m.CaptureRouteDeleted()
+			Expect(getMetrics(r.Port())).To(ContainSubstring(`routes_deleted 1`))
+		})
+
 		Describe("captures route registration latency", func() {
 			It("properly splits the latencies apart", func() {
 				m.CaptureRouteRegistrationLatency(1234 * time.Microsecond)

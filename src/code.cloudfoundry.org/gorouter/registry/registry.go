@@ -100,6 +100,7 @@ func (r *RouteRegistry) Register(uri route.Uri, endpoint *route.Endpoint) {
 		r.logger.Info("route-registered", slog.Any("uri", uri))
 		// for backward compatibility:
 		r.logger.Debug("uri-added", slog.Any("uri", uri))
+		r.reporter.CaptureRouteAdded()
 	}
 
 	switch poolPutResult {
@@ -185,6 +186,7 @@ func (r *RouteRegistry) Unregister(uri route.Uri, endpoint *route.Endpoint) {
 
 	if routeRemoved {
 		r.logger.Info("route-unregistered", slog.Any("uri", uri))
+		r.reporter.CaptureRouteDeleted()
 	} else {
 		r.logger.Info("route-not-unregistered", slog.Any("uri", uri))
 	}

@@ -76,6 +76,14 @@ type FakeMetricReporter struct {
 		arg1 metrics.ComponentTagged
 		arg2 string
 	}
+	CaptureRouteAddedStub        func()
+	captureRouteAddedMutex       sync.RWMutex
+	captureRouteAddedArgsForCall []struct {
+	}
+	CaptureRouteDeletedStub        func()
+	captureRouteDeletedMutex       sync.RWMutex
+	captureRouteDeletedArgsForCall []struct {
+	}
 	CaptureRouteRegistrationLatencyStub        func(time.Duration)
 	captureRouteRegistrationLatencyMutex       sync.RWMutex
 	captureRouteRegistrationLatencyArgsForCall []struct {
@@ -530,6 +538,54 @@ func (fake *FakeMetricReporter) CaptureRegistryMessageArgsForCall(i int) (metric
 	return argsForCall.arg1, argsForCall.arg2
 }
 
+func (fake *FakeMetricReporter) CaptureRouteAdded() {
+	fake.captureRouteAddedMutex.Lock()
+	fake.captureRouteAddedArgsForCall = append(fake.captureRouteAddedArgsForCall, struct {
+	}{})
+	stub := fake.CaptureRouteAddedStub
+	fake.recordInvocation("CaptureRouteAdded", []interface{}{})
+	fake.captureRouteAddedMutex.Unlock()
+	if stub != nil {
+		fake.CaptureRouteAddedStub()
+	}
+}
+
+func (fake *FakeMetricReporter) CaptureRouteAddedCallCount() int {
+	fake.captureRouteAddedMutex.RLock()
+	defer fake.captureRouteAddedMutex.RUnlock()
+	return len(fake.captureRouteAddedArgsForCall)
+}
+
+func (fake *FakeMetricReporter) CaptureRouteAddedCalls(stub func()) {
+	fake.captureRouteAddedMutex.Lock()
+	defer fake.captureRouteAddedMutex.Unlock()
+	fake.CaptureRouteAddedStub = stub
+}
+
+func (fake *FakeMetricReporter) CaptureRouteDeleted() {
+	fake.captureRouteDeletedMutex.Lock()
+	fake.captureRouteDeletedArgsForCall = append(fake.captureRouteDeletedArgsForCall, struct {
+	}{})
+	stub := fake.CaptureRouteDeletedStub
+	fake.recordInvocation("CaptureRouteDeleted", []interface{}{})
+	fake.captureRouteDeletedMutex.Unlock()
+	if stub != nil {
+		fake.CaptureRouteDeletedStub()
+	}
+}
+
+func (fake *FakeMetricReporter) CaptureRouteDeletedCallCount() int {
+	fake.captureRouteDeletedMutex.RLock()
+	defer fake.captureRouteDeletedMutex.RUnlock()
+	return len(fake.captureRouteDeletedArgsForCall)
+}
+
+func (fake *FakeMetricReporter) CaptureRouteDeletedCalls(stub func()) {
+	fake.captureRouteDeletedMutex.Lock()
+	defer fake.captureRouteDeletedMutex.Unlock()
+	fake.CaptureRouteDeletedStub = stub
+}
+
 func (fake *FakeMetricReporter) CaptureRouteRegistrationLatency(arg1 time.Duration) {
 	fake.captureRouteRegistrationLatencyMutex.Lock()
 	fake.captureRouteRegistrationLatencyArgsForCall = append(fake.captureRouteRegistrationLatencyArgsForCall, struct {
@@ -893,6 +949,10 @@ func (fake *FakeMetricReporter) Invocations() map[string][][]interface{} {
 	defer fake.captureNATSDroppedMessagesMutex.RUnlock()
 	fake.captureRegistryMessageMutex.RLock()
 	defer fake.captureRegistryMessageMutex.RUnlock()
+	fake.captureRouteAddedMutex.RLock()
+	defer fake.captureRouteAddedMutex.RUnlock()
+	fake.captureRouteDeletedMutex.RLock()
+	defer fake.captureRouteDeletedMutex.RUnlock()
 	fake.captureRouteRegistrationLatencyMutex.RLock()
 	defer fake.captureRouteRegistrationLatencyMutex.RUnlock()
 	fake.captureRouteServiceResponseMutex.RLock()

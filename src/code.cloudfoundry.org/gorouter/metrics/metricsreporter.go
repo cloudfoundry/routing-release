@@ -168,6 +168,14 @@ func (m *Metrics) CaptureUnregistryMessage(msg ComponentTagged) {
 	}
 }
 
+func (m *Metrics) CaptureRouteAdded() {
+	m.Batcher.BatchIncrementCounter("routes_added")
+}
+
+func (m *Metrics) CaptureRouteDeleted() {
+	m.Batcher.BatchIncrementCounter("routes_deleted")
+}
+
 func (m *Metrics) CaptureWebSocketUpdate() {
 	m.Batcher.BatchIncrementCounter("websocket_upgrades")
 }
