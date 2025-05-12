@@ -14,7 +14,7 @@ function test() {
 
   export GOFLAGS="-buildvcs=false"
   export DB="${DB}"
-  /ci/shared/tasks/run-bin-test/task.bash "${sub_package}" --nodes="${SAFE_CPU}"
+  /ci/shared/tasks/run-bin-test/task.bash --nodes="${SAFE_CPU}" "${sub_package}"
 }
 
 pushd /repo > /dev/null
