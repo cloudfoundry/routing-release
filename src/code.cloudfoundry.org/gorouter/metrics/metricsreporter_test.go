@@ -524,16 +524,16 @@ var _ = Describe("MetricsReporter", func() {
 		Expect(count).To(Equal(uint64(5)))
 	})
 
-	It("increments the routes_added metric", func() {
-		metricReporter.CaptureRouteAdded()
+	It("increments the routes_registered metric", func() {
+		metricReporter.CaptureRoutesRegistered()
 		Expect(batcher.BatchIncrementCounterCallCount()).To(Equal(1))
-		Expect(batcher.BatchIncrementCounterArgsForCall(0)).To(Equal("routes_added"))
+		Expect(batcher.BatchIncrementCounterArgsForCall(0)).To(Equal("routes_registered"))
 	})
 
-	It("increments the routes_deleted metric", func() {
-		metricReporter.CaptureRouteDeleted()
+	It("increments the routes_unregistered metric", func() {
+		metricReporter.CaptureRoutesUnregistered()
 		Expect(batcher.BatchIncrementCounterCallCount()).To(Equal(1))
-		Expect(batcher.BatchIncrementCounterArgsForCall(0)).To(Equal("routes_deleted"))
+		Expect(batcher.BatchIncrementCounterArgsForCall(0)).To(Equal("routes_unregistered"))
 	})
 
 	It("increments the backend_tls_handshake_failed metric", func() {

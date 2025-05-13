@@ -88,7 +88,7 @@ func (r *RouteRegistry) Register(uri route.Uri, endpoint *route.Endpoint) {
 		return
 	}
 
-	poolPutResult, routeAdded := r.register(uri, endpoint)
+	poolPutResult, routePoolAdded := r.register(uri, endpoint)
 
 	r.reporter.CaptureRegistryMessage(endpoint, poolPutResult.String())
 
@@ -96,11 +96,11 @@ func (r *RouteRegistry) Register(uri route.Uri, endpoint *route.Endpoint) {
 		r.reporter.CaptureRouteRegistrationLatency(time.Since(endpoint.UpdatedAt))
 	}
 
-	if routeAdded {
+	if routePoolAdded {
 		r.logger.Info("route-registered", slog.Any("uri", uri))
 		// for backward compatibility:
 		r.logger.Debug("uri-added", slog.Any("uri", uri))
-		r.reporter.CaptureRouteAdded()
+		r.reporter.CaptureRoutesRegistered()
 	}
 
 	switch poolPutResult {
@@ -123,7 +123,7 @@ func (r *RouteRegistry) Register(uri route.Uri, endpoint *route.Endpoint) {
 	}
 }
 
-func (r *RouteRegistry) register(uri route.Uri, endpoint *route.Endpoint) (putResult route.PoolPutResult, routeAdded bool) {
+func (r *RouteRegistry) register(uri route.Uri, endpoint *route.Endpoint) (putResult route.PoolPutResult, routePoolAdded bool) {
 	r.RLock()
 	defer r.RUnlock()
 
@@ -134,7 +134,7 @@ func (r *RouteRegistry) register(uri route.Uri, endpoint *route.Endpoint) (putRe
 	if pool == nil {
 		// release read lock, insertRouteKey() will acquire a write lock.
 		r.RUnlock()
-		pool, routeAdded = r.insertRouteKey(routekey, uri)
+		pool, routePoolAdded = r.insertRouteKey(routekey, uri)
 		r.RLock()
 	}
 
@@ -146,7 +146,7 @@ func (r *RouteRegistry) register(uri route.Uri, endpoint *route.Endpoint) (putRe
 	// Overwrites the load balancing algorithm of a pool by that of a specified endpoint, if that is valid.
 	r.SetTimeOfLastUpdate(t)
 
-	return putResult, routeAdded
+	return putResult, routePoolAdded
 }
 
 // insertRouteKey acquires a write lock, inserts the route key into the registry and releases the
@@ -186,7 +186,7 @@ func (r *RouteRegistry) Unregister(uri route.Uri, endpoint *route.Endpoint) {
 
 	if routeRemoved {
 		r.logger.Info("route-unregistered", slog.Any("uri", uri))
-		r.reporter.CaptureRouteDeleted()
+		r.reporter.CaptureRoutesUnregistered()
 	} else {
 		r.logger.Info("route-not-unregistered", slog.Any("uri", uri))
 	}

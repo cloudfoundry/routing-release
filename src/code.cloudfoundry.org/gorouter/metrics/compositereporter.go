@@ -39,8 +39,8 @@ type MetricReporter interface {
 	CaptureRoutesPruned(prunedRoutes uint64)
 	CaptureLookupTime(t time.Duration)
 	CaptureRegistryMessage(msg ComponentTagged, action string)
-	CaptureRouteAdded()
-	CaptureRouteDeleted()
+	CaptureRoutesRegistered()
+	CaptureRoutesUnregistered()
 	CaptureRouteRegistrationLatency(t time.Duration)
 	CaptureUnregistryMessage(msg ComponentTagged)
 	CaptureFoundFileDescriptors(files int)
@@ -200,15 +200,15 @@ func (m MultiMetricReporter) CaptureUnregistryMessage(msg ComponentTagged) {
 	}
 }
 
-func (m MultiMetricReporter) CaptureRouteAdded() {
+func (m MultiMetricReporter) CaptureRoutesRegistered() {
 	for _, r := range m {
-		r.CaptureRouteAdded()
+		r.CaptureRoutesRegistered()
 	}
 }
 
-func (m MultiMetricReporter) CaptureRouteDeleted() {
+func (m MultiMetricReporter) CaptureRoutesUnregistered() {
 	for _, r := range m {
-		r.CaptureRouteAdded()
+		r.CaptureRoutesUnregistered()
 	}
 }
 

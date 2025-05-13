@@ -18,8 +18,8 @@ type Metrics struct {
 	RouteRegistration           mr.CounterVec
 	RouteUnregistration         mr.CounterVec
 	RoutesPruned                mr.Counter
-	RoutesAdded                 mr.Counter
-	RoutesDeleted               mr.Counter
+	RoutesRegistered            mr.Counter
+	RoutesUnregistered          mr.Counter
 	TotalRoutes                 mr.Gauge
 	TimeSinceLastRegistryUpdate mr.Gauge
 	RouteLookupTime             mr.Histogram
@@ -66,8 +66,8 @@ func NewMetrics(registry *mr.Registry, perRequestMetricsReporting bool, meterCon
 		RouteRegistration:           registry.NewCounterVec("registry_message", "number of route registration messages", []string{"component", "action"}),
 		RouteUnregistration:         registry.NewCounterVec("unregistry_message", "number of unregister messages", []string{"component"}),
 		RoutesPruned:                registry.NewCounter("routes_pruned", "number of pruned routes"),
-		RoutesAdded:                 registry.NewCounter("routes_added", "number of added routes"),
-		RoutesDeleted:               registry.NewCounter("routes_deleted", "number of deleted routes"),
+		RoutesRegistered:            registry.NewCounter("routes_registered", "number of registered routes"),
+		RoutesUnregistered:          registry.NewCounter("routes_unregistered", "number of unregistered routes"),
 		TotalRoutes:                 registry.NewGauge("total_routes", "number of total routes"),
 		TimeSinceLastRegistryUpdate: registry.NewGauge("ms_since_last_registry_update", "time since last registry update in ms"),
 		RouteLookupTime:             registry.NewHistogram("route_lookup_time", "route lookup time per request in ns", meterConfig.RouteLookupTimeHistogramBuckets),
@@ -111,12 +111,12 @@ func (metrics *Metrics) CaptureRoutesPruned(routesPruned uint64) {
 	metrics.RoutesPruned.Add(float64(routesPruned))
 }
 
-func (metrics *Metrics) CaptureRouteAdded() {
-	metrics.RoutesAdded.Add(1)
+func (metrics *Metrics) CaptureRoutesRegistered() {
+	metrics.RoutesRegistered.Add(1)
 }
 
-func (metrics *Metrics) CaptureRouteDeleted() {
-	metrics.RoutesDeleted.Add(1)
+func (metrics *Metrics) CaptureRoutesUnregistered() {
+	metrics.RoutesUnregistered.Add(1)
 }
 func (metrics *Metrics) CaptureTotalRoutes(totalRoutes int) {
 	metrics.TotalRoutes.Set(float64(totalRoutes))
