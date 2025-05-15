@@ -49,7 +49,7 @@ func configDrainSetup(cfg *config.Config, pruneInterval, pruneThreshold time.Dur
 	cfg.DropletStaleThreshold = pruneThreshold
 	cfg.StartResponseDelayInterval = 1 * time.Second
 	cfg.EndpointTimeout = 5 * time.Second
-	cfg.EndpointDialTimeout = 10 * time.Millisecond
+	cfg.EndpointDialTimeout = 500 * time.Millisecond
 	cfg.DrainTimeout = 200 * time.Millisecond
 	cfg.DrainWait = time.Duration(drainWait) * time.Second
 }

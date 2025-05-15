@@ -858,22 +858,24 @@ var _ = Describe("Router Integration", func() {
 
 		Context("when the route service is not hosted on the platform (external)", func() {
 			BeforeEach(func() {
+				routeServiceHost := fmt.Sprintf("external-route-service.%s", test_util.LocalhostDNS)
 				routeServiceSrv = httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					w.WriteHeader(http.StatusTeapot)
 				}))
 
-				rsKey, rsCert := test_util.CreateKeyPair("test.routeservice.com")
+				rsKey, rsCert := test_util.CreateKeyPair(routeServiceHost)
 				cfg.CACerts = []string{string(rsCert)}
 				rsTLSCert, err := tls.X509KeyPair(rsCert, rsKey)
 				Expect(err).ToNot(HaveOccurred())
 
 				routeServiceSrv.TLS = &tls.Config{
 					Certificates: []tls.Certificate{rsTLSCert},
-					ServerName:   "test.routeservice.com",
+					ServerName:   routeServiceHost,
 				}
 				routeServiceSrv.StartTLS()
 
-				routeServiceURL = routeServiceSrv.URL
+				port := strings.Split(routeServiceSrv.Listener.Addr().String(), ":")[1]
+				routeServiceURL = fmt.Sprintf("https://%s:%s/", routeServiceHost, port)
 			})
 
 			AfterEach(func() {
