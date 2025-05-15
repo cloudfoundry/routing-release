@@ -1193,20 +1193,23 @@ var _ = Describe("Router Integration", func() {
 			runningApp.Stop()
 		})
 
-		var testRequest = func(body string) int {
+		var testRequest = func(header, body string) net.Conn {
 			conn, err := net.Dial("tcp", fmt.Sprintf("localhost:%d", proxyPort))
 			Expect(err).ToNot(HaveOccurred())
 			conn.SetReadDeadline(time.Now().Add(20 * time.Second))
 
 			connWriter := bufio.NewWriter(conn)
 
-			connWriter.Write([]byte(body))
+			connWriter.Write([]byte(header))
 			connWriter.Flush()
 
-			connReader := bufio.NewReader(conn)
-			resp, err := http.ReadResponse(connReader, &http.Request{})
-			Expect(err).NotTo(HaveOccurred())
-			return resp.StatusCode
+			if body != "" {
+				time.Sleep(100 * time.Millisecond)
+				connWriter.Write([]byte(body))
+				connWriter.Flush()
+
+			}
+			return conn
 		}
 
 		It("resets response for new request", func() {
@@ -1219,18 +1222,32 @@ var _ = Describe("Router Integration", func() {
 			go func() {
 				defer close(badRequestsDone)
 				defer GinkgoRecover()
-				for i := 0; i < 100; i++ {
-					statusCode := testRequest(
-						"OPTIONS / HTTP/1.1\r\n" +
-							fmt.Sprintf("Host: %s\r\n", appRoute) +
-							"Expect: 100-Continue\r\n" +
-							"Content-Type: text/plain\r\n" +
-							fmt.Sprintf("Content-Length: %d\r\n", 5) +
-							"\r\n" +
-							"hello",
+				for i := range 100 {
+					conn := testRequest(
+						"OPTIONS / HTTP/1.1\r\n"+
+							fmt.Sprintf("Host: %s\r\n", appRoute)+
+							"Expect: 100-Continue\r\n"+
+							"Content-Type: text/plain\r\n"+
+							fmt.Sprintf("Content-Length: %d\r\n", 5)+
+							"\r\n",
+						"hello",
 					)
-					Expect(statusCode).To(Equal(http.StatusMethodNotAllowed))
-					time.Sleep(50 * time.Millisecond)
+					responseReader := bufio.NewReader(conn)
+
+					var lines []string
+					for range 3 {
+						line, err := responseReader.ReadString('\n')
+						Expect(err).ToNot(HaveOccurred())
+						lines = append(lines, line)
+					}
+					conn.Close()
+					if lines[0] == "HTTP/1.1 100 Continue\r\n" {
+						Expect(lines[2]).To(Equal("HTTP/1.1 405 Method Not Allowed\r\n"))
+					} else {
+						Expect(lines[0]).To(Equal("HTTP/1.1 405 Method Not Allowed\r\n"))
+					}
+
+					time.Sleep(25 * time.Millisecond)
 					if i == 0 {
 						close(badRequestsStarted)
 					}
@@ -1244,15 +1261,21 @@ var _ = Describe("Router Integration", func() {
 			go func() {
 				defer close(goodRequestsDone)
 				defer GinkgoRecover()
-				for i := 0; i < 10; i++ {
-					statusCode := testRequest(
-						"GET / HTTP/1.1\r\n" +
-							fmt.Sprintf("Host: %s\r\n", appRoute) +
+				for range 50 {
+					conn := testRequest(
+						"GET / HTTP/1.1\r\n"+
+							fmt.Sprintf("Host: %s\r\n", appRoute)+
 							"\r\n",
+						"",
 					)
-					Expect(statusCode).To(Equal(http.StatusOK))
+					responseReader := bufio.NewReader(conn)
+					line, err := responseReader.ReadString('\n')
+					Expect(err).ToNot(HaveOccurred())
+					conn.Close()
+					Expect(line).To(Equal("HTTP/1.1 200 OK\r\n"))
 					time.Sleep(100 * time.Millisecond)
 				}
+
 			}()
 
 			Eventually(goodRequestsDone, "10s", "1s").Should(BeClosed())
