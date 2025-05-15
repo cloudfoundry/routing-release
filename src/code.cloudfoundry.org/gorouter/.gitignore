@@ -11,5 +11,4 @@ bin/*.sh
 tags
 .DS_Store
 *.coverprofile
-gorouter
 test_util/rss/rss
