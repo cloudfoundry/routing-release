@@ -180,7 +180,7 @@ func (r *RouteRegistry) Unregister(uri route.Uri, endpoint *route.Endpoint) {
 		return
 	}
 
-	endpointRemoved, routeRemoved := r.unregister(uri, endpoint)
+	endpointRemoved, routePoolRemoved := r.unregister(uri, endpoint)
 
 	r.reporter.CaptureUnregistryMessage(endpoint)
 
@@ -195,7 +195,7 @@ func (r *RouteRegistry) Unregister(uri route.Uri, endpoint *route.Endpoint) {
 		r.logger.Info(logMsg, buildSlogAttrs(uri, endpoint)...)
 	}
 
-	if routeRemoved {
+	if routePoolRemoved {
 		r.logger.Info("route-unregistered", slog.Any("uri", uri))
 		r.reporter.CaptureRoutesUnregistered()
 	} else {
@@ -203,7 +203,7 @@ func (r *RouteRegistry) Unregister(uri route.Uri, endpoint *route.Endpoint) {
 	}
 }
 
-func (r *RouteRegistry) unregister(uri route.Uri, endpoint *route.Endpoint) (endpointRemoved, routeRemoved bool) {
+func (r *RouteRegistry) unregister(uri route.Uri, endpoint *route.Endpoint) (endpointRemoved, routePoolRemoved bool) {
 	r.Lock()
 	defer r.Unlock()
 
