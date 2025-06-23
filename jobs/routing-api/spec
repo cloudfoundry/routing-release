@@ -232,6 +232,13 @@ properties:
     description: "Local port to listen on with admin endpoint (used for backup/restore locking)"
     default: 15897
 
+  routing_api.bbr.metadata:
+    description: "BBR Metadata"
+    default: |
+      ---
+      restore_should_be_locked_before:
+      - job_name: uaa
+        release: uaa
 
   release_level_backup:
     default: false

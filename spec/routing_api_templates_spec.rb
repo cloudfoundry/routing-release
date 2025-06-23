@@ -384,4 +384,41 @@ describe 'routing_api' do
       end
     end
   end
+
+  describe 'bbr metadata' do
+    let(:template) { job.template('bin/bbr/metadata') }
+    let(:links) { [] }
+
+    subject(:script_output) do
+      `#{template.render(merged_manifest_properties, consumes: links)}`
+    end
+
+    describe 'when the property is not defined' do
+      it 'has a sane default' do
+        expect(script_output).to eq('---
+restore_should_be_locked_before:
+- job_name: uaa
+  release: uaa
+
+')
+      end
+    end
+    describe 'when the property is provided' do
+      before do
+        merged_manifest_properties['routing_api']['bbr'] = {
+          'metadata'=> '---
+  test: yaml
+  corn: banana
+'
+        }
+      end
+      it 'overrides the output' do
+        expect(script_output).to eq('---
+  test: yaml
+  corn: banana
+
+')
+      end
+    end
+  end
 end
