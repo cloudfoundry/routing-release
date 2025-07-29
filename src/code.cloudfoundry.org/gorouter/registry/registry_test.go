@@ -845,6 +845,14 @@ var _ = Describe("RouteRegistry", func() {
 				Eventually(logger).Should(gbytes.Say(`"log_level":1.*route-unregistered.*a\.route`))
 			})
 
+			It("logs the redundant route and endpoint unregistration at debug level", func() {
+				r.Unregister("a.route", fooEndpoint)
+				Eventually(logger).Should(gbytes.Say(`"log_level":1.*endpoint-unregistered.*a\.route.*192\.168\.1\.1`))
+				Eventually(logger).Should(gbytes.Say(`"log_level":1.*route-unregistered.*a\.route`))
+				Eventually(logger).Should(gbytes.Say(`"log_level":0.*endpoint-not-unregistered.*a\.route.*192\.168\.1\.1`))
+				Eventually(logger).Should(gbytes.Say(`"log_level":0.*route-not-unregistered.*a\.route`))
+			})
+
 			It("only logs unregistration for existing routes", func() {
 				r.Unregister("non-existent-route", fooEndpoint)
 				Expect(logger).NotTo(gbytes.Say(`unregister.*.*a\.non-existent-route`))

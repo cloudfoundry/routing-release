@@ -184,22 +184,21 @@ func (r *RouteRegistry) Unregister(uri route.Uri, endpoint *route.Endpoint) {
 
 	r.reporter.CaptureUnregistryMessage(endpoint)
 
-	var logMsg string
 	if endpointRemoved {
-		logMsg = "endpoint-unregistered"
+		r.logger.Info("endpoint-unregistered", buildSlogAttrs(uri, endpoint)...)
 	} else {
-		logMsg = "endpoint-not-unregistered"
-	}
-
-	if r.logger.Enabled(context.Background(), slog.LevelInfo) {
-		r.logger.Info(logMsg, buildSlogAttrs(uri, endpoint)...)
+		if r.logger.Enabled(context.Background(), slog.LevelDebug) {
+			r.logger.Debug("endpoint-not-unregistered", buildSlogAttrs(uri, endpoint)...)
+		}
 	}
 
 	if routePoolRemoved {
 		r.logger.Info("route-unregistered", slog.Any("uri", uri))
 		r.reporter.CaptureRoutesUnregistered()
 	} else {
-		r.logger.Info("route-not-unregistered", slog.Any("uri", uri))
+		if r.logger.Enabled(context.Background(), slog.LevelDebug) {
+			r.logger.Debug("route-not-unregistered", slog.Any("uri", uri))
+		}
 	}
 }
 
