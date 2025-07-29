@@ -3,6 +3,7 @@ package config_test
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"time"
 
 	tlshelpers "code.cloudfoundry.org/cf-routing-test-helpers/tls"
@@ -208,4 +209,74 @@ var _ = Describe("Config", Serial, func() {
 
 		})
 	})
+
+	Context("When frontend_tls is enabled", func() {
+		var (
+			tmpDir string
+			cfg    *config.Config
+			err    error
+		)
+
+		BeforeEach(func() {
+			tmpDir = GinkgoT().TempDir()
+			os.Setenv("FRONTEND_TLS_BASE_PATH", tmpDir)
+		})
+
+		AfterEach(func() {
+			os.Unsetenv("FRONTEND_TLS_BASE_PATH")
+		})
+
+		Context("with valid cert and key", func() {
+			BeforeEach(func() {
+				cfg, err = config.New("fixtures/valid_frontend_cert.yml")
+			})
+
+			It("loads config without error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("adds the certs and keys to the expected directories", func() {
+				Expect(err).NotTo(HaveOccurred())
+				Expect(cfg.FrontendTLS).To(HaveLen(2))
+
+				Expect(cfg.FrontendTLS[0]).To(Equal(config.FrontendTLSConfig{
+					Enabled:  true,
+					CertPath: filepath.Join(tmpDir, "prod"),
+				}))
+
+				Expect(cfg.FrontendTLS[1]).To(Equal(config.FrontendTLSConfig{
+					Enabled:  true,
+					CertPath: filepath.Join(tmpDir, "dev"),
+				}))
+			})
+
+			It("writes the correct cert and key files", func() {
+				for i, name := range []string{"prod", "dev"} {
+					certPath := filepath.Join(tmpDir, name, name+".cert.pem")
+					keyPath := filepath.Join(tmpDir, name, name+".key.pem")
+
+					Expect(certPath).To(BeAnExistingFile())
+					Expect(keyPath).To(BeAnExistingFile())
+
+					certData, certErr := os.ReadFile(certPath)
+					Expect(certErr).NotTo(HaveOccurred())
+					Expect(string(certData)).To(Equal(cfg.FrontendTLSJob[i].CertChain))
+
+					keyData, keyErr := os.ReadFile(keyPath)
+					Expect(keyErr).NotTo(HaveOccurred())
+					Expect(string(keyData)).To(Equal(cfg.FrontendTLSJob[i].PrivateKey))
+				}
+			})
+		})
+
+		Context("with invalid frontend_tls config", func() {
+			It("should fail if cert_chain is missing SAN information", func() {
+				_, err := config.New("fixtures/invalid_frontend_cert.yml")
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(Equal("frontend_tls[0].cert_chain must include a subjectAltName extension"))
+			})
+
+		})
+	})
+
 })

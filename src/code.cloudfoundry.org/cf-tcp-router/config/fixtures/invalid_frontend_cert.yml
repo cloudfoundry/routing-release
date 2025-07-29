@@ -1,0 +1,48 @@
+oauth:
+  token_endpoint: "uaa.service.cf.internal"
+  client_name: "someclient"
+  client_secret: "somesecret"
+  port: 8443
+  skip_ssl_validation: true
+  ca_certs: "some-ca-cert"
+
+routing_api:
+  uri: http://routing-api.service.cf.internal
+  port: 3000
+  auth_disabled: false
+  client_cert_path: /a/client_cert
+  client_private_key_path: /b/private_key
+  ca_cert_path: /c/ca_cert
+
+haproxy_pid_file: /path/to/pid/file
+isolation_segments: ["foo-iso-seg"]
+reserved_system_component_ports: [8080, 8081]
+frontend_tls:
+  - name: "prod"
+    cert_chain: |-
+      -----BEGIN CERTIFICATE-----
+      MIIEITCCAgmgAwIBAgIRAMGCNmHhXZnK1fSdCinKK9owDQYJKoZIhvcNAQELBQAw
+      EjEQMA4GA1UEAxMHdGVzdC1jYTAeFw0yMTEwMjExNjU2NTJaFw0yMzA0MjExNjI5
+      MDVaMBMxETAPBgNVBAMTCHRlc3QuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8A
+      MIIBCgKCAQEAwY9FO90qNGnztTlPSUODTLvdKex08dA+/hQ2URMBStqI5g6dJZP9
+      RcLVyRpp9719KKs2PL2ol/QEfUMXKSB1pld6kRGFEXbPkz8rxLhYt79UzjAC8lWj
+      z/NbyIvNVzqgYlB7Tk+sgIBF3LSV3Zh4ZsrNoXMu/VDG+ODm/1dcLZJE3QXaMM6Z
+      nbvdy/eUOhJ12BzgM+1PKjNi93azOB6uBiXZ1QgzWbmWJHnGmvX/HUdT8s4e1snt
+      5mAsS7hmsrxpu2QD9b3gGUIgy6z6ZuFp1kq0S5HxoFDNjvi88p2E4Jk+unfFMaO9
+      4+OyOZWW5TqyyhTYCrhBEcZ4m5hm82v76wIDAQABo3EwbzAOBgNVHQ8BAf8EBAMC
+      A7gwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMB0GA1UdDgQWBBRZ7D+U
+      LkHi0vbszx8bMG2LZSqUejAfBgNVHSMEGDAWgBQSH/Cc1RDZyRh9u9sfHeS3eWYz
+      TDANBgkqhkiG9w0BAQsFAAOCAgEA1YluE0iSE4HEc2N2fdYhmwF2LP3pjUfmzF/g
+      NcxjhydQUoxyOxf6+1RsNe7taXQRLhmpN2JaiE8yCf+wDciIhRWnqyHgJEKoJgK6
+      4liu7JUpOFgAloe8koKhWxEerkU4VcPy8kN5gZ8I6b8Mso4hTq2O5NhntqKDFRS0
+      v0ZpMkz1PhWwI79No8WXU0tUwx5pT3mcwjCr57mnyYWmeHqAXgnUI4U0QnSyr3sa
+      jmjpLk2TncpC3CSTr1AbOhm/yglsrbLllvufHUbYv5QNlzkOauvgCzvXQ4ScFttn
+      epDzPE8PrsY8N/26BwOCc6ftQqabhpIKzT6w6DN5xYRZi5fyzRNho5+5RuBDRKmL
+      AGfrpiixm4zzgUL7jVlOVlZXQ/vkQ+h4+aqS2ssRwPoqGxilFxfUMgO+hr3jZkxz
+      o9Z7Yeljt7rzeYESEDtkwou+75LHzfKduVT8Kxwn8LwiB0trgbcx3qj2ab8fucM4
+      UUXAXr6ve5DcdkKevLoNypq2kCh7hySjrjDp/gnCMhuc0ch8oV2RV2ZlA+QOD+J4
+      VAgYLhy03ZZaUFvmGhCx+FEkkzq/d2GGWuNd1T2MMkTBplf+pK+3l+jHxYuSc8DR
+      gPYhs8i50bWlTVu/yJgJGBzAmWcybfi7NmUkQyYHmpLP3GRbtdI+eESF9vAJpKSs
+      ONppgXo=
+      -----END CERTIFICATE----- 
+    private_key: "some key"

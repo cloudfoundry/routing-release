@@ -91,3 +91,16 @@ backend_tls:
   client_cert_and_key_path: "/var/vcap/jobs/tcp_router/config/keys/tcp-router/backend/client_cert_and_key.pem"
 <% end %>
 <% end -%>
+
+<%
+frontend_tls = p('tcp_router.frontend_tls', [])
+%>
+
+frontend_tls:
+<% frontend_tls.each do |cert_pair| -%>
+  - name: <%= cert_pair['name'].inspect %>
+    cert_chain: |
+<%= cert_pair['cert_chain'].to_s.lines.map { |line| "      #{line.rstrip}" }.join("\n") %>
+    private_key: |
+<%= cert_pair['private_key'].to_s.lines.map { |line| "      #{line.rstrip}" }.join("\n") %>
+<% end -%>

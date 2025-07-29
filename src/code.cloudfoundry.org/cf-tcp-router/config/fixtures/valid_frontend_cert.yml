@@ -1,0 +1,76 @@
+oauth:
+  token_endpoint: "uaa.service.cf.internal"
+  client_name: "someclient"
+  client_secret: "somesecret"
+  port: 8443
+  skip_ssl_validation: true
+  ca_certs: "some-ca-cert"
+
+routing_api:
+  uri: http://routing-api.service.cf.internal
+  port: 3000
+  auth_disabled: false
+  client_cert_path: /a/client_cert
+  client_private_key_path: /b/private_key
+  ca_cert_path: /c/ca_cert
+
+haproxy_pid_file: /path/to/pid/file
+isolation_segments: ["foo-iso-seg"]
+reserved_system_component_ports: [8080, 8081]
+frontend_tls:
+  - name: "prod"
+    cert_chain: |-
+      -----BEGIN CERTIFICATE-----
+      MIIESzCCAjOgAwIBAgIQDnaPUSkJl2T+TaMLHUlWqzANBgkqhkiG9w0BAQsFADAS
+      MRAwDgYDVQQDEwd0ZXN0LWNhMB4XDTIxMTAyMTIwMDIzMloXDTIzMDQyMTE2Mjkw
+      NVowHTEbMBkGA1UEAxMSdGVzdDItd2l0aC1zYW4uY29tMIIBIjANBgkqhkiG9w0B
+      AQEFAAOCAQ8AMIIBCgKCAQEAwc8fvFNfGF1SqVs7UOTwYbQCv18wF+EfJYT4tq3P
+      1MLBuW7eURKnJ4ZAslsogX4WXmksYHnjRbIsQw6mtgAkMtkC+C5tuRO5uaEBSFxP
+      vA9z7b9uM9MGA2YSJVP1+U00y/HCrwI5LEc/SGij3bvKOcs+CUAEmHhr3sG95BTF
+      atVE5vbG+XHLw2DwaWzDFrtPG3o9zBtDb7/yqTNJCb+i7iyp9Yh0N2ZHgKjNI8Ru
+      6rEkQz8nYk44NjCwV5l0fKV3eKLXTRyfEb+Gr1RHfTtG7wRvfDcDanS5XTZQWAAr
+      a61V38xfR+bYniYsSLmH/VZ1CAhqY8t45N9Sc47cH6gOHQIDAQABo4GRMIGOMA4G
+      A1UdDwEB/wQEAwIDuDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwHQYD
+      VR0OBBYEFMl9dHRf9wJoWyuWNg93QldFc5IKMB8GA1UdIwQYMBaAFBIf8JzVENnJ
+      GH272x8d5Ld5ZjNMMB0GA1UdEQQWMBSCEnRlc3QyLXdpdGgtc2FuLmNvbTANBgkq
+      hkiG9w0BAQsFAAOCAgEADQFp7nPDLMRPbwWo1fRj7jF6XC85qJF5F9hMRyuioxu9
+      ZHnlejEpi8o41/NRCV0lPLIAXe9/0owppZF3WhqF7eYUFa1YxFr+BkQg3r4nAq9g
+      UKkT2qB/AmJA72HYGGYbb1OdxccRxbgh1+nWzEkxFzB7HbiIrY7OqmDFLr7JRAeF
+      kaH27wLnZ2TJ2MCDQZNM8n12+3szwytZDl8uz6Dl5W7L4HcK6KIROhvjA6s3lAvA
+      3E2VJ07bkAvMcXGX0jobcTVDB/+WVvVoZym0TfmMUVQ0JD6vFe8sNdsJysWCsUe9
+      DbE9ZRA+3GaURVlpZ89n4sURVIopP+N51Vs6aZAIZdOuOvFwu+7N82LjI4i8800c
+      P90vC+M77jSGmu7Cuehu62Q0aUIx+X98TXQXpb4KLQ5Ot5RIPV0E3ksmKuqIrwuO
+      m5tSO2hX/BIkj160bikWbi3oqU8+91+jeW9fQnRLApkPwLWXSViF1Q7K8c6+/H/p
+      oyX7VxkqnU43+nzL+Egc9ibYRF22XMkCBICZFrPu3rZbz8zHTw43ldqHezvx+O/J
+      R5DG1U9dcbt9urELWUBEWlrDudlyC1p6ZvMYQIHP2e27pUaU6wFy7xnIrTxYbDM6
+      HTngE/Gz+qIUe7OkPXPPkFeoSfR1poQ3yNz4bim9Vx+w50l6m+h6SZOYJTxEUds=
+      -----END CERTIFICATE-----
+    private_key: "some key"
+  - name: "dev"
+    cert_chain: |-
+      -----BEGIN CERTIFICATE-----
+      MIIESzCCAjOgAwIBAgIQDnaPUSkJl2T+TaMLHUlWqzANBgkqhkiG9w0BAQsFADAS
+      MRAwDgYDVQQDEwd0ZXN0LWNhMB4XDTIxMTAyMTIwMDIzMloXDTIzMDQyMTE2Mjkw
+      NVowHTEbMBkGA1UEAxMSdGVzdDItd2l0aC1zYW4uY29tMIIBIjANBgkqhkiG9w0B
+      AQEFAAOCAQ8AMIIBCgKCAQEAwc8fvFNfGF1SqVs7UOTwYbQCv18wF+EfJYT4tq3P
+      1MLBuW7eURKnJ4ZAslsogX4WXmksYHnjRbIsQw6mtgAkMtkC+C5tuRO5uaEBSFxP
+      vA9z7b9uM9MGA2YSJVP1+U00y/HCrwI5LEc/SGij3bvKOcs+CUAEmHhr3sG95BTF
+      atVE5vbG+XHLw2DwaWzDFrtPG3o9zBtDb7/yqTNJCb+i7iyp9Yh0N2ZHgKjNI8Ru
+      6rEkQz8nYk44NjCwV5l0fKV3eKLXTRyfEb+Gr1RHfTtG7wRvfDcDanS5XTZQWAAr
+      a61V38xfR+bYniYsSLmH/VZ1CAhqY8t45N9Sc47cH6gOHQIDAQABo4GRMIGOMA4G
+      A1UdDwEB/wQEAwIDuDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwHQYD
+      VR0OBBYEFMl9dHRf9wJoWyuWNg93QldFc5IKMB8GA1UdIwQYMBaAFBIf8JzVENnJ
+      GH272x8d5Ld5ZjNMMB0GA1UdEQQWMBSCEnRlc3QyLXdpdGgtc2FuLmNvbTANBgkq
+      hkiG9w0BAQsFAAOCAgEADQFp7nPDLMRPbwWo1fRj7jF6XC85qJF5F9hMRyuioxu9
+      ZHnlejEpi8o41/NRCV0lPLIAXe9/0owppZF3WhqF7eYUFa1YxFr+BkQg3r4nAq9g
+      UKkT2qB/AmJA72HYGGYbb1OdxccRxbgh1+nWzEkxFzB7HbiIrY7OqmDFLr7JRAeF
+      kaH27wLnZ2TJ2MCDQZNM8n12+3szwytZDl8uz6Dl5W7L4HcK6KIROhvjA6s3lAvA
+      3E2VJ07bkAvMcXGX0jobcTVDB/+WVvVoZym0TfmMUVQ0JD6vFe8sNdsJysWCsUe9
+      DbE9ZRA+3GaURVlpZ89n4sURVIopP+N51Vs6aZAIZdOuOvFwu+7N82LjI4i8800c
+      P90vC+M77jSGmu7Cuehu62Q0aUIx+X98TXQXpb4KLQ5Ot5RIPV0E3ksmKuqIrwuO
+      m5tSO2hX/BIkj160bikWbi3oqU8+91+jeW9fQnRLApkPwLWXSViF1Q7K8c6+/H/p
+      oyX7VxkqnU43+nzL+Egc9ibYRF22XMkCBICZFrPu3rZbz8zHTw43ldqHezvx+O/J
+      R5DG1U9dcbt9urELWUBEWlrDudlyC1p6ZvMYQIHP2e27pUaU6wFy7xnIrTxYbDM6
+      HTngE/Gz+qIUe7OkPXPPkFeoSfR1poQ3yNz4bim9Vx+w50l6m+h6SZOYJTxEUds=
+      -----END CERTIFICATE-----
+    private_key: "some other key"

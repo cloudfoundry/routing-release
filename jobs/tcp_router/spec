@@ -59,13 +59,31 @@ properties:
       be set. For mTLS also set tcp_router.backend_tls.client_cert and
       tcp_router.backend_tls.client_key.
     default: false
+  tcp_router.frontend_tls_pem.enabled:
+    description: |
+      This is enabled if certificates and keys are provided for tls traffic to be terminated at tcp router.
+    default: false
+  tcp_router.frontend_tls_pem.certificate_path:
+    description: Path to the certs and key store
+  tcp_router.frontend_tls:
+    description: "Array of private keys, certificates and names for serving TLS requests. Each element in the array is an object containing fields 'private_key' and 'cert_chain', each of which supports a PEM block."
+    example: |
+      - cert_chain: |
+          -----BEGIN CERTIFICATE-----
+          -----END CERTIFICATE-----
+          -----BEGIN CERTIFICATE-----
+          -----END CERTIFICATE-----
+        private_key: |
+          -----BEGIN RSA PRIVATE KEY-----
+          -----END RSA PRIVATE KEY-----
+        name: |
+          name of the cert
   tcp_router.backend_tls.client_cert:
     description: "TCP Router's TLS client cert used for mTLS with route backends"
   tcp_router.backend_tls.client_key:
     description: "TCP Router's TLS client private key used for mTLS with route backends"
   tcp_router.backend_tls.ca_cert:
     description: "TCP Router's TLS CA used with route backends"
-
   routing_api.uri:
     description: "URL where the routing API can be reached internally"
     default: https://routing-api.service.cf.internal

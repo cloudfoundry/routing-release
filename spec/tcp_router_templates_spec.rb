@@ -10,12 +10,25 @@ describe 'tcp_router' do
   let(:release) { Bosh::Template::Test::ReleaseDir.new(release_path) }
   let(:job) { release.job('tcp_router') }
   let(:backend_tls) { {} }
+  let(:frontend_tls) { {} }
 
   let(:merged_manifest_properties) do
     {
       'tcp_router' => {
         'oauth_secret' => '',
         'backend_tls' => backend_tls,
+        'frontend_tls' => [
+          {
+            'name' => 'testkey',
+            'cert_chain' => TEST_CERT,
+            'private_key' => TEST_KEY
+          },
+          {
+            'name' => 'testkey2',
+            'cert_chain' => TEST_CERT2,
+            'private_key' => TEST_KEY
+          }
+        ],
       },
       'uaa' => {
         'tls_port' => 1000
@@ -306,6 +319,18 @@ describe 'tcp_router' do
                                     },
                                     'drain_wait' => '20s',
                                     'backend_tls' => { 'enabled' => false },
+                                    'frontend_tls' => [
+                                      {
+                                        'name' => 'testkey',
+                                        'cert_chain' => TEST_CERT + "\n",
+                                        'private_key' => TEST_KEY+ "\n"
+                                      },
+                                      {
+                                        'name' => 'testkey2',
+                                        'cert_chain' => TEST_CERT2+ "\n",
+                                        'private_key' => TEST_KEY+ "\n"
+                                      }
+                                    ],
                                     'reserved_system_component_ports' => [8080, 8081],
                                     'routing_api' => {
                                       'uri' => 'https://routing-api.service.cf.internal',
