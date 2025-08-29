@@ -428,6 +428,46 @@ var _ = Describe("EndpointPool", func() {
 				Expect(pool.LoadBalancingAlgorithm).To(Equal(config.LOAD_BALANCE_RR))
 			})
 		})
+
+		Context("When switching to hash-based routing", func() {
+			It("will create the maglev table and add the endpoint", func() {
+				pool := route.NewPool(&route.PoolOpts{
+					Logger:                 logger.Logger,
+					LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
+				})
+
+				endpointOpts := route.EndpointOpts{
+					Host:                   "host-1",
+					Port:                   1234,
+					RouteServiceUrl:        "url",
+					LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
+				}
+
+				initalEndpoint := route.NewEndpoint(&endpointOpts)
+
+				pool.Put(initalEndpoint)
+				Expect(pool.LoadBalancingAlgorithm).To(Equal(config.LOAD_BALANCE_RR))
+
+				endpointOptsHash := route.EndpointOpts{
+					Host:                   "host-1",
+					Port:                   1234,
+					RouteServiceUrl:        "url",
+					LoadBalancingAlgorithm: config.LOAD_BALANCE_HB,
+					HashBalanceFactor:      1.25,
+					HashHeaderName:         "X-Tenant",
+				}
+
+				hashEndpoint := route.NewEndpoint(&endpointOptsHash)
+
+				pool.Put(hashEndpoint)
+				Expect(pool.LoadBalancingAlgorithm).To(Equal(config.LOAD_BALANCE_HB))
+				Expect(pool.HashLookupTable).ToNot(BeNil())
+				Expect(pool.HashLookupTable.GetEndpointList()).To(HaveLen(1))
+				Expect(pool.HashLookupTable.GetEndpointList()[0]).To(Equal(hashEndpoint.PrivateInstanceId))
+			})
+
+		})
+
 	})
 
 	Context("RouteServiceUrl", func() {

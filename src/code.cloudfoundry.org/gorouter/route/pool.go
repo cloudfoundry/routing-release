@@ -74,6 +74,21 @@ type ProxyRoundTripper interface {
 	CancelRequest(*http.Request)
 }
 
+type HashRoutingProperties struct {
+	Header        string
+	BalanceFactor float64
+}
+
+func (hrp *HashRoutingProperties) Equal(hrp2 *HashRoutingProperties) bool {
+	if hrp == nil && hrp2 == nil {
+		return true
+	}
+	if hrp == nil || hrp2 == nil {
+		return false
+	}
+	return hrp.Header == hrp2.Header && hrp.BalanceFactor == hrp2.BalanceFactor
+}
+
 type Endpoint struct {
 	ApplicationId          string
 	AvailabilityZone       string
@@ -186,6 +201,8 @@ type EndpointPool struct {
 	logger                 *slog.Logger
 	updatedAt              time.Time
 	LoadBalancingAlgorithm string
+	HashRoutingProperties  *HashRoutingProperties
+	HashLookupTable        *Maglev
 }
 
 type EndpointOpts struct {
@@ -248,10 +265,12 @@ type PoolOpts struct {
 	MaxConnsPerBackend     int64
 	Logger                 *slog.Logger
 	LoadBalancingAlgorithm string
+	HashHeader             string
+	HashBalanceFactor      float64
 }
 
 func NewPool(opts *PoolOpts) *EndpointPool {
-	return &EndpointPool{
+	pool := &EndpointPool{
 		endpoints:              make([]*endpointElem, 0, 1),
 		index:                  make(map[string]*endpointElem),
 		retryAfterFailure:      opts.RetryAfterFailure,
@@ -264,6 +283,14 @@ func NewPool(opts *PoolOpts) *EndpointPool {
 		updatedAt:              time.Now(),
 		LoadBalancingAlgorithm: opts.LoadBalancingAlgorithm,
 	}
+	if pool.LoadBalancingAlgorithm == config.LOAD_BALANCE_HB {
+		pool.HashLookupTable = NewMaglev(opts.Logger)
+		pool.HashRoutingProperties = &HashRoutingProperties{
+			Header:        opts.HashHeader,
+			BalanceFactor: opts.HashBalanceFactor,
+		}
+	}
+	return pool
 }
 
 func PoolsMatch(p1, p2 *EndpointPool) bool {
@@ -320,7 +347,6 @@ func (p *EndpointPool) Put(endpoint *Endpoint) PoolPutResult {
 		// new one.
 		e.Lock()
 		defer e.Unlock()
-
 		oldEndpoint := e.endpoint
 		e.endpoint = endpoint
 
@@ -336,6 +362,9 @@ func (p *EndpointPool) Put(endpoint *Endpoint) PoolPutResult {
 		p.RouteSvcUrl = e.endpoint.RouteServiceUrl
 		p.setPoolLoadBalancingAlgorithm(e.endpoint)
 		e.updated = time.Now()
+		if p.LoadBalancingAlgorithm == config.LOAD_BALANCE_HB {
+			p.HashLookupTable.Add(e.endpoint.PrivateInstanceId)
+		}
 		p.Update()
 
 		return EndpointUpdated
@@ -348,7 +377,6 @@ func (p *EndpointPool) Put(endpoint *Endpoint) PoolPutResult {
 			updated:            time.Now(),
 			maxConnsPerBackend: p.maxConnsPerBackend,
 		}
-
 		p.endpoints = append(p.endpoints, e)
 
 		p.index[endpoint.CanonicalAddr()] = e
@@ -356,6 +384,9 @@ func (p *EndpointPool) Put(endpoint *Endpoint) PoolPutResult {
 
 		p.RouteSvcUrl = e.endpoint.RouteServiceUrl
 		p.setPoolLoadBalancingAlgorithm(e.endpoint)
+		if p.LoadBalancingAlgorithm == config.LOAD_BALANCE_HB {
+			p.HashLookupTable.Add(e.endpoint.PrivateInstanceId)
+		}
 		p.Update()
 
 		return EndpointAdded
@@ -433,6 +464,11 @@ func (p *EndpointPool) removeEndpoint(e *endpointElem) {
 	delete(p.index, e.endpoint.CanonicalAddr())
 	delete(p.index, e.endpoint.PrivateInstanceId)
 	p.Update()
+
+	if p.LoadBalancingAlgorithm == config.LOAD_BALANCE_HB {
+		p.HashLookupTable.Remove(e.endpoint.PrivateInstanceId)
+	}
+
 }
 
 func (p *EndpointPool) Endpoints(logger *slog.Logger, initial string, mustBeSticky bool, azPreference string, az string) EndpointIterator {
@@ -443,6 +479,9 @@ func (p *EndpointPool) Endpoints(logger *slog.Logger, initial string, mustBeStic
 	case config.LOAD_BALANCE_RR:
 		logger.Debug("endpoint-iterator-with-round-robin-lb-algo")
 		return NewRoundRobin(logger, p, initial, mustBeSticky, azPreference == config.AZ_PREF_LOCAL, az)
+	case config.LOAD_BALANCE_HB:
+		logger.Debug("endpoint-iterator-with-hash-based-lb-algo")
+		return NewHashBased(logger, p, initial, mustBeSticky, azPreference == config.AZ_PREF_LOCAL, az)
 	default:
 		logger.Error("invalid-pool-load-balancing-algorithm",
 			slog.String("poolLBAlgorithm", p.LoadBalancingAlgorithm),
@@ -450,6 +489,23 @@ func (p *EndpointPool) Endpoints(logger *slog.Logger, initial string, mustBeStic
 			slog.String("Path", p.contextPath))
 		return NewRoundRobin(logger, p, initial, mustBeSticky, azPreference == config.AZ_PREF_LOCAL, az)
 	}
+}
+
+func (p *EndpointPool) FallBackToDefaultLoadBalancing(defaultLBAlgo string, logger *slog.Logger, initial string, mustBeSticky bool, azPreference string, az string) EndpointIterator {
+	logger.Info("hash-based-routing-header-not-found",
+		slog.String("poolLBAlgorithm", p.LoadBalancingAlgorithm),
+		slog.String("Host", p.host),
+		slog.String("Path", p.contextPath))
+
+	switch defaultLBAlgo {
+	case config.LOAD_BALANCE_LC:
+		logger.Debug("endpoint-iterator-with-least-connection-lb-algo")
+		return NewLeastConnection(logger, p, initial, mustBeSticky, azPreference == config.AZ_PREF_LOCAL, az)
+	case config.LOAD_BALANCE_RR:
+		logger.Debug("endpoint-iterator-with-round-robin-lb-algo")
+		return NewRoundRobin(logger, p, initial, mustBeSticky, azPreference == config.AZ_PREF_LOCAL, az)
+	}
+	return NewRoundRobin(logger, p, initial, mustBeSticky, azPreference == config.AZ_PREF_LOCAL, az)
 }
 
 func (p *EndpointPool) NumEndpoints() int {
@@ -561,18 +617,33 @@ func (p *EndpointPool) MarshalJSON() ([]byte, error) {
 
 // setPoolLoadBalancingAlgorithm overwrites the load balancing algorithm of a pool by that of a specified endpoint, if that is valid.
 func (p *EndpointPool) setPoolLoadBalancingAlgorithm(endpoint *Endpoint) {
-	if len(endpoint.LoadBalancingAlgorithm) > 0 && endpoint.LoadBalancingAlgorithm != p.LoadBalancingAlgorithm {
+	if endpoint.LoadBalancingAlgorithm != "" && endpoint.LoadBalancingAlgorithm != p.LoadBalancingAlgorithm {
 		if config.IsLoadBalancingAlgorithmValid(endpoint.LoadBalancingAlgorithm) {
 			p.LoadBalancingAlgorithm = endpoint.LoadBalancingAlgorithm
 			p.logger.Debug("setting-pool-load-balancing-algorithm-to-that-of-an-endpoint",
 				slog.String("endpointLBAlgorithm", endpoint.LoadBalancingAlgorithm),
 				slog.String("poolLBAlgorithm", p.LoadBalancingAlgorithm))
+			p.prepareHashBasedRouting(endpoint)
 		} else {
 			p.logger.Error("invalid-endpoint-load-balancing-algorithm-provided-keeping-pool-lb-algo",
 				slog.String("endpointLBAlgorithm", endpoint.LoadBalancingAlgorithm),
 				slog.String("poolLBAlgorithm", p.LoadBalancingAlgorithm))
 		}
 	}
+}
+
+func (p *EndpointPool) prepareHashBasedRouting(endpoint *Endpoint) {
+	if p.LoadBalancingAlgorithm != config.LOAD_BALANCE_HB {
+		return
+	}
+	if p.HashLookupTable == nil {
+		p.HashLookupTable = NewMaglev(p.logger)
+	}
+	p.HashRoutingProperties = &HashRoutingProperties{
+		Header:        endpoint.HashHeaderName,
+		BalanceFactor: endpoint.HashBalanceFactor,
+	}
+
 }
 
 func (e *endpointElem) failed() {
