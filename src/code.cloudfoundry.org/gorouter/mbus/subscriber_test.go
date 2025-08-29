@@ -476,74 +476,6 @@ var _ = Describe("Subscriber", func() {
 			Expect(originalEndpoint).To(Equal(expectedEndpoint))
 		})
 
-		Context("when the message contains load balancing algorithm option", func() {
-			JustBeforeEach(func() {
-				sub = mbus.NewSubscriber(natsClient, registry, cfg, reconnected, logger.Logger)
-				process = ifrit.Invoke(sub)
-				Eventually(process.Ready()).Should(BeClosed())
-			})
-
-			It("endpoint is constructed with the correct load balancing algorithm", func() {
-				var expectedLBAlgo = "round-robin"
-				var msg = mbus.RegistryMessage{
-					Host:     "host",
-					App:      "app",
-					Protocol: "http2",
-					Uris:     []route.Uri{"test.example.com"},
-					Options:  mbus.RegistryMessageOpts{LoadBalancingAlgorithm: expectedLBAlgo},
-				}
-				data, err := json.Marshal(msg)
-				Expect(err).NotTo(HaveOccurred())
-
-				err = natsClient.Publish("router.register", data)
-				Expect(err).ToNot(HaveOccurred())
-
-				Eventually(registry.RegisterCallCount).Should(Equal(2))
-				_, originalEndpoint := registry.RegisterArgsForCall(0)
-				expectedEndpoint := route.NewEndpoint(&route.EndpointOpts{
-					Host:                   "host",
-					AppId:                  "app",
-					Protocol:               "http2",
-					LoadBalancingAlgorithm: expectedLBAlgo,
-				})
-
-				Expect(originalEndpoint).To(Equal(expectedEndpoint))
-			})
-		})
-
-		Context("when the message contains an empty load balancing algorithm option", func() {
-			JustBeforeEach(func() {
-				sub = mbus.NewSubscriber(natsClient, registry, cfg, reconnected, logger.Logger)
-				process = ifrit.Invoke(sub)
-				Eventually(process.Ready()).Should(BeClosed())
-			})
-
-			It("endpoint is constructed with the empty string load balancing algorithm", func() {
-				var msg = mbus.RegistryMessage{
-					Host:     "host",
-					App:      "app",
-					Protocol: "http2",
-					Uris:     []route.Uri{"test.example.com"},
-				}
-				data, err := json.Marshal(msg)
-				Expect(err).NotTo(HaveOccurred())
-
-				err = natsClient.Publish("router.register", data)
-				Expect(err).ToNot(HaveOccurred())
-
-				Eventually(registry.RegisterCallCount).Should(Equal(2))
-				_, originalEndpoint := registry.RegisterArgsForCall(0)
-				expectedEndpoint := route.NewEndpoint(&route.EndpointOpts{
-					Host:     "host",
-					AppId:    "app",
-					Protocol: "http2",
-				})
-
-				Expect(originalEndpoint).To(Equal(expectedEndpoint))
-			})
-
-		})
-
 		Context("when HTTP/2 is disabled and the protocol is http2", func() {
 			BeforeEach(func() {
 				cfg.EnableHTTP2 = false
@@ -616,6 +548,181 @@ var _ = Describe("Subscriber", func() {
 			})
 
 			Expect(originalEndpoint).To(Equal(expectedEndpoint))
+		})
+	})
+
+	Context("when the message contains per-route options", func() {
+		Context("when the message contains load balancing algorithm option", func() {
+			JustBeforeEach(func() {
+				sub = mbus.NewSubscriber(natsClient, registry, cfg, reconnected, logger.Logger)
+				process = ifrit.Invoke(sub)
+				Eventually(process.Ready()).Should(BeClosed())
+			})
+
+			It("endpoint is constructed with the correct load balancing algorithm", func() {
+				var expectedLBAlgo = "round-robin"
+				var msg = mbus.RegistryMessage{
+					Host:     "host",
+					App:      "app",
+					Protocol: "http2",
+					Uris:     []route.Uri{"test.example.com"},
+					Options:  mbus.RegistryMessageOpts{LoadBalancingAlgorithm: expectedLBAlgo},
+				}
+				data, err := json.Marshal(msg)
+				Expect(err).NotTo(HaveOccurred())
+
+				err = natsClient.Publish("router.register", data)
+				Expect(err).ToNot(HaveOccurred())
+
+				Eventually(registry.RegisterCallCount).Should(Equal(1))
+				_, originalEndpoint := registry.RegisterArgsForCall(0)
+				expectedEndpoint := route.NewEndpoint(&route.EndpointOpts{
+					Host:                   "host",
+					AppId:                  "app",
+					Protocol:               "http2",
+					LoadBalancingAlgorithm: expectedLBAlgo,
+				})
+
+				Expect(originalEndpoint).To(Equal(expectedEndpoint))
+			})
+		})
+
+		Context("when the message contains an empty load balancing algorithm option", func() {
+			JustBeforeEach(func() {
+				sub = mbus.NewSubscriber(natsClient, registry, cfg, reconnected, logger.Logger)
+				process = ifrit.Invoke(sub)
+				Eventually(process.Ready()).Should(BeClosed())
+			})
+
+			It("endpoint is constructed with the empty string load balancing algorithm", func() {
+				var msg = mbus.RegistryMessage{
+					Host:     "host",
+					App:      "app",
+					Protocol: "http2",
+					Uris:     []route.Uri{"test.example.com"},
+				}
+				data, err := json.Marshal(msg)
+				Expect(err).NotTo(HaveOccurred())
+
+				err = natsClient.Publish("router.register", data)
+				Expect(err).ToNot(HaveOccurred())
+
+				Eventually(registry.RegisterCallCount).Should(Equal(1))
+				_, originalEndpoint := registry.RegisterArgsForCall(0)
+				expectedEndpoint := route.NewEndpoint(&route.EndpointOpts{
+					Host:     "host",
+					AppId:    "app",
+					Protocol: "http2",
+				})
+
+				Expect(originalEndpoint).To(Equal(expectedEndpoint))
+			})
+
+		})
+
+		Context("when the message contains hash-based load balancing options", func() {
+			JustBeforeEach(func() {
+				sub = mbus.NewSubscriber(natsClient, registry, cfg, reconnected, logger.Logger)
+				process = ifrit.Invoke(sub)
+				Eventually(process.Ready()).Should(BeClosed())
+			})
+			It("constructs an endpoint with the correct load balancing algorithm (HashBalance is set)", func() {
+				var expectedLBAlgo = "hash"
+
+				var msg = mbus.RegistryMessage{
+					Host:     "host",
+					App:      "app",
+					Protocol: "http2",
+					Uris:     []route.Uri{"test.example.com"},
+					Options: mbus.RegistryMessageOpts{
+						LoadBalancingAlgorithm: expectedLBAlgo,
+						HashHeader:             "X-Header",
+						HashBalance:            1.5,
+					},
+				}
+				data, err := json.Marshal(msg)
+				Expect(err).NotTo(HaveOccurred())
+
+				err = natsClient.Publish("router.register", data)
+				Expect(err).ToNot(HaveOccurred())
+
+				Eventually(registry.RegisterCallCount).Should(Equal(1))
+				_, originalEndpoint := registry.RegisterArgsForCall(0)
+				expectedEndpoint := route.NewEndpoint(&route.EndpointOpts{
+					Host:                   "host",
+					AppId:                  "app",
+					Protocol:               "http2",
+					LoadBalancingAlgorithm: expectedLBAlgo,
+					HashHeader:             "X-Header",
+					HashBalance:            1.5,
+				})
+
+				Expect(originalEndpoint).To(Equal(expectedEndpoint))
+			})
+
+			It("constructs an endpoint with the correct load balancing algorithm (HashBalance is not set)", func() {
+				var expectedLBAlgo = "hash"
+
+				var msg = mbus.RegistryMessage{
+					Host:     "host",
+					App:      "app",
+					Protocol: "http2",
+					Uris:     []route.Uri{"test.example.com"},
+					Options: mbus.RegistryMessageOpts{
+						LoadBalancingAlgorithm: expectedLBAlgo,
+						HashHeader:             "X-Header",
+					},
+				}
+				data, err := json.Marshal(msg)
+				Expect(err).NotTo(HaveOccurred())
+
+				err = natsClient.Publish("router.register", data)
+				Expect(err).ToNot(HaveOccurred())
+
+				Eventually(registry.RegisterCallCount).Should(Equal(1))
+				_, originalEndpoint := registry.RegisterArgsForCall(0)
+				expectedEndpoint := route.NewEndpoint(&route.EndpointOpts{
+					Host:                   "host",
+					AppId:                  "app",
+					Protocol:               "http2",
+					LoadBalancingAlgorithm: expectedLBAlgo,
+					HashHeader:             "X-Header",
+					HashBalance:            0.0,
+				})
+				Expect(expectedEndpoint.HashRoutingProperties).ToNot(BeNil())
+				Expect(originalEndpoint).To(Equal(expectedEndpoint))
+			})
+
+			It("ignores HashRoutingProperties if load balancing algorithm is not 'hash'", func() {
+				var expectedLBAlgo = "round-robin"
+
+				var msg = mbus.RegistryMessage{
+					Host:     "host",
+					App:      "app",
+					Protocol: "http2",
+					Uris:     []route.Uri{"test.example.com"},
+					Options: mbus.RegistryMessageOpts{
+						LoadBalancingAlgorithm: expectedLBAlgo,
+						HashHeader:             "X-Header",
+					},
+				}
+				data, err := json.Marshal(msg)
+				Expect(err).NotTo(HaveOccurred())
+
+				err = natsClient.Publish("router.register", data)
+				Expect(err).ToNot(HaveOccurred())
+
+				Eventually(registry.RegisterCallCount).Should(Equal(1))
+				_, originalEndpoint := registry.RegisterArgsForCall(0)
+				expectedEndpoint := route.NewEndpoint(&route.EndpointOpts{
+					Host:                   "host",
+					AppId:                  "app",
+					Protocol:               "http2",
+					LoadBalancingAlgorithm: expectedLBAlgo,
+				})
+				Expect(expectedEndpoint.HashRoutingProperties).To(BeNil())
+				Expect(originalEndpoint).To(Equal(expectedEndpoint))
+			})
 		})
 	})
 
@@ -839,5 +946,4 @@ var _ = Describe("Subscriber", func() {
 			}
 		})
 	})
-
 })

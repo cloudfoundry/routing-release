@@ -74,6 +74,21 @@ type ProxyRoundTripper interface {
 	CancelRequest(*http.Request)
 }
 
+type HashRoutingProperties struct {
+	Header        string
+	BalanceFactor float64
+}
+
+func (hrp *HashRoutingProperties) Equal(hrp2 *HashRoutingProperties) bool {
+	if hrp == nil && hrp2 == nil {
+		return true
+	}
+	if hrp == nil || hrp2 == nil {
+		return false
+	}
+	return hrp.Header == hrp2.Header && hrp.BalanceFactor == hrp2.BalanceFactor
+}
+
 type Endpoint struct {
 	ApplicationId          string
 	AvailabilityZone       string
@@ -94,6 +109,7 @@ type Endpoint struct {
 	UpdatedAt              time.Time
 	RoundTripperInit       sync.Once
 	LoadBalancingAlgorithm string
+	HashRoutingProperties  *HashRoutingProperties
 }
 
 func (e *Endpoint) RoundTripper() ProxyRoundTripper {
@@ -123,6 +139,7 @@ func (e *Endpoint) Equal(e2 *Endpoint) bool {
 	if e2 == nil {
 		return false
 	}
+
 	return e.ApplicationId == e2.ApplicationId &&
 		e.addr == e2.addr &&
 		e.Protocol == e2.Protocol &&
@@ -136,6 +153,7 @@ func (e *Endpoint) Equal(e2 *Endpoint) bool {
 		e.useTls == e2.useTls &&
 		e.UpdatedAt.Equal(e2.UpdatedAt) &&
 		e.LoadBalancingAlgorithm == e2.LoadBalancingAlgorithm &&
+		e.HashRoutingProperties.Equal(e2.HashRoutingProperties) &&
 		maps.Equal(e.Tags, e2.Tags)
 
 }
@@ -200,10 +218,12 @@ type EndpointOpts struct {
 	UseTLS                  bool
 	UpdatedAt               time.Time
 	LoadBalancingAlgorithm  string
+	HashHeader              string
+	HashBalance             float64
 }
 
 func NewEndpoint(opts *EndpointOpts) *Endpoint {
-	return &Endpoint{
+	endpoint := &Endpoint{
 		ApplicationId:          opts.AppId,
 		AvailabilityZone:       opts.AvailabilityZone,
 		addr:                   fmt.Sprintf("%s:%d", opts.Host, opts.Port),
@@ -221,6 +241,16 @@ func NewEndpoint(opts *EndpointOpts) *Endpoint {
 		UpdatedAt:              opts.UpdatedAt,
 		LoadBalancingAlgorithm: opts.LoadBalancingAlgorithm,
 	}
+
+	// TODO: Log debug? warning when HashHeader is set but LoadBalancingAlgorithm is not LOAD_BALANCE_HB?
+	if opts.LoadBalancingAlgorithm == config.LOAD_BALANCE_HB && opts.HashHeader != "" { // BalanceFactor is optional
+		endpoint.HashRoutingProperties = &HashRoutingProperties{
+			Header:        opts.HashHeader,
+			BalanceFactor: opts.HashBalance,
+		}
+	}
+
+	return endpoint
 }
 
 func (e *Endpoint) IsTLS() bool {
@@ -587,6 +617,8 @@ func (e *Endpoint) MarshalJSON() ([]byte, error) {
 		PrivateInstanceId      string            `json:"private_instance_id,omitempty"`
 		ServerCertDomainSAN    string            `json:"server_cert_domain_san,omitempty"`
 		LoadBalancingAlgorithm string            `json:"load_balancing_algorithm,omitempty"`
+		HashHeader             string            `json:"hash_header,omitempty"`
+		HashBalance            float64           `json:"hash_balance,omitempty"`
 	}
 
 	jsonObj.Address = e.addr
@@ -600,6 +632,12 @@ func (e *Endpoint) MarshalJSON() ([]byte, error) {
 	jsonObj.PrivateInstanceId = e.PrivateInstanceId
 	jsonObj.ServerCertDomainSAN = e.ServerCertDomainSAN
 	jsonObj.LoadBalancingAlgorithm = e.LoadBalancingAlgorithm
+
+	if e.HashRoutingProperties != nil {
+		jsonObj.HashHeader = e.HashRoutingProperties.Header
+		jsonObj.HashBalance = e.HashRoutingProperties.BalanceFactor
+	}
+
 	return json.Marshal(jsonObj)
 }
 

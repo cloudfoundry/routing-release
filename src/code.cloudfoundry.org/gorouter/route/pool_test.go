@@ -39,6 +39,70 @@ var _ = Describe("Endpoint", func() {
 			})
 		})
 	})
+
+	Context("Hash-based Load Balancing", func() {
+		Context("when endpoint is created with hash options", func() {
+			var endpoint *route.Endpoint
+			BeforeEach(func() {
+				endpoint = route.NewEndpoint(&route.EndpointOpts{
+					AppId:                  "test-app",
+					Host:                   "localhost",
+					Port:                   8080,
+					LoadBalancingAlgorithm: "hash",
+					HashHeader:             "X-Header",
+					HashBalance:            1.15,
+				})
+			})
+			It("should have the correct hash header", func() {
+				Expect(endpoint.HashRoutingProperties.Header).To(Equal("X-Header"))
+			})
+			It("should have the correct hash balance", func() {
+				Expect(endpoint.HashRoutingProperties.BalanceFactor).To(Equal(1.15))
+			})
+			It("should have the correct load balancing algorithm", func() {
+				Expect(endpoint.LoadBalancingAlgorithm).To(Equal("hash"))
+			})
+		})
+
+		Context("when comparing endpoints with hash options", func() {
+			var endpoint1, endpoint2, endpoint3 *route.Endpoint
+			BeforeEach(func() {
+				opts1 := &route.EndpointOpts{
+					AppId:                  "test-app",
+					Host:                   "localhost",
+					Port:                   8080,
+					LoadBalancingAlgorithm: "hash",
+					HashHeader:             "X-Header",
+					HashBalance:            1.15,
+				}
+				opts2 := &route.EndpointOpts{
+					AppId:                  "test-app",
+					Host:                   "localhost",
+					Port:                   8080,
+					LoadBalancingAlgorithm: "hash",
+					HashHeader:             "X-Header",
+					HashBalance:            1.15,
+				}
+				opts3 := &route.EndpointOpts{
+					AppId:                  "test-app",
+					Host:                   "localhost",
+					Port:                   8080,
+					LoadBalancingAlgorithm: "hash",
+					HashHeader:             "X-Header",
+					HashBalance:            2.25,
+				}
+				endpoint1 = route.NewEndpoint(opts1)
+				endpoint2 = route.NewEndpoint(opts2)
+				endpoint3 = route.NewEndpoint(opts3)
+			})
+			It("should return true when endpoints have same hash options", func() {
+				Expect(endpoint1.Equal(endpoint2)).To(BeTrue())
+			})
+			It("should return false when endpoints have different hash options", func() {
+				Expect(endpoint1.Equal(endpoint3)).To(BeFalse())
+			})
+		})
+	})
 })
 
 var _ = Describe("EndpointPool", func() {
@@ -232,134 +296,158 @@ var _ = Describe("EndpointPool", func() {
 
 		})
 	})
-	Context("Load Balancing Algorithm of a pool", func() {
-		It("has a value specified in the pool options", func() {
-			poolWithLBAlgo := route.NewPool(&route.PoolOpts{
-				Logger:                 logger.Logger,
-				LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
+	Context("Customizable Per Route Load Balancing", func() {
+
+		Context("Load Balancing Algorithm of a pool", func() {
+			It("has a value specified in the pool options", func() {
+				poolWithLBAlgo := route.NewPool(&route.PoolOpts{
+					Logger:                 logger.Logger,
+					LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
+				})
+				Expect(poolWithLBAlgo.LoadBalancingAlgorithm).To(Equal(config.LOAD_BALANCE_RR))
 			})
-			Expect(poolWithLBAlgo.LoadBalancingAlgorithm).To(Equal(config.LOAD_BALANCE_RR))
+
+			It("has an invalid value specified in the pool options", func() {
+				poolWithLBAlgo2 := route.NewPool(&route.PoolOpts{
+					Logger:                 logger.Logger,
+					LoadBalancingAlgorithm: "wrong-lb-algo",
+				})
+				iterator := poolWithLBAlgo2.Endpoints(logger.Logger, "", false, "none", "zone")
+				Expect(iterator).To(BeAssignableToTypeOf(&route.RoundRobin{}))
+				Eventually(logger).Should(gbytes.Say(`invalid-pool-load-balancing-algorithm`))
+			})
+
+			It("is correctly propagated to the newly created endpoints LOAD_BALANCE_LC ", func() {
+				poolWithLBAlgoLC := route.NewPool(&route.PoolOpts{
+					Logger:                 logger.Logger,
+					LoadBalancingAlgorithm: config.LOAD_BALANCE_LC,
+				})
+				iterator := poolWithLBAlgoLC.Endpoints(logger.Logger, "", false, "none", "az")
+				Expect(iterator).To(BeAssignableToTypeOf(&route.LeastConnection{}))
+				Eventually(logger).Should(gbytes.Say(`endpoint-iterator-with-least-connection-lb-algo`))
+			})
+
+			It("is correctly propagated to the newly created endpoints LOAD_BALANCE_RR ", func() {
+				poolWithLBAlgoLC := route.NewPool(&route.PoolOpts{
+					Logger:                 logger.Logger,
+					LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
+				})
+				iterator := poolWithLBAlgoLC.Endpoints(logger.Logger, "", false, "none", "az")
+				Expect(iterator).To(BeAssignableToTypeOf(&route.RoundRobin{}))
+				Eventually(logger).Should(gbytes.Say(`endpoint-iterator-with-round-robin-lb-algo`))
+			})
+
 		})
 
-		It("has an invalid value specified in the pool options", func() {
-			poolWithLBAlgo2 := route.NewPool(&route.PoolOpts{
-				Logger:                 logger.Logger,
-				LoadBalancingAlgorithm: "wrong-lb-algo",
+		Context("Load balancing algorithm of a newly added endpoint", func() {
+
+			It("is valid and will overwrite the load balancing algorithm of a pool", func() {
+				pool := route.NewPool(&route.PoolOpts{
+					Logger:                 logger.Logger,
+					LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
+				})
+				expectedLBAlgo := config.LOAD_BALANCE_LC
+				endpoint := route.NewEndpoint(&route.EndpointOpts{
+					Host: "host-1", Port: 1234,
+					RouteServiceUrl:        "url",
+					LoadBalancingAlgorithm: expectedLBAlgo,
+				})
+				pool.Put(endpoint)
+				Expect(pool.LoadBalancingAlgorithm).To(Equal(expectedLBAlgo))
+				Eventually(logger).Should(gbytes.Say(`setting-pool-load-balancing-algorithm-to-that-of-an-endpoint`))
 			})
-			iterator := poolWithLBAlgo2.Endpoints(logger.Logger, "", false, "none", "zone")
-			Expect(iterator).To(BeAssignableToTypeOf(&route.RoundRobin{}))
-			Eventually(logger).Should(gbytes.Say(`invalid-pool-load-balancing-algorithm`))
+
+			It("is an empty string and the load balancing algorithm of a pool is kept", func() {
+				expectedLBAlgo := config.LOAD_BALANCE_RR
+				pool := route.NewPool(&route.PoolOpts{
+					Logger:                 logger.Logger,
+					LoadBalancingAlgorithm: expectedLBAlgo,
+				})
+				endpoint := route.NewEndpoint(&route.EndpointOpts{
+					Host: "host-1", Port: 1234,
+					RouteServiceUrl: "url",
+				})
+				pool.Put(endpoint)
+				Expect(pool.LoadBalancingAlgorithm).To(Equal(expectedLBAlgo))
+			})
+
+			It("is not specified in the endpoint options and the load balancing algorithm of a pool is kept", func() {
+				expectedLBAlgo := config.LOAD_BALANCE_RR
+				pool := route.NewPool(&route.PoolOpts{
+					Logger:                 logger.Logger,
+					LoadBalancingAlgorithm: expectedLBAlgo,
+				})
+				endpoint := route.NewEndpoint(&route.EndpointOpts{
+					Host: "host-1", Port: 1234,
+					RouteServiceUrl: "url",
+				})
+				pool.Put(endpoint)
+				Expect(pool.LoadBalancingAlgorithm).To(Equal(expectedLBAlgo))
+			})
+
+			It("is an invalid value and the load balancing algorithm of a pool is kept", func() {
+				expectedLBAlgo := config.LOAD_BALANCE_RR
+				pool := route.NewPool(&route.PoolOpts{
+					Logger:                 logger.Logger,
+					LoadBalancingAlgorithm: expectedLBAlgo,
+				})
+				endpoint := route.NewEndpoint(&route.EndpointOpts{
+					Host: "host-1", Port: 1234,
+					RouteServiceUrl:        "url",
+					LoadBalancingAlgorithm: "invalid-lb-algo",
+				})
+				pool.Put(endpoint)
+				Expect(pool.LoadBalancingAlgorithm).To(Equal(expectedLBAlgo))
+				Eventually(logger).Should(gbytes.Say(`invalid-endpoint-load-balancing-algorithm-provided-keeping-pool-lb-algo`))
+			})
 		})
 
-		It("is correctly propagated to the newly created endpoints LOAD_BALANCE_LC ", func() {
-			poolWithLBAlgoLC := route.NewPool(&route.PoolOpts{
-				Logger:                 logger.Logger,
-				LoadBalancingAlgorithm: config.LOAD_BALANCE_LC,
+		Context("Load balancing algorithm of a updated endpoint", func() {
+			It("will overwrite the load balancing algorithm of the endpoint and pool", func() {
+				pool := route.NewPool(&route.PoolOpts{
+					Logger:                 logger.Logger,
+					LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
+				})
+
+				endpointOpts := route.EndpointOpts{
+					Host:                   "host-1",
+					Port:                   1234,
+					RouteServiceUrl:        "url",
+					LoadBalancingAlgorithm: config.LOAD_BALANCE_LC,
+				}
+
+				initalEndpoint := route.NewEndpoint(&endpointOpts)
+
+				pool.Put(initalEndpoint)
+				Expect(pool.LoadBalancingAlgorithm).To(Equal(config.LOAD_BALANCE_LC))
+
+				endpointOpts.LoadBalancingAlgorithm = config.LOAD_BALANCE_RR
+				updatedEndpoint := route.NewEndpoint(&endpointOpts)
+
+				pool.Put(updatedEndpoint)
+				Expect(pool.LoadBalancingAlgorithm).To(Equal(config.LOAD_BALANCE_RR))
 			})
-			iterator := poolWithLBAlgoLC.Endpoints(logger.Logger, "", false, "none", "az")
-			Expect(iterator).To(BeAssignableToTypeOf(&route.LeastConnection{}))
-			Eventually(logger).Should(gbytes.Say(`endpoint-iterator-with-least-connection-lb-algo`))
 		})
 
-		It("is correctly propagated to the newly created endpoints LOAD_BALANCE_RR ", func() {
-			poolWithLBAlgoLC := route.NewPool(&route.PoolOpts{
-				Logger:                 logger.Logger,
-				LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
-			})
-			iterator := poolWithLBAlgoLC.Endpoints(logger.Logger, "", false, "none", "az")
-			Expect(iterator).To(BeAssignableToTypeOf(&route.RoundRobin{}))
-			Eventually(logger).Should(gbytes.Say(`endpoint-iterator-with-round-robin-lb-algo`))
-		})
-	})
+		Context("Hash-Based load balancing algorithm", func() {
 
-	Context("Load balancing algorithm of a newly added endpoint", func() {
+			It("correctly propagates the load balancing algorithm and HashRoutingProperties of the newly created endpoint to the other endpoints of the pool ", func() {
+				// TODO: route.HashBased will be implemented at a later date
+				//	poolWithLBAlgoHB := route.NewPool(&route.PoolOpts{
+				//		Logger:                 logger.Logger,
+				//		LoadBalancingAlgorithm: config.LOAD_BALANCE_HB,
+				//		//HashRoutingProperties:
+				//	})
+				//	iterator := poolWithLBAlgoHB.Endpoints(logger.Logger, "", false, "none", "az")
+				//	Expect(iterator).To(BeAssignableToTypeOf(&route.HashBased{}))
+				//	Eventually(logger).Should(gbytes.Say(`endpoint-iterator-with-round-robin-lb-algo`))
+			})
 
-		It("is valid and will overwrite the load balancing algorithm of a pool", func() {
-			pool := route.NewPool(&route.PoolOpts{
-				Logger:                 logger.Logger,
-				LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
+			It("overwrites the load balancing algorithm and HashRoutingProperties of the endpoint and pool", func() {
+				//	TODO
 			})
-			expectedLBAlgo := config.LOAD_BALANCE_LC
-			endpoint := route.NewEndpoint(&route.EndpointOpts{
-				Host: "host-1", Port: 1234,
-				RouteServiceUrl:        "url",
-				LoadBalancingAlgorithm: expectedLBAlgo,
-			})
-			pool.Put(endpoint)
-			Expect(pool.LoadBalancingAlgorithm).To(Equal(expectedLBAlgo))
-			Eventually(logger).Should(gbytes.Say(`setting-pool-load-balancing-algorithm-to-that-of-an-endpoint`))
 		})
 
-		It("is an empty string and the load balancing algorithm of a pool is kept", func() {
-			expectedLBAlgo := config.LOAD_BALANCE_RR
-			pool := route.NewPool(&route.PoolOpts{
-				Logger:                 logger.Logger,
-				LoadBalancingAlgorithm: expectedLBAlgo,
-			})
-			endpoint := route.NewEndpoint(&route.EndpointOpts{
-				Host: "host-1", Port: 1234,
-				RouteServiceUrl: "url",
-			})
-			pool.Put(endpoint)
-			Expect(pool.LoadBalancingAlgorithm).To(Equal(expectedLBAlgo))
-		})
-
-		It("is not specified in the endpoint options and the load balancing algorithm of a pool is kept", func() {
-			expectedLBAlgo := config.LOAD_BALANCE_RR
-			pool := route.NewPool(&route.PoolOpts{
-				Logger:                 logger.Logger,
-				LoadBalancingAlgorithm: expectedLBAlgo,
-			})
-			endpoint := route.NewEndpoint(&route.EndpointOpts{
-				Host: "host-1", Port: 1234,
-				RouteServiceUrl: "url",
-			})
-			pool.Put(endpoint)
-			Expect(pool.LoadBalancingAlgorithm).To(Equal(expectedLBAlgo))
-		})
-
-		It("is an invalid value and the load balancing algorithm of a pool is kept", func() {
-			expectedLBAlgo := config.LOAD_BALANCE_RR
-			pool := route.NewPool(&route.PoolOpts{
-				Logger:                 logger.Logger,
-				LoadBalancingAlgorithm: expectedLBAlgo,
-			})
-			endpoint := route.NewEndpoint(&route.EndpointOpts{
-				Host: "host-1", Port: 1234,
-				RouteServiceUrl:        "url",
-				LoadBalancingAlgorithm: "invalid-lb-algo",
-			})
-			pool.Put(endpoint)
-			Expect(pool.LoadBalancingAlgorithm).To(Equal(expectedLBAlgo))
-			Eventually(logger).Should(gbytes.Say(`invalid-endpoint-load-balancing-algorithm-provided-keeping-pool-lb-algo`))
-		})
-	})
-
-	Context("Load balancing algorithm of a updated endpoint", func() {
-		It("is will overwrite the load balancing algorithm of the endpoint and pool", func() {
-			pool := route.NewPool(&route.PoolOpts{
-				Logger:                 logger.Logger,
-				LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
-			})
-
-			endpointOpts := route.EndpointOpts{
-				Host:                   "host-1",
-				Port:                   1234,
-				RouteServiceUrl:        "url",
-				LoadBalancingAlgorithm: config.LOAD_BALANCE_LC,
-			}
-
-			initalEndpoint := route.NewEndpoint(&endpointOpts)
-
-			pool.Put(initalEndpoint)
-			Expect(pool.LoadBalancingAlgorithm).To(Equal(config.LOAD_BALANCE_LC))
-
-			endpointOpts.LoadBalancingAlgorithm = config.LOAD_BALANCE_RR
-			updatedEndpoint := route.NewEndpoint(&endpointOpts)
-
-			pool.Put(updatedEndpoint)
-			Expect(pool.LoadBalancingAlgorithm).To(Equal(config.LOAD_BALANCE_RR))
-		})
 	})
 
 	Context("RouteServiceUrl", func() {
@@ -848,7 +936,9 @@ var _ = Describe("EndpointPool", func() {
 			ServerCertDomainSAN:     "pvt_test_san",
 			PrivateInstanceId:       "pvt_test_instance_id",
 			UseTLS:                  true,
-			LoadBalancingAlgorithm:  "lb-meow",
+			LoadBalancingAlgorithm:  "hash",
+			HashHeader:              "X-Header",
+			HashBalance:             1.25,
 		})
 
 		pool.Put(e)
@@ -857,7 +947,7 @@ var _ = Describe("EndpointPool", func() {
 		json, err := pool.MarshalJSON()
 		Expect(err).ToNot(HaveOccurred())
 
-		Expect(string(json)).To(Equal(`[{"address":"1.2.3.4:5678","availability_zone":"az-meow","protocol":"http1","tls":false,"ttl":-1,"route_service_url":"https://my-rs.com","tags":null},{"address":"5.6.7.8:5678","availability_zone":"","protocol":"http2","tls":true,"ttl":-1,"tags":null,"private_instance_id":"pvt_test_instance_id","server_cert_domain_san":"pvt_test_san","load_balancing_algorithm":"lb-meow"}]`))
+		Expect(string(json)).To(Equal(`[{"address":"1.2.3.4:5678","availability_zone":"az-meow","protocol":"http1","tls":false,"ttl":-1,"route_service_url":"https://my-rs.com","tags":null},{"address":"5.6.7.8:5678","availability_zone":"","protocol":"http2","tls":true,"ttl":-1,"tags":null,"private_instance_id":"pvt_test_instance_id","server_cert_domain_san":"pvt_test_san","load_balancing_algorithm":"hash","hash_header":"X-Header","hash_balance":1.25}]`))
 	})
 
 	Context("when endpoints do not have empty tags", func() {

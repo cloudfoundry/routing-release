@@ -47,13 +47,31 @@ zone: meow-zone
 			})
 		})
 
+		Context("Global Load Balancing Algorithm Validator", func() {
+			It("Returns false if the value is not in the list of configured global load balancing strategies", func() {
+				Expect(IsGlobalLoadBalancingAlgorithmValid("wrong.algo")).To(BeFalse())
+			})
+
+			It("Returns true if the value is in the list of configured global load balancing strategies", func() {
+				Expect(IsGlobalLoadBalancingAlgorithmValid(LOAD_BALANCE_RR)).To(BeTrue())
+			})
+
+			It("Returns false for hash load balancing algorithm as global setting", func() {
+				Expect(IsGlobalLoadBalancingAlgorithmValid(LOAD_BALANCE_HB)).To(BeFalse())
+			})
+		})
+
 		Context("Load Balancing Algorithm Validator", func() {
 			It("Returns false if the value is not in the list of configured load balancing strategies", func() {
-				Expect(IsLoadBalancingAlgorithmValid("wrong.algo")).To(Equal(false))
+				Expect(IsLoadBalancingAlgorithmValid("wrong.algo")).To(BeFalse())
 			})
 
 			It("Returns true if the value is in the list of configured load balancing strategies", func() {
-				Expect(IsLoadBalancingAlgorithmValid(LOAD_BALANCE_RR)).To(Equal(true))
+				Expect(IsLoadBalancingAlgorithmValid(LOAD_BALANCE_RR)).To(BeTrue())
+			})
+
+			It("Returns true for hash load balancing algorithm", func() {
+				Expect(IsLoadBalancingAlgorithmValid(LOAD_BALANCE_HB)).To(BeTrue())
 			})
 		})
 
@@ -73,12 +91,22 @@ balancing_algorithm: least-connection
 				Expect(cfg.LoadBalance).To(Equal(LOAD_BALANCE_LC))
 			})
 
+			It("can NOT override the load balance strategy to hash (not available as global default)", func() {
+				cfg, err := DefaultConfig()
+				Expect(err).ToNot(HaveOccurred())
+				var b = []byte(`
+balancing_algorithm: hash
+`)
+				cfg.Initialize(b)
+				Expect(cfg.Process()).To(MatchError("Invalid global load balancing algorithm hash. Allowed values are [round-robin least-connection]"))
+			})
+
 			It("does not allow an invalid load balance strategy", func() {
 				cfg, err := DefaultConfig()
 				Expect(err).ToNot(HaveOccurred())
 				cfgForSnippet.LoadBalance = "foo-bar"
 				cfg.Initialize(createYMLSnippet(cfgForSnippet))
-				Expect(cfg.Process()).To(MatchError("Invalid load balancing algorithm foo-bar. Allowed values are [round-robin least-connection]"))
+				Expect(cfg.Process()).To(MatchError("Invalid global load balancing algorithm foo-bar. Allowed values are [round-robin least-connection]"))
 			})
 		})
 
@@ -1805,7 +1833,7 @@ load_balancer_healthy_threshold: 10s
 			})
 			It("setting hop_by_hop_headers_to_filter succeeds", func() {
 				err := config.Initialize(createYMLSnippet(cfgForSnippet))
-				Expect(err).NotTo(HaveOccurred())
+				Expect(err).ToNot(HaveOccurred())
 				Expect(config.Process()).To(Succeed())
 				Expect(config.HopByHopHeadersToFilter).To(Equal([]string{"X-ME", "X-Foo"}))
 			})
