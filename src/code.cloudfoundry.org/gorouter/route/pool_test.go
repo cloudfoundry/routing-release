@@ -198,8 +198,8 @@ var _ = Describe("EndpointPool", func() {
 
 	Context("Put", func() {
 		var (
-			az           = "meow-zone"
-			azPreference = "none"
+			az                = "meow-zone"
+			locallyOptimistic = false
 		)
 
 		It("adds endpoints", func() {
@@ -233,6 +233,7 @@ var _ = Describe("EndpointPool", func() {
 		Context("with modification tags", func() {
 			var modTag models.ModificationTag
 			var modTag2 models.ModificationTag
+			var routingProps route.RoutingProperties
 
 			BeforeEach(func() {
 				modTag = models.ModificationTag{}
@@ -240,13 +241,19 @@ var _ = Describe("EndpointPool", func() {
 				endpoint1 := route.NewEndpoint(&route.EndpointOpts{Host: "1.2.3.4", Port: 5678, ModificationTag: modTag})
 
 				Expect(pool.Put(endpoint1)).To(Equal(route.EndpointAdded))
+
+				routingProps = route.RoutingProperties{
+					LocallyOptimistic: locallyOptimistic,
+					GlobalLB:          config.LOAD_BALANCE_RR,
+					AZ:                az,
+				}
 			})
 
 			It("updates an endpoint with modification tag", func() {
 				endpoint := route.NewEndpoint(&route.EndpointOpts{Host: "1.2.3.4", Port: 5678, ModificationTag: modTag2})
 
 				Expect(pool.Put(endpoint)).To(Equal(route.EndpointUpdated))
-				Expect(pool.Endpoints(logger.Logger, "", false, azPreference, az).Next(0).ModificationTag).To(Equal(modTag2))
+				Expect(pool.Endpoints(logger.Logger, "", false, routingProps).Next(0).ModificationTag).To(Equal(modTag2))
 			})
 
 			Context("when modification_tag is older", func() {
@@ -261,7 +268,7 @@ var _ = Describe("EndpointPool", func() {
 					endpoint := route.NewEndpoint(&route.EndpointOpts{Host: "1.2.3.4", Port: 5678, ModificationTag: olderModTag})
 
 					Expect(pool.Put(endpoint)).To(Equal(route.EndpointUnmodified))
-					Expect(pool.Endpoints(logger.Logger, "", false, azPreference, az).Next(0).ModificationTag).To(Equal(modTag2))
+					Expect(pool.Endpoints(logger.Logger, "", false, routingProps).Next(0).ModificationTag).To(Equal(modTag2))
 				})
 			})
 		})
@@ -297,7 +304,18 @@ var _ = Describe("EndpointPool", func() {
 		})
 	})
 	Context("Customizable Per Route Load Balancing", func() {
+		var (
+			locallyOptimistic = false
+			routingProps      route.RoutingProperties
+		)
 
+		BeforeEach(func() {
+			routingProps = route.RoutingProperties{
+				LocallyOptimistic: locallyOptimistic,
+				GlobalLB:          config.LOAD_BALANCE_RR,
+				AZ:                "az",
+			}
+		})
 		Context("Load Balancing Algorithm of a pool", func() {
 			It("has a value specified in the pool options", func() {
 				poolWithLBAlgo := route.NewPool(&route.PoolOpts{
@@ -312,7 +330,7 @@ var _ = Describe("EndpointPool", func() {
 					Logger:                 logger.Logger,
 					LoadBalancingAlgorithm: "wrong-lb-algo",
 				})
-				iterator := poolWithLBAlgo2.Endpoints(logger.Logger, "", false, "none", "zone")
+				iterator := poolWithLBAlgo2.Endpoints(logger.Logger, "", false, routingProps)
 				Expect(iterator).To(BeAssignableToTypeOf(&route.RoundRobin{}))
 				Eventually(logger).Should(gbytes.Say(`invalid-pool-load-balancing-algorithm`))
 			})
@@ -322,7 +340,7 @@ var _ = Describe("EndpointPool", func() {
 					Logger:                 logger.Logger,
 					LoadBalancingAlgorithm: config.LOAD_BALANCE_LC,
 				})
-				iterator := poolWithLBAlgoLC.Endpoints(logger.Logger, "", false, "none", "az")
+				iterator := poolWithLBAlgoLC.Endpoints(logger.Logger, "", false, routingProps)
 				Expect(iterator).To(BeAssignableToTypeOf(&route.LeastConnection{}))
 				Eventually(logger).Should(gbytes.Say(`endpoint-iterator-with-least-connection-lb-algo`))
 			})
@@ -332,7 +350,7 @@ var _ = Describe("EndpointPool", func() {
 					Logger:                 logger.Logger,
 					LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
 				})
-				iterator := poolWithLBAlgoLC.Endpoints(logger.Logger, "", false, "none", "az")
+				iterator := poolWithLBAlgoLC.Endpoints(logger.Logger, "", false, routingProps)
 				Expect(iterator).To(BeAssignableToTypeOf(&route.RoundRobin{}))
 				Eventually(logger).Should(gbytes.Say(`endpoint-iterator-with-round-robin-lb-algo`))
 			})
@@ -428,6 +446,46 @@ var _ = Describe("EndpointPool", func() {
 				Expect(pool.LoadBalancingAlgorithm).To(Equal(config.LOAD_BALANCE_RR))
 			})
 		})
+
+		Context("When switching to hash-based routing", func() {
+			It("will create the maglev table and add the endpoint", func() {
+				pool := route.NewPool(&route.PoolOpts{
+					Logger:                 logger.Logger,
+					LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
+				})
+
+				endpointOpts := route.EndpointOpts{
+					Host:                   "host-1",
+					Port:                   1234,
+					RouteServiceUrl:        "url",
+					LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
+				}
+
+				initalEndpoint := route.NewEndpoint(&endpointOpts)
+
+				pool.Put(initalEndpoint)
+				Expect(pool.LoadBalancingAlgorithm).To(Equal(config.LOAD_BALANCE_RR))
+
+				endpointOptsHash := route.EndpointOpts{
+					Host:                   "host-1",
+					Port:                   1234,
+					RouteServiceUrl:        "url",
+					LoadBalancingAlgorithm: config.LOAD_BALANCE_HB,
+					HashBalanceFactor:      1.25,
+					HashHeaderName:         "X-Tenant",
+				}
+
+				hashEndpoint := route.NewEndpoint(&endpointOptsHash)
+
+				pool.Put(hashEndpoint)
+				Expect(pool.LoadBalancingAlgorithm).To(Equal(config.LOAD_BALANCE_HB))
+				Expect(pool.HashLookupTable).ToNot(BeNil())
+				Expect(pool.HashLookupTable.GetEndpointList()).To(HaveLen(1))
+				Expect(pool.HashLookupTable.GetEndpointList()[0]).To(Equal(hashEndpoint.PrivateInstanceId))
+			})
+
+		})
+
 	})
 
 	Context("RouteServiceUrl", func() {
@@ -497,10 +555,15 @@ var _ = Describe("EndpointPool", func() {
 			Context("when a read connection is reset", func() {
 				It("marks the endpoint as failed", func() {
 					az := "meow-zone"
-					azPreference := "none"
+					locallyOptimistic := false
+					routingProps := route.RoutingProperties{
+						LocallyOptimistic: locallyOptimistic,
+						GlobalLB:          config.LOAD_BALANCE_RR,
+						AZ:                az,
+					}
 					connectionResetError := &net.OpError{Op: "read", Err: errors.New("read: connection reset by peer")}
 					pool.EndpointFailed(failedEndpoint, connectionResetError)
-					i := pool.Endpoints(logger.Logger, "", false, azPreference, az)
+					i := pool.Endpoints(logger.Logger, "", false, routingProps)
 					epOne := i.Next(0)
 					epTwo := i.Next(1)
 					Expect(epOne).To(Equal(epTwo))
@@ -927,7 +990,7 @@ var _ = Describe("EndpointPool", func() {
 		json, err := pool.MarshalJSON()
 		Expect(err).ToNot(HaveOccurred())
 
-		Expect(string(json)).To(Equal(`[{"address":"1.2.3.4:5678","availability_zone":"az-meow","protocol":"http1","tls":false,"ttl":-1,"route_service_url":"https://my-rs.com","tags":null},{"address":"5.6.7.8:5678","availability_zone":"","protocol":"http2","tls":true,"ttl":-1,"tags":null,"private_instance_id":"pvt_test_instance_id","server_cert_domain_san":"pvt_test_san","load_balancing_algorithm":"hash","hash_header":"X-Header","hash_balance":1.25}]`))
+		Expect(string(json)).To(Equal(`[{"address":"1.2.3.4:5678","availability_zone":"az-meow","protocol":"http1","tls":false,"ttl":-1,"route_service_url":"https://my-rs.com","tags":null},{"address":"5.6.7.8:5678","availability_zone":"","protocol":"http2","tls":true,"ttl":-1,"tags":null,"private_instance_id":"pvt_test_instance_id","server_cert_domain_san":"pvt_test_san","load_balancing_algorithm":"hash","hash_header":"X-Header","hash_balance":"1.25"}]`))
 	})
 
 	Context("when endpoints do not have empty tags", func() {

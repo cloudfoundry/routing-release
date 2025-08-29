@@ -24,6 +24,11 @@ applications:
   - route: example2.com
     options:
       loadbalancing: least-connection
+  - route: example3.com
+    options:
+      loadbalancing: hash
+      hash_header: tenant-id
+      hash_balance: 1.25
 ```
 
 > [!NOTE]

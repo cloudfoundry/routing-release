@@ -63,13 +63,19 @@ func upgradeHeader(request *http.Request) string {
 	return ""
 }
 
-func EndpointIteratorForRequest(logger *slog.Logger, request *http.Request, stickySessionCookieNames config.StringSet, authNegotiateSticky bool, azPreference string, az string) (route.EndpointIterator, error) {
+func EndpointIteratorForRequest(logger *slog.Logger, request *http.Request, stickySessionCookieNames config.StringSet, authNegotiateSticky bool, locallyOptimistic bool, az string, globalLB string) (route.EndpointIterator, error) {
 	reqInfo, err := ContextRequestInfo(request)
 	if err != nil {
 		return nil, fmt.Errorf("could not find reqInfo in context")
 	}
 	stickyEndpointID, mustBeSticky := GetStickySession(request, stickySessionCookieNames, authNegotiateSticky)
-	return reqInfo.RoutePool.Endpoints(logger, stickyEndpointID, mustBeSticky, azPreference, az), nil
+	routingProperties := route.RoutingProperties{
+		RequestHeaders:    &request.Header,
+		LocallyOptimistic: locallyOptimistic,
+		GlobalLB:          globalLB,
+		AZ:                az,
+	}
+	return reqInfo.RoutePool.Endpoints(logger, stickyEndpointID, mustBeSticky, routingProperties), nil
 }
 
 func GetStickySession(request *http.Request, stickySessionCookieNames config.StringSet, authNegotiateSticky bool) (string, bool) {

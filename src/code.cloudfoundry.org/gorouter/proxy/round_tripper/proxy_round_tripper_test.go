@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math/rand"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -274,8 +275,14 @@ var _ = Describe("ProxyRoundTripper", func() {
 				It("logs the error and removes offending backend", func() {
 					res, err := proxyRoundTripper.RoundTrip(req)
 					Expect(err).NotTo(HaveOccurred())
+					routingProps := route.RoutingProperties{
+						LocallyOptimistic: false,
+						GlobalLB:          cfg.LoadBalance,
+						AZ:                AZ,
+						RequestHeaders:    &req.Header,
+					}
 
-					iter := routePool.Endpoints(logger.Logger, "", false, AZPreference, AZ)
+					iter := routePool.Endpoints(logger.Logger, "", false, routingProps)
 					ep1 := iter.Next(0)
 					ep2 := iter.Next(1)
 					Expect(ep1.PrivateInstanceId).To(Equal(ep2.PrivateInstanceId))
@@ -603,13 +610,20 @@ var _ = Describe("ProxyRoundTripper", func() {
 						PrivateInstanceIndex: "2",
 					})
 
+					routingProps := route.RoutingProperties{
+						LocallyOptimistic: false,
+						GlobalLB:          cfg.LoadBalance,
+						AZ:                AZ,
+						RequestHeaders:    &req.Header,
+					}
+
 					added := routePool.Put(endpoint)
 					Expect(added).To(Equal(route.EndpointAdded))
 
 					_, err := proxyRoundTripper.RoundTrip(req)
 					Expect(err).To(MatchError(ContainSubstring("tls: handshake failure")))
 
-					iter := routePool.Endpoints(logger.Logger, "", false, AZPreference, AZ)
+					iter := routePool.Endpoints(logger.Logger, "", false, routingProps)
 					ep1 := iter.Next(0)
 					ep2 := iter.Next(1)
 					Expect(ep1).To(Equal(ep2))
@@ -2345,6 +2359,167 @@ var _ = Describe("ProxyRoundTripper", func() {
 							Expect(newCookies).To(HaveLen(1))
 							Expect(newCookies[0].Name).To(Equal(round_tripper.VcapCookieId))
 							Expect(newCookies[0].Value).To(Equal("vcap-id-property-already-on-the-response"))
+						})
+					})
+				})
+			})
+
+			Context("when load-balancing strategy is set to hash-based routing", func() {
+				JustBeforeEach(func() {
+					for i := 1; i <= 3; i++ {
+						endpoint = route.NewEndpoint(&route.EndpointOpts{
+							AppId:                  fmt.Sprintf("appID%d", i),
+							Host:                   fmt.Sprintf("%d.%d.%d.%d", i, i, i, i),
+							Port:                   9090,
+							PrivateInstanceId:      fmt.Sprintf("instanceID%d", i),
+							PrivateInstanceIndex:   fmt.Sprintf("%d", i),
+							AvailabilityZone:       AZ,
+							LoadBalancingAlgorithm: config.LOAD_BALANCE_HB,
+							HashHeaderName:         "X-Hash",
+						})
+
+						_ = routePool.Put(endpoint)
+						Expect(routePool.HashLookupTable).ToNot(BeNil())
+
+					}
+				})
+
+				It("routes requests with same hash header value to the same endpoint", func() {
+					req.Header.Set("X-Hash", "value")
+					reqInfo, err := handlers.ContextRequestInfo(req)
+					Expect(err).ToNot(HaveOccurred())
+					reqInfo.RoutePool = routePool
+
+					var selectedEndpoints []*route.Endpoint
+
+					// Make multiple requests with the same hash value
+					for i := 0; i < 5; i++ {
+						_, err = proxyRoundTripper.RoundTrip(req)
+						Expect(err).NotTo(HaveOccurred())
+						selectedEndpoints = append(selectedEndpoints, reqInfo.RouteEndpoint)
+					}
+
+					// All requests should go to the same endpoint
+					firstEndpoint := selectedEndpoints[0]
+					for _, ep := range selectedEndpoints[1:] {
+						Expect(ep.PrivateInstanceId).To(Equal(firstEndpoint.PrivateInstanceId))
+					}
+				})
+
+				It("routes requests with different hash header values to potentially different endpoints", func() {
+					reqInfo, err := handlers.ContextRequestInfo(req)
+					Expect(err).ToNot(HaveOccurred())
+					reqInfo.RoutePool = routePool
+
+					endpointDistribution := make(map[string]int)
+
+					// Make requests with different hash values
+					for i := 0; i < 10; i++ {
+						req.Header.Set("X-Hash", fmt.Sprintf("value-%d", i))
+						_, err = proxyRoundTripper.RoundTrip(req)
+						Expect(err).NotTo(HaveOccurred())
+						endpointDistribution[reqInfo.RouteEndpoint.PrivateInstanceId]++
+					}
+
+					// Should distribute across multiple endpoints (not all to one)
+					Expect(len(endpointDistribution)).To(BeNumerically(">", 1))
+				})
+
+				It("falls back to default load balancing algorithm when hash header is missing", func() {
+					reqInfo, err := handlers.ContextRequestInfo(req)
+					Expect(err).ToNot(HaveOccurred())
+
+					reqInfo.RoutePool = routePool
+
+					_, err = proxyRoundTripper.RoundTrip(req)
+					Expect(err).NotTo(HaveOccurred())
+
+					infoLogs := logger.Lines(zap.InfoLevel)
+					count := 0
+					for i := 0; i < len(infoLogs); i++ {
+						if strings.Contains(infoLogs[i], "hash-based-routing-header-value-not-found") {
+							count++
+						}
+					}
+					Expect(count).To(Equal(1))
+					// Verify it still selects an endpoint
+					Expect(reqInfo.RouteEndpoint).ToNot(BeNil())
+				})
+
+				Context("when sticky session cookies (JSESSIONID and VCAP_ID) are on the request", func() {
+					var (
+						sessionCookie *http.Cookie
+						cookies       []*http.Cookie
+					)
+
+					JustBeforeEach(func() {
+						sessionCookie = &http.Cookie{
+							Name: StickyCookieKey, //JSESSIONID
+						}
+						transport.RoundTripStub = func(req *http.Request) (*http.Response, error) {
+							resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
+							//Attach the same JSESSIONID on to the response if it exists on the request
+
+							if len(req.Cookies()) > 0 {
+								for _, cookie := range req.Cookies() {
+									if cookie.Name == StickyCookieKey {
+										resp.Header.Add(round_tripper.CookieHeader, cookie.String())
+										return resp, nil
+									}
+								}
+							}
+
+							sessionCookie.Value, _ = uuid.GenerateUUID()
+							resp.Header.Add(round_tripper.CookieHeader, sessionCookie.String())
+							return resp, nil
+						}
+						resp, err := proxyRoundTripper.RoundTrip(req)
+						Expect(err).ToNot(HaveOccurred())
+
+						cookies = resp.Cookies()
+						Expect(cookies).To(HaveLen(2))
+
+					})
+
+					Context("when there is a JSESSIONID and __VCAP_ID__ set on the request", func() {
+						It("will always route to the instance specified with the __VCAP_ID__ cookie", func() {
+
+							// Generate 20 random values for the hash header, so chance that all go to instanceID1
+							// by accident is 0.33^20
+							for i := 0; i < 20; i++ {
+								randomStr := make([]byte, 8)
+								for j := range randomStr {
+									randomStr[j] = byte('a' + rand.Intn(26))
+								}
+
+								req.Header.Set("X-Hash", string(randomStr))
+								reqInfo, err := handlers.ContextRequestInfo(req)
+								req.AddCookie(&http.Cookie{Name: round_tripper.VcapCookieId, Value: "instanceID1"})
+								req.AddCookie(&http.Cookie{Name: StickyCookieKey, Value: "abc"})
+
+								Expect(err).ToNot(HaveOccurred())
+								reqInfo.RoutePool = routePool
+
+								resp, err := proxyRoundTripper.RoundTrip(req)
+								Expect(err).ToNot(HaveOccurred())
+
+								new_cookies := resp.Cookies()
+								Expect(new_cookies).To(HaveLen(2))
+
+								for _, cookie := range new_cookies {
+									Expect(cookie.Name).To(SatisfyAny(
+										Equal(StickyCookieKey),
+										Equal(round_tripper.VcapCookieId),
+									))
+									if cookie.Name == StickyCookieKey {
+										Expect(cookie.Value).To(Equal("abc"))
+									} else {
+										Expect(cookie.Value).To(Equal("instanceID1"))
+									}
+								}
+
+							}
+
 						})
 					})
 				})

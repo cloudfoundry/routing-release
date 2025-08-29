@@ -414,6 +414,17 @@ properties:
   router.backends.max_conns:
     description: "Maximum concurrent TCP connections per backend. When set to 0 there is no limit"
     default: 500
+  router.hash_based_routing.lookup_table_size:
+    description: |
+      Size of the Maglev lookup table used for hash-based load balancing.
+      The size should be approximately chosen based on the expected maximum number of endpoints / application instances per route which use hash-based routing. The provided values are not hard limits but recommended values.
+      Valid values are:
+        - "XS": recommended for up to 10 endpoints per pool
+        - "S": recommended for up to 30 endpoints per pool
+        - "M": recommended for up to 50 endpoints per pool
+        - "L": recommended for up to. 100 endpoints per pool
+        - "XL": recommended for up to 650 endpoints per pool
+    default: "S"
   router.tracing.enable_zipkin:
     description: "Enables the addition of the X-B3-Trace-Id header to incoming requests. If the header already exists on the incoming request, it will not be overwritten."
     default: false

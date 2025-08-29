@@ -128,7 +128,15 @@ func (rt *roundTripper) RoundTrip(originalRequest *http.Request) (*http.Response
 
 	stickyEndpointID, mustBeSticky := handlers.GetStickySession(request, rt.config.StickySessionCookieNames, rt.config.StickySessionsForAuthNegotiate)
 	numberOfEndpoints := reqInfo.RoutePool.NumEndpoints()
-	iter := reqInfo.RoutePool.Endpoints(rt.logger, stickyEndpointID, mustBeSticky, rt.config.LoadBalanceAZPreference, rt.config.Zone)
+	locallyOptimistic := rt.config.LoadBalanceAZPreference == config.AZ_PREF_LOCAL
+	routingProperties := route.RoutingProperties{
+		RequestHeaders:    &request.Header,
+		LocallyOptimistic: locallyOptimistic,
+		GlobalLB:          rt.config.LoadBalance,
+		AZ:                rt.config.Zone,
+	}
+
+	iter := reqInfo.RoutePool.Endpoints(rt.logger, stickyEndpointID, mustBeSticky, routingProperties)
 
 	// The selectEndpointErr needs to be tracked separately. If we get an error
 	// while selecting an endpoint we might just have run out of routes. In
