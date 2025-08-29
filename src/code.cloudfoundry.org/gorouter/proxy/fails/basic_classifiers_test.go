@@ -144,12 +144,17 @@ var _ = Describe("ErrorClassifiers - enemy tests", func() {
 						testTransport.TLSClientConfig.MaxVersion = tls.VersionTLS12
 					})
 
-					It("matches the error", func() {
+					// This changed in go 1.25.
+					// Before go 1.25 this would return a "certificate required" error
+					// In go 1.25+ this now returns a "tls handshake" error, which is more
+					// generic and should not be retriable.
+					// https://github.com/golang/go/commit/fd605450a7be429efe68aed2271fbd3d40818f8e
+					It("does not match RemoteFailedCertCheck error", func() {
 						req, _ := http.NewRequest("GET", tlsServer.URL, nil)
 
 						_, err := testTransport.RoundTrip(req)
 						Expect(err).To(HaveOccurred())
-						Expect(fails.RemoteFailedCertCheck(err)).To(BeTrue())
+						Expect(fails.RemoteFailedCertCheck(err)).To(BeFalse())
 					})
 				})
 

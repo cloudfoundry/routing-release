@@ -110,21 +110,18 @@ var _ = Describe("Backend TLS", func() {
 			})
 		})
 		Context("when the gorouter does not present certs", func() {
+			// This changed in go 1.25.
+			// Before go 1.25 this would return a "certificate required" error, which is retriable.
+			// In go 1.25+ this now returns a "tls handshake" error, which is more
+			// generic and should not be retriable.
+			// https://github.com/golang/go/commit/fd605450a7be429efe68aed2271fbd3d40818f8e
 			BeforeEach(func() {
 				conf.Backends.ClientAuthCertificate = tls.Certificate{}
 			})
-			It("returns a HTTP 496 status code", func() {
+
+			It("returns a HTTP 525 SSL Handshake error", func() {
 				resp := registerAppAndTest()
-				Expect(resp.StatusCode).To(Equal(496))
-			})
-			Context("when the route is expired and the backend fails with a retriable error", func() {
-				BeforeEach(func() {
-					registerConfig.StaleThreshold = -1
-				})
-				It("prunes the route and returns a HTTP 496 status code", func() {
-					resp := registerAppAndTest()
-					Expect(resp.StatusCode).To(Equal(496))
-				})
+				Expect(resp.StatusCode).To(Equal(525))
 			})
 		})
 	})
