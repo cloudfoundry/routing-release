@@ -39,8 +39,8 @@ const (
 )
 
 var (
-	GlobalLoadBalancingAlgorithms   = []string{LOAD_BALANCE_RR, LOAD_BALANCE_LC} // These strategies can be set globally via config
-	LoadBalancingStrategies         = append(GlobalLoadBalancingAlgorithms, LOAD_BALANCE_HB)
+	GlobalLoadBalancingAlgorithms   = []string{LOAD_BALANCE_RR, LOAD_BALANCE_LC}             // These strategies can be set globally via routing-release config
+	LoadBalancingStrategies         = append(GlobalLoadBalancingAlgorithms, LOAD_BALANCE_HB) // These strategies can be set for individual routes (per-route options)
 	AZPreferences                   = []string{AZ_PREF_NONE, AZ_PREF_LOCAL}
 	AllowedShardingModes            = []string{SHARD_ALL, SHARD_SEGMENTS, SHARD_SHARED_AND_SEGMENTS}
 	AllowedForwardedClientCertModes = []string{ALWAYS_FORWARD, FORWARD, SANITIZE_SET}

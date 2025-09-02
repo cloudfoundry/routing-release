@@ -75,7 +75,12 @@ type ProxyRoundTripper interface {
 }
 
 type HashRoutingProperties struct {
-	Header        string
+	// HeaderName is a name of the HTTP header that will be used for hash routing
+	HeaderName string
+
+	// BalanceFactor is a number, used to prevent endpoint overload.
+	// If BalanceFactor is not provided, it defaults to 0 and the overload situation will not be considered
+	// See https://github.com/cloudfoundry/community/blob/main/toc/rfc/rfc-0042-hash-based-routing.md#considering-a-balance-factor
 	BalanceFactor float64
 }
 
@@ -86,7 +91,7 @@ func (hrp *HashRoutingProperties) Equal(hrp2 *HashRoutingProperties) bool {
 	if hrp == nil || hrp2 == nil {
 		return false
 	}
-	return hrp.Header == hrp2.Header && hrp.BalanceFactor == hrp2.BalanceFactor
+	return hrp.HeaderName == hrp2.HeaderName && hrp.BalanceFactor == hrp2.BalanceFactor
 }
 
 type Endpoint struct {
@@ -218,7 +223,7 @@ type EndpointOpts struct {
 	UseTLS                  bool
 	UpdatedAt               time.Time
 	LoadBalancingAlgorithm  string
-	HashHeader              string
+	HashHeaderName          string
 	HashBalance             float64
 }
 
@@ -242,10 +247,9 @@ func NewEndpoint(opts *EndpointOpts) *Endpoint {
 		LoadBalancingAlgorithm: opts.LoadBalancingAlgorithm,
 	}
 
-	// TODO: Log debug? warning when HashHeader is set but LoadBalancingAlgorithm is not LOAD_BALANCE_HB?
-	if opts.LoadBalancingAlgorithm == config.LOAD_BALANCE_HB && opts.HashHeader != "" { // BalanceFactor is optional
+	if opts.LoadBalancingAlgorithm == config.LOAD_BALANCE_HB && opts.HashHeaderName != "" { // BalanceFactor is optional
 		endpoint.HashRoutingProperties = &HashRoutingProperties{
-			Header:        opts.HashHeader,
+			HeaderName:    opts.HashHeaderName,
 			BalanceFactor: opts.HashBalance,
 		}
 	}
@@ -634,7 +638,7 @@ func (e *Endpoint) MarshalJSON() ([]byte, error) {
 	jsonObj.LoadBalancingAlgorithm = e.LoadBalancingAlgorithm
 
 	if e.HashRoutingProperties != nil {
-		jsonObj.HashHeader = e.HashRoutingProperties.Header
+		jsonObj.HashHeader = e.HashRoutingProperties.HeaderName
 		jsonObj.HashBalance = e.HashRoutingProperties.BalanceFactor
 	}
 

@@ -428,26 +428,6 @@ var _ = Describe("EndpointPool", func() {
 				Expect(pool.LoadBalancingAlgorithm).To(Equal(config.LOAD_BALANCE_RR))
 			})
 		})
-
-		Context("Hash-Based load balancing algorithm", func() {
-
-			It("correctly propagates the load balancing algorithm and HashRoutingProperties of the newly created endpoint to the other endpoints of the pool ", func() {
-				// TODO: route.HashBased will be implemented at a later date
-				//	poolWithLBAlgoHB := route.NewPool(&route.PoolOpts{
-				//		Logger:                 logger.Logger,
-				//		LoadBalancingAlgorithm: config.LOAD_BALANCE_HB,
-				//		//HashRoutingProperties:
-				//	})
-				//	iterator := poolWithLBAlgoHB.Endpoints(logger.Logger, "", false, "none", "az")
-				//	Expect(iterator).To(BeAssignableToTypeOf(&route.HashBased{}))
-				//	Eventually(logger).Should(gbytes.Say(`endpoint-iterator-with-round-robin-lb-algo`))
-			})
-
-			It("overwrites the load balancing algorithm and HashRoutingProperties of the endpoint and pool", func() {
-				//	TODO
-			})
-		})
-
 	})
 
 	Context("RouteServiceUrl", func() {
