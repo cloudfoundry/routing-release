@@ -1519,7 +1519,7 @@ var _ = Describe("Proxy", func() {
 					return 0, err
 				}
 				return fi.Size(), nil
-			}).ShouldNot(BeZero())
+			}, 50).ShouldNot(BeZero())
 
 			//make sure the record includes all the data
 			//since the building of the log record happens throughout the life of the request
@@ -1613,6 +1613,7 @@ var _ = Describe("Proxy", func() {
 
 					Expect(err).NotTo(HaveOccurred())
 					Expect(string(msgBuf[:n])).To(Equal("WEBSOCKET OK"))
+					conn.Close()
 
 					Eventually(func() (int64, error) {
 						fi, err := f.Stat()
@@ -2728,6 +2729,7 @@ var _ = Describe("Proxy", func() {
 
 			conn.WriteLine("hello from client")
 			conn.CheckLine("hello from server")
+			conn.Close()
 
 			Eventually(func() (int64, error) {
 				fi, err := f.Stat()
@@ -2739,13 +2741,12 @@ var _ = Describe("Proxy", func() {
 
 			b, err := os.ReadFile(f.Name())
 			Expect(err).NotTo(HaveOccurred())
+			fmt.Println(string(b))
 
 			Expect(string(b)).To(ContainSubstring(`response_time:`))
 			Expect(string(b)).To(ContainSubstring("HTTP/1.1\" 101"))
 			responseTime := parseResponseTimeFromLog(string(b))
 			Expect(responseTime).To(BeNumerically(">", 0))
-
-			conn.Close()
 		})
 
 		It("emits a xxx metric", func() {

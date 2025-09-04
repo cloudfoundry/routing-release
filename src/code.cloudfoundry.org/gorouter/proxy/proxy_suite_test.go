@@ -124,7 +124,7 @@ var _ = JustBeforeEach(func() {
 		conf.RouteServiceConfig.EnableWebsockets,
 	)
 
-	proxyServer, err = net.Listen("tcp", "127.0.0.1:0")
+	proxyServer, err = net.Listen("tcp", "127.0.0.1:8888")
 	Expect(err).NotTo(HaveOccurred())
 
 	serverAddr := proxyServer.Addr().String()

@@ -1,0 +1,27 @@
+20:10:35.525582 IP localhost.40828 > localhost.8888: Flags [S], seq 4207237725, win 65495, options [mss 65495,sackOK,TS val 875283805 ecr 0,nop,wscale 7], length 0
+20:10:35.525595 IP localhost.8888 > localhost.40828: Flags [S.], seq 2083683262, ack 4207237726, win 65483, options [mss 65495,sackOK,TS val 875283805 ecr 875283805,nop,wscale 7], length 0
+20:10:35.525605 IP localhost.40828 > localhost.8888: Flags [.], ack 1, win 512, options [nop,nop,TS val 875283805 ecr 875283805], length 0
+20:10:35.525771 IP localhost.40828 > localhost.8888: Flags [P.], seq 1:106, ack 1, win 512, options [nop,nop,TS val 875283805 ecr 875283805], length 105
+20:10:35.525777 IP localhost.8888 > localhost.40828: Flags [.], ack 106, win 511, options [nop,nop,TS val 875283805 ecr 875283805], length 0
+20:10:35.526193 IP localhost.49128 > localhost.42693: Flags [S], seq 1839722784, win 65495, options [mss 65495,sackOK,TS val 875283805 ecr 0,nop,wscale 7], length 0
+20:10:35.526201 IP localhost.42693 > localhost.49128: Flags [S.], seq 1557473386, ack 1839722785, win 65483, options [mss 65495,sackOK,TS val 875283805 ecr 875283805,nop,wscale 7], length 0
+20:10:35.526208 IP localhost.49128 > localhost.42693: Flags [.], ack 1, win 512, options [nop,nop,TS val 875283805 ecr 875283805], length 0
+20:10:35.526411 IP localhost.49128 > localhost.42693: Flags [P.], seq 1:327, ack 1, win 512, options [nop,nop,TS val 875283806 ecr 875283805], length 326
+20:10:35.526431 IP localhost.42693 > localhost.49128: Flags [.], ack 327, win 510, options [nop,nop,TS val 875283806 ecr 875283806], length 0
+20:10:35.536507 IP localhost.42693 > localhost.49128: Flags [P.], seq 1:78, ack 327, win 512, options [nop,nop,TS val 875283816 ecr 875283806], length 77
+20:10:35.536529 IP localhost.49128 > localhost.42693: Flags [.], ack 78, win 512, options [nop,nop,TS val 875283816 ecr 875283816], length 0
+20:10:35.536706 IP localhost.8888 > localhost.40828: Flags [P.], seq 1:135, ack 106, win 512, options [nop,nop,TS val 875283816 ecr 875283805], length 134
+20:10:35.536728 IP localhost.40828 > localhost.8888: Flags [.], ack 135, win 511, options [nop,nop,TS val 875283816 ecr 875283816], length 0
+20:10:35.536767 IP localhost.40828 > localhost.8888: Flags [P.], seq 106:125, ack 135, win 512, options [nop,nop,TS val 875283816 ecr 875283816], length 19
+20:10:35.536874 IP localhost.49128 > localhost.42693: Flags [P.], seq 327:346, ack 78, win 512, options [nop,nop,TS val 875283816 ecr 875283816], length 19
+20:10:35.536912 IP localhost.42693 > localhost.49128: Flags [P.], seq 78:97, ack 346, win 512, options [nop,nop,TS val 875283816 ecr 875283816], length 19
+20:10:35.536931 IP localhost.42693 > localhost.49128: Flags [F.], seq 97, ack 346, win 512, options [nop,nop,TS val 875283816 ecr 875283816], length 0
+20:10:35.536941 IP localhost.8888 > localhost.40828: Flags [P.], seq 135:154, ack 125, win 512, options [nop,nop,TS val 875283816 ecr 875283816], length 19
+20:10:35.536973 IP localhost.8888 > localhost.40828: Flags [F.], seq 154, ack 125, win 512, options [nop,nop,TS val 875283816 ecr 875283816], length 0
+20:10:35.537067 IP localhost.49128 > localhost.42693: Flags [F.], seq 346, ack 98, win 512, options [nop,nop,TS val 875283816 ecr 875283816], length 0
+20:10:35.537072 IP localhost.42693 > localhost.49128: Flags [.], ack 347, win 512, options [nop,nop,TS val 875283816 ecr 875283816], length 0
+20:10:35.546323 IP localhost.8888 > localhost.40828: Flags [F.], seq 154, ack 125, win 512, options [nop,nop,TS val 875283826 ecr 875283816], length 0
+20:10:35.546362 IP localhost.40828 > localhost.8888: Flags [.], ack 155, win 512, options [nop,nop,TS val 875283826 ecr 875283816,nop,nop,sack 1 {154:155}], length 0
+20:10:35.547342 IP localhost.40828 > localhost.8888: Flags [F.], seq 125, ack 155, win 512, options [nop,nop,TS val 875283827 ecr 875283816], length 0
+20:10:35.547353 IP localhost.8888 > localhost.40828: Flags [.], ack 126, win 512, options [nop,nop,TS val 875283827 ecr 875283827], length 0
+

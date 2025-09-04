@@ -1,0 +1,51 @@
+# [S] SYN - client is initiating new connection
+20:07:59.258346 IP localhost.33162 > localhost.8888: Flags [S], seq 2882310677, win 65495, options [mss 65495,sackOK,TS val 875127538 ecr 0,nop,wscale 7], length 0
+
+# [S.] - SYN ACK - from app
+20:07:59.258359 IP localhost.8888 > localhost.33162: Flags [S.], seq 3664773338, ack 2882310678, win 65483, options [mss 65495,sackOK,TS val 875127538 ecr 875127538,nop,wscale 7], length 0
+
+# [.] - ACK from client
+20:07:59.258368 IP localhost.33162 > localhost.8888: Flags [.], ack 1, win 512, options [nop,nop,TS val 875127538 ecr 875127538], length 0
+
+# [P.] - PSH (PUSH) from client. this flag instructs the operating system’s network stack to send/receive the entire content of its buffers immediately.
+20:07:59.258479 IP localhost.33162 > localhost.8888: Flags [P.], seq 1:106, ack 1, win 512, options [nop,nop,TS val 875127538 ecr 875127538], length 105
+
+# [.] - ACK from app 
+20:07:59.258493 IP localhost.8888 > localhost.33162: Flags [.], ack 106, win 511, options [nop,nop,TS val 875127538 ecr 875127538], length 0
+
+# [P.] - app ACKs the push from client.
+20:07:59.268857 IP localhost.8888 > localhost.33162: Flags [P.], seq 1:135, ack 106, win 512, options [nop,nop,TS val 875127548 ecr 875127538], length 134
+
+# [.] - client ack's the app's [P.]
+20:07:59.268874 IP localhost.33162 > localhost.8888: Flags [.], ack 135, win 511, options [nop,nop,TS val 875127548 ecr 875127548], length 0
+
+# [P.] - client sends some data
+20:07:59.268915 IP localhost.33162 > localhost.8888: Flags [P.], seq 106:125, ack 135, win 512, options [nop,nop,TS val 875127548 ecr 875127548], length 19
+
+# [P.] - app responds with some data
+20:07:59.269025 IP localhost.8888 > localhost.33162: Flags [P.], seq 135:154, ack 125, win 512, options [nop,nop,TS val 875127548 ecr 875127548], length 19
+
+# [F.] - app sends FIN (this makes sense, the conn is closed in the test on the client side)
+20:07:59.269037 IP localhost.8888 > localhost.33162: Flags [F.], seq 154, ack 125, win 512, options [nop,nop,TS val 875127548 ecr 875127548], length 0
+20:07:59.274300 IP localhost.8888 > localhost.33162: Flags [F.], seq 154, ack 125, win 512, options [nop,nop,TS val 875127554 ecr 875127548], length 0
+
+# [.] - client sends ACK
+20:07:59.274318 IP localhost.33162 > localhost.8888: Flags [.], ack 155, win 512, options [nop,nop,TS val 875127554 ecr 875127548,nop,nop,sack 1 {154:155}], length 0
+
+
+------------------------------------------------
+
+20:08:14.274314 IP localhost.33162 > localhost.8888: Flags [.], ack 155, win 512, options [nop,nop,TS val 875142554 ecr 875127548], length 0
+20:08:14.274332 IP localhost.8888 > localhost.33162: Flags [.], ack 125, win 512, options [nop,nop,TS val 875142554 ecr 875127554], length 0
+20:08:14.278313 IP localhost.8888 > localhost.33162: Flags [.], ack 125, win 512, options [nop,nop,TS val 875142558 ecr 875127554], length 0
+20:08:14.278324 IP localhost.33162 > localhost.8888: Flags [.], ack 155, win 512, options [nop,nop,TS val 875142558 ecr 875142554], length 0
+20:08:29.374323 IP localhost.8888 > localhost.33162: Flags [.], ack 125, win 512, options [nop,nop,TS val 875157654 ecr 875142558], length 0
+20:08:29.374323 IP localhost.33162 > localhost.8888: Flags [.], ack 155, win 512, options [nop,nop,TS val 875157654 ecr 875142554], length 0
+20:08:29.374340 IP localhost.33162 > localhost.8888: Flags [.], ack 155, win 512, options [nop,nop,TS val 875157654 ecr 875142554], length 0
+20:08:29.374340 IP localhost.8888 > localhost.33162: Flags [.], ack 125, win 512, options [nop,nop,TS val 875157654 ecr 875142558], length 0
+20:08:44.478335 IP localhost.33162 > localhost.8888: Flags [.], ack 155, win 512, options [nop,nop,TS val 875172758 ecr 875157654], length 0
+20:08:44.478350 IP localhost.8888 > localhost.33162: Flags [.], ack 125, win 512, options [nop,nop,TS val 875172758 ecr 875157654], length 0
+20:08:44.482345 IP localhost.8888 > localhost.33162: Flags [.], ack 125, win 512, options [nop,nop,TS val 875172762 ecr 875157654], length 0
+20:08:44.482364 IP localhost.33162 > localhost.8888: Flags [.], ack 155, win 512, options [nop,nop,TS val 875172762 ecr 875172758], length 0
+20:08:49.274732 IP localhost.33162 > localhost.8888: Flags [F.], seq 125, ack 155, win 512, options [nop,nop,TS val 875177554 ecr 875172758], length 0
+20:08:49.274734 IP localhost.8888 > localhost.33162: Flags [.], ack 126, win 512, options [nop,nop,TS val 875177554 ecr 875177554], length 0

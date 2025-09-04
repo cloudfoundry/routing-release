@@ -1,0 +1,39 @@
+# [S] SYN - client is initiating new connection
+20:10:35.525582 IP localhost.40828 > localhost.8888: Flags [S], seq 4207237725, win 65495, options [mss 65495,sackOK,TS val 875283805 ecr 0,nop,wscale 7], length 0
+
+# [S.] - SYN ACK - from app
+20:10:35.525595 IP localhost.8888 > localhost.40828: Flags [S.], seq 2083683262, ack 4207237726, win 65483, options [mss 65495,sackOK,TS val 875283805 ecr 875283805,nop,wscale 7], length 0
+
+# [.] - ACK from client
+20:10:35.525605 IP localhost.40828 > localhost.8888: Flags [.], ack 1, win 512, options [nop,nop,TS val 875283805 ecr 875283805], length 0
+
+# [P.] - PSH (PUSH) from client. this flag instructs the operating system’s network stack to send/receive the entire content of its buffers immediately.
+20:10:35.525771 IP localhost.40828 > localhost.8888: Flags [P.], seq 1:106, ack 1, win 512, options [nop,nop,TS val 875283805 ecr 875283805], length 105
+ 
+# [.] - ACK from app 
+20:10:35.525777 IP localhost.8888 > localhost.40828: Flags [.], ack 106, win 511, options [nop,nop,TS val 875283805 ecr 875283805], length 0
+
+# [P.] - app ACKs the push from client.
+20:10:35.536706 IP localhost.8888 > localhost.40828: Flags [P.], seq 1:135, ack 106, win 512, options [nop,nop,TS val 875283816 ecr 875283805], length 134
+
+# [.] - client ack's the app's [P.]
+20:10:35.536728 IP localhost.40828 > localhost.8888: Flags [.], ack 135, win 511, options [nop,nop,TS val 875283816 ecr 875283816], length 0
+
+# [P.] - client sends some data
+20:10:35.536767 IP localhost.40828 > localhost.8888: Flags [P.], seq 106:125, ack 135, win 512, options [nop,nop,TS val 875283816 ecr 875283816], length 19
+
+# [P.] - app responds with some data
+20:10:35.536941 IP localhost.8888 > localhost.40828: Flags [P.], seq 135:154, ack 125, win 512, options [nop,nop,TS val 875283816 ecr 875283816], length 19
+
+# [F.] - app sends FIN (this makes sense, the conn is closed in the test on the client side)
+20:10:35.536973 IP localhost.8888 > localhost.40828: Flags [F.], seq 154, ack 125, win 512, options [nop,nop,TS val 875283816 ecr 875283816], length 0
+20:10:35.546323 IP localhost.8888 > localhost.40828: Flags [F.], seq 154, ack 125, win 512, options [nop,nop,TS val 875283826 ecr 875283816], length 0
+
+# [.] - client sends ACK
+20:10:35.546362 IP localhost.40828 > localhost.8888: Flags [.], ack 155, win 512, options [nop,nop,TS val 875283826 ecr 875283816,nop,nop,sack 1 {154:155}], length 0
+
+# [F.] - client sends FIN back to app
+20:10:35.547342 IP localhost.40828 > localhost.8888: Flags [F.], seq 125, ack 155, win 512, options [nop,nop,TS val 875283827 ecr 875283816], length 0
+
+# [.] - App acknowledges the FIN and the connection is closed
+20:10:35.547353 IP localhost.8888 > localhost.40828: Flags [.], ack 126, win 512, options [nop,nop,TS val 875283827 ecr 875283827], length 0
