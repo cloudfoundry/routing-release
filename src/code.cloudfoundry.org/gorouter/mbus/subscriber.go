@@ -79,7 +79,7 @@ func (rm *RegistryMessage) makeEndpoint(http2Enabled bool) (*route.Endpoint, err
 		UpdatedAt:               updatedAt,
 		LoadBalancingAlgorithm:  rm.Options.LoadBalancingAlgorithm,
 		HashHeaderName:          rm.Options.HashHeaderName,
-		HashBalance:             rm.Options.HashBalance,
+		HashBalanceFactor:       rm.Options.HashBalance,
 	}), nil
 }
 

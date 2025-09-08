@@ -49,15 +49,15 @@ var _ = Describe("Endpoint", func() {
 					Host:                   "localhost",
 					Port:                   8080,
 					LoadBalancingAlgorithm: "hash",
-					HashHeader:             "X-Header",
-					HashBalance:            1.15,
+					HashHeaderName:         "X-Header",
+					HashBalanceFactor:      1.15,
 				})
 			})
 			It("should have the correct hash header", func() {
-				Expect(endpoint.HashRoutingProperties.Header).To(Equal("X-Header"))
+				Expect(endpoint.HashHeaderName).To(Equal("X-Header"))
 			})
 			It("should have the correct hash balance", func() {
-				Expect(endpoint.HashRoutingProperties.BalanceFactor).To(Equal(1.15))
+				Expect(endpoint.HashBalanceFactor).To(Equal(1.15))
 			})
 			It("should have the correct load balancing algorithm", func() {
 				Expect(endpoint.LoadBalancingAlgorithm).To(Equal("hash"))
@@ -72,24 +72,24 @@ var _ = Describe("Endpoint", func() {
 					Host:                   "localhost",
 					Port:                   8080,
 					LoadBalancingAlgorithm: "hash",
-					HashHeader:             "X-Header",
-					HashBalance:            1.15,
+					HashHeaderName:         "X-Header",
+					HashBalanceFactor:      1.15,
 				}
 				opts2 := &route.EndpointOpts{
 					AppId:                  "test-app",
 					Host:                   "localhost",
 					Port:                   8080,
 					LoadBalancingAlgorithm: "hash",
-					HashHeader:             "X-Header",
-					HashBalance:            1.15,
+					HashHeaderName:         "X-Header",
+					HashBalanceFactor:      1.15,
 				}
 				opts3 := &route.EndpointOpts{
 					AppId:                  "test-app",
 					Host:                   "localhost",
 					Port:                   8080,
 					LoadBalancingAlgorithm: "hash",
-					HashHeader:             "X-Header",
-					HashBalance:            2.25,
+					HashHeaderName:         "X-Header",
+					HashBalanceFactor:      2.25,
 				}
 				endpoint1 = route.NewEndpoint(opts1)
 				endpoint2 = route.NewEndpoint(opts2)
@@ -917,8 +917,8 @@ var _ = Describe("EndpointPool", func() {
 			PrivateInstanceId:       "pvt_test_instance_id",
 			UseTLS:                  true,
 			LoadBalancingAlgorithm:  "hash",
-			HashHeader:              "X-Header",
-			HashBalance:             1.25,
+			HashHeaderName:          "X-Header",
+			HashBalanceFactor:       1.25,
 		})
 
 		pool.Put(e)

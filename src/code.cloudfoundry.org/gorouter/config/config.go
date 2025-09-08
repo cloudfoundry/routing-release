@@ -39,7 +39,7 @@ const (
 )
 
 var (
-	GlobalLoadBalancingAlgorithms   = []string{LOAD_BALANCE_RR, LOAD_BALANCE_LC}
+	GlobalLoadBalancingStrategies   = []string{LOAD_BALANCE_RR, LOAD_BALANCE_LC}
 	LoadBalancingStrategies         = []string{LOAD_BALANCE_RR, LOAD_BALANCE_LC, LOAD_BALANCE_HB}
 	AZPreferences                   = []string{AZ_PREF_NONE, AZ_PREF_LOCAL}
 	AllowedShardingModes            = []string{SHARD_ALL, SHARD_SEGMENTS, SHARD_SHARED_AND_SEGMENTS}
@@ -598,7 +598,7 @@ func DefaultConfig() (*Config, error) {
 }
 
 func IsGlobalLoadBalancingAlgorithmValid(lbAlgo string) bool {
-	return slices.Contains(GlobalLoadBalancingAlgorithms, lbAlgo)
+	return slices.Contains(GlobalLoadBalancingStrategies, lbAlgo)
 }
 
 func IsLoadBalancingAlgorithmValid(lbAlgo string) bool {
@@ -762,7 +762,7 @@ func (c *Config) Process() error {
 	}
 
 	if !IsGlobalLoadBalancingAlgorithmValid(c.LoadBalance) {
-		return fmt.Errorf("Invalid global load balancing algorithm %s. Allowed values are %s", c.LoadBalance, GlobalLoadBalancingAlgorithms)
+		return fmt.Errorf("Invalid global load balancing algorithm %s. Allowed values are %s", c.LoadBalance, GlobalLoadBalancingStrategies)
 	}
 
 	validAZPref := false

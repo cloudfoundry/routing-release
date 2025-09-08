@@ -74,26 +74,6 @@ type ProxyRoundTripper interface {
 	CancelRequest(*http.Request)
 }
 
-type HashRoutingProperties struct {
-	// HeaderName is a name of the HTTP header that will be used for hash routing
-	HeaderName string
-
-	// BalanceFactor is a number, used to prevent endpoint overload.
-	// If BalanceFactor is not provided, it defaults to 0 and the overload situation will not be considered
-	// See https://github.com/cloudfoundry/community/blob/main/toc/rfc/rfc-0042-hash-based-routing.md#considering-a-balance-factor
-	BalanceFactor float64
-}
-
-func (hrp *HashRoutingProperties) Equal(hrp2 *HashRoutingProperties) bool {
-	if hrp == nil && hrp2 == nil {
-		return true
-	}
-	if hrp == nil || hrp2 == nil {
-		return false
-	}
-	return hrp.HeaderName == hrp2.HeaderName && hrp.BalanceFactor == hrp2.BalanceFactor
-}
-
 type Endpoint struct {
 	ApplicationId          string
 	AvailabilityZone       string
@@ -114,7 +94,8 @@ type Endpoint struct {
 	UpdatedAt              time.Time
 	RoundTripperInit       sync.Once
 	LoadBalancingAlgorithm string
-	HashRoutingProperties  *HashRoutingProperties
+	HashHeaderName         string
+	HashBalanceFactor      float64
 }
 
 func (e *Endpoint) RoundTripper() ProxyRoundTripper {
@@ -158,7 +139,8 @@ func (e *Endpoint) Equal(e2 *Endpoint) bool {
 		e.useTls == e2.useTls &&
 		e.UpdatedAt.Equal(e2.UpdatedAt) &&
 		e.LoadBalancingAlgorithm == e2.LoadBalancingAlgorithm &&
-		e.HashRoutingProperties.Equal(e2.HashRoutingProperties) &&
+		e.HashHeaderName == e2.HashHeaderName &&
+		e.HashBalanceFactor == e2.HashBalanceFactor &&
 		maps.Equal(e.Tags, e2.Tags)
 
 }
@@ -224,7 +206,7 @@ type EndpointOpts struct {
 	UpdatedAt               time.Time
 	LoadBalancingAlgorithm  string
 	HashHeaderName          string
-	HashBalance             float64
+	HashBalanceFactor       float64
 }
 
 func NewEndpoint(opts *EndpointOpts) *Endpoint {
@@ -248,10 +230,8 @@ func NewEndpoint(opts *EndpointOpts) *Endpoint {
 	}
 
 	if opts.LoadBalancingAlgorithm == config.LOAD_BALANCE_HB && opts.HashHeaderName != "" { // BalanceFactor is optional
-		endpoint.HashRoutingProperties = &HashRoutingProperties{
-			HeaderName:    opts.HashHeaderName,
-			BalanceFactor: opts.HashBalance,
-		}
+		endpoint.HashHeaderName = opts.HashHeaderName
+		endpoint.HashBalanceFactor = opts.HashBalanceFactor
 	}
 
 	return endpoint
@@ -636,11 +616,8 @@ func (e *Endpoint) MarshalJSON() ([]byte, error) {
 	jsonObj.PrivateInstanceId = e.PrivateInstanceId
 	jsonObj.ServerCertDomainSAN = e.ServerCertDomainSAN
 	jsonObj.LoadBalancingAlgorithm = e.LoadBalancingAlgorithm
-
-	if e.HashRoutingProperties != nil {
-		jsonObj.HashHeader = e.HashRoutingProperties.HeaderName
-		jsonObj.HashBalance = e.HashRoutingProperties.BalanceFactor
-	}
+	jsonObj.HashHeader = e.HashHeaderName
+	jsonObj.HashBalance = e.HashBalanceFactor
 
 	return json.Marshal(jsonObj)
 }
