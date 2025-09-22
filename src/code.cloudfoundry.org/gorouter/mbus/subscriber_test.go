@@ -636,7 +636,7 @@ var _ = Describe("Subscriber", func() {
 					Uris:     []route.Uri{"test.example.com"},
 					Options: mbus.RegistryMessageOpts{
 						LoadBalancingAlgorithm: expectedLBAlgo,
-						HashHeader:             "X-Header",
+						HashHeaderName:         "X-Header",
 						HashBalance:            1.5,
 					},
 				}
@@ -653,8 +653,8 @@ var _ = Describe("Subscriber", func() {
 					AppId:                  "app",
 					Protocol:               "http2",
 					LoadBalancingAlgorithm: expectedLBAlgo,
-					HashHeader:             "X-Header",
-					HashBalance:            1.5,
+					HashHeaderName:         "X-Header",
+					HashBalanceFactor:      1.5,
 				})
 
 				Expect(originalEndpoint).To(Equal(expectedEndpoint))
@@ -670,7 +670,7 @@ var _ = Describe("Subscriber", func() {
 					Uris:     []route.Uri{"test.example.com"},
 					Options: mbus.RegistryMessageOpts{
 						LoadBalancingAlgorithm: expectedLBAlgo,
-						HashHeader:             "X-Header",
+						HashHeaderName:         "X-Header",
 					},
 				}
 				data, err := json.Marshal(msg)
@@ -686,10 +686,11 @@ var _ = Describe("Subscriber", func() {
 					AppId:                  "app",
 					Protocol:               "http2",
 					LoadBalancingAlgorithm: expectedLBAlgo,
-					HashHeader:             "X-Header",
-					HashBalance:            0.0,
+					HashHeaderName:         "X-Header",
+					HashBalanceFactor:      0.0,
 				})
-				Expect(expectedEndpoint.HashRoutingProperties).ToNot(BeNil())
+				Expect(expectedEndpoint.HashHeaderName).To(Equal("X-Header"))
+				Expect(expectedEndpoint.HashBalanceFactor).To(Equal(0.0))
 				Expect(originalEndpoint).To(Equal(expectedEndpoint))
 			})
 
@@ -703,7 +704,7 @@ var _ = Describe("Subscriber", func() {
 					Uris:     []route.Uri{"test.example.com"},
 					Options: mbus.RegistryMessageOpts{
 						LoadBalancingAlgorithm: expectedLBAlgo,
-						HashHeader:             "X-Header",
+						HashHeaderName:         "X-Header",
 					},
 				}
 				data, err := json.Marshal(msg)
@@ -720,7 +721,8 @@ var _ = Describe("Subscriber", func() {
 					Protocol:               "http2",
 					LoadBalancingAlgorithm: expectedLBAlgo,
 				})
-				Expect(expectedEndpoint.HashRoutingProperties).To(BeNil())
+				Expect(expectedEndpoint.HashHeaderName).To(BeEmpty())
+				Expect(expectedEndpoint.HashBalanceFactor).To(Equal(0.0))
 				Expect(originalEndpoint).To(Equal(expectedEndpoint))
 			})
 		})
