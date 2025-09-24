@@ -276,20 +276,20 @@ func main() {
 	os.Exit(0)
 }
 
-// initializeDropsondeReporter setups metrics via dropsonse if enabled
+// initializeDropsondeReporter initializes logs. It also initializes envelope V1 metrics if enabled
 func initializeDropsondeReporter(prefix string, logger *slog.Logger, c *config.Config) *metrics.Metrics {
-	if !c.EnableEnvelopeV1Metrics {
-		return nil
-	}
 	err := dropsonde.Initialize(c.Logging.MetronAddress, c.Logging.JobName)
 	if err != nil {
 		grlog.Fatal(logger, "dropsonde-initialize-error", grlog.ErrAttr(err))
+	}
+	if !c.EnableEnvelopeV1Metrics {
+		return nil
 	}
 	dropsondeMetricSender := metric_sender.NewMetricSender(dropsonde.AutowiredEmitter())
 	return initializeMetrics(dropsondeMetricSender, c, grlog.CreateLoggerWithSource(prefix, "metricsreporter"))
 }
 
-// initializePrometheusReporter setups metrics via Prometheus if enabled
+// initializePrometheusReporter initializes metrics via Prometheus if enabled
 func initializePrometheusReporter(c *config.Config) *metrics_prometheus.Metrics {
 	if !c.Prometheus.Enabled {
 		return nil
