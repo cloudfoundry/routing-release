@@ -38,6 +38,7 @@ require (
 	github.com/nats-io/nats-server/v2 v2.10.16
 	github.com/nats-io/nats.go v1.36.0
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
+	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/ginkgo/v2 v2.19.0
 	github.com/onsi/gomega v1.33.1
 	github.com/openzipkin/zipkin-go v0.4.3
@@ -70,6 +71,7 @@ require (
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/facebookgo/limitgroup v0.0.0-20150612190941-6abd8d71ec01 // indirect
 	github.com/facebookgo/muster v0.0.0-20150708232844-fd3d7953fd52 // indirect
+	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/go-test/deep v1.0.7 // indirect
@@ -87,6 +89,7 @@ require (
 	github.com/nats-io/jwt/v2 v2.5.7 // indirect
 	github.com/nats-io/nkeys v0.4.7 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
+	github.com/nxadm/tail v1.4.8 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_golang v1.19.1 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
@@ -105,5 +108,6 @@ require (
 	golang.org/x/time v0.5.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240610135401-a8a62080eff3 // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
+	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

@@ -1,0 +1,6 @@
+check process testapp
+  with pidfile /var/vcap/sys/run/bpm/testapp/testapp.pid
+  start program "/var/vcap/jobs/bpm/bin/bpm start testapp"
+    with timeout 60 seconds
+  stop program "/var/vcap/jobs/bpm/bin/bpm stop testapp"
+  group vcap

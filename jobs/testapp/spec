@@ -1,0 +1,18 @@
+---
+name: testapp
+
+templates:
+  config.json.erb: config/testapp.json
+  bpm.yml.erb: config/bpm.yml
+  server.crt.erb: config/certs/server.crt
+  private.key.erb: config/certs/private.key
+
+packages:
+ - golang-1.22-linux
+ - testapp
+
+properties:
+  tls_app.cert:
+    description: "Cert to serve when running a TLS endpoint"
+  tls_app.private_key:
+    description: "Private key to use when running a TLS endpoint"

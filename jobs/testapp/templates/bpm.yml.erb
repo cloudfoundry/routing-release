@@ -1,0 +1,19 @@
+<%=
+require 'yaml'
+
+bpm = {
+  "processes" => [
+    { "name" => "testapp",
+      "executable" => "/var/vcap/packages/testapp/bin/testapp",
+      "args" => [ "-c", "/var/vcap/jobs/testapp/config/testapp.json"],
+      "additional_volumes" => [
+        { "path" =>  "/var/vcap/jobs/route_registrar/config/nats/certs",
+        "writable" => false,
+        }
+      ]
+    },
+  ]
+}
+
+YAML.dump(bpm)
+%>

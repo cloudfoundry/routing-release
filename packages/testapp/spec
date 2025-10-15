@@ -1,0 +1,10 @@
+---
+name: testapp
+
+dependencies:
+- golang-1.22-linux
+
+files:
+  - code.cloudfoundry.org/go.mod
+  - code.cloudfoundry.org/go.sum
+  - code.cloudfoundry.org/testapp/*.go
