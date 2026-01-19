@@ -1,6 +1,7 @@
 package route
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log/slog"
@@ -462,6 +463,48 @@ func (p *EndpointPool) findById(id string) *endpointElem {
 	p.Lock()
 	defer p.Unlock()
 	return p.index[id]
+}
+
+// FindStickyEndpoint attempts to find and return a sticky session endpoint.
+// If the endpoint is found and not overloaded, it returns the endpoint.
+// If mustBeSticky is true and the endpoint is missing or overloaded, it returns nil.
+// If mustBeSticky is false and the endpoint is missing or overloaded, it clears the stickyEndpointID and returns nil.
+// The stickyEndpointID pointer is modified in place when the endpoint is not sticky.
+func (p *EndpointPool) FindStickyEndpoint(logger *slog.Logger, stickyEndpointID *string, mustBeSticky bool) *Endpoint {
+	var e *endpointElem
+	if *stickyEndpointID != "" {
+		e = p.findById(*stickyEndpointID)
+		if e != nil && e.isOverloaded() {
+			if mustBeSticky {
+				if logger.Enabled(context.Background(), slog.LevelDebug) {
+					logger.Debug("endpoint-overloaded-but-request-must-be-sticky", e.endpoint.ToLogData()...)
+				}
+				return nil
+			}
+			e = nil
+		}
+
+		if e == nil && mustBeSticky {
+			if logger.Enabled(context.Background(), slog.LevelDebug) {
+				logger.Debug("endpoint-missing-but-request-must-be-sticky", slog.String("requested-endpoint", *stickyEndpointID))
+			}
+			return nil
+		}
+
+		if !mustBeSticky {
+			if logger.Enabled(context.Background(), slog.LevelDebug) {
+				logger.Debug("endpoint-missing-choosing-alternate", slog.String("requested-endpoint", *stickyEndpointID))
+			}
+			*stickyEndpointID = ""
+		}
+	}
+
+	if e != nil {
+		e.RLock()
+		defer e.RUnlock()
+		return e.endpoint
+	}
+	return nil
 }
 
 func (p *EndpointPool) IsEmpty() bool {

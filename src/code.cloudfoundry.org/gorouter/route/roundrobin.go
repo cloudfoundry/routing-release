@@ -1,7 +1,6 @@
 package route
 
 import (
-	"context"
 	"log/slog"
 	"sync"
 	"time"
@@ -38,43 +37,22 @@ func (r *RoundRobin) Next(attempt int) *Endpoint {
 	r.lock.Lock()
 	defer r.lock.Unlock()
 
-	var e *endpointElem
-	if r.initialEndpoint != "" {
-		e = r.pool.findById(r.initialEndpoint)
-		if e != nil && e.isOverloaded() {
-			if r.mustBeSticky {
-				if r.logger.Enabled(context.Background(), slog.LevelDebug) {
-					r.logger.Debug("endpoint-overloaded-but-request-must-be-sticky", e.endpoint.ToLogData()...)
-				}
-				return nil
-			}
-			e = nil
-		}
-
-		if e == nil && r.mustBeSticky {
-			r.logger.Debug("endpoint-missing-but-request-must-be-sticky", slog.String("requested-endpoint", r.initialEndpoint))
-			return nil
-		}
-
-		if !r.mustBeSticky {
-			r.logger.Debug("endpoint-missing-choosing-alternate", slog.String("requested-endpoint", r.initialEndpoint))
-			r.initialEndpoint = ""
-		}
+	e := r.pool.FindStickyEndpoint(r.logger, &r.initialEndpoint, r.mustBeSticky)
+	if e != nil {
+		r.lastEndpoint = e
+		return e
 	}
 
-	if e != nil {
-		e.RLock()
-		defer e.RUnlock()
-		r.lastEndpoint = e.endpoint
-		return e.endpoint
+	if r.mustBeSticky {
+		return nil
 	}
 
-	e = r.next(attempt)
-	if e != nil {
-		e.RLock()
-		defer e.RUnlock()
-		r.lastEndpoint = e.endpoint
-		return e.endpoint
+	endpointElem := r.next(attempt)
+	if endpointElem != nil {
+		endpointElem.RLock()
+		defer endpointElem.RUnlock()
+		r.lastEndpoint = endpointElem.endpoint
+		return endpointElem.endpoint
 	}
 
 	r.lastEndpoint = nil
