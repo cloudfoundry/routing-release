@@ -251,7 +251,7 @@ max_request_header_bytes: 10
 		})
 
 		It("sets prometheus endpoint config", func() {
-			cfg, err := DefaultConfig()
+			_, err := DefaultConfig()
 			Expect(err).ToNot(HaveOccurred())
 
 			var b = []byte(`
@@ -271,26 +271,6 @@ prometheus:
 			Expect(config.Prometheus.CertPath).To(Equal("/some-cert-path"))
 			Expect(config.Prometheus.KeyPath).To(Equal("/some-key-path"))
 			Expect(config.Prometheus.CAPath).To(Equal("/some-ca-path"))
-			Expect(config.Prometheus.Meters).To(Equal(cfg.Prometheus.Meters))
-		})
-
-		It("sets prometheus histogram buckets config", func() {
-			var b = []byte(`
-prometheus:
-  meters:
-    route_lookup_time_histogram_buckets: [0, 100, 10000]
-    route_registration_latency_histogram_buckets: [-10, 0, 10]
-    gorouter_time_histogram_buckets: [1,2,4]
-    routing_response_latency_histogram_buckets: [0.1, 0.5, 1]
-`)
-
-			err := config.Initialize(b)
-			Expect(err).ToNot(HaveOccurred())
-
-			Expect(config.Prometheus.Meters.RouteLookupTimeHistogramBuckets).To(Equal([]float64{0, 100, 10000}))
-			Expect(config.Prometheus.Meters.RouteRegistrationLatencyHistogramBuckets).To(Equal([]float64{-10, 0, 10}))
-			Expect(config.Prometheus.Meters.GorouterTimeHistogramBuckets).To(Equal([]float64{1, 2, 4}))
-			Expect(config.Prometheus.Meters.RoutingResponseLatencyHistogramBuckets).To(Equal([]float64{0.1, 0.5, 1}))
 		})
 
 		It("defaults frontend idle timeout to 900", func() {

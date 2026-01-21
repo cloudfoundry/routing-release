@@ -23,10 +23,9 @@ var _ = Describe("Metrics", func() {
 		var endpoint *route.Endpoint
 
 		BeforeEach(func() {
-			var perRequestMetricsReporting = true
-			var config = config.PrometheusConfig{Port: 0, Meters: getMetersConfig()}
+			var config = config.PrometheusConfig{Port: 0}
 			r = NewMetricsRegistry(config)
-			m = NewMetrics(r, perRequestMetricsReporting, config.Meters)
+			m = NewMetrics(r, true)
 			endpoint = new(route.Endpoint)
 		})
 		AfterEach(func() {
@@ -78,20 +77,16 @@ var _ = Describe("Metrics", func() {
 
 		It("sends the lookup time for routing table", func() {
 			m.CaptureLookupTime(time.Duration(95) * time.Microsecond)
-			Expect(getMetrics(r.Port())).To(ContainSubstring("route_lookup_time_bucket{le=\"100000\"} 1"))
-
-			m.perRequestMetricsReporting = false
-			m.CaptureLookupTime(time.Duration(95) * time.Microsecond)
-			Expect(getMetrics(r.Port())).To(ContainSubstring("route_lookup_time_bucket{le=\"100000\"} 1"))
+			Expect(getMetrics(r.Port())).To(ContainSubstring("route_lookup_time 95000"))
 		})
 
 		It("sends the gorouter time per request", func() {
 			m.CaptureGorouterTime(1)
-			Expect(getMetrics(r.Port())).To(ContainSubstring("gorouter_time_bucket{le=\"1.2\"} 1"))
+			Expect(getMetrics(r.Port())).To(ContainSubstring("gorouter_time 1"))
 
 			m.perRequestMetricsReporting = false
 			m.CaptureGorouterTime(1)
-			Expect(getMetrics(r.Port())).To(ContainSubstring("gorouter_time_bucket{le=\"1.2\"} 1"))
+			Expect(getMetrics(r.Port())).To(ContainSubstring("gorouter_time 1"))
 		})
 
 		It("increments the routes pruned metric", func() {
@@ -112,18 +107,15 @@ var _ = Describe("Metrics", func() {
 			It("properly splits the latencies apart", func() {
 				m.CaptureRouteRegistrationLatency(1234 * time.Microsecond)
 				m.CaptureRouteRegistrationLatency(134 * time.Microsecond)
-
-				Expect(getMetrics(r.Port())).To(ContainSubstring("route_registration_latency_bucket{le=\"1.4\"} 2"))
-				Expect(getMetrics(r.Port())).To(ContainSubstring("route_registration_latency_bucket{le=\"0.2\"} 1"))
+				Expect(getMetrics(r.Port())).To(ContainSubstring("route_registration_latency 0.134"))
 			})
 		})
 	})
 	Context("sends backend errors metrics", func() {
 		BeforeEach(func() {
-			var perRequestMetricsReporting = true
-			var config = config.PrometheusConfig{Port: 0, Meters: getMetersConfig()}
+			var config = config.PrometheusConfig{Port: 0}
 			r = NewMetricsRegistry(config)
-			m = NewMetrics(r, perRequestMetricsReporting, config.Meters)
+			m = NewMetrics(r, true)
 		})
 		AfterEach(func() {
 			m.perRequestMetricsReporting = true
@@ -163,10 +155,9 @@ var _ = Describe("Metrics", func() {
 	})
 	Context("sends lookup error metrics", func() {
 		BeforeEach(func() {
-			var perRequestMetricsReporting = true
-			var config = config.PrometheusConfig{Port: 0, Meters: getMetersConfig()}
+			var config = config.PrometheusConfig{Port: 0}
 			r = NewMetricsRegistry(config)
-			m = NewMetrics(r, perRequestMetricsReporting, config.Meters)
+			m = NewMetrics(r, true)
 		})
 		AfterEach(func() {
 			m.perRequestMetricsReporting = true
@@ -195,10 +186,9 @@ var _ = Describe("Metrics", func() {
 	})
 	Context("websocket metrics", func() {
 		BeforeEach(func() {
-			var perRequestMetricsReporting = true
-			var config = config.PrometheusConfig{Port: 0, Meters: getMetersConfig()}
+			var config = config.PrometheusConfig{Port: 0}
 			r = NewMetricsRegistry(config)
-			m = NewMetrics(r, perRequestMetricsReporting, config.Meters)
+			m = NewMetrics(r, true)
 		})
 		AfterEach(func() {
 			m.perRequestMetricsReporting = true
@@ -218,10 +208,9 @@ var _ = Describe("Metrics", func() {
 		var endpoint *route.Endpoint
 
 		BeforeEach(func() {
-			var perRequestMetricsReporting = true
-			var config = config.PrometheusConfig{Port: 0, Meters: getMetersConfig()}
+			var config = config.PrometheusConfig{Port: 0}
 			r = NewMetricsRegistry(config)
-			m = NewMetrics(r, perRequestMetricsReporting, config.Meters)
+			m = NewMetrics(r, true)
 			endpoint = new(route.Endpoint)
 		})
 		AfterEach(func() {
@@ -257,10 +246,9 @@ var _ = Describe("Metrics", func() {
 
 	Context("increments the response metrics", func() {
 		BeforeEach(func() {
-			var perRequestMetricsReporting = true
-			var config = config.PrometheusConfig{Port: 0, Meters: getMetersConfig()}
+			var config = config.PrometheusConfig{Port: 0}
 			r = NewMetricsRegistry(config)
-			m = NewMetrics(r, perRequestMetricsReporting, config.Meters)
+			m = NewMetrics(r, true)
 		})
 		AfterEach(func() {
 			m.perRequestMetricsReporting = true
@@ -319,10 +307,9 @@ var _ = Describe("Metrics", func() {
 		var response http.Response
 
 		BeforeEach(func() {
-			var perRequestMetricsReporting = true
-			var config = config.PrometheusConfig{Port: 0, Meters: getMetersConfig()}
+			var config = config.PrometheusConfig{Port: 0}
 			r = NewMetricsRegistry(config)
-			m = NewMetrics(r, perRequestMetricsReporting, config.Meters)
+			m = NewMetrics(r, true)
 			response = http.Response{}
 		})
 		AfterEach(func() {
@@ -389,10 +376,9 @@ var _ = Describe("Metrics", func() {
 		var endpoint *route.Endpoint
 
 		BeforeEach(func() {
-			var perRequestMetricsReporting = true
-			var config = config.PrometheusConfig{Port: 0, Meters: getMetersConfig()}
+			var config = config.PrometheusConfig{Port: 0}
 			r = NewMetricsRegistry(config)
-			m = NewMetrics(r, perRequestMetricsReporting, config.Meters)
+			m = NewMetrics(r, true)
 			endpoint = new(route.Endpoint)
 		})
 		AfterEach(func() {
@@ -400,37 +386,38 @@ var _ = Describe("Metrics", func() {
 		})
 
 		It("sends the latency", func() {
+			endpoint.Tags = map[string]string{"component": "testComponent"}
 			m.CaptureRoutingResponseLatency(endpoint, 0, time.Time{}, 2*time.Millisecond)
+			Expect(getMetrics(r.Port())).To(ContainSubstring("latency{component=\"testComponent\"} 2"))
 			m.CaptureRoutingResponseLatency(endpoint, 0, time.Time{}, 500*time.Microsecond)
-			Expect(getMetrics(r.Port())).To(ContainSubstring("latency_bucket{component=\"\",le=\"0.6\"} 1"))
-			Expect(getMetrics(r.Port())).To(ContainSubstring("latency_bucket{component=\"\",le=\"2\"} 2"))
+			Expect(getMetrics(r.Port())).To(ContainSubstring("latency{component=\"testComponent\"} 0.5"))
 		})
 
 		It("does not send the latency if switched off", func() {
 			m.perRequestMetricsReporting = false
 			m.CaptureRoutingResponseLatency(endpoint, 0, time.Time{}, 2*time.Millisecond)
-			Expect(getMetrics(r.Port())).NotTo(ContainSubstring("\nlatency_bucket"))
+			Expect(getMetrics(r.Port())).NotTo(ContainSubstring("\nlatency"))
 		})
 
 		It("sends the latency for the given component", func() {
 			endpoint.Tags = map[string]string{"component": "CloudController"}
 			m.CaptureRoutingResponseLatency(endpoint, 0, time.Time{}, 2*time.Millisecond)
-			Expect(getMetrics(r.Port())).To(ContainSubstring("latency_bucket{component=\"CloudController\",le=\"2\"} 1"))
+			Expect(getMetrics(r.Port())).To(ContainSubstring("latency{component=\"CloudController\"} 2"))
 		})
 
 		It("does not send the latency for the given component if switched off", func() {
 			m.perRequestMetricsReporting = false
 			endpoint.Tags = map[string]string{"component": "CloudController"}
 			m.CaptureRoutingResponseLatency(endpoint, 0, time.Time{}, 2*time.Millisecond)
-			Expect(getMetrics(r.Port())).NotTo(ContainSubstring("\nlatency_bucket"))
+			Expect(getMetrics(r.Port())).NotTo(ContainSubstring("\nlatency"))
 		})
 	})
 
 	Context("increments the monitor metrics", func() {
 		BeforeEach(func() {
-			var config = config.PrometheusConfig{Port: 0, Meters: getMetersConfig()}
+			var config = config.PrometheusConfig{Port: 0}
 			r = NewMetricsRegistry(config)
-			m = NewMetrics(r, false, config.Meters)
+			m = NewMetrics(r, false)
 		})
 
 		It("sends fd metric", func() {
@@ -449,32 +436,21 @@ var _ = Describe("Metrics", func() {
 
 	Context("observes http metrics", func() {
 		BeforeEach(func() {
-			var perRequestMetricsReporting = true
-			var config = config.PrometheusConfig{Port: 0, Meters: getMetersConfig()}
+			var config = config.PrometheusConfig{Port: 0}
 			r = NewMetricsRegistry(config)
-			m = NewMetrics(r, perRequestMetricsReporting, config.Meters)
+			m = NewMetrics(r, true)
 		})
 
 		It("sends the latency", func() {
 			m.CaptureHTTPLatency(2*time.Second, "")
-			Expect(getMetrics(r.Port())).To(ContainSubstring("http_latency_seconds_bucket{source_id=\"\",le=\"3.2\"} 1"))
+			Expect(getMetrics(r.Port())).To(ContainSubstring("http_latency_seconds{source_id=\"\"} 2"))
 
 			m.CaptureHTTPLatency(500*time.Millisecond, "some-source")
 			m.CaptureHTTPLatency(630*time.Millisecond, "some-source")
-			Expect(getMetrics(r.Port())).To(ContainSubstring("http_latency_seconds_bucket{source_id=\"some-source\",le=\"0.8\"} 2"))
+			Expect(getMetrics(r.Port())).To(ContainSubstring("http_latency_seconds{source_id=\"some-source\"} 0.63"))
 		})
 	})
 })
-
-func getMetersConfig() config.MetersConfig {
-	return config.MetersConfig{
-		RouteLookupTimeHistogramBuckets:          []float64{10_000, 20_000, 30_000, 40_000, 50_000, 60_000, 70_000, 80_000, 90_000, 100_000},
-		GorouterTimeHistogramBuckets:             []float64{0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2},
-		RouteRegistrationLatencyHistogramBuckets: []float64{0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2},
-		RoutingResponseLatencyHistogramBuckets:   []float64{0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2},
-		HTTPLatencyHistogramBuckets:              []float64{0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4, 12.8, 25.6},
-	}
-}
 
 func getMetrics(port string) string {
 	addr := fmt.Sprintf("http://127.0.0.1:%s/metrics", port)

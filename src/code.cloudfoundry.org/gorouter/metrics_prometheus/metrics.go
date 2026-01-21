@@ -22,9 +22,9 @@ type Metrics struct {
 	RoutesUnregistered          mr.Counter
 	TotalRoutes                 mr.Gauge
 	TimeSinceLastRegistryUpdate mr.Gauge
-	RouteLookupTime             mr.Histogram
-	GorouterTime                mr.Histogram
-	RouteRegistrationLatency    mr.Histogram
+	RouteLookupTime             mr.Gauge
+	GorouterTime                mr.Gauge
+	RouteRegistrationLatency    mr.Gauge
 	RoutingRequest              mr.CounterVec
 	BadRequest                  mr.Counter
 	BadGateway                  mr.Counter
@@ -37,11 +37,11 @@ type Metrics struct {
 	WebsocketFailures           mr.Counter
 	Responses                   mr.CounterVec
 	RouteServicesResponses      mr.CounterVec
-	RoutingResponseLatency      mr.HistogramVec
+	RoutingResponseLatency      mr.GaugeVec
 	FoundFileDescriptors        mr.Gauge
 	NATSBufferedMessages        mr.Gauge
 	NATSDroppedMessages         mr.Gauge
-	HTTPLatency                 mr.HistogramVec
+	HTTPLatency                 mr.GaugeVec
 	perRequestMetricsReporting  bool
 }
 
@@ -61,7 +61,7 @@ func NewMetricsRegistry(config config.PrometheusConfig) *mr.Registry {
 
 var _ metrics.MetricReporter = &Metrics{}
 
-func NewMetrics(registry *mr.Registry, perRequestMetricsReporting bool, meterConfig config.MetersConfig) *Metrics {
+func NewMetrics(registry *mr.Registry, perRequestMetricsReporting bool) *Metrics {
 	return &Metrics{
 		RouteRegistration:           registry.NewCounterVec("registry_message", "number of route registration messages", []string{"component", "action"}),
 		RouteUnregistration:         registry.NewCounterVec("unregistry_message", "number of unregister messages", []string{"component"}),
@@ -70,9 +70,9 @@ func NewMetrics(registry *mr.Registry, perRequestMetricsReporting bool, meterCon
 		RoutesUnregistered:          registry.NewCounter("routes_unregistered", "number of unregistered routes"),
 		TotalRoutes:                 registry.NewGauge("total_routes", "number of total routes"),
 		TimeSinceLastRegistryUpdate: registry.NewGauge("ms_since_last_registry_update", "time since last registry update in ms"),
-		RouteLookupTime:             registry.NewHistogram("route_lookup_time", "route lookup time per request in ns", meterConfig.RouteLookupTimeHistogramBuckets),
-		GorouterTime:                registry.NewHistogram("gorouter_time", "gorouter time per request in seconds", meterConfig.GorouterTimeHistogramBuckets),
-		RouteRegistrationLatency:    registry.NewHistogram("route_registration_latency", "route registration latency in ms", meterConfig.RouteRegistrationLatencyHistogramBuckets),
+		RouteLookupTime:             registry.NewGauge("route_lookup_time", "route lookup time per request in ns"),
+		GorouterTime:                registry.NewGauge("gorouter_time", "gorouter time per request in seconds"),
+		RouteRegistrationLatency:    registry.NewGauge("route_registration_latency", "route registration latency in ms"),
 		RoutingRequest:              registry.NewCounterVec("total_requests", "number of routing requests", []string{"component"}),
 		BadRequest:                  registry.NewCounter("rejected_requests", "number of rejected requests"),
 		BadGateway:                  registry.NewCounter("bad_gateways", "number of bad gateway errors received from backends"),
@@ -85,11 +85,11 @@ func NewMetrics(registry *mr.Registry, perRequestMetricsReporting bool, meterCon
 		WebsocketFailures:           registry.NewCounter("websocket_failures", "websocket failure"),
 		Responses:                   registry.NewCounterVec("responses", "number of responses", []string{"status_group"}),
 		RouteServicesResponses:      registry.NewCounterVec("responses_route_services", "number of responses for route services", []string{"status_group"}),
-		RoutingResponseLatency:      registry.NewHistogramVec("latency", "routing response latency in ms", []string{"component"}, meterConfig.RoutingResponseLatencyHistogramBuckets),
+		RoutingResponseLatency:      registry.NewGaugeVec("latency", "routing response latency in ms", []string{"component"}),
 		FoundFileDescriptors:        registry.NewGauge("file_descriptors", "number of file descriptors found"),
 		NATSBufferedMessages:        registry.NewGauge("buffered_messages", "number of buffered messages in NATS"),
 		NATSDroppedMessages:         registry.NewGauge("total_dropped_messages", "number of total dropped messages in NATS"),
-		HTTPLatency:                 registry.NewHistogramVec("http_latency_seconds", "the latency of http requests from gorouter and back in sec", []string{"source_id"}, meterConfig.HTTPLatencyHistogramBuckets),
+		HTTPLatency:                 registry.NewGaugeVec("http_latency_seconds", "the latency of http requests from gorouter and back in sec", []string{"source_id"}),
 		perRequestMetricsReporting:  perRequestMetricsReporting,
 	}
 }
@@ -124,18 +124,18 @@ func (metrics *Metrics) CaptureTotalRoutes(totalRoutes int) {
 
 func (metrics *Metrics) CaptureLookupTime(t time.Duration) {
 	if metrics.perRequestMetricsReporting {
-		metrics.RouteLookupTime.Observe(float64(t.Nanoseconds()))
+		metrics.RouteLookupTime.Set(float64(t.Nanoseconds()))
 	}
 }
 
 func (metrics *Metrics) CaptureGorouterTime(t float64) {
 	if metrics.perRequestMetricsReporting {
-		metrics.GorouterTime.Observe(t)
+		metrics.GorouterTime.Set(t)
 	}
 }
 
 func (metrics *Metrics) CaptureRouteRegistrationLatency(t time.Duration) {
-	metrics.RouteRegistrationLatency.Observe(float64(t) / float64(time.Millisecond))
+	metrics.RouteRegistrationLatency.Set(float64(t) / float64(time.Millisecond))
 }
 
 // UnmuzzleRouteRegistrationLatency should set a flag which suppresses metric data.
@@ -184,7 +184,7 @@ func (metrics *Metrics) CaptureRoutingResponse(statusCode int) {
 // CaptureRoutingResponseLatency has extra arguments to match varz reporter
 func (metrics *Metrics) CaptureRoutingResponseLatency(b *route.Endpoint, _ int, _ time.Time, d time.Duration) {
 	if metrics.perRequestMetricsReporting {
-		metrics.RoutingResponseLatency.Observe(float64(d)/float64(time.Millisecond), []string{b.Component()})
+		metrics.RoutingResponseLatency.Set(float64(d)/float64(time.Millisecond), []string{b.Component()})
 	}
 }
 
@@ -217,7 +217,7 @@ func (metrics *Metrics) CaptureNATSDroppedMessages(messages int) {
 }
 
 func (metrics *Metrics) CaptureHTTPLatency(d time.Duration, sourceID string) {
-	metrics.HTTPLatency.Observe(float64(d)/float64(time.Second), []string{sourceID})
+	metrics.HTTPLatency.Set(float64(d)/float64(time.Second), []string{sourceID})
 }
 
 func statusGroupName(statusCode int) string {

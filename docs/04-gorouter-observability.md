@@ -268,67 +268,10 @@ bad_gateways 0
 # TYPE empty_content_length_header counter
 empty_content_length_header 0
 # HELP latency routing response latency in ms
-# TYPE latency histogram
-latency_bucket{component="",le="1"} 2
-latency_bucket{component="",le="2"} 8705
-latency_bucket{component="",le="4"} 55939
-latency_bucket{component="",le="6"} 73786
-latency_bucket{component="",le="8"} 79800
-latency_bucket{component="",le="10"} 81911
-latency_bucket{component="",le="20"} 86670
-latency_bucket{component="",le="40"} 95701
-latency_bucket{component="",le="50"} 100139
-latency_bucket{component="",le="100"} 102135
-latency_bucket{component="",le="500"} 104114
-latency_bucket{component="",le="1000"} 104518
-latency_bucket{component="",le="+Inf"} 104519
-latency_sum{component=""} 1.5821502875950185e+06
-latency_count{component=""} 104519
-latency_bucket{component="CloudController",le="1"} 0
-latency_bucket{component="CloudController",le="2"} 0
-latency_bucket{component="CloudController",le="4"} 7
-latency_bucket{component="CloudController",le="6"} 3928
-latency_bucket{component="CloudController",le="8"} 5142
-latency_bucket{component="CloudController",le="10"} 5606
-latency_bucket{component="CloudController",le="20"} 22662
-latency_bucket{component="CloudController",le="40"} 75564
-latency_bucket{component="CloudController",le="50"} 82497
-latency_bucket{component="CloudController",le="100"} 87240
-latency_bucket{component="CloudController",le="500"} 91080
-latency_bucket{component="CloudController",le="1000"} 91566
-latency_bucket{component="CloudController",le="+Inf"} 91579
-latency_sum{component="CloudController"} 3.744289433603952e+06
-latency_count{component="CloudController"} 91579
-latency_bucket{component="route-emitter",le="1"} 0
-latency_bucket{component="route-emitter",le="2"} 337
-latency_bucket{component="route-emitter",le="4"} 448
-latency_bucket{component="route-emitter",le="6"} 462
-latency_bucket{component="route-emitter",le="8"} 1241
-latency_bucket{component="route-emitter",le="10"} 31250
-latency_bucket{component="route-emitter",le="20"} 75412
-latency_bucket{component="route-emitter",le="40"} 75695
-latency_bucket{component="route-emitter",le="50"} 75711
-latency_bucket{component="route-emitter",le="100"} 75717
-latency_bucket{component="route-emitter",le="500"} 75799
-latency_bucket{component="route-emitter",le="1000"} 75800
-latency_bucket{component="route-emitter",le="+Inf"} 75802
-latency_sum{component="route-emitter"} 808316.2385179874
-latency_count{component="route-emitter"} 75802
-latency_bucket{component="uaa",le="1"} 0
-latency_bucket{component="uaa",le="2"} 1
-latency_bucket{component="uaa",le="4"} 5951
-latency_bucket{component="uaa",le="6"} 64736
-latency_bucket{component="uaa",le="8"} 83650
-latency_bucket{component="uaa",le="10"} 90136
-latency_bucket{component="uaa",le="20"} 101690
-latency_bucket{component="uaa",le="40"} 102816
-latency_bucket{component="uaa",le="50"} 102868
-latency_bucket{component="uaa",le="100"} 106615
-latency_bucket{component="uaa",le="500"} 119313
-latency_bucket{component="uaa",le="1000"} 119325
-latency_bucket{component="uaa",le="+Inf"} 119328
-latency_sum{component="uaa"} 2.5461252577970154e+06
-latency_count{component="uaa"} 119328
+# TYPE latency gaugeVec
+latency{component="CloudController"} 91579
+latency{component="route-emitter"} 337
+latency{component="uaa"} 1
 # HELP ms_since_last_registry_update time since last registry update in ms
 # TYPE ms_since_last_registry_update gauge
 ms_since_last_registry_update 3942
@@ -355,34 +298,11 @@ responses{status_group="2xx"} 312778
 responses{status_group="3xx"} 29409
 responses{status_group="4xx"} 49041
 # HELP route_lookup_time route lookup time per request in ns
-# TYPE route_lookup_time histogram
-route_lookup_time_bucket{le="10000"} 377295
-route_lookup_time_bucket{le="20000"} 389278
-route_lookup_time_bucket{le="30000"} 390445
-route_lookup_time_bucket{le="40000"} 391008
-route_lookup_time_bucket{le="50000"} 391261
-route_lookup_time_bucket{le="60000"} 391337
-route_lookup_time_bucket{le="70000"} 391378
-route_lookup_time_bucket{le="80000"} 391397
-route_lookup_time_bucket{le="90000"} 391417
-route_lookup_time_bucket{le="100000"} 391432
-route_lookup_time_bucket{le="+Inf"} 391525
-route_lookup_time_sum 1.584830859e+09
-route_lookup_time_count 391525
+# TYPE route_lookup_time gauge
+route_lookup_time 377295
 # HELP route_registration_latency route registration latency in ms
-# TYPE route_registration_latency histogram
-route_registration_latency_bucket{le="0.1"} 0
-route_registration_latency_bucket{le="0.5"} 0
-route_registration_latency_bucket{le="1"} 0
-route_registration_latency_bucket{le="1.5"} 0
-route_registration_latency_bucket{le="2"} 2
-route_registration_latency_bucket{le="2.5"} 15
-route_registration_latency_bucket{le="3"} 152
-route_registration_latency_bucket{le="3.5"} 625
-route_registration_latency_bucket{le="4"} 1372
-route_registration_latency_bucket{le="+Inf"} 2012
-route_registration_latency_sum 7695.366220000008
-route_registration_latency_count 2012
+# TYPE route_registration_latency gauge
+route_registration_latency 15
 # HELP routes_pruned number of pruned routes
 # TYPE routes_pruned counter
 routes_pruned 0

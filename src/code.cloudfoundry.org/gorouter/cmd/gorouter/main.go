@@ -295,7 +295,7 @@ func initializePrometheusReporter(c *config.Config) *metrics_prometheus.Metrics 
 		return nil
 	}
 	promRegistry := metrics_prometheus.NewMetricsRegistry(c.Prometheus)
-	return metrics_prometheus.NewMetrics(promRegistry, c.PerRequestMetricsReporting, c.Prometheus.Meters)
+	return metrics_prometheus.NewMetrics(promRegistry, c.PerRequestMetricsReporting)
 }
 
 func initializeFDMonitor(reporter metrics.MetricReporter, logger *slog.Logger) *monitor.FileDescriptor {

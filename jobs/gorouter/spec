@@ -95,18 +95,6 @@ properties:
   router.prometheus.key:
     description: "TLS private key for prometheus server."
     default: ""
-  router.prometheus.meters.route_lookup_time_histogram_buckets:
-    description: "Upper limits in nanoseconds of the ranges in which the observed value of route lookup time is expected to fall"
-    default: [10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000]
-  router.prometheus.meters.route_registration_latency_histogram_buckets:
-    description: "Upper limits in milliseconds of the ranges in which the observed value of route registration latency is expected to fall"
-    default: [0.1, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4]
-  router.prometheus.meters.routing_response_latency_histogram_buckets:
-    description: "Upper limits in milliseconds of the ranges in which the observed value of route response latency is expected to fall"
-    default: [1, 2, 4, 6, 8, 10, 20, 40, 50, 100, 500, 1000]
-  router.prometheus.meters.http_latency_histogram_buckets:
-    description: "Upper limits in seconds of the ranges in which the observed value of the latency of http requests from gorouter and back"
-    default: [0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4, 12.8, 25.6]
   router.requested_route_registration_interval_in_seconds:
     description: |
       On startup, the router will delay listening for requests by this duration to increase likelihood that it has a complete routing table before serving requests.

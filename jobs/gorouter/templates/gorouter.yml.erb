@@ -185,8 +185,7 @@ if_p('router.prometheus.port') do |port|
    
    params['prometheus'] = {
     'enabled' => true,
-    'port' => port,
-    'meters' => p('router.prometheus.meters')
+    'port' => port
    }
 
   cert_set = p('router.prometheus.cert') != ''
