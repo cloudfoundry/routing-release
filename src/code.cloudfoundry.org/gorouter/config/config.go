@@ -176,6 +176,7 @@ type RouteServiceConfig struct {
 	StrictSignatureValidation bool             `yaml:"strict_signature_validation"`
 	TLSPem                    `yaml:",inline"` // embed to get cert_chain and private_key for client authentication
 	EnableWebsockets          bool             `yaml:"enable_websockets"`
+	EgressBlocklist           []string         `yaml:"egress_blocklist,omitempty"`
 }
 
 type LoggingConfig struct {

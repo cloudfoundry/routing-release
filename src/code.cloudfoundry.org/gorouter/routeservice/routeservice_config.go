@@ -3,6 +3,7 @@ package routeservice
 import (
 	"errors"
 	"log/slog"
+	"net/netip"
 	"net/url"
 	"time"
 
@@ -29,6 +30,7 @@ type RouteServiceConfig struct {
 	recommendHttps                   bool
 	strictSignatureValidation        bool
 	enableWebsockets                 bool
+	egressBlocklist                  []netip.Prefix
 }
 
 type RequestToSendToRouteService struct {
@@ -57,6 +59,7 @@ func NewRouteServiceConfig(
 	recommendHttps bool,
 	strictSignatureValidation bool,
 	enableWebsockets bool,
+	egressBlocklist []netip.Prefix,
 ) *RouteServiceConfig {
 	return &RouteServiceConfig{
 		routeServiceEnabled:              enabled,
@@ -69,6 +72,7 @@ func NewRouteServiceConfig(
 		recommendHttps:                   recommendHttps,
 		strictSignatureValidation:        strictSignatureValidation,
 		enableWebsockets:                 enableWebsockets,
+		egressBlocklist:                  egressBlocklist,
 	}
 }
 
@@ -78,6 +82,10 @@ func (rs *RouteServiceConfig) RouteServiceEnabled() bool {
 
 func (rs *RouteServiceConfig) EnableWebsockets() bool {
 	return rs.enableWebsockets
+}
+
+func (rs *RouteServiceConfig) EgressBlockList() []netip.Prefix {
+	return rs.egressBlocklist
 }
 
 func (rs *RouteServiceConfig) RouteServiceRecommendHttps() bool {

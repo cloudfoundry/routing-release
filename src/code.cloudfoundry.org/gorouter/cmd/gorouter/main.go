@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"log/slog"
+	"net/netip"
 	"os"
 	"runtime"
 	"syscall"
@@ -170,6 +171,17 @@ func main() {
 		}
 	}
 
+	// Extract and convert EgressBlocklist to []netip.Prefix
+	var egressBlocklist []netip.Prefix
+	for _, cidr := range c.RouteServiceConfig.EgressBlocklist {
+		prefix, err := netip.ParsePrefix(cidr)
+		if err != nil {
+			logger.Error("invalid-cidr", slog.String("cidr", cidr), grlog.ErrAttr(err))
+			continue
+		}
+		egressBlocklist = append(egressBlocklist, prefix)
+	}
+
 	routeServiceConfig := routeservice.NewRouteServiceConfig(
 		grlog.CreateLoggerWithSource(prefix, "proxy"),
 		c.RouteServiceEnabled,
@@ -181,6 +193,7 @@ func main() {
 		c.RouteServiceRecommendHttps,
 		c.RouteServiceConfig.StrictSignatureValidation,
 		c.RouteServiceConfig.EnableWebsockets,
+		egressBlocklist,
 	)
 
 	// These TLS configs are just templates. If you add other keys you will

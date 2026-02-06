@@ -2474,7 +2474,7 @@ func initializeRouter(config *cfg.Config, backendIdleTimeout, requestTimeout tim
 	batcher := new(fakeMetrics.MetricBatcher)
 	metricReporter := &metrics.Metrics{Sender: sender, Batcher: batcher}
 	combinedReporter := &metrics.CompositeReporter{VarzReporter: varz, MetricReporter: metricReporter}
-	routeServiceConfig := routeservice.NewRouteServiceConfig(logger, true, config.RouteServicesHairpinning, config.RouteServicesHairpinningAllowlist, config.EndpointTimeout, nil, nil, false, false, true)
+	routeServiceConfig := routeservice.NewRouteServiceConfig(logger, true, config.RouteServicesHairpinning, config.RouteServicesHairpinningAllowlist, config.EndpointTimeout, nil, nil, false, false, true, nil)
 
 	ew := errorwriter.NewPlaintextErrorWriter()
 

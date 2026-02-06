@@ -340,6 +340,7 @@ end
 
 strict_signature_validation = p('router.route_services_strict_signature_validation')
 enable_websockets = p('router.route_services.enable_websockets')
+egress_blocklist = p('router.route_services.egress_blocklist')
 
 route_services = {
   'max_attempts' => route_service_attempts,
@@ -347,6 +348,7 @@ route_services = {
   'private_key' => route_services_private_key,
   'strict_signature_validation' => strict_signature_validation,
   'enable_websockets' => enable_websockets,
+  'egress_blocklist' => egress_blocklist,
 }
 
 params['route_services'] = route_services

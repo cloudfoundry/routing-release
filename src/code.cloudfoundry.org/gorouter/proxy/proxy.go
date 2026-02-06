@@ -3,13 +3,16 @@ package proxy
 import (
 	"crypto/tls"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net"
 	"net/http"
 	"net/http/httputil"
+	"net/netip"
 	"net/url"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/cloudfoundry/dropsonde"
@@ -79,6 +82,12 @@ func NewProxy(
 		KeepAlive: cfg.EndpointKeepAliveProbeInterval,
 	}
 
+	rsDialer := &net.Dialer{
+		Timeout:   cfg.EndpointDialTimeout,
+		KeepAlive: cfg.EndpointKeepAliveProbeInterval,
+		Control:   RouteServiceDialControl(routeServiceConfig),
+	}
+
 	roundTripperFactory := &round_tripper.FactoryImpl{
 		BackendTemplate: &http.Transport{
 			DialContext:            dialer.DialContext,
@@ -93,7 +102,7 @@ func NewProxy(
 			MaxResponseHeaderBytes: int64(cfg.MaxResponseHeaderBytes),
 		},
 		RouteServiceTemplate: &http.Transport{
-			DialContext:            dialer.DialContext,
+			DialContext:            rsDialer.DialContext,
 			DisableKeepAlives:      cfg.DisableKeepAlives,
 			MaxIdleConns:           cfg.MaxIdleConns,
 			IdleConnTimeout:        90 * time.Second, // setting the value to golang default transport
@@ -276,4 +285,24 @@ func escapePathAndPreserveSlashes(unescaped string) string {
 	escapedPath = strings.TrimSuffix(escapedPath, "/")
 
 	return escapedPath
+}
+
+// RouteServiceDialControl checks if the address is allowed based on the block list.
+func RouteServiceDialControl(routeServiceConfig *routeservice.RouteServiceConfig) func(network, address string, c syscall.RawConn) error {
+	return func(network, address string, c syscall.RawConn) error {
+		if routeServiceConfig == nil || len(routeServiceConfig.EgressBlockList()) == 0 {
+			return nil
+		}
+		addrPort, err := netip.ParseAddrPort(address)
+		if err != nil {
+			return fmt.Errorf("wrong address format '%s': an IP and a port number are expected", address)
+		}
+
+		for _, blockedIP := range routeServiceConfig.EgressBlockList() {
+			if blockedIP.Contains(addrPort.Addr()) {
+				return fmt.Errorf("connection to %s not allowed", addrPort.Addr().String())
+			}
+		}
+		return nil
+	}
 }

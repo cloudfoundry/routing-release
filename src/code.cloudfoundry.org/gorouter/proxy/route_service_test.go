@@ -7,6 +7,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"net/netip"
 	"sync"
 	"time"
 
@@ -84,6 +85,7 @@ var _ = Describe("Route Services", func() {
 			recommendHTTPS,
 			strictSignatureValidation,
 			conf.RouteServiceConfig.EnableWebsockets,
+			[]netip.Prefix{}, // Pass empty blocklist for tests
 		)
 		reqArgs, err := config.CreateRequest("", forwardedUrl)
 		Expect(err).ToNot(HaveOccurred())

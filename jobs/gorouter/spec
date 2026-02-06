@@ -111,7 +111,7 @@ properties:
     description: |
       Configuration option used in conjunction with the `router.balancing_algorithm` to decide from which
       availability zone to pick a suitable backend. Defaults to "None".
-      "none" - There is no preference regarding availability zones. The router uses the 
+      "none" - There is no preference regarding availability zones. The router uses the
         `router.balancing_algorithm` across all possible backends in all existing AZs.
       "locally-optimistic" - On the initial attempt to pick a backend, the router will use
         `router.balancing_algorithm` across all backends in the same AZ as the router itself. Subsequent
@@ -247,6 +247,10 @@ properties:
     description: |
       Enable websocket connections for application routes bound to Route Services.
     default: true
+  router.route_services.egress_blocklist:
+      description: |
+        Route Service Requests to these CIDRs will be blocked with HTTP status code 502.
+      default: []
   router.route_services.cert_chain:
     description: Certificate chain used for client authentication to TLS-registered route services.  In PEM format.
   router.route_services.private_key:
@@ -503,12 +507,12 @@ properties:
     default: 900
   http_1_request_timeout_in_seconds:
     description: |
-      The amount of time HTTP/1 requests from the Gorouter to apps are allowed to live before being canceled. 
+      The amount of time HTTP/1 requests from the Gorouter to apps are allowed to live before being canceled.
       Enter value in seconds. Set to -1 to disable timeouts. If set to 0, it inherits the value from request_timeout_in_seconds.
     default: 0
   http_2_request_timeout_in_seconds:
     description: |
-      The amount of time HTTP/2 requests from the Gorouter to apps are allowed to live before being canceled. 
+      The amount of time HTTP/2 requests from the Gorouter to apps are allowed to live before being canceled.
       Enter value in seconds. Set to -1 to disable timeouts. If set to 0, it inherits the value from request_timeout_in_seconds.
     default: 0
   endpoint_dial_timeout_in_seconds:

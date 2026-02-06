@@ -5,6 +5,7 @@ import (
 	"crypto/x509"
 	"net"
 	"net/http"
+	"net/netip"
 	"os"
 	"strconv"
 	"testing"
@@ -122,6 +123,7 @@ var _ = JustBeforeEach(func() {
 		recommendHTTPS,
 		strictSignatureValidation,
 		conf.RouteServiceConfig.EnableWebsockets,
+		[]netip.Prefix{},
 	)
 
 	proxyServer, err = net.Listen("tcp", "127.0.0.1:0")

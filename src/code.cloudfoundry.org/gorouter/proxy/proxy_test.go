@@ -3,6 +3,8 @@ package proxy_test
 import (
 	"bufio"
 	"bytes"
+	"code.cloudfoundry.org/gorouter/proxy"
+	"code.cloudfoundry.org/gorouter/routeservice"
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
@@ -10,6 +12,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/netip"
 	"net/url"
 	"os"
 	"regexp"
@@ -1739,7 +1742,7 @@ var _ = Describe("Proxy", func() {
 					Expect(logStr).To(ContainSubstring("failed_attempts:3"))
 					Expect(logStr).To(ContainSubstring("failed_attempts_time:0.3"))
 					Expect(logStr).To(ContainSubstring("response_time:0.3"))
-					Expect(logStr).To(ContainSubstring("gorouter_time:0"))
+					Expect(logStr).To(ContainSubstring("gorouter_time:0.0"))
 					Expect(logStr).To(ContainSubstring(`backend_time:"-"`))
 					Expect(logStr).To(ContainSubstring(`dns_time:"-"`))
 					Expect(logStr).To(ContainSubstring(`dial_time:"-"`))
@@ -2914,6 +2917,7 @@ var _ = Describe("Proxy", func() {
 			var vcapHeader string
 			ln := test_util.RegisterConnHandler(r, "app", func(conn *test_util.HttpConn) {
 				req, _ := conn.ReadRequest()
+
 				vcapHeader = req.Header.Get(handlers.VcapRequestIdHeader)
 				resp := test_util.NewResponse(http.StatusOK)
 				conn.WriteResponse(resp)
@@ -3022,6 +3026,81 @@ var _ = Describe("Proxy", func() {
 			})
 		})
 	})
+	Describe("RouteServiceDialControl", func() {
+		var (
+			blockList []netip.Prefix
+			config    *routeservice.RouteServiceConfig
+		)
+
+		BeforeEach(func() {
+			blockList = []netip.Prefix{}
+			config = nil // will be set in each test
+		})
+
+		It("does not match IPv4 address to IPv6 prefix", func() {
+			blockList = []netip.Prefix{netip.MustParsePrefix("::1/128")}
+			config = routeservice.NewRouteServiceConfig(
+				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, false, blockList,
+			)
+			control := proxy.RouteServiceDialControl(config)
+			err := control("tcp", "127.0.0.1:80", nil)
+			Expect(err).To(BeNil())
+		})
+
+		It("does not match IPv4-mapped IPv6 address to IPv4 prefix", func() {
+			blockList = []netip.Prefix{netip.MustParsePrefix("192.168.1.0/24")}
+			config = routeservice.NewRouteServiceConfig(
+				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, false, blockList,
+			)
+			control := proxy.RouteServiceDialControl(config)
+			err := control("tcp", "[::ffff:192.168.1.1]:80", nil)
+			Expect(err).To(BeNil())
+		})
+
+		It("does not match IP with IPv6 zone to any prefix", func() {
+			blockList = []netip.Prefix{netip.MustParsePrefix("fe80::/10")}
+			config = routeservice.NewRouteServiceConfig(
+				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, false, blockList,
+			)
+			control := proxy.RouteServiceDialControl(config)
+			err := control("tcp", "[fe80::1%lo0]:80", nil)
+			Expect(err).To(BeNil())
+		})
+
+		It("allows connection when IP is not in blocklist", func() {
+			blockList = []netip.Prefix{netip.MustParsePrefix("10.0.0.0/8")}
+			config = routeservice.NewRouteServiceConfig(
+				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, false, blockList,
+			)
+			control := proxy.RouteServiceDialControl(config)
+			err := control("tcp", "192.168.1.1:80", nil)
+			Expect(err).To(BeNil())
+		})
+
+		It("blocks connection and returns error when IP is in blocklist", func() {
+			blockList = []netip.Prefix{netip.MustParsePrefix("192.168.1.0/24")}
+			config = routeservice.NewRouteServiceConfig(
+				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, false, blockList,
+			)
+			control := proxy.RouteServiceDialControl(config)
+			err := control("tcp", "192.168.1.1:80", nil)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("connection to 192.168.1.1 not allowed"))
+		})
+
+		It("returns an error when ParseAddrPort fails for an invalid address", func() {
+			blockList = []netip.Prefix{netip.MustParsePrefix("10.0.0.0/8")}
+			config = routeservice.NewRouteServiceConfig(
+				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, false, blockList,
+			)
+			control := proxy.RouteServiceDialControl(config)
+			// Use an invalid address that is not a zero-value/empty IP
+			err := control("tcp", "invalid-address", nil)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("wrong address format 'invalid-address'"))
+		})
+	})
+
 })
 
 // HACK: this is used to silence any http warnings in logs

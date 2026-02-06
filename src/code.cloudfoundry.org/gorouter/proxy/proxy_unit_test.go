@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
+	"net/netip"
 	"time"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -65,6 +66,7 @@ var _ = Describe("Proxy Unit tests", func() {
 				false,
 				false,
 				conf.RouteServiceConfig.EnableWebsockets,
+				[]netip.Prefix{},
 			)
 			varz := test_helpers.NullVarz{}
 			sender := new(fakes.MetricSender)
