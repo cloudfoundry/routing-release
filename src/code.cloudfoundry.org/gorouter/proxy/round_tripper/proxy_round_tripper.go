@@ -486,10 +486,9 @@ func setupStickySession(
 	authNegotiateSticky bool,
 ) {
 
-	requestContainsStickySessionCookies := originalEndpointId != ""
 	requestNotSentToRequestedApp := originalEndpointId != endpoint.PrivateInstanceId
 	responseContainsAuthNegotiateHeader := strings.HasPrefix(strings.ToLower(response.Header.Get("WWW-Authenticate")), "negotiate")
-	shouldSetVCAPID := ((authNegotiateSticky && responseContainsAuthNegotiateHeader) || requestContainsStickySessionCookies) && requestNotSentToRequestedApp
+	shouldSetVCAPID := false
 
 	secure := false
 	maxAge := 0
@@ -497,10 +496,13 @@ func setupStickySession(
 	expiry := time.Time{}
 	partitioned := false
 
-	if responseContainsAuthNegotiateHeader && authNegotiateSticky {
+	// Only set VCAP_ID when response contains auth negotiate header or JSESSIONID cookie
+	if responseContainsAuthNegotiateHeader && authNegotiateSticky && requestNotSentToRequestedApp {
+		shouldSetVCAPID = true
 		maxAge = AuthNegotiateHeaderCookieMaxAgeInSeconds
 		sameSite = http.SameSiteStrictMode
 	} else {
+		// Check if response has a sticky session cookie (JSESSIONID)
 		for _, v := range response.Cookies() {
 			if _, ok := stickySessionCookieNames[v.Name]; ok {
 				shouldSetVCAPID = true
@@ -516,6 +518,7 @@ func setupStickySession(
 		}
 	}
 
+	// If response already has VCAP_ID, don't add another one
 	for _, v := range response.Cookies() {
 		if v.Name == VcapCookieId {
 			shouldSetVCAPID = false

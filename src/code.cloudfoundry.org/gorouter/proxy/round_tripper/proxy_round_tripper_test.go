@@ -1690,18 +1690,32 @@ var _ = Describe("ProxyRoundTripper", func() {
 							})
 
 							Context("when route service headers are not on the request", func() {
-								It("will select a new backend and update the VCAP_ID", func() {
+								It("will NOT set VCAP_ID when response has no JSESSIONID", func() {
 									resp, err := proxyRoundTripper.RoundTrip(req)
 									Expect(err).ToNot(HaveOccurred())
 
 									newCookies := resp.Cookies()
-									Expect(newCookies).To(HaveLen(1))
-									Expect(newCookies[0].Name).To(Equal(round_tripper.VcapCookieId))
-									Expect(newCookies[0].Value).To(Equal("id-5"))
-									Expect(cookies[0].MaxAge).To(Equal(0))
-									Expect(cookies[0].Expires).To(Equal(time.Time{}))
-									Expect(cookies[0].Secure).To(Equal(cfg.SecureCookies))
-									Expect(cookies[0].SameSite).To(Equal(http.SameSite(0)))
+									// No VCAP_ID should be set because response doesn't have JSESSIONID
+									Expect(newCookies).To(HaveLen(0))
+								})
+
+								Context("when client has both JSESSIONID and VCAP_ID cookies", func() {
+									JustBeforeEach(func() {
+										// Simulate client sending both cookies (sticky session established)
+										req.AddCookie(&http.Cookie{Name: StickyCookieKey, Value: "client-session-id"})
+										req.AddCookie(&http.Cookie{Name: round_tripper.VcapCookieId, Value: "id-1"}) // id-1 doesn't exist anymore
+									})
+
+									It("will NOT create new VCAP_ID because response has no JSESSIONID", func() {
+										resp, err := proxyRoundTripper.RoundTrip(req)
+										Expect(err).ToNot(HaveOccurred())
+
+										newCookies := resp.Cookies()
+										// Response should have no cookies because:
+										// 1. App didn't send JSESSIONID in response
+										// 2. Gorouter should NOT create VCAP_ID in this case
+										Expect(newCookies).To(HaveLen(0))
+									})
 								})
 							})
 
