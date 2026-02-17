@@ -1248,6 +1248,124 @@ var _ = Describe("ProxyRoundTripper", func() {
 								Expect(cookies[1].Raw).To(ContainSubstring("Expires=Wed, 01 Jan 2020 01:00:00 GMT; HttpOnly; Secure; SameSite=Strict"))
 							})
 						})
+
+						Context("when the JSESSIONID cookie has a negative value for the MaxAge attribute", func() {
+							BeforeEach(func() {
+								transport.RoundTripStub = func(req *http.Request) (*http.Response, error) {
+									resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
+
+									// Create JSESSIONID with MaxAge=-1, which translates to "Max-Age=0" in the HTTP header (delete cookie immediately)
+									deleteCookie := &http.Cookie{
+										Name:     StickyCookieKey,
+										Value:    "session-to-delete",
+										MaxAge:   -1,
+										Secure:   true,
+										HttpOnly: true,
+										SameSite: http.SameSiteStrictMode,
+									}
+									resp.Header.Add(round_tripper.CookieHeader, deleteCookie.String())
+									return resp, nil
+								}
+							})
+
+							It("copies MaxAge=-1 to VCAP_ID cookie so both cookies are deleted immediately", func() {
+								resp, err := proxyRoundTripper.RoundTrip(req)
+								Expect(err).ToNot(HaveOccurred())
+
+								cookies := resp.Cookies()
+								Expect(cookies).To(HaveLen(2))
+
+								// Verify JSESSIONID has MaxAge=-1
+								Expect(cookies[0].Name).To(Equal(StickyCookieKey))
+								Expect(cookies[0].MaxAge).To(Equal(-1))
+
+								// Verify VCAP_ID also has MaxAge=-1
+								Expect(cookies[1].Name).To(Equal(round_tripper.VcapCookieId))
+								Expect(cookies[1].MaxAge).To(Equal(-1))
+								Expect(cookies[1].Value).To(SatisfyAny(
+									Equal("id-1"),
+									Equal("id-2")))
+							})
+						})
+
+						Context("when the JSESSIONID cookie has a positive value for the MaxAge attribute", func() {
+							BeforeEach(func() {
+								transport.RoundTripStub = func(req *http.Request) (*http.Response, error) {
+									resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
+
+									// Create JSESSIONID with MaxAge=1 (cookie expires in 1 second)
+									expiringCookie := &http.Cookie{
+										Name:     StickyCookieKey,
+										Value:    "session-value",
+										MaxAge:   1,
+										Secure:   true,
+										HttpOnly: true,
+										SameSite: http.SameSiteStrictMode,
+									}
+									resp.Header.Add(round_tripper.CookieHeader, expiringCookie.String())
+									return resp, nil
+								}
+							})
+
+							It("copies MaxAge=1 to VCAP_ID cookie so both cookies expire at the same time", func() {
+								resp, err := proxyRoundTripper.RoundTrip(req)
+								Expect(err).ToNot(HaveOccurred())
+
+								cookies := resp.Cookies()
+								Expect(cookies).To(HaveLen(2))
+
+								// Verify JSESSIONID has MaxAge=1
+								Expect(cookies[0].Name).To(Equal(StickyCookieKey))
+								Expect(cookies[0].MaxAge).To(Equal(1))
+
+								// Verify VCAP_ID also has MaxAge=1
+								Expect(cookies[1].Name).To(Equal(round_tripper.VcapCookieId))
+								Expect(cookies[1].MaxAge).To(Equal(1))
+								Expect(cookies[1].Value).To(SatisfyAny(
+									Equal("id-1"),
+									Equal("id-2")))
+							})
+						})
+
+						Context("when the JSESSIONID cookie has a zero value for the MaxAge attribute", func() {
+							BeforeEach(func() {
+								transport.RoundTripStub = func(req *http.Request) (*http.Response, error) {
+									resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
+
+									// Create JSESSIONID with MaxAge=0 (Max-Age attribute is not set in HTTP header, cookie is a session cookie)
+									sessionCookie := &http.Cookie{
+										Name:     StickyCookieKey,
+										Value:    "session-value",
+										MaxAge:   0,
+										Secure:   true,
+										HttpOnly: true,
+										SameSite: http.SameSiteStrictMode,
+									}
+									resp.Header.Add(round_tripper.CookieHeader, sessionCookie.String())
+									return resp, nil
+								}
+							})
+
+							It("copies MaxAge=0 to VCAP_ID cookie so both are session cookies", func() {
+								resp, err := proxyRoundTripper.RoundTrip(req)
+								Expect(err).ToNot(HaveOccurred())
+
+								cookies := resp.Cookies()
+								Expect(cookies).To(HaveLen(2))
+
+								// Verify JSESSIONID has MaxAge=0
+								Expect(cookies[0].Name).To(Equal(StickyCookieKey))
+								Expect(cookies[0].MaxAge).To(Equal(0))
+
+								// Verify VCAP_ID also has MaxAge=0
+								Expect(cookies[1].Name).To(Equal(round_tripper.VcapCookieId))
+								Expect(cookies[1].MaxAge).To(Equal(0))
+								Expect(cookies[1].Value).To(SatisfyAny(
+									Equal("id-1"),
+									Equal("id-2")))
+							})
+
+						})
 					})
 
 					Context("when there is a JSESSION_ID and a VCAP_ID on the response", func() {

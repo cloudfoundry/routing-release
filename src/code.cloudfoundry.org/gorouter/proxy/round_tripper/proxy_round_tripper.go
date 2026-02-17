@@ -505,9 +505,7 @@ func setupStickySession(
 			if _, ok := stickySessionCookieNames[v.Name]; ok {
 				shouldSetVCAPID = true
 
-				if v.MaxAge < 0 {
-					maxAge = v.MaxAge
-				}
+				maxAge = v.MaxAge
 				secure = v.Secure
 				sameSite = v.SameSite
 				expiry = v.Expires
