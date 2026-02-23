@@ -450,6 +450,54 @@ var _ = Describe("Metrics", func() {
 			Expect(getMetrics(r.Port())).To(ContainSubstring("http_latency_seconds{source_id=\"some-source\"} 0.63"))
 		})
 	})
+
+	Context("endpoints_per_pool metric", func() {
+		BeforeEach(func() {
+			var config = config.PrometheusConfig{Port: 0}
+			r = NewMetricsRegistry(config)
+			m = NewMetrics(r, true)
+		})
+
+		It("reports the number of endpoints per pool with correct labels", func() {
+			m.CaptureEndpointsPerPool(5, "routeA", "round_robin")
+			metricsOutput := getMetrics(r.Port())
+			expected := "endpoints_per_pool{LB_algorithm=\"round_robin\",route=\"routeA\"} 5"
+			Expect(metricsOutput).To(ContainSubstring(expected))
+		})
+
+		It("updates the value for the same label combination", func() {
+			m.CaptureEndpointsPerPool(5, "routeA", "round_robin")
+			m.CaptureEndpointsPerPool(7, "routeA", "round_robin")
+			metricsOutput := getMetrics(r.Port())
+			expected := "endpoints_per_pool{LB_algorithm=\"round_robin\",route=\"routeA\"} 7"
+			Expect(metricsOutput).To(ContainSubstring(expected))
+		})
+
+		It("reports multiple values for different label combinations", func() {
+			m.CaptureEndpointsPerPool(5, "routeA", "round_robin")
+			m.CaptureEndpointsPerPool(3, "routeB", "least_conn")
+			metricsOutput := getMetrics(r.Port())
+			expectedA := "endpoints_per_pool{LB_algorithm=\"round_robin\",route=\"routeA\"} 5"
+			expectedB := "endpoints_per_pool{LB_algorithm=\"least_conn\",route=\"routeB\"} 3"
+			Expect(metricsOutput).To(ContainSubstring(expectedA))
+			Expect(metricsOutput).To(ContainSubstring(expectedB))
+		})
+
+		It("deletes the metric for a given route and LB algorithm", func() {
+			m.CaptureEndpointsPerPool(5, "routeA", "round_robin")
+			Expect(getMetrics(r.Port())).To(ContainSubstring("endpoints_per_pool{LB_algorithm=\"round_robin\",route=\"routeA\"} 5"))
+
+			m.DeleteEndpointsPerPool("routeA", "round_robin")
+			Expect(getMetrics(r.Port())).NotTo(ContainSubstring("endpoints_per_pool{LB_algorithm=\"round_robin\",route=\"routeA\"}"))
+		})
+
+		It("does nothing when deleting a non-existent label combination", func() {
+			m.CaptureEndpointsPerPool(5, "routeA", "round_robin")
+
+			m.DeleteEndpointsPerPool("routeX", "round_robin")
+			Expect(getMetrics(r.Port())).To(ContainSubstring("endpoints_per_pool{LB_algorithm=\"round_robin\",route=\"routeA\"} 5"))
+		})
+	})
 })
 
 func getMetrics(port string) string {

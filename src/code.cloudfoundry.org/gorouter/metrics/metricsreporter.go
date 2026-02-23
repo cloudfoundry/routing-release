@@ -201,6 +201,14 @@ func (m *Metrics) CaptureNATSDroppedMessages(messages int) {
 func (m *Metrics) CaptureHTTPLatency(_ time.Duration, _ string) {
 }
 
+// Empty implementation here is to fulfil interface
+func (m *Metrics) CaptureEndpointsPerPool(endpoints int, route string, lbAlgo string) {
+}
+
+// Empty implementation here is to fulfil interface
+func (m *Metrics) DeleteEndpointsPerPool(route string, lbAlgo string) {
+}
+
 func getResponseCounterName(statusCode int) string {
 	statusCode = statusCode / 100
 	if statusCode >= 2 && statusCode <= 5 {
