@@ -75,21 +75,24 @@ files:
   - code.cloudfoundry.org/vendor/github.com/google/go-cmp/cmp/internal/flags/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/google/go-cmp/cmp/internal/function/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/google/go-cmp/cmp/internal/value/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/jinzhu/gorm/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/jinzhu/gorm/dialects/mysql/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/jinzhu/gorm/dialects/postgres/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/jackc/pgpassfile/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/jackc/pgservicefile/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/jackc/pgx/v5/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/jackc/pgx/v5/internal/iobufpool/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/jackc/pgx/v5/internal/pgio/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/jackc/pgx/v5/internal/sanitize/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/jackc/pgx/v5/internal/stmtcache/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/jackc/pgx/v5/pgconn/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/jackc/pgx/v5/pgconn/ctxwatch/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/jackc/pgx/v5/pgconn/internal/bgreader/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/jackc/pgx/v5/pgproto3/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/jackc/pgx/v5/pgtype/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/jackc/pgx/v5/pgxpool/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/jackc/pgx/v5/stdlib/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/jackc/puddle/v2/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/jackc/puddle/v2/internal/genstack/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/jinzhu/inflection/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/lib/pq/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/lib/pq/hstore/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/lib/pq/internal/pgpass/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/lib/pq/internal/pgservice/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/lib/pq/internal/pqsql/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/lib/pq/internal/pqtime/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/lib/pq/internal/pqutil/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/lib/pq/internal/proto/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/lib/pq/oid/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/lib/pq/pqerror/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/lib/pq/scram/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/jinzhu/now/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/nu7hatch/gouuid/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/v2/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/onsi/ginkgo/v2/config/*.go # gosub
@@ -122,9 +125,7 @@ files:
   - code.cloudfoundry.org/vendor/github.com/square/certstrap/pkix/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/tedsuo/ifrit/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/tedsuo/ifrit/ginkgomon_v2/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/tedsuo/ifrit/grouper/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/tedsuo/ifrit/http_server/*.go # gosub
-  - code.cloudfoundry.org/vendor/github.com/tedsuo/ifrit/sigmon/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/tedsuo/rata/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/vito/go-sse/sse/*.go # gosub
   - code.cloudfoundry.org/vendor/go.step.sm/crypto/fingerprint/*.go # gosub
@@ -168,9 +169,11 @@ files:
   - code.cloudfoundry.org/vendor/golang.org/x/oauth2/clientcredentials/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/oauth2/internal/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/sync/errgroup/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/sync/semaphore/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/sys/unix/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/sys/unix/*.s # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/sys/windows/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/text/cases/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/text/encoding/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/text/encoding/charmap/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/text/encoding/htmlindex/*.go # gosub
@@ -181,6 +184,7 @@ files:
   - code.cloudfoundry.org/vendor/golang.org/x/text/encoding/simplifiedchinese/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/text/encoding/traditionalchinese/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/text/encoding/unicode/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/text/internal/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/text/internal/language/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/text/internal/language/compact/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/text/internal/tag/*.go # gosub
@@ -188,9 +192,11 @@ files:
   - code.cloudfoundry.org/vendor/golang.org/x/text/language/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/text/runes/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/text/secure/bidirule/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/text/secure/precis/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/text/transform/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/text/unicode/bidi/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/text/unicode/norm/*.go # gosub
+  - code.cloudfoundry.org/vendor/golang.org/x/text/width/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/tools/go/ast/edge/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/tools/go/ast/inspector/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/tools/go/gcexportdata/*.go # gosub
@@ -308,3 +314,14 @@ files:
   - code.cloudfoundry.org/vendor/google.golang.org/protobuf/types/known/durationpb/*.go # gosub
   - code.cloudfoundry.org/vendor/google.golang.org/protobuf/types/known/timestamppb/*.go # gosub
   - code.cloudfoundry.org/vendor/gopkg.in/yaml.v3/*.go # gosub
+  - code.cloudfoundry.org/vendor/gorm.io/driver/mysql/*.go # gosub
+  - code.cloudfoundry.org/vendor/gorm.io/driver/postgres/*.go # gosub
+  - code.cloudfoundry.org/vendor/gorm.io/gorm/*.go # gosub
+  - code.cloudfoundry.org/vendor/gorm.io/gorm/callbacks/*.go # gosub
+  - code.cloudfoundry.org/vendor/gorm.io/gorm/clause/*.go # gosub
+  - code.cloudfoundry.org/vendor/gorm.io/gorm/internal/lru/*.go # gosub
+  - code.cloudfoundry.org/vendor/gorm.io/gorm/internal/stmt_store/*.go # gosub
+  - code.cloudfoundry.org/vendor/gorm.io/gorm/logger/*.go # gosub
+  - code.cloudfoundry.org/vendor/gorm.io/gorm/migrator/*.go # gosub
+  - code.cloudfoundry.org/vendor/gorm.io/gorm/schema/*.go # gosub
+  - code.cloudfoundry.org/vendor/gorm.io/gorm/utils/*.go # gosub
