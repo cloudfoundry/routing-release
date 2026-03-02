@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -1110,31 +1111,36 @@ var _ = Describe("ProxyRoundTripper", func() {
 
 			Context("when using sticky sessions", func() {
 				var (
-					sessionCookie *http.Cookie
-					endpoint1     *route.Endpoint
-					endpoint2     *route.Endpoint
+					sessionCookie     *http.Cookie
+					endpoint1         *route.Endpoint
+					endpoint2         *route.Endpoint
+					defaultExpiryDate = time.Date(2020, 1, 1, 1, 0, 0, 0, time.UTC)
 
 					// options for transport.RoundTripStub
 					responseContainsNoCookies                     func(req *http.Request) (*http.Response, error)
 					responseContainsJSESSIONID                    func(req *http.Request) (*http.Response, error)
 					responseContainsJSESSIONIDWithExtraProperties func(req *http.Request) (*http.Response, error)
+					responseContainsPartitionedJSESSIONID         func(req *http.Request) (*http.Response, error)
 					responseContainsVCAPID                        func(req *http.Request) (*http.Response, error)
 					responseContainsJSESSIONIDAndVCAPID           func(req *http.Request) (*http.Response, error)
 				)
 
-				setJSESSIONID := func(req *http.Request, resp *http.Response, setExtraProperties bool) (response *http.Response) {
+				setJSESSIONID := func(req *http.Request, resp *http.Response, setExtraProperties bool, partitioned bool) (response *http.Response) {
 
 					//Attach the same JSESSIONID on to the response if it exists on the request
-					if len(req.Cookies()) > 0 && !setExtraProperties {
+					if len(req.Cookies()) > 0 && !setExtraProperties && !partitioned {
 						resp.Header.Add(round_tripper.CookieHeader, req.Cookies()[0].String())
 						return resp
 					}
 
 					if setExtraProperties {
 						sessionCookie.SameSite = http.SameSiteStrictMode
-						sessionCookie.Expires = time.Date(2020, 1, 1, 1, 0, 0, 0, time.UTC)
+						sessionCookie.Expires = defaultExpiryDate
 						sessionCookie.Secure = true
 						sessionCookie.HttpOnly = true
+					}
+
+					if partitioned {
 						sessionCookie.Partitioned = true
 					}
 
@@ -1168,7 +1174,7 @@ var _ = Describe("ProxyRoundTripper", func() {
 
 				responseContainsJSESSIONID = func(req *http.Request) (*http.Response, error) {
 					resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
-					setJSESSIONID(req, resp, false)
+					setJSESSIONID(req, resp, false, false)
 					return resp, nil
 				}
 
@@ -1177,15 +1183,25 @@ var _ = Describe("ProxyRoundTripper", func() {
 					setVCAPID(resp)
 					return resp, nil
 				}
+
 				responseContainsJSESSIONIDAndVCAPID = func(req *http.Request) (*http.Response, error) {
 					resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
-					setJSESSIONID(req, resp, false)
+					setJSESSIONID(req, resp, false, false)
 					setVCAPID(resp)
 					return resp, nil
 				}
+
+				// Non-partitioned JSESSIONID with extra properties (Secure, HttpOnly, SameSite, Expires)
 				responseContainsJSESSIONIDWithExtraProperties = func(req *http.Request) (*http.Response, error) {
 					resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
-					setJSESSIONID(req, resp, true)
+					setJSESSIONID(req, resp, true, false)
+					return resp, nil
+				}
+
+				// Partitioned JSESSIONID with all properties
+				responseContainsPartitionedJSESSIONID = func(req *http.Request) (*http.Response, error) {
+					resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
+					setJSESSIONID(req, resp, true, true)
 					return resp, nil
 				}
 
@@ -1209,171 +1225,47 @@ var _ = Describe("ProxyRoundTripper", func() {
 					Expect(removed).To(BeTrue())
 				})
 
-				Context("when there are no cookies on the request", func() {
-					Context("when there is a JSESSIONID set on the response", func() {
+				expectVcapIdCookie := func(cookie *http.Cookie, expectedInstanceIds ...string) {
+					ExpectWithOffset(1, cookie.Name).To(Equal(round_tripper.VcapCookieId))
+					if len(expectedInstanceIds) > 0 {
+						ExpectWithOffset(1, cookie.Value).To(BeElementOf(expectedInstanceIds))
+					}
+				}
+
+				expectMetaCookie := func(cookie *http.Cookie, checkFn func(value string)) {
+					ExpectWithOffset(1, cookie.Name).To(Equal(round_tripper.VcapMetaCookieId))
+					if checkFn != nil {
+						checkFn(cookie.Value)
+					}
+				}
+
+				Context("Early Return: when the backend already sets VCAP_ID on the response", func() {
+					// Gorouter must never overwrite a __VCAP_ID__ cookie that the backend sets itself.
+					// This is an early-return guard in setupStickySession that applies regardless of
+					// which scenario (Auth Negotiate, New Session, Stale Session) would otherwise trigger.
+
+					Context("when only VCAP_ID is set on the response", func() {
 						BeforeEach(func() {
-							transport.RoundTripStub = responseContainsJSESSIONID
+							transport.RoundTripStub = responseContainsVCAPID
 						})
 
-						It("will select an endpoint and set the VCAP_ID to the privateInstanceId", func() {
+						It("does not overwrite it", func() {
 							resp, err := proxyRoundTripper.RoundTrip(req)
 							Expect(err).ToNot(HaveOccurred())
 
 							cookies := resp.Cookies()
-							Expect(cookies).To(HaveLen(2))
-							Expect(cookies[0].Raw).To(Equal(sessionCookie.String()))
-							Expect(cookies[1].Name).To(Equal(round_tripper.VcapCookieId))
-							Expect(cookies[1].Value).To(SatisfyAny(
-								Equal("id-1"),
-								Equal("id-2")))
-						})
-						Context("when the JSESSIONID cookie has properties set,", func() {
-							BeforeEach(func() {
-								transport.RoundTripStub = responseContainsJSESSIONIDWithExtraProperties
-							})
-
-							It("sets the same properties on the VCAP_ID", func() {
-								resp, err := proxyRoundTripper.RoundTrip(req)
-								Expect(err).ToNot(HaveOccurred())
-
-								cookies := resp.Cookies()
-								Expect(cookies).To(HaveLen(2))
-								Expect(cookies[0].Raw).To(Equal(sessionCookie.String()))
-								Expect(sessionCookie.String()).To(ContainSubstring("Expires=Wed, 01 Jan 2020 01:00:00 GMT; HttpOnly; Secure; SameSite=Strict"))
-
-								Expect(cookies[1].Name).To(Equal(round_tripper.VcapCookieId))
-								Expect(cookies[1].Value).To(SatisfyAny(
-									Equal("id-1"),
-									Equal("id-2")))
-								Expect(cookies[1].Raw).To(ContainSubstring("Expires=Wed, 01 Jan 2020 01:00:00 GMT; HttpOnly; Secure; SameSite=Strict"))
-							})
-						})
-
-						Context("when the JSESSIONID cookie has a negative value for the MaxAge attribute", func() {
-							BeforeEach(func() {
-								transport.RoundTripStub = func(req *http.Request) (*http.Response, error) {
-									resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
-
-									// Create JSESSIONID with MaxAge=-1, which translates to "Max-Age=0" in the HTTP header (delete cookie immediately)
-									deleteCookie := &http.Cookie{
-										Name:     StickyCookieKey,
-										Value:    "session-to-delete",
-										MaxAge:   -1,
-										Secure:   true,
-										HttpOnly: true,
-										SameSite: http.SameSiteStrictMode,
-									}
-									resp.Header.Add(round_tripper.CookieHeader, deleteCookie.String())
-									return resp, nil
-								}
-							})
-
-							It("copies MaxAge=-1 to VCAP_ID cookie so both cookies are deleted immediately", func() {
-								resp, err := proxyRoundTripper.RoundTrip(req)
-								Expect(err).ToNot(HaveOccurred())
-
-								cookies := resp.Cookies()
-								Expect(cookies).To(HaveLen(2))
-
-								// Verify JSESSIONID has MaxAge=-1
-								Expect(cookies[0].Name).To(Equal(StickyCookieKey))
-								Expect(cookies[0].MaxAge).To(Equal(-1))
-
-								// Verify VCAP_ID also has MaxAge=-1
-								Expect(cookies[1].Name).To(Equal(round_tripper.VcapCookieId))
-								Expect(cookies[1].MaxAge).To(Equal(-1))
-								Expect(cookies[1].Value).To(SatisfyAny(
-									Equal("id-1"),
-									Equal("id-2")))
-							})
-						})
-
-						Context("when the JSESSIONID cookie has a positive value for the MaxAge attribute", func() {
-							BeforeEach(func() {
-								transport.RoundTripStub = func(req *http.Request) (*http.Response, error) {
-									resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
-
-									// Create JSESSIONID with MaxAge=1 (cookie expires in 1 second)
-									expiringCookie := &http.Cookie{
-										Name:     StickyCookieKey,
-										Value:    "session-value",
-										MaxAge:   1,
-										Secure:   true,
-										HttpOnly: true,
-										SameSite: http.SameSiteStrictMode,
-									}
-									resp.Header.Add(round_tripper.CookieHeader, expiringCookie.String())
-									return resp, nil
-								}
-							})
-
-							It("copies MaxAge=1 to VCAP_ID cookie so both cookies expire at the same time", func() {
-								resp, err := proxyRoundTripper.RoundTrip(req)
-								Expect(err).ToNot(HaveOccurred())
-
-								cookies := resp.Cookies()
-								Expect(cookies).To(HaveLen(2))
-
-								// Verify JSESSIONID has MaxAge=1
-								Expect(cookies[0].Name).To(Equal(StickyCookieKey))
-								Expect(cookies[0].MaxAge).To(Equal(1))
-
-								// Verify VCAP_ID also has MaxAge=1
-								Expect(cookies[1].Name).To(Equal(round_tripper.VcapCookieId))
-								Expect(cookies[1].MaxAge).To(Equal(1))
-								Expect(cookies[1].Value).To(SatisfyAny(
-									Equal("id-1"),
-									Equal("id-2")))
-							})
-						})
-
-						Context("when the JSESSIONID cookie has a zero value for the MaxAge attribute", func() {
-							BeforeEach(func() {
-								transport.RoundTripStub = func(req *http.Request) (*http.Response, error) {
-									resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
-
-									// Create JSESSIONID with MaxAge=0 (Max-Age attribute is not set in HTTP header, cookie is a session cookie)
-									sessionCookie := &http.Cookie{
-										Name:     StickyCookieKey,
-										Value:    "session-value",
-										MaxAge:   0,
-										Secure:   true,
-										HttpOnly: true,
-										SameSite: http.SameSiteStrictMode,
-									}
-									resp.Header.Add(round_tripper.CookieHeader, sessionCookie.String())
-									return resp, nil
-								}
-							})
-
-							It("copies MaxAge=0 to VCAP_ID cookie so both are session cookies", func() {
-								resp, err := proxyRoundTripper.RoundTrip(req)
-								Expect(err).ToNot(HaveOccurred())
-
-								cookies := resp.Cookies()
-								Expect(cookies).To(HaveLen(2))
-
-								// Verify JSESSIONID has MaxAge=0
-								Expect(cookies[0].Name).To(Equal(StickyCookieKey))
-								Expect(cookies[0].MaxAge).To(Equal(0))
-
-								// Verify VCAP_ID also has MaxAge=0
-								Expect(cookies[1].Name).To(Equal(round_tripper.VcapCookieId))
-								Expect(cookies[1].MaxAge).To(Equal(0))
-								Expect(cookies[1].Value).To(SatisfyAny(
-									Equal("id-1"),
-									Equal("id-2")))
-							})
-
+							Expect(cookies).To(HaveLen(1))
+							Expect(cookies[0].Name).To(Equal(round_tripper.VcapCookieId))
+							Expect(cookies[0].Value).To(Equal("vcap-id-property-already-on-the-response"))
 						})
 					})
 
-					Context("when there is a JSESSION_ID and a VCAP_ID on the response", func() {
+					Context("when both JSESSIONID and VCAP_ID are set on the response", func() {
 						BeforeEach(func() {
 							transport.RoundTripStub = responseContainsJSESSIONIDAndVCAPID
 						})
 
-						It("leaves the VCAP_ID alone and does not overwrite it", func() {
+						It("does not add a second VCAP_ID or META cookie", func() {
 							resp, err := proxyRoundTripper.RoundTrip(req)
 							Expect(err).ToNot(HaveOccurred())
 
@@ -1384,20 +1276,97 @@ var _ = Describe("ProxyRoundTripper", func() {
 							Expect(cookies[1].Value).To(Equal("vcap-id-property-already-on-the-response"))
 						})
 					})
+				})
 
-					Context("when there is only a VCAP_ID set on the response", func() {
+				Context("Auth Negotiation Scenario", func() {
+					Context("when VCAP_ID cookie and 'Authorization: Negotiate ...' header are on the request", func() {
 						BeforeEach(func() {
-							transport.RoundTripStub = responseContainsVCAPID
+							req.AddCookie(&http.Cookie{
+								Name:  round_tripper.VcapCookieId,
+								Value: "id-2",
+							})
+							req.Header.Add("Authorization", "Negotiate SOME-TOKEN")
+							transport.RoundTripStub = func(req *http.Request) (*http.Response, error) {
+								Expect(req.URL.Host).To(Equal("1.1.1.1:9092"))
+								resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
+								return resp, nil
+							}
 						})
 
-						It("leaves the VCAP_ID alone and does not overwrite it", func() {
+						It("routes the request to the sticky endpoint and does not set VCAP_ID (endpoint unchanged)", func() {
+							resp, err := proxyRoundTripper.RoundTrip(req)
+							Expect(err).ToNot(HaveOccurred())
+							// Backend selection is verified in the transport stub above
+							Expect(resp.Cookies()).To(HaveLen(0))
+						})
+					})
+
+					Context("when VCAP_ID is already set on the request and the response contains 'WWW-Authenticate: Negotiate'", func() {
+						// When a client already has a valid sticky session (VCAP_ID points to a live endpoint),
+						// and the backend responds with WWW-Authenticate: Negotiate (e.g., a Kerberos handshake
+						// round-trip), gorouter must NOT re-issue the VCAP_ID cookie. The endpoint has not
+						// changed, so there is nothing to update.
+						BeforeEach(func() {
+							req.AddCookie(&http.Cookie{
+								Name:  round_tripper.VcapCookieId,
+								Value: "id-2",
+							})
+							// Authorization: Negotiate on the request is what enables sticky routing via __VCAP_ID__.
+							req.Header.Add("Authorization", "Negotiate SOME-TOKEN")
+							transport.RoundTripStub = func(req *http.Request) (*http.Response, error) {
+								// The request is correctly routed to endpoint2 (id-2) — no endpoint change.
+								Expect(req.URL.Host).To(Equal("1.1.1.1:9092"))
+								resp := &http.Response{StatusCode: http.StatusUnauthorized, Header: make(map[string][]string)}
+								resp.Header.Add("WWW-Authenticate", "Negotiate SOME-TOKEN")
+								return resp, nil
+							}
+						})
+
+						It("does not set VCAP_ID on the response (endpoint unchanged, no cookie update needed)", func() {
+							resp, err := proxyRoundTripper.RoundTrip(req)
+							Expect(err).ToNot(HaveOccurred())
+
+							Expect(resp.Cookies()).To(HaveLen(0))
+						})
+					})
+
+					Context("when a JSESSIONID sticky session is stale and the new backend responds with 'WWW-Authenticate: Negotiate'", func() {
+						// A client has an active JSESSIONID sticky session (so originalEndpointId is set)
+						// but the pinned endpoint is gone. The new backend responds with WWW-Authenticate:
+						// Negotiate. Gorouter must re-issue VCAP_ID with the fixed Negotiate defaults
+						// (MaxAge=60, SameSite=Strict) — not attempt to restore attributes from
+						// __VCAP_ID_META__ (which encodes JSESSIONID attributes, not Negotiate defaults).
+						JustBeforeEach(func() {
+							// First request: establish a JSESSIONID session so JSESSIONID + VCAP_ID + META are on req.
+							transport.RoundTripStub = responseContainsJSESSIONID
+							firstResp, err := proxyRoundTripper.RoundTrip(req)
+							Expect(err).ToNot(HaveOccurred())
+							for _, c := range firstResp.Cookies() {
+								req.AddCookie(c)
+							}
+							// Swap out the endpoint so endpointChanged=true on the next request.
+							routePool.Remove(endpoint1)
+							routePool.Remove(endpoint2)
+							newEndpoint := route.NewEndpoint(&route.EndpointOpts{PrivateInstanceId: "id-new-backend"})
+							routePool.Put(newEndpoint)
+							transport.RoundTripStub = func(req *http.Request) (*http.Response, error) {
+								resp := &http.Response{StatusCode: http.StatusUnauthorized, Header: make(map[string][]string)}
+								resp.Header.Add("WWW-Authenticate", "Negotiate SOME-TOKEN")
+								return resp, nil
+							}
+						})
+
+						It("sets VCAP_ID with Negotiate defaults (MaxAge=60, SameSite=Strict) on the new backend", func() {
 							resp, err := proxyRoundTripper.RoundTrip(req)
 							Expect(err).ToNot(HaveOccurred())
 
 							cookies := resp.Cookies()
 							Expect(cookies).To(HaveLen(1))
 							Expect(cookies[0].Name).To(Equal(round_tripper.VcapCookieId))
-							Expect(cookies[0].Value).To(Equal("vcap-id-property-already-on-the-response"))
+							Expect(cookies[0].Value).To(Equal("id-new-backend"))
+							Expect(cookies[0].MaxAge).To(Equal(round_tripper.AuthNegotiateHeaderCookieMaxAgeInSeconds))
+							Expect(cookies[0].SameSite).To(Equal(http.SameSiteStrictMode))
+							Expect(cookies[0].Expires).To(Equal(time.Time{}))
 						})
 					})
 
@@ -1410,7 +1379,7 @@ var _ = Describe("ProxyRoundTripper", func() {
 							}
 						})
 
-						It("will select an endpoint and set the VCAP_ID to the privateInstanceId", func() {
+						It("will select an endpoint and set VCAP_ID to the privateInstanceId", func() {
 							resp, err := proxyRoundTripper.RoundTrip(req)
 							Expect(err).ToNot(HaveOccurred())
 
@@ -1426,61 +1395,17 @@ var _ = Describe("ProxyRoundTripper", func() {
 							Expect(cookies[0].SameSite).To(Equal(http.SameSiteStrictMode))
 						})
 
-						Context("when there is also a VCAP_ID set on the response", func() {
-							BeforeEach(func() {
-								transport.RoundTripStub = func(req *http.Request) (*http.Response, error) {
-									resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
-									setAuthorizationNegotiateHeader(resp)
-									setVCAPID(resp)
-									return resp, nil
-								}
-							})
-
-							It("leaves the VCAP_ID alone and does not overwrite it", func() {
-								resp, err := proxyRoundTripper.RoundTrip(req)
-								Expect(err).ToNot(HaveOccurred())
-
-								cookies := resp.Cookies()
-								Expect(cookies).To(HaveLen(1))
-								Expect(cookies[0].Name).To(Equal(round_tripper.VcapCookieId))
-								Expect(cookies[0].Value).To(Equal("vcap-id-property-already-on-the-response"))
-							})
-						})
-
-						Context("when there is also a JSESSIONID and VCAP_ID set on the response", func() {
-							BeforeEach(func() {
-								transport.RoundTripStub = func(req *http.Request) (*http.Response, error) {
-									resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
-									setAuthorizationNegotiateHeader(resp)
-									setJSESSIONID(req, resp, false)
-									setVCAPID(resp)
-									return resp, nil
-								}
-							})
-
-							It("does not overwrite JSESSIONID and VCAP_ID", func() {
-								resp, err := proxyRoundTripper.RoundTrip(req)
-								Expect(err).ToNot(HaveOccurred())
-
-								cookies := resp.Cookies()
-								Expect(cookies).To(HaveLen(2))
-								Expect(cookies[0].Raw).To(Equal(sessionCookie.String()))
-								Expect(cookies[1].Name).To(Equal(round_tripper.VcapCookieId))
-								Expect(cookies[1].Value).To(Equal("vcap-id-property-already-on-the-response"))
-							})
-						})
-
 						Context("when there is also JSESSIONID cookie with extra properties set", func() {
 							BeforeEach(func() {
 								transport.RoundTripStub = func(req *http.Request) (*http.Response, error) {
 									resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
 									setAuthorizationNegotiateHeader(resp)
-									setJSESSIONID(req, resp, true)
+									setJSESSIONID(req, resp, true, false)
 									return resp, nil
 								}
 							})
 
-							It("sets the auth negotiate default properties on the VCAP_ID", func() {
+							It("sets the auth negotiate default properties on VCAP_ID", func() {
 								resp, err := proxyRoundTripper.RoundTrip(req)
 								Expect(err).ToNot(HaveOccurred())
 
@@ -1501,7 +1426,7 @@ var _ = Describe("ProxyRoundTripper", func() {
 									cfg.SecureCookies = true
 								})
 
-								It("sets the auth negotiate default properties with Secure on the VCAP_ID", func() {
+								It("sets the auth negotiate default properties with Secure on VCAP_ID", func() {
 									resp, err := proxyRoundTripper.RoundTrip(req)
 									Expect(err).ToNot(HaveOccurred())
 
@@ -1522,298 +1447,905 @@ var _ = Describe("ProxyRoundTripper", func() {
 							BeforeEach(func() {
 								cfg.StickySessionsForAuthNegotiate = false
 							})
-							It("does not set the VCAP_ID cookie", func() {
+							It("does not set VCAP_ID cookie", func() {
 								resp, err := proxyRoundTripper.RoundTrip(req)
 								Expect(err).ToNot(HaveOccurred())
 
 								cookies := resp.Cookies()
 								Expect(cookies).To(HaveLen(0))
 							})
-							Context("when there is also a JSESSIONID cookie with extra properties", func() {
+							Context("when there is also a JSESSIONID cookie on the response", func() {
+								// Even though Negotiate sticky sessions are disabled, the JSESSIONID code path
+								// is independent and still applies: VCAP_ID is set from the JSESSIONID attributes.
 								BeforeEach(func() {
 									transport.RoundTripStub = func(req *http.Request) (*http.Response, error) {
 										resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
 										setAuthorizationNegotiateHeader(resp)
-										setJSESSIONID(req, resp, true)
+										setJSESSIONID(req, resp, true, false)
 										return resp, nil
 									}
 								})
-								It("sets the VCAP_ID cookie with JSESSION_ID properties", func() {
+								It("sets VCAP_ID via the JSESSIONID path (Negotiate path is skipped)", func() {
 									resp, err := proxyRoundTripper.RoundTrip(req)
 									Expect(err).ToNot(HaveOccurred())
 
 									cookies := resp.Cookies()
-									Expect(cookies).To(HaveLen(2))
+									Expect(cookies).To(HaveLen(3)) // JSESSIONID + VCAP_ID + VCAP_ID_META
 									Expect(cookies[0].Raw).To(Equal(sessionCookie.String()))
 									Expect(sessionCookie.String()).To(ContainSubstring("Expires=Wed, 01 Jan 2020 01:00:00 GMT; HttpOnly; Secure; SameSite=Strict"))
+									Expect(sessionCookie.String()).ToNot(ContainSubstring("Partitioned"))
 
-									Expect(cookies[1].Name).To(Equal(round_tripper.VcapCookieId))
-									Expect(cookies[1].Value).To(SatisfyAny(
-										Equal("id-1"),
-										Equal("id-2")))
-									Expect(cookies[1].Raw).To(ContainSubstring("Expires=Wed, 01 Jan 2020 01:00:00 GMT; HttpOnly; Secure; SameSite=Strict"))
+									expectVcapIdCookie(cookies[1], "id-1", "id-2")
+									Expect(cookies[1].Raw).ToNot(ContainSubstring("Partitioned"))
 								})
 							})
 						})
 					})
+
 				})
 
-				Context("when sticky session cookies (JSESSIONID and VCAP_ID) are on the request", func() {
-					var cookies []*http.Cookie
-					JustBeforeEach(func() {
-						transport.RoundTripStub = responseContainsJSESSIONID
-						resp, err := proxyRoundTripper.RoundTrip(req)
-						Expect(err).ToNot(HaveOccurred())
+				Context("New Session Scenario", func() {
 
-						cookies = resp.Cookies()
-						Expect(cookies).To(HaveLen(2))
-						for _, cookie := range cookies {
-							req.AddCookie(cookie)
-						}
-					})
-
-					Context("when there is a JSESSIONID set on the response", func() {
-						JustBeforeEach(func() {
+					Context("When the response contains a JSESSIONID cookie", func() {
+						BeforeEach(func() {
 							transport.RoundTripStub = responseContainsJSESSIONID
 						})
 
-						It("will select the previous backend and VCAP_ID is set on the response", func() {
+						It("selects an endpoint and sets VCAP_ID and VCAP_ID_META", func() {
 							resp, err := proxyRoundTripper.RoundTrip(req)
 							Expect(err).ToNot(HaveOccurred())
 
-							new_cookies := resp.Cookies()
-							Expect(new_cookies).To(HaveLen(2))
-							Expect(new_cookies[0]).To(Equal(cookies[0]))
-							Expect(new_cookies[0].Raw).To(Equal(sessionCookie.String()))
-							Expect(new_cookies[1].Value).To(Equal(cookies[1].Value))
-							Expect(new_cookies[1].Name).To(Equal(round_tripper.VcapCookieId))
+							cookies := resp.Cookies()
+							Expect(cookies).To(HaveLen(3)) // JSESSIONID + VCAP_ID + VCAP_ID_META
+							Expect(cookies[0].Raw).To(Equal(sessionCookie.String()))
+							expectVcapIdCookie(cookies[1], "id-1", "id-2")
+							expectMetaCookie(cookies[2], nil)
+						})
+					})
+
+					Context("when JSESSIONID is non-partitioned with Secure, SameSite=Strict, and an Expires date", func() {
+						BeforeEach(func() {
+							transport.RoundTripStub = responseContainsJSESSIONIDWithExtraProperties
 						})
 
-						Context("when the JSESSIONID on the response has new properties", func() {
-							JustBeforeEach(func() {
-								transport.RoundTripStub = responseContainsJSESSIONIDWithExtraProperties
+						It("creates non-partitioned VCAP_ID cookies with matching attributes", func() {
+							resp, err := proxyRoundTripper.RoundTrip(req)
+							Expect(err).ToNot(HaveOccurred())
+
+							cookies := resp.Cookies()
+							Expect(cookies).To(HaveLen(3)) // JSESSIONID + VCAP_ID + VCAP_ID_META (all non-partitioned)
+							Expect(cookies[0].Raw).To(Equal(sessionCookie.String()))
+							Expect(sessionCookie.String()).To(ContainSubstring("Expires=Wed, 01 Jan 2020 01:00:00 GMT; HttpOnly; Secure; SameSite=Strict"))
+							Expect(sessionCookie.String()).ToNot(ContainSubstring("Partitioned"))
+
+							expectVcapIdCookie(cookies[1], "id-1", "id-2")
+							Expect(cookies[1].Raw).To(ContainSubstring("Expires=Wed, 01 Jan 2020 01:00:00 GMT; HttpOnly; Secure; SameSite=Strict"))
+							Expect(cookies[1].Partitioned).To(BeFalse())
+							expectMetaCookie(cookies[2], nil)
+							Expect(cookies[2].Partitioned).To(BeFalse())
+						})
+
+						It("encodes secure, samesite=strict, and expires= in VCAP_ID_META", func() {
+							resp, err := proxyRoundTripper.RoundTrip(req)
+							Expect(err).ToNot(HaveOccurred())
+
+							cookies := resp.Cookies()
+							Expect(cookies).To(HaveLen(3)) // JSESSIONID + VCAP_ID + VCAP_ID_META
+							expectMetaCookie(cookies[2], func(value string) {
+								Expect(value).To(ContainSubstring("secure"))
+								Expect(value).To(ContainSubstring("samesite=strict"))
+								// expires= holds the raw Unix timestamp from the original Expires header
+								Expect(value).To(ContainSubstring("expires="))
+								Expect(value).ToNot(ContainSubstring("maxage="))
+								params, _ := url.ParseQuery(value)
+								v, err := strconv.ParseInt(params.Get("expires"), 10, 64)
+								Expect(err).ToNot(HaveOccurred())
+								// Expires=Wed, 01 Jan 2020 01:00:00 GMT → Unix timestamp 1577840400
+								Expect(v).To(Equal(int64(1577840400)))
+							})
+						})
+					})
+
+					Context("when JSESSIONID is partitioned", func() {
+						BeforeEach(func() {
+							transport.RoundTripStub = responseContainsPartitionedJSESSIONID
+						})
+
+						It("creates partitioned VCAP_ID and VCAP_ID_META cookies with partitioned in meta", func() {
+							resp, err := proxyRoundTripper.RoundTrip(req)
+							Expect(err).ToNot(HaveOccurred())
+
+							cookies := resp.Cookies()
+							Expect(cookies).To(HaveLen(3)) // JSESSIONID + VCAP_ID + VCAP_ID_META (all partitioned)
+
+							// JSESSIONID is partitioned
+							Expect(cookies[0].Raw).To(Equal(sessionCookie.String()))
+							Expect(sessionCookie.String()).To(ContainSubstring("Partitioned"))
+
+							// VCAP_ID is partitioned
+							expectVcapIdCookie(cookies[1], "id-1", "id-2")
+							Expect(cookies[1].Partitioned).To(BeTrue())
+
+							// VCAP_ID_META carries partitioned and is itself partitioned
+							expectMetaCookie(cookies[2], func(value string) {
+								Expect(value).To(ContainSubstring("partitioned"))
+							})
+							Expect(cookies[2].Partitioned).To(BeTrue())
+						})
+					})
+
+					Context("when JSESSIONID has MaxAge=-1 (delete cookie)", func() {
+						BeforeEach(func() {
+							transport.RoundTripStub = func(req *http.Request) (*http.Response, error) {
+								resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
+
+								// Create JSESSIONID with MaxAge=-1, which translates to "Max-Age=0" in the HTTP header (delete cookie immediately)
+								deleteCookie := &http.Cookie{
+									Name:     StickyCookieKey,
+									Value:    "session-to-delete",
+									MaxAge:   -1,
+									Secure:   true,
+									HttpOnly: true,
+									SameSite: http.SameSiteStrictMode,
+								}
+								resp.Header.Add(round_tripper.CookieHeader, deleteCookie.String())
+								return resp, nil
+							}
+						})
+
+						It("copies MaxAge=-1 to VCAP_ID and stores maxage=-1 in VCAP_ID_META", func() {
+							resp, err := proxyRoundTripper.RoundTrip(req)
+							Expect(err).ToNot(HaveOccurred())
+
+							cookies := resp.Cookies()
+							Expect(cookies).To(HaveLen(3)) // JSESSIONID + VCAP_ID + VCAP_ID_META
+
+							// Verify JSESSIONID has MaxAge=-1
+							Expect(cookies[0].Name).To(Equal(StickyCookieKey))
+							Expect(cookies[0].MaxAge).To(Equal(-1))
+
+							// Verify VCAP_ID also has MaxAge=-1
+							Expect(cookies[1].Name).To(Equal(round_tripper.VcapCookieId))
+							Expect(cookies[1].MaxAge).To(Equal(-1))
+							Expect(cookies[1].Value).To(SatisfyAny(
+								Equal("id-1"),
+								Equal("id-2")))
+
+							// Verify VCAP_ID_META stores maxage=-1 so the delete is preserved on refresh
+							expectMetaCookie(cookies[2], func(value string) {
+								params, _ := url.ParseQuery(value)
+								Expect(params.Get("maxage")).To(Equal("-1"))
+								Expect(value).ToNot(ContainSubstring("expires="))
+							})
+						})
+					})
+
+					Context("when JSESSIONID has a positive MaxAge", func() {
+						BeforeEach(func() {
+							transport.RoundTripStub = func(req *http.Request) (*http.Response, error) {
+								resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
+								resp.Header.Add(round_tripper.CookieHeader, (&http.Cookie{
+									Name: StickyCookieKey, Value: "session-value", MaxAge: 3600,
+								}).String())
+								return resp, nil
+							}
+						})
+
+						It("copies MaxAge to VCAP_ID and stores absolute epoch in VCAP_ID_META maxage=", func() {
+							before := time.Now().Unix()
+							resp, err := proxyRoundTripper.RoundTrip(req)
+							after := time.Now().Unix()
+							Expect(err).ToNot(HaveOccurred())
+
+							cookies := resp.Cookies()
+							Expect(cookies).To(HaveLen(3)) // JSESSIONID + VCAP_ID + VCAP_ID_META
+
+							Expect(cookies[0].Name).To(Equal(StickyCookieKey))
+							Expect(cookies[0].MaxAge).To(Equal(3600))
+
+							Expect(cookies[1].Name).To(Equal(round_tripper.VcapCookieId))
+							Expect(cookies[1].MaxAge).To(Equal(3600))
+							Expect(cookies[1].Value).To(SatisfyAny(Equal("id-1"), Equal("id-2")))
+
+							// VCAP_ID_META stores the absolute expiry epoch so stale refresh can compute remaining time
+							expectMetaCookie(cookies[2], func(value string) {
+								Expect(value).To(ContainSubstring("maxage="))
+								Expect(value).ToNot(ContainSubstring("expires="))
+								params, _ := url.ParseQuery(value)
+								v, err := strconv.ParseInt(params.Get("maxage"), 10, 64)
+								Expect(err).ToNot(HaveOccurred())
+								Expect(v).To(BeNumerically(">=", before+3600))
+								Expect(v).To(BeNumerically("<=", after+3600))
+							})
+						})
+					})
+
+					Context("when JSESSIONID has MaxAge=0 (session cookie, Max-Age not set)", func() {
+						BeforeEach(func() {
+							transport.RoundTripStub = func(req *http.Request) (*http.Response, error) {
+								resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
+
+								// Create JSESSIONID with MaxAge=0 (Max-Age attribute is not set in HTTP header, cookie is a session cookie)
+								sessionCookie := &http.Cookie{
+									Name:     StickyCookieKey,
+									Value:    "session-value",
+									MaxAge:   0,
+									Secure:   true,
+									HttpOnly: true,
+									SameSite: http.SameSiteStrictMode,
+								}
+								resp.Header.Add(round_tripper.CookieHeader, sessionCookie.String())
+								return resp, nil
+							}
+						})
+
+						It("sets VCAP_ID as a session cookie and VCAP_ID_META with no expiry flags", func() {
+							resp, err := proxyRoundTripper.RoundTrip(req)
+							Expect(err).ToNot(HaveOccurred())
+
+							cookies := resp.Cookies()
+							Expect(cookies).To(HaveLen(3)) // JSESSIONID + VCAP_ID + VCAP_ID_META
+
+							// JSESSIONID has no Max-Age (zero value, not set)
+							Expect(cookies[0].Name).To(Equal(StickyCookieKey))
+							Expect(cookies[0].MaxAge).To(Equal(0))
+
+							// VCAP_ID is also a session cookie — Max-Age is absent, not copied
+							Expect(cookies[1].Name).To(Equal(round_tripper.VcapCookieId))
+							Expect(cookies[1].MaxAge).To(Equal(0))
+							Expect(cookies[1].Value).To(SatisfyAny(
+								Equal("id-1"),
+								Equal("id-2")))
+						})
+
+					})
+
+					Context("when Secure Cookies are enforced in Gorouter", func() {
+						BeforeEach(func() {
+							cfg.SecureCookies = true
+							transport.RoundTripStub = responseContainsJSESSIONIDWithExtraProperties
+						})
+
+						Context("when JSESSIONID is Secure", func() {
+							BeforeEach(func() {
+								transport.RoundTripStub = func(req *http.Request) (*http.Response, error) {
+									resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
+									sessionCookie.Value, _ = uuid.GenerateUUID()
+									sessionCookie.Secure = true
+									resp.Header.Add(round_tripper.CookieHeader, sessionCookie.String())
+									return resp, nil
+								}
 							})
 
-							It("the VCAP_ID on the response is set with the same new values", func() {
+							It("sets Secure on VCAP_ID and VCAP_ID_META, and encodes secure in VCAP_ID_META", func() {
+								resp, err := proxyRoundTripper.RoundTrip(req)
+								Expect(err).ToNot(HaveOccurred())
+
+								cookies := resp.Cookies()
+								Expect(cookies).To(HaveLen(3)) // JSESSIONID + VCAP_ID + VCAP_ID_META
+
+								Expect(cookies[1].Name).To(Equal(round_tripper.VcapCookieId))
+								Expect(cookies[1].Secure).To(BeTrue())
+								Expect(cookies[2].Name).To(Equal(round_tripper.VcapMetaCookieId))
+								Expect(cookies[2].Secure).To(BeTrue())
+								expectMetaCookie(cookies[2], func(value string) {
+									Expect(value).To(ContainSubstring("secure"))
+								})
+							})
+						})
+
+						Context("when JSESSIONID is not Secure", func() {
+							BeforeEach(func() {
+								transport.RoundTripStub = responseContainsJSESSIONID
+							})
+
+							It("enforces Secure on VCAP_ID and VCAP_ID_META, and encodes secure in VCAP_ID_META", func() {
+								resp, err := proxyRoundTripper.RoundTrip(req)
+								Expect(err).ToNot(HaveOccurred())
+
+								cookies := resp.Cookies()
+								Expect(cookies).To(HaveLen(3)) // JSESSIONID + VCAP_ID + VCAP_ID_META
+
+								Expect(cookies[1].Name).To(Equal(round_tripper.VcapCookieId))
+								Expect(cookies[1].Secure).To(BeTrue())
+								Expect(cookies[2].Name).To(Equal(round_tripper.VcapMetaCookieId))
+								Expect(cookies[2].Secure).To(BeTrue())
+								expectMetaCookie(cookies[2], func(value string) {
+									Expect(value).To(ContainSubstring("secure"))
+								})
+							})
+						})
+					})
+
+				})
+
+				Context("Existing Session Scenario", func() {
+
+					Context("when the sticky endpoint still exists (no stale session)", func() {
+						var firstCookies []*http.Cookie
+						JustBeforeEach(func() {
+							transport.RoundTripStub = responseContainsJSESSIONID
+							resp, err := proxyRoundTripper.RoundTrip(req)
+							Expect(err).ToNot(HaveOccurred())
+
+							firstCookies = resp.Cookies()
+							Expect(firstCookies).To(HaveLen(3)) // JSESSIONID + VCAP_ID + VCAP_ID_META
+							for _, cookie := range firstCookies {
+								req.AddCookie(cookie)
+							}
+						})
+
+						Context("when there is a JSESSIONID set on the response", func() {
+							JustBeforeEach(func() {
+								transport.RoundTripStub = responseContainsJSESSIONID
+							})
+
+							It("selects the previous backend and refreshes VCAP_ID and VCAP_ID_META", func() {
 								resp, err := proxyRoundTripper.RoundTrip(req)
 								Expect(err).ToNot(HaveOccurred())
 
 								newCookies := resp.Cookies()
-								Expect(newCookies).To(HaveLen(2))
+								Expect(newCookies).To(HaveLen(3)) // JSESSIONID + VCAP_ID + VCAP_ID_META
+
+								// JSESSIONID is the session cookie set by the backend
+								Expect(newCookies[0].Name).To(Equal(StickyCookieKey))
+
+								// VCAP_ID still points to the same backend instance (previous backend selected)
+								expectVcapIdCookie(newCookies[1], firstCookies[1].Value)
+
+								// VCAP_ID_META is refreshed alongside VCAP_ID
+								expectMetaCookie(newCookies[2], nil)
+							})
+
+							Context("when JSESSIONID on the response is non-partitioned with extra properties", func() {
+								JustBeforeEach(func() {
+									transport.RoundTripStub = responseContainsJSESSIONIDWithExtraProperties
+								})
+
+								It("sets VCAP_ID and VCAP_ID_META on the response with the same new cookie attributes", func() {
+									resp, err := proxyRoundTripper.RoundTrip(req)
+									Expect(err).ToNot(HaveOccurred())
+
+									newCookies := resp.Cookies()
+									Expect(newCookies).To(HaveLen(3)) // JSESSIONID + VCAP_ID + VCAP_ID_META
+									Expect(newCookies[0].Raw).To(Equal(sessionCookie.String()))
+									Expect(newCookies[0].Partitioned).To(BeFalse())
+
+									Expect(newCookies[1].Name).To(Equal(round_tripper.VcapCookieId))
+									Expect(newCookies[1].Value).To(Equal(firstCookies[1].Value)) // still pointing to the same app
+									Expect(sessionCookie.String()).To(ContainSubstring("Expires=Wed, 01 Jan 2020 01:00:00 GMT; HttpOnly; Secure; SameSite=Strict"))
+									Expect(newCookies[1].Raw).To(ContainSubstring("Expires=Wed, 01 Jan 2020 01:00:00 GMT; HttpOnly; Secure; SameSite=Strict"))
+									Expect(newCookies[1].Partitioned).To(BeFalse())
+
+									expectMetaCookie(newCookies[2], nil)
+									Expect(newCookies[2].Raw).To(ContainSubstring("Expires=Wed, 01 Jan 2020 01:00:00 GMT; HttpOnly; Secure; SameSite=Strict"))
+									Expect(newCookies[2].Partitioned).To(BeFalse())
+								})
+							})
+
+							Context("when JSESSIONID on the response is partitioned", func() {
+								JustBeforeEach(func() {
+									transport.RoundTripStub = responseContainsPartitionedJSESSIONID
+								})
+
+								It("sets VCAP_ID and VCAP_ID_META with the same new cookie attributes", func() {
+									resp, err := proxyRoundTripper.RoundTrip(req)
+									Expect(err).ToNot(HaveOccurred())
+
+									newCookies := resp.Cookies()
+									Expect(newCookies).To(HaveLen(3)) // JSESSIONID + VCAP_ID + VCAP_ID_META
+
+									// JSESSIONID is partitioned
+									Expect(newCookies[0].Raw).To(Equal(sessionCookie.String()))
+									Expect(newCookies[0].Partitioned).To(BeTrue())
+
+									// VCAP_ID is partitioned and points to same instance
+									Expect(newCookies[1].Name).To(Equal(round_tripper.VcapCookieId))
+									Expect(newCookies[1].Value).To(Equal(firstCookies[1].Value)) // still pointing to the same app
+									Expect(newCookies[1].Partitioned).To(BeTrue())
+
+									// VCAP_ID_META carries partitioned and is itself partitioned
+									expectMetaCookie(newCookies[2], func(value string) {
+										Expect(value).To(ContainSubstring("partitioned"))
+									})
+									Expect(newCookies[2].Partitioned).To(BeTrue())
+								})
+							})
+
+						})
+
+						Context("when no cookies are set on the response", func() {
+							JustBeforeEach(func() {
+								transport.RoundTripStub = responseContainsNoCookies
+							})
+
+							It("does not set cookies on the response", func() {
+								resp, err := proxyRoundTripper.RoundTrip(req)
+								Expect(err).ToNot(HaveOccurred())
+
+								Expect(resp.Cookies()).To(HaveLen(0))
+							})
+						})
+
+					})
+
+					Context("when the sticky endpoint no longer exists (stale session)", func() {
+
+						// initialStub is the RoundTrip stub used for the first (setup) request.
+						// Sub-contexts that need direct cookie injection set it to nil and add
+						// cookies themselves in an inner JustBeforeEach.
+						var initialStub func(*http.Request) (*http.Response, error)
+
+						BeforeEach(func() {
+							initialStub = responseContainsJSESSIONID // default: plain non-partitioned session cookie
+						})
+
+						JustBeforeEach(func() {
+							if initialStub != nil {
+								transport.RoundTripStub = initialStub
+								firstResp, err := proxyRoundTripper.RoundTrip(req)
+								Expect(err).ToNot(HaveOccurred())
+								for _, c := range firstResp.Cookies() {
+									req.AddCookie(c)
+								}
+							}
+							routePool.Remove(endpoint1)
+							routePool.Remove(endpoint2)
+							newEndpoint := route.NewEndpoint(&route.EndpointOpts{PrivateInstanceId: "id-new-backend"})
+							routePool.Put(newEndpoint)
+							transport.RoundTripStub = responseContainsNoCookies
+						})
+
+						Context("when the new backend sets a JSESSIONID on the response", func() {
+							JustBeforeEach(func() {
+								transport.RoundTripStub = responseContainsJSESSIONIDWithExtraProperties
+							})
+
+							It("selects the new backend, updates VCAP_ID with JSESSIONID attributes, and updates VCAP_ID_META", func() {
+								resp, err := proxyRoundTripper.RoundTrip(req)
+								Expect(err).ToNot(HaveOccurred())
+
+								newCookies := resp.Cookies()
+								Expect(newCookies).To(HaveLen(3)) // JSESSIONID + VCAP_ID + VCAP_ID_META
+
 								Expect(newCookies[0].Raw).To(Equal(sessionCookie.String()))
-								Expect(newCookies[0].Partitioned).To(BeTrue())
 
 								Expect(newCookies[1].Name).To(Equal(round_tripper.VcapCookieId))
-								Expect(newCookies[1].Value).To(Equal(cookies[1].Value)) // still pointing to the same app
-								Expect(sessionCookie.String()).To(ContainSubstring("Expires=Wed, 01 Jan 2020 01:00:00 GMT; HttpOnly; Secure; SameSite=Strict; Partitioned"))
-								Expect(newCookies[1].Raw).To(ContainSubstring("Expires=Wed, 01 Jan 2020 01:00:00 GMT; HttpOnly; Secure; SameSite=Strict; Partitioned"))
+								Expect(newCookies[1].Value).To(Equal("id-new-backend"))
+								Expect(newCookies[1].Raw).To(ContainSubstring("Expires=Wed, 01 Jan 2020 01:00:00 GMT; HttpOnly; Secure; SameSite=Strict"))
+
+								expectMetaCookie(newCookies[2], func(value string) {
+									Expect(value).To(ContainSubstring("secure"))
+									Expect(value).To(ContainSubstring("samesite=strict"))
+									params, _ := url.ParseQuery(value)
+									v, err := strconv.ParseInt(params.Get("expires"), 10, 64)
+									Expect(err).ToNot(HaveOccurred())
+									// Expires=Wed, 01 Jan 2020 01:00:00 GMT → Unix timestamp 1577840400
+									Expect(v).To(Equal(int64(1577840400)))
+								})
+								Expect(newCookies[2].Raw).To(ContainSubstring("Expires=Wed, 01 Jan 2020 01:00:00 GMT; HttpOnly; Secure; SameSite=Strict"))
+								Expect(newCookies[2].Partitioned).To(BeFalse())
 							})
 						})
 
-						Context("when the VCAP_ID on the request doesn't match the instance id of the chosen backend", func() {
-							// This happens when the requested VCAP_ID does not exist or errored.
-							// This can also happen with route services
-
-							JustBeforeEach(func() {
-								removed := routePool.Remove(endpoint1)
-								Expect(removed).To(BeTrue())
-
-								removed = routePool.Remove(endpoint2)
-								Expect(removed).To(BeTrue())
-
-								new_endpoint := route.NewEndpoint(&route.EndpointOpts{PrivateInstanceId: "id-5"})
-								added := routePool.Put(new_endpoint)
-								Expect(added).To(Equal(route.EndpointAdded))
-							})
-
-							Context("when route service headers are not on the request", func() {
-								It("will select a new backend and update the VCAP_ID", func() {
-									resp, err := proxyRoundTripper.RoundTrip(req)
-									Expect(err).ToNot(HaveOccurred())
-
-									newCookies := resp.Cookies()
-									Expect(newCookies).To(HaveLen(2))
-									Expect(newCookies[0].Raw).To(Equal(sessionCookie.String()))
-									Expect(newCookies[1].Name).To(Equal(round_tripper.VcapCookieId))
-									Expect(newCookies[1].Value).To(Equal("id-5"))
-								})
-							})
-
-							Context("when route service headers are on the request", func() {
-								// This case explicitly disallows sticky sessions to route services
+						Context("when the new backend does not set JSESSIONID on the response", func() {
+							Context("when the session is partitioned (client has partitioned JSESSIONID + VCAP_ID + VCAP_ID_META)", func() {
 								JustBeforeEach(func() {
-									req.Header.Set(routeservice.HeaderKeySignature, "foo")
-									req.Header.Set(routeservice.HeaderKeyForwardedURL, "bar")
+									// Simulate a client that previously received a partitioned session:
+									// replace the non-partitioned META cookie (set by the outer JustBeforeEach)
+									// with a partitioned one. Rebuild the Cookie header so there is exactly one META.
+									var kept []*http.Cookie
+									for _, c := range req.Cookies() {
+										if c.Name != round_tripper.VcapMetaCookieId {
+											kept = append(kept, c)
+										}
+									}
+									req.Header.Del("Cookie")
+									for _, c := range kept {
+										req.AddCookie(c)
+									}
+									req.AddCookie(&http.Cookie{
+										Name:  round_tripper.VcapMetaCookieId,
+										Value: "partitioned",
+									})
 								})
 
-								It("it will not set VCAP_ID", func() {
+								It("updates VCAP_ID as partitioned and re-sets VCAP_ID_META, without JSESSIONID in the response", func() {
 									resp, err := proxyRoundTripper.RoundTrip(req)
 									Expect(err).ToNot(HaveOccurred())
 
 									newCookies := resp.Cookies()
-									Expect(newCookies).To(HaveLen(1))
-									Expect(newCookies[0].Raw).To(Equal(sessionCookie.String()))
-								})
-							})
-						})
+									Expect(newCookies).To(HaveLen(1)) // VCAP_ID
 
-					})
-
-					Context("when no cookies are set on the response", func() {
-						JustBeforeEach(func() {
-							transport.RoundTripStub = responseContainsNoCookies
-						})
-
-						It("no cookies are set on the response", func() {
-							transport.RoundTripStub = responseContainsNoCookies
-							resp, err := proxyRoundTripper.RoundTrip(req)
-							Expect(err).ToNot(HaveOccurred())
-
-							new_cookies := resp.Cookies()
-							Expect(new_cookies).To(HaveLen(0))
-						})
-
-						Context("when the VCAP_ID on the request doesn't match the instance id of the chosen backend", func() {
-							// This happens when the requested VCAP_ID does not exist or errored.
-							// This can also happen with route services
-
-							JustBeforeEach(func() {
-								removed := routePool.Remove(endpoint1)
-								Expect(removed).To(BeTrue())
-
-								removed = routePool.Remove(endpoint2)
-								Expect(removed).To(BeTrue())
-
-								new_endpoint := route.NewEndpoint(&route.EndpointOpts{PrivateInstanceId: "id-5"})
-								added := routePool.Put(new_endpoint)
-								Expect(added).To(Equal(route.EndpointAdded))
-							})
-
-							Context("when route service headers are not on the request", func() {
-								It("will select a new backend and update the VCAP_ID", func() {
-									resp, err := proxyRoundTripper.RoundTrip(req)
-									Expect(err).ToNot(HaveOccurred())
-
-									newCookies := resp.Cookies()
-									Expect(newCookies).To(HaveLen(1))
 									Expect(newCookies[0].Name).To(Equal(round_tripper.VcapCookieId))
-									Expect(newCookies[0].Value).To(Equal("id-5"))
-									Expect(cookies[0].MaxAge).To(Equal(0))
-									Expect(cookies[0].Expires).To(Equal(time.Time{}))
-									Expect(cookies[0].Secure).To(Equal(cfg.SecureCookies))
-									Expect(cookies[0].SameSite).To(Equal(http.SameSite(0)))
+									Expect(newCookies[0].Value).To(Equal("id-new-backend"))
+									Expect(newCookies[0].Partitioned).To(BeTrue())
 								})
 							})
 
-							Context("when route service headers are on the request", func() {
-								JustBeforeEach(func() {
-									req.Header.Set(routeservice.HeaderKeySignature, "foo")
-									req.Header.Set(routeservice.HeaderKeyForwardedURL, "bar")
+							Context("when VCAP_ID_META has Secure=true and SameSite=Strict", func() {
+								BeforeEach(func() {
+									initialStub = responseContainsJSESSIONIDWithExtraProperties
 								})
 
-								It("it will not set VCAP_ID", func() {
+								It("restores Expires verbatim and preserved attributes on refreshed VCAP_ID", func() {
 									resp, err := proxyRoundTripper.RoundTrip(req)
 									Expect(err).ToNot(HaveOccurred())
 
 									newCookies := resp.Cookies()
-									Expect(newCookies).To(HaveLen(0))
+									Expect(newCookies).To(HaveLen(1)) // VCAP_ID
+
+									Expect(newCookies[0].Name).To(Equal(round_tripper.VcapCookieId))
+									Expect(newCookies[0].Value).To(Equal("id-new-backend"))
+									Expect(newCookies[0].Secure).To(BeTrue())
+									Expect(newCookies[0].SameSite).To(Equal(http.SameSiteStrictMode))
+									// Expires is restored verbatim from the stored timestamp
+									Expect(newCookies[0].Expires).To(Equal(time.Date(2020, 1, 1, 1, 0, 0, 0, time.UTC)))
+									Expect(newCookies[0].MaxAge).To(Equal(0))
+								})
+							})
+
+							Context("when VCAP_ID_META is a session cookie (no expiry)", func() {
+								// initialStub defaults to responseContainsJSESSIONID — no override needed
+
+								It("refreshes VCAP_ID as a session cookie (no MaxAge, no Expires)", func() {
+									resp, err := proxyRoundTripper.RoundTrip(req)
+									Expect(err).ToNot(HaveOccurred())
+
+									newCookies := resp.Cookies()
+									Expect(newCookies).To(HaveLen(1)) // VCAP_ID
+
+									Expect(newCookies[0].Name).To(Equal(round_tripper.VcapCookieId))
+									Expect(newCookies[0].MaxAge).To(Equal(0))
+									Expect(newCookies[0].Expires).To(Equal(time.Time{}))
+								})
+							})
+
+							Context("when VCAP_ID_META has a positive MaxAge", func() {
+								BeforeEach(func() {
+									initialStub = func(req *http.Request) (*http.Response, error) {
+										resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
+										resp.Header.Add(round_tripper.CookieHeader, (&http.Cookie{
+											Name: StickyCookieKey, Value: "s", MaxAge: 3600,
+										}).String())
+										return resp, nil
+									}
+								})
+
+								It("restores VCAP_ID with remaining MaxAge (no Expires)", func() {
+									before := time.Now().Unix()
+									resp, err := proxyRoundTripper.RoundTrip(req)
+									after := time.Now().Unix()
+									Expect(err).ToNot(HaveOccurred())
+
+									newCookies := resp.Cookies()
+									Expect(newCookies).To(HaveLen(1)) // VCAP_ID
+
+									Expect(newCookies[0].Name).To(Equal(round_tripper.VcapCookieId))
+									Expect(newCookies[0].Expires).To(Equal(time.Time{}))
+									Expect(newCookies[0].MaxAge).To(BeNumerically(">=", int(before+3600-after)))
+									Expect(newCookies[0].MaxAge).To(BeNumerically("<=", 3600))
+								})
+							})
+
+							Context("when VCAP_ID_META has an already-elapsed MaxAge", func() {
+								BeforeEach(func() {
+									initialStub = nil // skip first request; inject cookies directly below
+								})
+
+								JustBeforeEach(func() {
+									// Construct META cookie directly with a maxage epoch in the past,
+									// bypassing the first-request path to avoid timing-sensitive sleeps.
+									pastEpoch := time.Now().Unix() - 10
+									req.AddCookie(&http.Cookie{Name: StickyCookieKey, Value: "s"})
+									req.AddCookie(&http.Cookie{Name: round_tripper.VcapCookieId, Value: endpoint1.PrivateInstanceId})
+									req.AddCookie(&http.Cookie{
+										Name:  round_tripper.VcapMetaCookieId,
+										Value: "maxage=" + strconv.FormatInt(pastEpoch, 10),
+									})
+								})
+
+								It("sets MaxAge=-1 on refreshed VCAP_ID (session has expired)", func() {
+									resp, err := proxyRoundTripper.RoundTrip(req)
+									Expect(err).ToNot(HaveOccurred())
+
+									newCookies := resp.Cookies()
+									Expect(newCookies).To(HaveLen(1)) // VCAP_ID
+
+									Expect(newCookies[0].Name).To(Equal(round_tripper.VcapCookieId))
+									Expect(newCookies[0].MaxAge).To(Equal(-1))
+									Expect(newCookies[0].Expires).To(Equal(time.Time{}))
+								})
+							})
+
+							Context("when VCAP_ID_META has both MaxAge and Expires", func() {
+								BeforeEach(func() {
+									initialStub = func(req *http.Request) (*http.Response, error) {
+										resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
+										resp.Header.Add(round_tripper.CookieHeader, (&http.Cookie{
+											Name:    StickyCookieKey,
+											Value:   "s",
+											MaxAge:  3600,
+											Expires: time.Date(2020, 1, 1, 1, 0, 0, 0, time.UTC),
+										}).String())
+										return resp, nil
+									}
+								})
+
+								It("restores both remaining MaxAge and Expires verbatim on refreshed VCAP_ID", func() {
+									before := time.Now().Unix()
+									resp, err := proxyRoundTripper.RoundTrip(req)
+									after := time.Now().Unix()
+									Expect(err).ToNot(HaveOccurred())
+
+									newCookies := resp.Cookies()
+									Expect(newCookies).To(HaveLen(1)) // VCAP_ID
+
+									Expect(newCookies[0].Name).To(Equal(round_tripper.VcapCookieId))
+									Expect(newCookies[0].MaxAge).To(BeNumerically(">=", int(before+3600-after)))
+									Expect(newCookies[0].MaxAge).To(BeNumerically("<=", 3600))
+									Expect(newCookies[0].Expires).To(Equal(time.Date(2020, 1, 1, 1, 0, 0, 0, time.UTC)))
+								})
+							})
+
+							Context("when VCAP_ID_META is absent (legacy client without meta cookie)", func() {
+								BeforeEach(func() {
+									initialStub = nil // skip first request; inject cookies directly below
+								})
+
+								JustBeforeEach(func() {
+									req.AddCookie(&http.Cookie{Name: StickyCookieKey, Value: "s"})
+									req.AddCookie(&http.Cookie{Name: round_tripper.VcapCookieId, Value: endpoint1.PrivateInstanceId})
+								})
+
+								It("updates VCAP_ID with defaults (no attribute preservation possible)", func() {
+									resp, err := proxyRoundTripper.RoundTrip(req)
+									Expect(err).ToNot(HaveOccurred())
+
+									newCookies := resp.Cookies()
+									Expect(newCookies).To(HaveLen(1)) // VCAP_ID only — no META to read or write
+
+									Expect(newCookies[0].Name).To(Equal(round_tripper.VcapCookieId))
+									Expect(newCookies[0].Value).To(Equal("id-new-backend"))
+									Expect(newCookies[0].Partitioned).To(BeFalse())
+								})
+
+								It("logs an info message that VCAP_ID_META was not found", func() {
+									_, err := proxyRoundTripper.RoundTrip(req)
+									Expect(err).ToNot(HaveOccurred())
+									Eventually(logger).Should(gbytes.Say(`"log_level":1.*vcap-id-meta-cookie-not-found`))
+								})
+							})
+
+							Context("when VCAP_ID_META has an unparseable value", func() {
+								BeforeEach(func() {
+									initialStub = nil // skip first request; inject cookies directly below
+								})
+
+								JustBeforeEach(func() {
+									req.AddCookie(&http.Cookie{Name: StickyCookieKey, Value: "s"})
+									req.AddCookie(&http.Cookie{Name: round_tripper.VcapCookieId, Value: endpoint1.PrivateInstanceId})
+									req.AddCookie(&http.Cookie{
+										Name:  round_tripper.VcapMetaCookieId,
+										Value: "partitioned=%ZZ", // invalid percent-encoding causes url.ParseQuery to return an error
+									})
+								})
+
+								It("logs an error that VCAP_ID_META could not be parsed", func() {
+									_, err := proxyRoundTripper.RoundTrip(req)
+									Expect(err).ToNot(HaveOccurred())
+									Eventually(logger).Should(gbytes.Say(`"log_level":3.*vcap-id-meta-cookie-parse-error`))
+								})
+
+								It("falls back to default cookie attributes on the refreshed VCAP_ID", func() {
+									resp, err := proxyRoundTripper.RoundTrip(req)
+									Expect(err).ToNot(HaveOccurred())
+
+									newCookies := resp.Cookies()
+									Expect(newCookies).To(HaveLen(1))
+
+									Expect(newCookies[0].Name).To(Equal(round_tripper.VcapCookieId))
+									Expect(newCookies[0].Value).To(Equal("id-new-backend"))
+									Expect(newCookies[0].Secure).To(BeFalse())
+									Expect(newCookies[0].SameSite).To(BeZero())
+									Expect(newCookies[0].Partitioned).To(BeFalse())
+									Expect(newCookies[0].MaxAge).To(Equal(0))
+									Expect(newCookies[0].Expires).To(Equal(time.Time{}))
+								})
+							})
+
+							Context("when VCAP_ID_META has an unparseable maxage", func() {
+								BeforeEach(func() {
+									initialStub = nil
+								})
+
+								JustBeforeEach(func() {
+									req.AddCookie(&http.Cookie{Name: StickyCookieKey, Value: "s"})
+									req.AddCookie(&http.Cookie{Name: round_tripper.VcapCookieId, Value: endpoint1.PrivateInstanceId})
+									req.AddCookie(&http.Cookie{
+										Name:  round_tripper.VcapMetaCookieId,
+										Value: "secure&samesite=strict&partitioned&maxage=notanumber&expires=1577840400",
+									})
+								})
+
+								It("logs an error that VCAP_ID_META could not be parsed", func() {
+									_, err := proxyRoundTripper.RoundTrip(req)
+									Expect(err).ToNot(HaveOccurred())
+									Eventually(logger).Should(gbytes.Say(`"log_level":3.*vcap-id-meta-cookie-parse-error.*maxage`))
+								})
+
+								It("preserves parseable attributes but falls back to default MaxAge", func() {
+									resp, err := proxyRoundTripper.RoundTrip(req)
+									Expect(err).ToNot(HaveOccurred())
+
+									newCookies := resp.Cookies()
+									Expect(newCookies).To(HaveLen(1))
+
+									Expect(newCookies[0].Name).To(Equal(round_tripper.VcapCookieId))
+									Expect(newCookies[0].Value).To(Equal("id-new-backend"))
+									Expect(newCookies[0].Secure).To(BeTrue())
+									Expect(newCookies[0].SameSite).To(Equal(http.SameSiteStrictMode))
+									Expect(newCookies[0].Partitioned).To(BeTrue())
+									Expect(newCookies[0].MaxAge).To(Equal(0))
+									Expect(newCookies[0].Expires).To(Equal(time.Date(2020, 1, 1, 1, 0, 0, 0, time.UTC)))
+								})
+							})
+
+							Context("when VCAP_ID_META has an unparseable expires", func() {
+								BeforeEach(func() {
+									initialStub = nil
+								})
+
+								JustBeforeEach(func() {
+									req.AddCookie(&http.Cookie{Name: StickyCookieKey, Value: "s"})
+									req.AddCookie(&http.Cookie{Name: round_tripper.VcapCookieId, Value: endpoint1.PrivateInstanceId})
+									req.AddCookie(&http.Cookie{
+										Name:  round_tripper.VcapMetaCookieId,
+										Value: "secure&samesite=lax&expires=notanumber",
+									})
+								})
+
+								It("logs an error that VCAP_ID_META could not be parsed", func() {
+									_, err := proxyRoundTripper.RoundTrip(req)
+									Expect(err).ToNot(HaveOccurred())
+									Eventually(logger).Should(gbytes.Say(`"log_level":3.*vcap-id-meta-cookie-parse-error.*expires`))
+								})
+
+								It("preserves parseable attributes but falls back to default Expires", func() {
+									resp, err := proxyRoundTripper.RoundTrip(req)
+									Expect(err).ToNot(HaveOccurred())
+
+									newCookies := resp.Cookies()
+									Expect(newCookies).To(HaveLen(1))
+
+									Expect(newCookies[0].Name).To(Equal(round_tripper.VcapCookieId))
+									Expect(newCookies[0].Value).To(Equal("id-new-backend"))
+									Expect(newCookies[0].Secure).To(BeTrue())
+									Expect(newCookies[0].SameSite).To(Equal(http.SameSiteLaxMode))
+									Expect(newCookies[0].Partitioned).To(BeFalse())
+									Expect(newCookies[0].MaxAge).To(Equal(0))
+									Expect(newCookies[0].Expires).To(Equal(time.Time{}))
+								})
+							})
+
+							Context("when VCAP_ID_META has an unknown samesite value", func() {
+								BeforeEach(func() {
+									initialStub = nil
+								})
+
+								JustBeforeEach(func() {
+									req.AddCookie(&http.Cookie{Name: StickyCookieKey, Value: "s"})
+									req.AddCookie(&http.Cookie{Name: round_tripper.VcapCookieId, Value: endpoint1.PrivateInstanceId})
+									req.AddCookie(&http.Cookie{
+										Name:  round_tripper.VcapMetaCookieId,
+										Value: "secure&samesite=bogus",
+									})
+								})
+
+								It("logs an error that VCAP_ID_META could not be parsed", func() {
+									_, err := proxyRoundTripper.RoundTrip(req)
+									Expect(err).ToNot(HaveOccurred())
+									Eventually(logger).Should(gbytes.Say(`"log_level":3.*vcap-id-meta-cookie-parse-error.*samesite`))
+								})
+
+								It("preserves parseable attributes but falls back to default SameSite", func() {
+									resp, err := proxyRoundTripper.RoundTrip(req)
+									Expect(err).ToNot(HaveOccurred())
+
+									newCookies := resp.Cookies()
+									Expect(newCookies).To(HaveLen(1))
+
+									Expect(newCookies[0].Name).To(Equal(round_tripper.VcapCookieId))
+									Expect(newCookies[0].Value).To(Equal("id-new-backend"))
+									Expect(newCookies[0].Secure).To(BeTrue())
+									Expect(newCookies[0].SameSite).To(BeZero())
 								})
 							})
 						})
-					})
 
-					Context("when there is a VCAP_ID set on the response", func() {
-						JustBeforeEach(func() {
-							transport.RoundTripStub = responseContainsVCAPID
+						Context("when Secure Cookies are enforced in Gorouter", func() {
+							BeforeEach(func() {
+								cfg.SecureCookies = true
+							})
+
+							It("enforces Secure on the refreshed VCAP_ID even though JSESSIONID was not Secure", func() {
+								resp, err := proxyRoundTripper.RoundTrip(req)
+								Expect(err).ToNot(HaveOccurred())
+
+								newCookies := resp.Cookies()
+								Expect(newCookies).To(HaveLen(1)) // VCAP_ID only
+
+								Expect(newCookies[0].Name).To(Equal(round_tripper.VcapCookieId))
+								Expect(newCookies[0].Value).To(Equal("id-new-backend"))
+								Expect(newCookies[0].Secure).To(BeTrue())
+							})
 						})
 
-						It("leaves it alone and does not overwrite it", func() {
-							transport.RoundTripStub = responseContainsVCAPID
+					})
+
+				})
+
+				Context("when route service headers are present on the request", func() {
+					JustBeforeEach(func() {
+						// Simulate an existing session: first request populates JSESSIONID + VCAP_ID on req
+						transport.RoundTripStub = responseContainsJSESSIONID
+						firstResp, err := proxyRoundTripper.RoundTrip(req)
+						Expect(err).ToNot(HaveOccurred())
+						for _, c := range firstResp.Cookies() {
+							req.AddCookie(c)
+						}
+						// Swap endpoint so the request hits a new backend
+						routePool.Remove(endpoint1)
+						routePool.Remove(endpoint2)
+						newEndpoint := route.NewEndpoint(&route.EndpointOpts{PrivateInstanceId: "id-5"})
+						routePool.Put(newEndpoint)
+						// Set route service headers — gorouter must not set VCAP_ID for route service requests
+						req.Header.Set(routeservice.HeaderKeySignature, "foo")
+						req.Header.Set(routeservice.HeaderKeyForwardedURL, "bar")
+					})
+
+					Context("when the backend sets a JSESSIONID on the response", func() {
+						JustBeforeEach(func() {
+							transport.RoundTripStub = responseContainsJSESSIONID
+						})
+
+						It("does not set VCAP_ID", func() {
 							resp, err := proxyRoundTripper.RoundTrip(req)
 							Expect(err).ToNot(HaveOccurred())
 
 							newCookies := resp.Cookies()
 							Expect(newCookies).To(HaveLen(1))
+							Expect(newCookies[0].Raw).To(Equal(sessionCookie.String()))
+						})
+					})
 
+					Context("when the backend sets no cookies on the response", func() {
+						JustBeforeEach(func() {
+							transport.RoundTripStub = responseContainsNoCookies
+						})
+
+						It("does not set VCAP_ID", func() {
+							resp, err := proxyRoundTripper.RoundTrip(req)
+							Expect(err).ToNot(HaveOccurred())
+
+							Expect(resp.Cookies()).To(HaveLen(0))
+						})
+					})
+
+					Context("when the backend sets a VCAP_ID on the response", func() {
+						JustBeforeEach(func() {
+							transport.RoundTripStub = responseContainsVCAPID
+						})
+
+						It("leaves VCAP_ID alone and does not overwrite it", func() {
+							resp, err := proxyRoundTripper.RoundTrip(req)
+							Expect(err).ToNot(HaveOccurred())
+
+							newCookies := resp.Cookies()
+							Expect(newCookies).To(HaveLen(1))
 							Expect(newCookies[0].Name).To(Equal(round_tripper.VcapCookieId))
 							Expect(newCookies[0].Value).To(Equal("vcap-id-property-already-on-the-response"))
 						})
-
-						Context("when the VCAP_ID on the request doesn't match the instance id of the chosen backend", func() {
-							// This happens when the requested VCAP_ID does not exist or errored.
-							// This can also happen with route services
-
-							JustBeforeEach(func() {
-								removed := routePool.Remove(endpoint1)
-								Expect(removed).To(BeTrue())
-
-								removed = routePool.Remove(endpoint2)
-								Expect(removed).To(BeTrue())
-
-								new_endpoint := route.NewEndpoint(&route.EndpointOpts{PrivateInstanceId: "id-5"})
-								added := routePool.Put(new_endpoint)
-								Expect(added).To(Equal(route.EndpointAdded))
-							})
-
-							Context("when route service headers are not on the request", func() {
-								JustBeforeEach(func() {
-									transport.RoundTripStub = responseContainsVCAPID
-								})
-
-								It("leaves it alone and does not overwrite it", func() {
-									transport.RoundTripStub = responseContainsVCAPID
-									resp, err := proxyRoundTripper.RoundTrip(req)
-									Expect(err).ToNot(HaveOccurred())
-									newCookies := resp.Cookies()
-									Expect(newCookies).To(HaveLen(1))
-
-									Expect(newCookies[0].Name).To(Equal(round_tripper.VcapCookieId))
-									Expect(newCookies[0].Value).To(Equal("vcap-id-property-already-on-the-response"))
-								})
-							})
-
-							Context("when route service headers are on the request", func() {
-								JustBeforeEach(func() {
-									req.Header.Set(routeservice.HeaderKeySignature, "foo")
-									req.Header.Set(routeservice.HeaderKeyForwardedURL, "bar")
-									transport.RoundTripStub = responseContainsVCAPID
-								})
-
-								It("leaves it alone and does not overwrite it", func() {
-									transport.RoundTripStub = responseContainsVCAPID
-									resp, err := proxyRoundTripper.RoundTrip(req)
-									Expect(err).ToNot(HaveOccurred())
-
-									newCookies := resp.Cookies()
-									Expect(newCookies).To(HaveLen(1))
-
-									Expect(newCookies[0].Name).To(Equal(round_tripper.VcapCookieId))
-									Expect(newCookies[0].Value).To(Equal("vcap-id-property-already-on-the-response"))
-								})
-							})
-						})
-					})
-				})
-
-				Context("when VCAP_ID cookie and 'Authorization: Negotiate ...' header are on the request", func() {
-					BeforeEach(func() {
-						req.AddCookie(&http.Cookie{
-							Name:  round_tripper.VcapCookieId,
-							Value: "id-2",
-						})
-						req.Header.Add("Authorization", "Negotiate SOME-TOKEN")
-						transport.RoundTripStub = func(req *http.Request) (*http.Response, error) {
-							Expect(req.URL.Host).To(Equal("1.1.1.1:9092"))
-							resp := &http.Response{StatusCode: http.StatusTeapot, Header: make(map[string][]string)}
-							return resp, nil
-						}
-					})
-
-					It("will select the previous backend and VCAP_ID is set on the response", func() {
-						Consistently(func() error {
-							_, err := proxyRoundTripper.RoundTrip(req)
-							return err
-						}).ShouldNot(HaveOccurred())
 					})
 				})
 			})

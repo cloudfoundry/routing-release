@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -24,6 +25,7 @@ import (
 
 const (
 	VcapCookieId                             = "__VCAP_ID__"
+	VcapMetaCookieId                         = "__VCAP_ID_META__"
 	CookieHeader                             = "Set-Cookie"
 	BadGatewayMessage                        = "502 Bad Gateway: Registered endpoint failed to handle the request."
 	HostnameErrorMessage                     = "503 Service Unavailable"
@@ -361,9 +363,9 @@ func (rt *roundTripper) RoundTrip(originalRequest *http.Request) (*http.Response
 
 	if res != nil && endpoint.PrivateInstanceId != "" && !requestSentToRouteService(request) {
 		setupStickySession(
-			res, endpoint, stickyEndpointID, rt.config.SecureCookies,
+			res, request.Cookies(), endpoint, stickyEndpointID, rt.config.SecureCookies,
 			reqInfo.RoutePool.ContextPath(), rt.config.StickySessionCookieNames,
-			rt.config.StickySessionsForAuthNegotiate,
+			rt.config.StickySessionsForAuthNegotiate, rt.logger,
 		)
 	}
 
@@ -476,75 +478,240 @@ func setRequestXCfInstanceId(request *http.Request, endpoint *route.Endpoint) {
 	request.Header.Set(router_http.CfInstanceIdHeader, value)
 }
 
+// vcapAttributes holds the decoded attributes from the __VCAP_ID_META__ cookie value, used to restore cookie attributes when refreshing a stale instance.
+type vcapAttributes struct {
+	secure       bool
+	sameSite     http.SameSite
+	partitioned  bool
+	maxAgeEpoch  int64 // Unix epoch = time.Now()+MaxAge; remaining seconds restored on refresh. -1 = MaxAge < 0 to invalidate cookie.
+	expiresEpoch int64 // Unix epoch from original Expires; restored verbatim on refresh.
+}
+
+// getMaxAgeFromMetaCookie returns the remaining MaxAge in seconds, or -1 if the original MaxAge has elapsed or was negative.
+func (m vcapAttributes) getMaxAgeFromMetaCookie() int {
+	if m.maxAgeEpoch < 0 {
+		return -1
+	} else if m.maxAgeEpoch > 0 {
+		if remaining := m.maxAgeEpoch - time.Now().Unix(); remaining > 0 {
+			return int(remaining)
+		} else {
+			return -1
+		}
+	}
+	return 0
+}
+
+func (m vcapAttributes) getExpiresFromMetaCookie() time.Time {
+	if m.expiresEpoch != 0 {
+		return time.Unix(m.expiresEpoch, 0)
+	}
+	return time.Time{}
+}
+
 func setupStickySession(
 	response *http.Response,
+	requestCookies []*http.Cookie,
 	endpoint *route.Endpoint,
 	originalEndpointId string,
 	secureCookies bool,
 	path string,
 	stickySessionCookieNames config.StringSet,
 	authNegotiateSticky bool,
+	logger *slog.Logger,
 ) {
+	sessionCookie, vcapCookie := getSessionCookies(response, stickySessionCookieNames)
 
-	requestContainsStickySessionCookies := originalEndpointId != ""
-	requestNotSentToRequestedApp := originalEndpointId != endpoint.PrivateInstanceId
-	responseContainsAuthNegotiateHeader := strings.HasPrefix(strings.ToLower(response.Header.Get("WWW-Authenticate")), "negotiate")
-	shouldSetVCAPID := ((authNegotiateSticky && responseContainsAuthNegotiateHeader) || requestContainsStickySessionCookies) && requestNotSentToRequestedApp
+	// When the application sets VCAP_ID, Gorouter does not overwrite it
+	if vcapCookie != nil {
+		return
+	}
 
-	secure := false
-	maxAge := 0
-	sameSite := http.SameSite(0)
-	expiry := time.Time{}
-	partitioned := false
+	authHeader := response.Header.Get("WWW-Authenticate")
+	hasAuthNegotiate := authNegotiateSticky && strings.HasPrefix(strings.ToLower(authHeader), "negotiate")
 
-	if responseContainsAuthNegotiateHeader && authNegotiateSticky {
-		maxAge = AuthNegotiateHeaderCookieMaxAgeInSeconds
-		sameSite = http.SameSiteStrictMode
-	} else {
-		for _, v := range response.Cookies() {
-			if _, ok := stickySessionCookieNames[v.Name]; ok {
-				shouldSetVCAPID = true
+	// Define the scenarios for sticky session setup
+	// Stale Session: Sticky session to non-existing endpoint
+	staleSessionScenario := originalEndpointId != "" && originalEndpointId != endpoint.PrivateInstanceId
+	// Auth Negotiation: Auth negotiation headers in request, and session has not yet been established or is stale
+	authNegotiateScenario := hasAuthNegotiate && (originalEndpointId == "" || staleSessionScenario)
+	// New Session: The application sets a session cookie in the response
+	newSessionScenario := sessionCookie != nil
 
-				maxAge = v.MaxAge
-				secure = v.Secure
-				sameSite = v.SameSite
-				expiry = v.Expires
-				partitioned = v.Partitioned
+	// Early return: Not a sticky session scenario
+	if !(staleSessionScenario || authNegotiateScenario || newSessionScenario) {
+		return
+	}
 
-				break
+	// Create VCAP_ID cookie with default cookie attributes
+	vcapCookie = &http.Cookie{
+		Name:     VcapCookieId,
+		Value:    endpoint.PrivateInstanceId,
+		Path:     path,
+		HttpOnly: true,
+	}
+	createMetaCookie := false
+
+	if authNegotiateScenario {
+		vcapCookie.MaxAge = AuthNegotiateHeaderCookieMaxAgeInSeconds
+		vcapCookie.SameSite = http.SameSiteStrictMode
+	} else if newSessionScenario {
+		vcapCookie.Secure = sessionCookie.Secure
+		vcapCookie.SameSite = sessionCookie.SameSite
+		vcapCookie.Partitioned = sessionCookie.Partitioned
+		vcapCookie.MaxAge = sessionCookie.MaxAge
+		vcapCookie.Expires = sessionCookie.Expires
+		createMetaCookie = true
+	} else if staleSessionScenario {
+		if m := getAttributesFromMetaCookie(requestCookies, logger); m != nil {
+			// Take cookie attributes from __VCAP_ID_META__ in request
+			vcapCookie.Secure = m.secure
+			vcapCookie.SameSite = m.sameSite
+			vcapCookie.Partitioned = m.partitioned
+			vcapCookie.MaxAge = m.getMaxAgeFromMetaCookie()
+			vcapCookie.Expires = m.getExpiresFromMetaCookie()
+		}
+	}
+
+	if secureCookies { // see config.SecureCookies
+		vcapCookie.Secure = true
+	}
+
+	addCookieToResponse(response, vcapCookie, logger)
+	if createMetaCookie {
+		addCookieToResponse(response, createVcapMetaCookie(vcapCookie), logger)
+	}
+}
+
+// getSessionCookies returns the session cookie and __VCAP_ID__ cookie from the response, when they exist
+func getSessionCookies(response *http.Response, stickySessionCookieNames config.StringSet) (sessionCookie *http.Cookie, vcapIdCookie *http.Cookie) {
+	for _, cookie := range response.Cookies() {
+		if cookie.Name == VcapCookieId {
+			vcapIdCookie = cookie
+			return
+		}
+		if sessionCookie == nil {
+			if _, ok := stickySessionCookieNames[cookie.Name]; ok {
+				sessionCookie = cookie
 			}
 		}
 	}
+	return
+}
 
-	for _, v := range response.Cookies() {
-		if v.Name == VcapCookieId {
-			shouldSetVCAPID = false
-			break
+// getAttributesFromMetaCookie returns the __VCAP_ID_META__ cookie from the request cookies, when it exists
+func getAttributesFromMetaCookie(cookies []*http.Cookie, logger *slog.Logger) *vcapAttributes {
+	for _, c := range cookies {
+		if c.Name == VcapMetaCookieId {
+			vcapMetaAttributes, err := parseVcapMeta(c.Value)
+			if err != nil {
+				logger.Error("vcap-id-meta-cookie-parse-error", log.ErrAttr(err))
+			}
+			return vcapMetaAttributes
 		}
 	}
+	logger.Info("vcap-id-meta-cookie-not-found") // Expected when rolling out VCAP_ID_META
+	return nil
+}
 
-	if shouldSetVCAPID {
-		// right now secure attribute would as equal to the JSESSION ID cookie (if present),
-		// but override if set to true in config
-		if secureCookies {
-			secure = true
+// parseVcapMeta deserializes the __VCAP_ID_META__ cookie value.
+func parseVcapMeta(value string) (*vcapAttributes, error) {
+	params, err := url.ParseQuery(value)
+	if err != nil {
+		return nil, err
+	}
+	var metaAttributesFromCookie vcapAttributes
+	var parseErrors []error
+	if params.Has("secure") {
+		metaAttributesFromCookie.secure = true
+	}
+	if params.Has("partitioned") {
+		metaAttributesFromCookie.partitioned = true
+	}
+	switch params.Get("samesite") {
+	case "none":
+		metaAttributesFromCookie.sameSite = http.SameSiteNoneMode
+	case "lax":
+		metaAttributesFromCookie.sameSite = http.SameSiteLaxMode
+	case "strict":
+		metaAttributesFromCookie.sameSite = http.SameSiteStrictMode
+	case "":
+		// not set — keep zero value
+	default:
+		parseErrors = append(parseErrors, fmt.Errorf("samesite: unknown value %q", params.Get("samesite")))
+	}
+	if s := params.Get("maxage"); s != "" {
+		if ts, err := strconv.ParseInt(s, 10, 64); err == nil {
+			metaAttributesFromCookie.maxAgeEpoch = ts
+		} else {
+			parseErrors = append(parseErrors, fmt.Errorf("maxage: %w", err))
 		}
+	}
+	if s := params.Get("expires"); s != "" {
+		if ts, err := strconv.ParseInt(s, 10, 64); err == nil {
+			metaAttributesFromCookie.expiresEpoch = ts
+		} else {
+			parseErrors = append(parseErrors, fmt.Errorf("expires: %w", err))
+		}
+	}
+	return &metaAttributesFromCookie, errors.Join(parseErrors...)
+}
 
-		vcapIDCookie := http.Cookie{
-			Name:        VcapCookieId,
-			Value:       endpoint.PrivateInstanceId,
-			Path:        path,
-			MaxAge:      maxAge,
-			HttpOnly:    true,
-			Secure:      secure,
-			SameSite:    sameSite,
-			Expires:     expiry,
-			Partitioned: partitioned,
-		}
+// createVcapMetaCookie copies cookie attributes from __VCAP_ID__ to __VCAP_ID_META__
+func createVcapMetaCookie(vcapIdCookie *http.Cookie) *http.Cookie {
+	cookieAttributes := encodeCookieAttributes(vcapIdCookie)
+	metaCookie := *vcapIdCookie
+	metaCookie.Name = VcapMetaCookieId
+	metaCookie.Value = cookieAttributes
+	return &metaCookie
+}
 
-		if v := vcapIDCookie.String(); v != "" {
-			response.Header.Add(CookieHeader, v)
+// encodeCookieAttributes encodes the attributes of __VCAP_ID__ as a URL query string, which is stored as the value for __VCAP_ID_META__
+func encodeCookieAttributes(vcapIdCookie *http.Cookie) string {
+	var parts []string
+	if vcapIdCookie.Secure {
+		parts = append(parts, "secure")
+	}
+	if vcapIdCookie.Partitioned {
+		parts = append(parts, "partitioned")
+	}
+
+	kvParts := url.Values{}
+	switch vcapIdCookie.SameSite {
+	case http.SameSiteNoneMode:
+		kvParts.Set("samesite", "none")
+	case http.SameSiteLaxMode:
+		kvParts.Set("samesite", "lax")
+	case http.SameSiteStrictMode:
+		kvParts.Set("samesite", "strict")
+	default:
+	}
+
+	if vcapIdCookie.MaxAge != 0 {
+		var maxAgeEpoch int64
+		if vcapIdCookie.MaxAge < 0 {
+			maxAgeEpoch = -1
+		} else if vcapIdCookie.MaxAge > 0 {
+			maxAgeEpoch = time.Now().Unix() + int64(vcapIdCookie.MaxAge)
 		}
+		kvParts.Set("maxage", strconv.FormatInt(maxAgeEpoch, 10))
+	}
+
+	if !vcapIdCookie.Expires.IsZero() {
+		expiresEpoch := vcapIdCookie.Expires.Unix()
+		kvParts.Set("expires", strconv.FormatInt(expiresEpoch, 10))
+	}
+
+	if encoded := kvParts.Encode(); encoded != "" {
+		parts = append(parts, encoded)
+	}
+	return strings.Join(parts, "&")
+}
+
+func addCookieToResponse(response *http.Response, cookie *http.Cookie, logger *slog.Logger) {
+	if cookieStr := cookie.String(); cookieStr != "" {
+		response.Header.Add(CookieHeader, cookieStr)
+	} else {
+		logger.Error("invalid-cookie-name", slog.String("cookie-name", cookie.Name))
 	}
 }
 
