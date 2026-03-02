@@ -30,7 +30,7 @@ func NewLeastConnection(logger *slog.Logger, p *EndpointPool, initial string, mu
 }
 
 func (r *LeastConnection) Next(attempt int) *Endpoint {
-	e := r.pool.FindStickyEndpoint(r.logger, &r.initialEndpoint, r.mustBeSticky)
+	e := r.pool.FindStickyEndpoint(r.logger, r.initialEndpoint, r.mustBeSticky)
 	if e != nil {
 		r.lastEndpoint = e
 		return e
@@ -39,6 +39,8 @@ func (r *LeastConnection) Next(attempt int) *Endpoint {
 	if r.mustBeSticky {
 		return nil
 	}
+
+	r.initialEndpoint = "" // unset initial endpoint as it was not found in the pool
 
 	endpointElem := r.next(attempt)
 	if endpointElem != nil {
