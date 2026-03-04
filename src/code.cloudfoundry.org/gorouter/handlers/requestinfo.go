@@ -81,6 +81,10 @@ type RequestInfo struct {
 	TraceInfo TraceInfo
 
 	BackendReqHeaders http.Header
+
+	// CallerIdentity contains the identity of the calling application extracted
+	// from the client certificate on mTLS domains. Will be nil for non-mTLS requests.
+	CallerIdentity *CallerIdentity
 }
 
 func (r *RequestInfo) ProvideTraceInfo() (TraceInfo, error) {
