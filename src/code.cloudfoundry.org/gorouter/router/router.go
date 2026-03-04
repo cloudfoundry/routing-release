@@ -291,7 +291,8 @@ func (r *Router) serveHTTPS(server *http.Server, errChan chan error) error {
 		return nil
 	}
 
-	tlsConfig := &tls.Config{
+	// Base TLS config for non-mTLS domains
+	baseTlsConfig := &tls.Config{
 		Certificates: r.config.SSLCertificates,
 		CipherSuites: r.config.CipherSuites,
 		MinVersion:   r.config.MinTLSVersion,
@@ -301,18 +302,25 @@ func (r *Router) serveHTTPS(server *http.Server, errChan chan error) error {
 	}
 
 	if r.config.VerifyClientCertificatesBasedOnProvidedMetadata && r.config.VerifyClientCertificateMetadataRules != nil {
-		tlsConfig.VerifyPeerCertificate = r.verifyMtlsMetadata
+		baseTlsConfig.VerifyPeerCertificate = r.verifyMtlsMetadata
 	}
 
 	if r.config.EnableHTTP2 {
-		tlsConfig.NextProtos = []string{"h2", "http/1.1"}
+		baseTlsConfig.NextProtos = []string{"h2", "http/1.1"}
 	}
 
 	// Although this functionality is deprecated there is no intention to remove it from the stdlib
 	// due to the Go 1 compatibility promise. We rely on it to prefer more specific matches (a full
 	// SNI match over wildcard matches) instead of relying on the order of certificates.
 	//lint:ignore SA1019 - see ^^
-	tlsConfig.BuildNameToCertificate()
+	baseTlsConfig.BuildNameToCertificate()
+
+	// Wrap with GetConfigForClient for per-domain mTLS
+	tlsConfig := &tls.Config{
+		GetConfigForClient: func(hello *tls.ClientHelloInfo) (*tls.Config, error) {
+			return r.getTLSConfigForClient(hello, baseTlsConfig)
+		},
+	}
 
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", r.config.SSLPort))
 	if err != nil {
@@ -351,6 +359,30 @@ func (r *Router) verifyMtlsMetadata(_ [][]byte, chains [][]*x509.Certificate) er
 		return config.VerifyClientCertMetadata(r.config.VerifyClientCertificateMetadataRules, chains, r.logger)
 	}
 	return nil
+}
+
+// getTLSConfigForClient returns appropriate TLS config based on SNI (Server Name Indication)
+// For mTLS domains, it requires and verifies client certificates using domain-specific CA pool
+// For regular domains, it uses the base TLS configuration
+func (r *Router) getTLSConfigForClient(hello *tls.ClientHelloInfo, baseConfig *tls.Config) (*tls.Config, error) {
+	serverName := hello.ServerName
+
+	mtlsDomainConfig := r.config.GetMtlsDomainConfig(serverName)
+	if mtlsDomainConfig == nil {
+		// Not an mTLS domain, use base config
+		return baseConfig, nil
+	}
+
+	// mTLS domain - require client certificate
+	mtlsConfig := baseConfig.Clone()
+	mtlsConfig.ClientAuth = tls.RequireAndVerifyClientCert
+	mtlsConfig.ClientCAs = mtlsDomainConfig.CAPool
+
+	r.logger.Debug("mtls-domain-detected",
+		slog.String("server_name", serverName),
+		slog.String("domain", mtlsDomainConfig.Domain))
+
+	return mtlsConfig, nil
 }
 
 func (r *Router) serveHTTP(server *http.Server, errChan chan error) error {
