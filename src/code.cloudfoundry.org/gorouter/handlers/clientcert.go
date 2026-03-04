@@ -22,6 +22,7 @@ type clientCert struct {
 	skipSanitization  func(req *http.Request) bool
 	forceDeleteHeader func(req *http.Request) (bool, error)
 	forwardingMode    string
+	config            *config.Config
 	logger            *slog.Logger
 	errorWriter       errorwriter.ErrorWriter
 }
@@ -30,6 +31,7 @@ func NewClientCert(
 	skipSanitization func(req *http.Request) bool,
 	forceDeleteHeader func(req *http.Request) (bool, error),
 	forwardingMode string,
+	cfg *config.Config,
 	logger *slog.Logger,
 	ew errorwriter.ErrorWriter,
 ) negroni.Handler {
@@ -37,6 +39,7 @@ func NewClientCert(
 		skipSanitization:  skipSanitization,
 		forceDeleteHeader: forceDeleteHeader,
 		forwardingMode:    forwardingMode,
+		config:            cfg,
 		logger:            logger,
 		errorWriter:       ew,
 	}
@@ -45,8 +48,18 @@ func NewClientCert(
 func (c *clientCert) ServeHTTP(rw http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	logger := LoggerWithTraceInfo(c.logger, r)
 	skip := c.skipSanitization(r)
+
+	// Determine forwarding mode - use domain-specific if on mTLS domain
+	forwardingMode := c.forwardingMode
+	if mtlsDomainConfig := c.config.GetMtlsDomainConfig(r.Host); mtlsDomainConfig != nil {
+		forwardingMode = mtlsDomainConfig.ForwardedClientCert
+		c.logger.Debug("using-mtls-domain-xfcc-mode",
+			slog.String("host", r.Host),
+			slog.String("mode", forwardingMode))
+	}
+
 	if !skip {
-		switch c.forwardingMode {
+		switch forwardingMode {
 		case config.FORWARD:
 			if r.TLS == nil || len(r.TLS.PeerCertificates) == 0 {
 				r.Header.Del(xfcc)

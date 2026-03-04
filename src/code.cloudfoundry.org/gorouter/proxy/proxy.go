@@ -172,6 +172,7 @@ func NewProxy(
 		SkipSanitize(routeServiceHandler.(*handlers.RouteService)),
 		ForceDeleteXFCCHeader(routeServiceHandler.(*handlers.RouteService), cfg.ForwardedClientCert, logger),
 		cfg.ForwardedClientCert,
+		cfg,
 		logger,
 		errorWriter,
 	))

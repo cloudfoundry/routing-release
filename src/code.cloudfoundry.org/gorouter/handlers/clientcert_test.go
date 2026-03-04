@@ -45,7 +45,8 @@ var _ = Describe("Clientcert", func() {
 
 	DescribeTable("Client Cert Error Handling", func(forceDeleteHeaderFunc func(*http.Request) (bool, error), skipSanitizationFunc func(*http.Request) bool, errorCase string) {
 		logger = test_util.NewTestLogger("")
-		clientCertHandler := handlers.NewClientCert(skipSanitizationFunc, forceDeleteHeaderFunc, config.SANITIZE_SET, logger.Logger, errorWriter)
+		cfg, _ := config.DefaultConfig()
+		clientCertHandler := handlers.NewClientCert(skipSanitizationFunc, forceDeleteHeaderFunc, config.SANITIZE_SET, cfg, logger.Logger, errorWriter)
 
 		nextHandlerWasCalled := false
 		nextHandler := http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) { nextHandlerWasCalled = true })
@@ -82,7 +83,8 @@ var _ = Describe("Clientcert", func() {
 
 	DescribeTable("Client Cert Result", func(forceDeleteHeaderFunc func(*http.Request) (bool, error), skipSanitizationFunc func(*http.Request) bool, forwardedClientCert string, noTLSCertStrip bool, TLSCertStrip bool, mTLSCertStrip string) {
 		logger = test_util.NewTestLogger("test")
-		clientCertHandler := handlers.NewClientCert(skipSanitizationFunc, forceDeleteHeaderFunc, forwardedClientCert, logger.Logger, errorWriter)
+		cfg, _ := config.DefaultConfig()
+		clientCertHandler := handlers.NewClientCert(skipSanitizationFunc, forceDeleteHeaderFunc, forwardedClientCert, cfg, logger.Logger, errorWriter)
 
 		nextReq := &http.Request{}
 		nextHandler := http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) { nextReq = r })
