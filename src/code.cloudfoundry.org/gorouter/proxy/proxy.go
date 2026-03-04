@@ -176,6 +176,8 @@ func NewProxy(
 		logger,
 		errorWriter,
 	))
+	n.Use(handlers.NewIdentity())
+	n.Use(handlers.NewMtlsAuthorization(cfg, logger))
 	n.Use(handlers.NewHopByHop(cfg, logger))
 	n.Use(&handlers.XForwardedProto{
 		SkipSanitization:         SkipSanitizeXFP(routeServiceHandler.(*handlers.RouteService)),
