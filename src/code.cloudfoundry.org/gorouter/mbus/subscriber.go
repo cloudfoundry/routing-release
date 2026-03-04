@@ -38,12 +38,27 @@ type RegistryMessage struct {
 	Tags                    map[string]string   `json:"tags"`
 	Uris                    []route.Uri         `json:"uris"`
 	Options                 RegistryMessageOpts `json:"options"`
+	AllowedSources          *AllowedSources     `json:"allowed_sources,omitempty"`
 }
 
 type RegistryMessageOpts struct {
 	LoadBalancingAlgorithm string  `json:"loadbalancing"`
 	HashHeaderName         string  `json:"hash_header"`
 	HashBalance            float64 `json:"hash_balance,string"`
+}
+
+// AllowedSources contains the list of source application GUIDs that are authorized
+// to communicate with this endpoint on mTLS domains
+type AllowedSources struct {
+	AppGUIDs []string `json:"app_guids"`
+}
+
+// getAllowedSourceAppGUIDs extracts the app GUIDs from AllowedSources, returning nil if not present
+func getAllowedSourceAppGUIDs(as *AllowedSources) []string {
+	if as == nil {
+		return nil
+	}
+	return as.AppGUIDs
 }
 
 func (rm *RegistryMessage) makeEndpoint(http2Enabled bool, globalRoutingAlgo string) (*route.Endpoint, error) {
@@ -85,6 +100,7 @@ func (rm *RegistryMessage) makeEndpoint(http2Enabled bool, globalRoutingAlgo str
 		LoadBalancingAlgorithm:  lbAlgo,
 		HashHeaderName:          rm.Options.HashHeaderName,
 		HashBalanceFactor:       rm.Options.HashBalance,
+		AllowedSourceAppGUIDs:   getAllowedSourceAppGUIDs(rm.AllowedSources),
 	}), nil
 }
 

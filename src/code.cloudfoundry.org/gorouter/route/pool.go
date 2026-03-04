@@ -118,6 +118,7 @@ type Endpoint struct {
 	LoadBalancingAlgorithm string
 	HashHeaderName         string
 	HashBalanceFactor      float64
+	AllowedSourceAppGUIDs  []string
 }
 
 func (e *Endpoint) RoundTripper() ProxyRoundTripper {
@@ -163,7 +164,8 @@ func (e *Endpoint) Equal(e2 *Endpoint) bool {
 		e.LoadBalancingAlgorithm == e2.LoadBalancingAlgorithm &&
 		e.HashHeaderName == e2.HashHeaderName &&
 		e.HashBalanceFactor == e2.HashBalanceFactor &&
-		maps.Equal(e.Tags, e2.Tags)
+		maps.Equal(e.Tags, e2.Tags) &&
+		slices.Equal(e.AllowedSourceAppGUIDs, e2.AllowedSourceAppGUIDs)
 
 }
 
@@ -231,6 +233,7 @@ type EndpointOpts struct {
 	LoadBalancingAlgorithm  string
 	HashHeaderName          string
 	HashBalanceFactor       float64
+	AllowedSourceAppGUIDs   []string
 }
 
 func NewEndpoint(opts *EndpointOpts) *Endpoint {
