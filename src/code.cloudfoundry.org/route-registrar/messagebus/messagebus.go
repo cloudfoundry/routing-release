@@ -41,6 +41,12 @@ type Message struct {
 	ServerCertDomainSAN string            `json:"server_cert_domain_san,omitempty"`
 	AvailabilityZone    string            `json:"availability_zone,omitempty"`
 	Options             map[string]string `json:"options,omitempty"`
+	AllowedSources      *AllowedSources   `json:"allowed_sources,omitempty"`
+}
+
+// AllowedSources specifies which source applications are authorized to access this endpoint
+type AllowedSources struct {
+	AppGUIDs []string `json:"app_guids"`
 }
 
 const LoadBalancingAlgorithm string = "loadbalancing"
@@ -109,6 +115,7 @@ func (m msgBus) SendMessage(subject string, route config.Route, privateInstanceI
 	m.logger.Debug("creating-message", lager.Data{"subject": subject, "route": route, "privateInstanceId": privateInstanceId})
 
 	routeOptions := m.mapRouteOptions(route)
+	allowedSources := m.mapAllowedSources(route)
 
 	msg := &Message{
 		URIs:                route.URIs,
@@ -122,6 +129,7 @@ func (m msgBus) SendMessage(subject string, route config.Route, privateInstanceI
 		PrivateInstanceId:   privateInstanceId,
 		AvailabilityZone:    m.availabilityZone,
 		Options:             routeOptions,
+		AllowedSources:      allowedSources,
 	}
 
 	json, err := json.Marshal(msg)
@@ -142,6 +150,15 @@ func (m msgBus) mapRouteOptions(route config.Route) map[string]string {
 			routeOptions[LoadBalancingAlgorithm] = string(route.Options.LoadBalancingAlgorithm)
 		}
 		return routeOptions
+	}
+	return nil
+}
+
+func (m msgBus) mapAllowedSources(route config.Route) *AllowedSources {
+	if route.AllowedSourceAppGUIDs != nil && len(route.AllowedSourceAppGUIDs) > 0 {
+		return &AllowedSources{
+			AppGUIDs: route.AllowedSourceAppGUIDs,
+		}
 	}
 	return nil
 }
