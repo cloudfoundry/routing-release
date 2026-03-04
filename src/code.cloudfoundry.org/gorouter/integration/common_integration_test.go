@@ -247,6 +247,35 @@ func (s *testState) registerWithInternalRouteService(appBackend, routeServiceSer
 	s.registerAndWait(rm)
 }
 
+func (s *testState) registerWithAllowedSources(backend *httptest.Server, routeURI string, allowedSources map[string]interface{}) {
+	_, backendPort := hostnameAndPort(backend.Listener.Addr().String())
+
+	// Convert map to AllowedSources struct
+	as := &mbus.AllowedSources{}
+	if apps, ok := allowedSources["apps"].([]string); ok {
+		as.Apps = apps
+	}
+	if spaces, ok := allowedSources["spaces"].([]string); ok {
+		as.Spaces = spaces
+	}
+	if orgs, ok := allowedSources["orgs"].([]string); ok {
+		as.Orgs = orgs
+	}
+	if any, ok := allowedSources["any"].(bool); ok {
+		as.Any = any
+	}
+
+	rm := mbus.RegistryMessage{
+		Host:                    "127.0.0.1",
+		Port:                    uint16(backendPort),
+		Uris:                    []route.Uri{route.Uri(routeURI)},
+		StaleThresholdInSeconds: 10,
+		PrivateInstanceID:       fmt.Sprintf("%x", rand.Int31()),
+		AllowedSources:          as,
+	}
+	s.registerAndWait(rm)
+}
+
 func (s *testState) registerAndWait(rm mbus.RegistryMessage) {
 	b, _ := json.Marshal(rm)
 	s.mbusClient.Publish("router.register", b)

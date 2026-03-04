@@ -738,3 +738,73 @@ func CreateInvalidCertAndRule(cn string, invalidSubjects []string) ([]*x509.Cert
 	// Return leaf + CA in chain
 	return []*x509.Certificate{x509Leaf, x509CA}, rule, nil
 }
+
+// InstanceIdentityCertNames contains identity information for instance identity certificates
+type InstanceIdentityCertNames struct {
+	CommonName string
+	AppGUID    string // Required - will be added as OU "app:<guid>"
+	SpaceGUID  string // Optional - will be added as OU "space:<guid>"
+	OrgGUID    string // Optional - will be added as OU "organization:<guid>"
+	SANs       SubjectAltNames
+}
+
+// CreateInstanceIdentityCert creates a certificate chain with instance identity
+// information embedded in OrganizationalUnit fields, matching Diego's format
+func CreateInstanceIdentityCert(certNames InstanceIdentityCertNames) CertChain {
+	rootPrivateKey, rootCADER := CreateCertDER("Diego Instance Identity CA")
+	serialNumberLimit := new(big.Int).Lsh(big.NewInt(1), 128)
+	serialNumber, err := rand.Int(rand.Reader, serialNumberLimit)
+	Expect(err).ToNot(HaveOccurred())
+
+	// Build OrganizationalUnit slice with instance identity info
+	organizationalUnits := []string{fmt.Sprintf("app:%s", certNames.AppGUID)}
+	if certNames.SpaceGUID != "" {
+		organizationalUnits = append(organizationalUnits, fmt.Sprintf("space:%s", certNames.SpaceGUID))
+	}
+	if certNames.OrgGUID != "" {
+		organizationalUnits = append(organizationalUnits, fmt.Sprintf("organization:%s", certNames.OrgGUID))
+	}
+
+	subject := pkix.Name{
+		Organization:       []string{"Cloud Foundry"},
+		OrganizationalUnit: organizationalUnits,
+		CommonName:         certNames.CommonName,
+	}
+
+	certTemplate := x509.Certificate{
+		SerialNumber:          serialNumber,
+		Subject:               subject,
+		SignatureAlgorithm:    x509.SHA256WithRSA,
+		NotBefore:             time.Now(),
+		NotAfter:              time.Now().Add(time.Hour),
+		BasicConstraintsValid: true,
+	}
+
+	if certNames.SANs.IP != "" {
+		certTemplate.IPAddresses = []net.IP{net.ParseIP(certNames.SANs.IP)}
+	}
+	if certNames.SANs.DNS != "" {
+		certTemplate.DNSNames = []string{certNames.SANs.DNS}
+	}
+
+	rootCert, err := x509.ParseCertificate(rootCADER)
+	Expect(err).NotTo(HaveOccurred())
+
+	ownKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	Expect(err).NotTo(HaveOccurred())
+
+	certDER, err := x509.CreateCertificate(rand.Reader, &certTemplate, rootCert, &ownKey.PublicKey, rootPrivateKey)
+	Expect(err).NotTo(HaveOccurred())
+
+	ownKeyPEM, ownCertPEM := CreateKeyPairFromDER(certDER, ownKey)
+	rootKeyPEM, rootCertPEM := CreateKeyPairFromDER(rootCADER, rootPrivateKey)
+
+	return CertChain{
+		CertPEM:      ownCertPEM,
+		PrivKeyPEM:   ownKeyPEM,
+		CACertPEM:    rootCertPEM,
+		CAPrivKeyPEM: rootKeyPEM,
+		CACert:       rootCert,
+		CAPrivKey:    rootPrivateKey,
+	}
+}
