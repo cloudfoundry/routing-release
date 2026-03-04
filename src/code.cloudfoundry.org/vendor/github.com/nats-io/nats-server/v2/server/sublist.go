@@ -638,10 +638,9 @@ func (s *Sublist) hasInterest(subject string, doLock bool, np, nq *int) bool {
 	if doLock {
 		s.RLock()
 	}
-	var matched, ok bool
+	var matched bool
 	if s.cache != nil {
-		var r *SublistResult
-		if r, ok = s.cache[subject]; ok {
+		if r, ok := s.cache[subject]; ok {
 			if np != nil && nq != nil {
 				*np += len(r.psubs)
 				for _, qsub := range r.qsubs {
@@ -654,9 +653,9 @@ func (s *Sublist) hasInterest(subject string, doLock bool, np, nq *int) bool {
 	if doLock {
 		s.RUnlock()
 	}
-	if ok {
+	if matched {
 		atomic.AddUint64(&s.cacheHits, 1)
-		return matched
+		return true
 	}
 
 	tsa := [32]string{}

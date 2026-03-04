@@ -66,9 +66,8 @@ type Config struct {
 	GoFiles                   []string
 	NonGoFiles                []string
 	IgnoredFiles              []string
-	ModulePath                string            // Deprecated: redundant w.r.t. Module.Path in go1.27; remove after go1.28.
-	ModuleVersion             string            // Deprecated: redundant w.r.t. Module.Version in go1.27; remove after go1.28.
-	Module                    *analysis.Module  // module information, if any
+	ModulePath                string            // module path
+	ModuleVersion             string            // module version
 	ImportMap                 map[string]string // maps import path to package path
 	PackageFile               map[string]string // maps package path to file of type information
 	Standard                  map[string]bool   // package belongs to standard library
@@ -447,14 +446,10 @@ func run(fset *token.FileSet, cfg *Config, analyzers []*analysis.Analyzer) ([]re
 				factFilter[reflect.TypeOf(f)] = true
 			}
 
-			module := cfg.Module
-			// cmd/go vet prior to go1.27 did not populate cfg.Module. Do our best.
-			if module == nil && cfg.ModulePath != "" {
-				module = &analysis.Module{
-					Path:      cfg.ModulePath,
-					Version:   cfg.ModuleVersion,
-					GoVersion: cfg.GoVersion,
-				}
+			module := &analysis.Module{
+				Path:      cfg.ModulePath,
+				Version:   cfg.ModuleVersion,
+				GoVersion: cfg.GoVersion,
 			}
 
 			pass := &analysis.Pass{

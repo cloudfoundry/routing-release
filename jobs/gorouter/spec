@@ -204,13 +204,13 @@ properties:
     description: |
       Array of domains requiring mutual TLS authentication. Each domain can have its own CA certificate pool and forwarded_client_cert mode.
       For non-wildcard domains, the domain must match the request host exactly.
-      For wildcard domains (e.g., *.apps.internal), the wildcard must be the leftmost label and matches any single label.
+      For wildcard domains (e.g., *.apps.mtls.internal), the wildcard must be the leftmost label and matches any single label.
     default: []
     example:
-    - domain: "*.apps.internal"
+    - domain: "*.apps.mtls.internal"
       ca_certs: |
         -----BEGIN CERTIFICATE-----
-        <CA certificate for apps.internal domain>
+        <CA certificate for apps.mtls.internal domain>
         -----END CERTIFICATE-----
       forwarded_client_cert: sanitize_set
     - domain: "secure.example.com"

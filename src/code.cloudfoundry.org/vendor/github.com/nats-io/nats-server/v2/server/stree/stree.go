@@ -485,7 +485,7 @@ func LazyIntersect[TL, TR any](tl *SubjectTree[TL], tr *SubjectTree[TR], cb func
 // IntersectGSL will match all items in the given subject tree that
 // have interest expressed in the given sublist. The callback will only be called
 // once for each subject, regardless of overlapping subscriptions in the sublist.
-func IntersectGSL[T any, SL comparable](t *SubjectTree[T], sl *gsl.GenericSublist[SL], cb func(subject []byte, val *T) bool) {
+func IntersectGSL[T any, SL comparable](t *SubjectTree[T], sl *gsl.GenericSublist[SL], cb func(subject []byte, val *T)) {
 	if t == nil || t.root == nil || sl == nil {
 		return
 	}
@@ -493,14 +493,14 @@ func IntersectGSL[T any, SL comparable](t *SubjectTree[T], sl *gsl.GenericSublis
 	_intersectGSL(t.root, _pre[:0], sl, cb)
 }
 
-func _intersectGSL[T any, SL comparable](n node, pre []byte, sl *gsl.GenericSublist[SL], cb func(subject []byte, val *T) bool) bool {
+func _intersectGSL[T any, SL comparable](n node, pre []byte, sl *gsl.GenericSublist[SL], cb func(subject []byte, val *T)) {
 	if n.isLeaf() {
 		ln := n.(*leaf[T])
 		subj := append(pre, ln.suffix...)
 		if sl.HasInterest(bytesToString(subj)) {
-			return cb(subj, &ln.value)
+			cb(subj, &ln.value)
 		}
-		return true
+		return
 	}
 	bn := n.base()
 	pre = append(pre, bn.prefix...)
@@ -512,11 +512,8 @@ func _intersectGSL[T any, SL comparable](n node, pre []byte, sl *gsl.GenericSubl
 		if !hasInterestForTokens(sl, subj, len(pre)) {
 			continue
 		}
-		if !_intersectGSL(cn, pre, sl, cb) {
-			return false
-		}
+		_intersectGSL(cn, pre, sl, cb)
 	}
-	return true
 }
 
 // The subject tree can return partial tokens so we need to check starting interest
