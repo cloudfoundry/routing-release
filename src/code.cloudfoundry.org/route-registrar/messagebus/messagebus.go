@@ -44,9 +44,15 @@ type Message struct {
 	AllowedSources      *AllowedSources   `json:"allowed_sources,omitempty"`
 }
 
-// AllowedSources specifies which source applications are authorized to access this endpoint
+// AllowedSources contains authorization rules for which sources can communicate
+// with this endpoint on mTLS domains. Per RFC specification:
+// - If Any is true, any authenticated app is allowed (mutually exclusive with Apps/Spaces/Orgs)
+// - If Any is false, at least one of Apps/Spaces/Orgs must be specified (default-deny)
 type AllowedSources struct {
-	AppGUIDs []string `json:"app_guids"`
+	Apps   []string `json:"apps,omitempty"`
+	Spaces []string `json:"spaces,omitempty"`
+	Orgs   []string `json:"orgs,omitempty"`
+	Any    bool     `json:"any,omitempty"`
 }
 
 const LoadBalancingAlgorithm string = "loadbalancing"
@@ -155,9 +161,12 @@ func (m msgBus) mapRouteOptions(route config.Route) map[string]string {
 }
 
 func (m msgBus) mapAllowedSources(route config.Route) *AllowedSources {
-	if route.AllowedSourceAppGUIDs != nil && len(route.AllowedSourceAppGUIDs) > 0 {
+	if route.AllowedSources != nil {
 		return &AllowedSources{
-			AppGUIDs: route.AllowedSourceAppGUIDs,
+			Apps:   route.AllowedSources.Apps,
+			Spaces: route.AllowedSources.Spaces,
+			Orgs:   route.AllowedSources.Orgs,
+			Any:    route.AllowedSources.Any,
 		}
 	}
 	return nil

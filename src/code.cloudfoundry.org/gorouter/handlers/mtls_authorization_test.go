@@ -140,17 +140,52 @@ var _ = Describe("MtlsAuthorization", func() {
 			})
 		})
 
+		Context("when route endpoint has empty allowed sources", func() {
+			BeforeEach(func() {
+				// Create endpoint with empty allowed sources (default deny)
+				endpoint := route.NewEndpoint(&route.EndpointOpts{
+					AppId:             "backend-app-id",
+					Host:              "192.168.1.1",
+					Port:              8080,
+					PrivateInstanceId: "backend-instance-id",
+					AllowedSources:    &route.AllowedSources{},
+				})
+
+				reqInfoHandler := handlers.NewRequestInfo()
+				n := negroni.New()
+				n.Use(reqInfoHandler)
+				n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+					reqInfo, err := handlers.ContextRequestInfo(r)
+					Expect(err).NotTo(HaveOccurred())
+					reqInfo.RouteEndpoint = endpoint
+					request = r
+					next(w, r)
+				})
+				n.Use(handler)
+				n.UseHandlerFunc(nextHandler)
+
+				n.ServeHTTP(recorder, request)
+			})
+
+			It("returns 403 Forbidden", func() {
+				Expect(nextCalled).To(BeFalse())
+				Expect(recorder.Code).To(Equal(http.StatusForbidden))
+			})
+		})
+
 		Context("when route endpoint has allowed sources", func() {
 			var endpoint *route.Endpoint
 
 			BeforeEach(func() {
 				// Create endpoint with allowed sources
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:                 "backend-app-id",
-					Host:                  "192.168.1.1",
-					Port:                  8080,
-					PrivateInstanceId:     "backend-instance-id",
-					AllowedSourceAppGUIDs: []string{"allowed-app-1", "allowed-app-2"},
+					AppId:             "backend-app-id",
+					Host:              "192.168.1.1",
+					Port:              8080,
+					PrivateInstanceId: "backend-instance-id",
+					AllowedSources: &route.AllowedSources{
+						Apps: []string{"allowed-app-1", "allowed-app-2"},
+					},
 				})
 			})
 
@@ -390,6 +425,275 @@ var _ = Describe("MtlsAuthorization", func() {
 
 				Expect(nextCalled).To(BeFalse())
 				Expect(recorder.Code).To(Equal(http.StatusForbidden))
+			})
+		})
+	})
+
+	Context("with RFC-compliant AllowedSources authorization", func() {
+		BeforeEach(func() {
+			request = test_util.NewRequest("GET", "backend.apps.mtls.internal", "/", nil)
+		})
+
+		Context("when AllowedSources.Any is true", func() {
+			var endpoint *route.Endpoint
+
+			BeforeEach(func() {
+				endpoint = route.NewEndpoint(&route.EndpointOpts{
+					AppId:             "backend-app-id",
+					Host:              "192.168.1.1",
+					Port:              8080,
+					PrivateInstanceId: "backend-instance-id",
+					AllowedSources: &route.AllowedSources{
+						Any: true,
+					},
+				})
+			})
+
+			Context("when caller is authenticated", func() {
+				BeforeEach(func() {
+					reqInfoHandler := handlers.NewRequestInfo()
+					n := negroni.New()
+					n.Use(reqInfoHandler)
+					n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+						reqInfo, err := handlers.ContextRequestInfo(r)
+						Expect(err).NotTo(HaveOccurred())
+						reqInfo.RouteEndpoint = endpoint
+						reqInfo.CallerIdentity = &handlers.CallerIdentity{
+							AppGUID: "random-app-guid",
+						}
+						request = r
+						next(w, r)
+					})
+					n.Use(handler)
+					n.UseHandlerFunc(nextHandler)
+
+					n.ServeHTTP(recorder, request)
+				})
+
+				It("allows any authenticated app", func() {
+					Expect(nextCalled).To(BeTrue())
+					Expect(recorder.Code).To(Equal(http.StatusOK))
+				})
+			})
+
+			Context("when caller is not authenticated", func() {
+				BeforeEach(func() {
+					reqInfoHandler := handlers.NewRequestInfo()
+					n := negroni.New()
+					n.Use(reqInfoHandler)
+					n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+						reqInfo, err := handlers.ContextRequestInfo(r)
+						Expect(err).NotTo(HaveOccurred())
+						reqInfo.RouteEndpoint = endpoint
+						// Don't set CallerIdentity
+						request = r
+						next(w, r)
+					})
+					n.Use(handler)
+					n.UseHandlerFunc(nextHandler)
+
+					n.ServeHTTP(recorder, request)
+				})
+
+				It("returns 401 Unauthorized", func() {
+					Expect(nextCalled).To(BeFalse())
+					Expect(recorder.Code).To(Equal(http.StatusUnauthorized))
+				})
+			})
+		})
+
+		Context("when caller's space is in AllowedSources.Spaces", func() {
+			BeforeEach(func() {
+				endpoint := route.NewEndpoint(&route.EndpointOpts{
+					AppId:             "backend-app-id",
+					Host:              "192.168.1.1",
+					Port:              8080,
+					PrivateInstanceId: "backend-instance-id",
+					AllowedSources: &route.AllowedSources{
+						Spaces: []string{"allowed-space-1", "allowed-space-2"},
+					},
+				})
+
+				reqInfoHandler := handlers.NewRequestInfo()
+				n := negroni.New()
+				n.Use(reqInfoHandler)
+				n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+					reqInfo, err := handlers.ContextRequestInfo(r)
+					Expect(err).NotTo(HaveOccurred())
+					reqInfo.RouteEndpoint = endpoint
+					reqInfo.CallerIdentity = &handlers.CallerIdentity{
+						AppGUID:   "caller-app-guid",
+						SpaceGUID: "allowed-space-2",
+					}
+					request = r
+					next(w, r)
+				})
+				n.Use(handler)
+				n.UseHandlerFunc(nextHandler)
+
+				n.ServeHTTP(recorder, request)
+			})
+
+			It("allows the request", func() {
+				Expect(nextCalled).To(BeTrue())
+				Expect(recorder.Code).To(Equal(http.StatusOK))
+			})
+		})
+
+		Context("when caller's space is not in AllowedSources.Spaces", func() {
+			BeforeEach(func() {
+				endpoint := route.NewEndpoint(&route.EndpointOpts{
+					AppId:             "backend-app-id",
+					Host:              "192.168.1.1",
+					Port:              8080,
+					PrivateInstanceId: "backend-instance-id",
+					AllowedSources: &route.AllowedSources{
+						Spaces: []string{"allowed-space-1", "allowed-space-2"},
+					},
+				})
+
+				reqInfoHandler := handlers.NewRequestInfo()
+				n := negroni.New()
+				n.Use(reqInfoHandler)
+				n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+					reqInfo, err := handlers.ContextRequestInfo(r)
+					Expect(err).NotTo(HaveOccurred())
+					reqInfo.RouteEndpoint = endpoint
+					reqInfo.CallerIdentity = &handlers.CallerIdentity{
+						AppGUID:   "caller-app-guid",
+						SpaceGUID: "different-space",
+					}
+					request = r
+					next(w, r)
+				})
+				n.Use(handler)
+				n.UseHandlerFunc(nextHandler)
+
+				n.ServeHTTP(recorder, request)
+			})
+
+			It("returns 403 Forbidden", func() {
+				Expect(nextCalled).To(BeFalse())
+				Expect(recorder.Code).To(Equal(http.StatusForbidden))
+			})
+		})
+
+		Context("when caller's org is in AllowedSources.Orgs", func() {
+			BeforeEach(func() {
+				endpoint := route.NewEndpoint(&route.EndpointOpts{
+					AppId:             "backend-app-id",
+					Host:              "192.168.1.1",
+					Port:              8080,
+					PrivateInstanceId: "backend-instance-id",
+					AllowedSources: &route.AllowedSources{
+						Orgs: []string{"allowed-org-1", "allowed-org-2"},
+					},
+				})
+
+				reqInfoHandler := handlers.NewRequestInfo()
+				n := negroni.New()
+				n.Use(reqInfoHandler)
+				n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+					reqInfo, err := handlers.ContextRequestInfo(r)
+					Expect(err).NotTo(HaveOccurred())
+					reqInfo.RouteEndpoint = endpoint
+					reqInfo.CallerIdentity = &handlers.CallerIdentity{
+						AppGUID: "caller-app-guid",
+						OrgGUID: "allowed-org-1",
+					}
+					request = r
+					next(w, r)
+				})
+				n.Use(handler)
+				n.UseHandlerFunc(nextHandler)
+
+				n.ServeHTTP(recorder, request)
+			})
+
+			It("allows the request", func() {
+				Expect(nextCalled).To(BeTrue())
+				Expect(recorder.Code).To(Equal(http.StatusOK))
+			})
+		})
+
+		Context("when caller's org is not in AllowedSources.Orgs", func() {
+			BeforeEach(func() {
+				endpoint := route.NewEndpoint(&route.EndpointOpts{
+					AppId:             "backend-app-id",
+					Host:              "192.168.1.1",
+					Port:              8080,
+					PrivateInstanceId: "backend-instance-id",
+					AllowedSources: &route.AllowedSources{
+						Orgs: []string{"allowed-org-1", "allowed-org-2"},
+					},
+				})
+
+				reqInfoHandler := handlers.NewRequestInfo()
+				n := negroni.New()
+				n.Use(reqInfoHandler)
+				n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+					reqInfo, err := handlers.ContextRequestInfo(r)
+					Expect(err).NotTo(HaveOccurred())
+					reqInfo.RouteEndpoint = endpoint
+					reqInfo.CallerIdentity = &handlers.CallerIdentity{
+						AppGUID: "caller-app-guid",
+						OrgGUID: "different-org",
+					}
+					request = r
+					next(w, r)
+				})
+				n.Use(handler)
+				n.UseHandlerFunc(nextHandler)
+
+				n.ServeHTTP(recorder, request)
+			})
+
+			It("returns 403 Forbidden", func() {
+				Expect(nextCalled).To(BeFalse())
+				Expect(recorder.Code).To(Equal(http.StatusForbidden))
+			})
+		})
+
+		Context("with multiple authorization levels", func() {
+			BeforeEach(func() {
+				// Endpoint allows specific apps, specific spaces, and specific orgs
+				endpoint := route.NewEndpoint(&route.EndpointOpts{
+					AppId:             "backend-app-id",
+					Host:              "192.168.1.1",
+					Port:              8080,
+					PrivateInstanceId: "backend-instance-id",
+					AllowedSources: &route.AllowedSources{
+						Apps:   []string{"app-1", "app-2"},
+						Spaces: []string{"space-1"},
+						Orgs:   []string{"org-1"},
+					},
+				})
+
+				reqInfoHandler := handlers.NewRequestInfo()
+				n := negroni.New()
+				n.Use(reqInfoHandler)
+				n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+					reqInfo, err := handlers.ContextRequestInfo(r)
+					Expect(err).NotTo(HaveOccurred())
+					reqInfo.RouteEndpoint = endpoint
+					// Caller is not in the app list, but is in the allowed space
+					reqInfo.CallerIdentity = &handlers.CallerIdentity{
+						AppGUID:   "app-3",
+						SpaceGUID: "space-1",
+						OrgGUID:   "different-org",
+					}
+					request = r
+					next(w, r)
+				})
+				n.Use(handler)
+				n.UseHandlerFunc(nextHandler)
+
+				n.ServeHTTP(recorder, request)
+			})
+
+			It("allows if any level matches", func() {
+				Expect(nextCalled).To(BeTrue())
+				Expect(recorder.Code).To(Equal(http.StatusOK))
 			})
 		})
 	})

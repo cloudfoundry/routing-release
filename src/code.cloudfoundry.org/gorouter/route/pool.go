@@ -63,6 +63,31 @@ type Stats struct {
 	NumberConnections *Counter
 }
 
+// AllowedSources contains authorization rules for which sources can communicate
+// with this endpoint on mTLS domains. Per RFC specification:
+// - If Any is true, any authenticated app is allowed (mutually exclusive with Apps/Spaces/Orgs)
+// - If Any is false, at least one of Apps/Spaces/Orgs must be specified (default-deny)
+type AllowedSources struct {
+	Apps   []string
+	Spaces []string
+	Orgs   []string
+	Any    bool
+}
+
+// Equal compares two AllowedSources for equality
+func (as *AllowedSources) Equal(other *AllowedSources) bool {
+	if as == nil && other == nil {
+		return true
+	}
+	if as == nil || other == nil {
+		return false
+	}
+	return slices.Equal(as.Apps, other.Apps) &&
+		slices.Equal(as.Spaces, other.Spaces) &&
+		slices.Equal(as.Orgs, other.Orgs) &&
+		as.Any == other.Any
+}
+
 func NewStats() *Stats {
 	return &Stats{
 		NumberConnections: &Counter{},
@@ -118,7 +143,7 @@ type Endpoint struct {
 	LoadBalancingAlgorithm string
 	HashHeaderName         string
 	HashBalanceFactor      float64
-	AllowedSourceAppGUIDs  []string
+	AllowedSources         *AllowedSources
 }
 
 func (e *Endpoint) RoundTripper() ProxyRoundTripper {
@@ -165,7 +190,7 @@ func (e *Endpoint) Equal(e2 *Endpoint) bool {
 		e.HashHeaderName == e2.HashHeaderName &&
 		e.HashBalanceFactor == e2.HashBalanceFactor &&
 		maps.Equal(e.Tags, e2.Tags) &&
-		slices.Equal(e.AllowedSourceAppGUIDs, e2.AllowedSourceAppGUIDs)
+		e.AllowedSources.Equal(e2.AllowedSources)
 
 }
 
@@ -233,7 +258,7 @@ type EndpointOpts struct {
 	LoadBalancingAlgorithm  string
 	HashHeaderName          string
 	HashBalanceFactor       float64
-	AllowedSourceAppGUIDs   []string
+	AllowedSources          *AllowedSources
 }
 
 func NewEndpoint(opts *EndpointOpts) *Endpoint {
@@ -254,7 +279,7 @@ func NewEndpoint(opts *EndpointOpts) *Endpoint {
 		IsolationSegment:       opts.IsolationSegment,
 		UpdatedAt:              opts.UpdatedAt,
 		LoadBalancingAlgorithm: opts.LoadBalancingAlgorithm,
-		AllowedSourceAppGUIDs:  opts.AllowedSourceAppGUIDs,
+		AllowedSources:         opts.AllowedSources,
 	}
 
 	if opts.LoadBalancingAlgorithm == config.LOAD_BALANCE_HB && opts.HashHeaderName != "" { // BalanceFactor is optional

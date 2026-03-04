@@ -219,6 +219,133 @@ var _ = Describe("Identity", func() {
 	})
 })
 
+func generateTestCertWithOrgAndSpace() *x509.Certificate {
+	return generateTestCertWithMultipleOUs([]string{
+		"app:test-app-guid",
+		"space:test-space-guid",
+		"organization:test-org-guid",
+	})
+}
+
+func buildTestCertWithIdentity(appGUID, spaceGUID, orgGUID string) *x509.Certificate {
+	ous := []string{}
+	if appGUID != "" {
+		ous = append(ous, "app:"+appGUID)
+	}
+	if spaceGUID != "" {
+		ous = append(ous, "space:"+spaceGUID)
+	}
+	if orgGUID != "" {
+		ous = append(ous, "organization:"+orgGUID)
+	}
+	return generateTestCertWithMultipleOUs(ous)
+}
+
+var _ = Describe("Identity with Space and Org extraction", func() {
+	var (
+		handler     negroni.Handler
+		nextCalled  bool
+		recorder    *httptest.ResponseRecorder
+		request     *http.Request
+		requestInfo *handlers.RequestInfo
+	)
+
+	BeforeEach(func() {
+		handler = handlers.NewIdentity()
+		nextCalled = false
+		recorder = httptest.NewRecorder()
+
+		request = test_util.NewRequest("GET", "backend.apps.mtls.internal", "/", nil)
+	})
+
+	var runHandler = func() {
+		// Add RequestInfo to context
+		reqInfoHandler := handlers.NewRequestInfo()
+		n := negroni.New()
+		n.Use(reqInfoHandler)
+		n.Use(handler)
+		n.UseHandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			nextCalled = true
+			request = r
+			// Capture RequestInfo for assertions
+			var err error
+			requestInfo, err = handlers.ContextRequestInfo(r)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		n.ServeHTTP(recorder, request)
+	}
+
+	Context("when cert contains app, space, and org GUIDs", func() {
+		BeforeEach(func() {
+			cert := generateTestCertWithOrgAndSpace()
+			certPEM := encodeCertToPEM(cert)
+			xfccHeader := buildXFCCHeader(certPEM)
+			request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+		})
+
+		It("extracts all three GUIDs", func() {
+			runHandler()
+			Expect(nextCalled).To(BeTrue())
+			Expect(requestInfo.CallerIdentity).NotTo(BeNil())
+			Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("test-app-guid"))
+			Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal("test-space-guid"))
+			Expect(requestInfo.CallerIdentity.OrgGUID).To(Equal("test-org-guid"))
+		})
+	})
+
+	Context("when cert contains only app and space GUIDs", func() {
+		BeforeEach(func() {
+			cert := buildTestCertWithIdentity("my-app", "my-space", "")
+			certPEM := encodeCertToPEM(cert)
+			xfccHeader := buildXFCCHeader(certPEM)
+			request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+		})
+
+		It("extracts app and space GUIDs", func() {
+			runHandler()
+			Expect(nextCalled).To(BeTrue())
+			Expect(requestInfo.CallerIdentity).NotTo(BeNil())
+			Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("my-app"))
+			Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal("my-space"))
+			Expect(requestInfo.CallerIdentity.OrgGUID).To(Equal(""))
+		})
+	})
+
+	Context("when cert contains only app GUID", func() {
+		BeforeEach(func() {
+			cert := buildTestCertWithIdentity("my-app", "", "")
+			certPEM := encodeCertToPEM(cert)
+			xfccHeader := buildXFCCHeader(certPEM)
+			request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+		})
+
+		It("extracts only app GUID", func() {
+			runHandler()
+			Expect(nextCalled).To(BeTrue())
+			Expect(requestInfo.CallerIdentity).NotTo(BeNil())
+			Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("my-app"))
+			Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal(""))
+			Expect(requestInfo.CallerIdentity.OrgGUID).To(Equal(""))
+		})
+	})
+
+	Context("when cert contains space and org but no app GUID", func() {
+		BeforeEach(func() {
+			cert := buildTestCertWithIdentity("", "my-space", "my-org")
+			certPEM := encodeCertToPEM(cert)
+			xfccHeader := buildXFCCHeader(certPEM)
+			request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+		})
+
+		It("does not set caller identity (app GUID required)", func() {
+			runHandler()
+			Expect(nextCalled).To(BeTrue())
+			Expect(requestInfo.CallerIdentity).To(BeNil())
+		})
+	})
+})
+
 // Helper functions for generating test certificates
 
 func generateTestCert(ou string) *x509.Certificate {

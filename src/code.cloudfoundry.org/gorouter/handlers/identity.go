@@ -11,8 +11,14 @@ import (
 )
 
 // CallerIdentity represents the identity of the calling application extracted from mTLS
+// certificate. The certificate OU field contains:
+// - app:<app-guid> for the application GUID
+// - space:<space-guid> for the space GUID
+// - organization:<org-guid> for the organization GUID
 type CallerIdentity struct {
-	AppGUID string
+	AppGUID   string
+	SpaceGUID string
+	OrgGUID   string
 }
 
 // identityHandler extracts the caller identity from the X-Forwarded-Client-Cert header
@@ -48,10 +54,14 @@ func (h *identityHandler) ServeHTTP(w http.ResponseWriter, r *http.Request, next
 }
 
 // extractIdentityFromXFCC parses the X-Forwarded-Client-Cert header and extracts
-// the application GUID from the client certificate's OU (Organizational Unit) field.
+// the application, space, and organization GUIDs from the client certificate's
+// OU (Organizational Unit) field.
 //
 // Expected XFCC format: Cert="<PEM-encoded-cert>"
-// Expected cert OU format: "app:<app-guid>"
+// Expected cert OU formats:
+// - "app:<app-guid>"
+// - "space:<space-guid>"
+// - "organization:<org-guid>"
 func extractIdentityFromXFCC(xfcc string) (*CallerIdentity, error) {
 	// Parse XFCC header to extract PEM certificate
 	// Format: Cert="<PEM>"
@@ -80,18 +90,31 @@ func extractIdentityFromXFCC(xfcc string) (*CallerIdentity, error) {
 		return nil, err
 	}
 
-	// Extract app GUID from OU field
-	// Expected format: "app:<app-guid>"
+	// Extract GUIDs from OU fields
+	identity := &CallerIdentity{}
 	for _, ou := range cert.Subject.OrganizationalUnit {
 		if strings.HasPrefix(ou, "app:") {
 			appGUID := strings.TrimPrefix(ou, "app:")
 			if appGUID != "" {
-				return &CallerIdentity{
-					AppGUID: appGUID,
-				}, nil
+				identity.AppGUID = appGUID
+			}
+		} else if strings.HasPrefix(ou, "space:") {
+			spaceGUID := strings.TrimPrefix(ou, "space:")
+			if spaceGUID != "" {
+				identity.SpaceGUID = spaceGUID
+			}
+		} else if strings.HasPrefix(ou, "organization:") {
+			orgGUID := strings.TrimPrefix(ou, "organization:")
+			if orgGUID != "" {
+				identity.OrgGUID = orgGUID
 			}
 		}
 	}
 
-	return nil, errors.New("no app GUID found in certificate OU")
+	// At minimum, require app GUID to be present
+	if identity.AppGUID == "" {
+		return nil, errors.New("no app GUID found in certificate OU")
+	}
+
+	return identity, nil
 }

@@ -47,18 +47,28 @@ type RegistryMessageOpts struct {
 	HashBalance            float64 `json:"hash_balance,string"`
 }
 
-// AllowedSources contains the list of source application GUIDs that are authorized
-// to communicate with this endpoint on mTLS domains
+// AllowedSources contains authorization rules for which sources can communicate
+// with this endpoint on mTLS domains. Per RFC specification:
+// - If Any is true, any authenticated app is allowed (mutually exclusive with Apps/Spaces/Orgs)
+// - If Any is false, at least one of Apps/Spaces/Orgs must be specified (default-deny)
 type AllowedSources struct {
-	AppGUIDs []string `json:"app_guids"`
+	Apps   []string `json:"apps,omitempty"`
+	Spaces []string `json:"spaces,omitempty"`
+	Orgs   []string `json:"orgs,omitempty"`
+	Any    bool     `json:"any,omitempty"`
 }
 
-// getAllowedSourceAppGUIDs extracts the app GUIDs from AllowedSources, returning nil if not present
-func getAllowedSourceAppGUIDs(as *AllowedSources) []string {
+// getAllowedSources returns the AllowedSources, or nil if not present
+func getAllowedSources(as *AllowedSources) *route.AllowedSources {
 	if as == nil {
 		return nil
 	}
-	return as.AppGUIDs
+	return &route.AllowedSources{
+		Apps:   as.Apps,
+		Spaces: as.Spaces,
+		Orgs:   as.Orgs,
+		Any:    as.Any,
+	}
 }
 
 func (rm *RegistryMessage) makeEndpoint(http2Enabled bool, globalRoutingAlgo string) (*route.Endpoint, error) {
@@ -100,7 +110,7 @@ func (rm *RegistryMessage) makeEndpoint(http2Enabled bool, globalRoutingAlgo str
 		LoadBalancingAlgorithm:  lbAlgo,
 		HashHeaderName:          rm.Options.HashHeaderName,
 		HashBalanceFactor:       rm.Options.HashBalance,
-		AllowedSourceAppGUIDs:   getAllowedSourceAppGUIDs(rm.AllowedSources),
+		AllowedSources:          getAllowedSources(rm.AllowedSources),
 	}), nil
 }
 

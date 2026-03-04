@@ -3,6 +3,7 @@ package handlers
 import (
 	"log/slog"
 	"net/http"
+	"slices"
 
 	"github.com/urfave/negroni/v3"
 
@@ -52,12 +53,48 @@ func (h *mtlsAuthorization) ServeHTTP(w http.ResponseWriter, r *http.Request, ne
 
 	endpoint := reqInfo.RouteEndpoint
 
-	// If endpoint has no allowed sources list, deny by default on mTLS domains
-	if endpoint.AllowedSourceAppGUIDs == nil || len(endpoint.AllowedSourceAppGUIDs) == 0 {
+	// If endpoint has no allowed sources, deny by default on mTLS domains
+	// Per RFC: if Any is not set and no Apps/Spaces/Orgs are specified, default-deny
+	if endpoint.AllowedSources == nil {
 		h.logger.Info("mtls-authorization-denied",
 			slog.String("host", r.Host),
 			slog.String("endpoint-app", endpoint.ApplicationId),
 			slog.String("reason", "no-allowed-sources"))
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	allowedSources := endpoint.AllowedSources
+
+	// If Any is true, allow any authenticated app
+	if allowedSources.Any {
+		// Check that caller identity exists (authenticated)
+		if reqInfo.CallerIdentity == nil {
+			h.logger.Info("mtls-authorization-denied",
+				slog.String("host", r.Host),
+				slog.String("endpoint-app", endpoint.ApplicationId),
+				slog.String("reason", "no-caller-identity"))
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		// Any authenticated app is allowed
+		h.logger.Debug("mtls-authorization-granted",
+			slog.String("host", r.Host),
+			slog.String("endpoint-app", endpoint.ApplicationId),
+			slog.String("caller-app", reqInfo.CallerIdentity.AppGUID),
+			slog.String("reason", "any-authenticated-app"))
+		next(w, r)
+		return
+	}
+
+	// If Any is false, check specific Apps/Spaces/Orgs
+	// At least one of Apps/Spaces/Orgs must be specified (RFC requirement)
+	if len(allowedSources.Apps) == 0 && len(allowedSources.Spaces) == 0 && len(allowedSources.Orgs) == 0 {
+		h.logger.Info("mtls-authorization-denied",
+			slog.String("host", r.Host),
+			slog.String("endpoint-app", endpoint.ApplicationId),
+			slog.String("reason", "empty-allowed-sources"))
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
@@ -72,31 +109,50 @@ func (h *mtlsAuthorization) ServeHTTP(w http.ResponseWriter, r *http.Request, ne
 		return
 	}
 
-	// Verify the calling app GUID is in the allowed sources list
-	callerAppGUID := reqInfo.CallerIdentity.AppGUID
-	allowed := false
-	for _, allowedGUID := range endpoint.AllowedSourceAppGUIDs {
-		if allowedGUID == callerAppGUID {
-			allowed = true
-			break
-		}
-	}
+	identity := reqInfo.CallerIdentity
 
-	if !allowed {
-		h.logger.Info("mtls-authorization-denied",
+	// Check if caller's app GUID is in the allowed apps list
+	if slices.Contains(allowedSources.Apps, identity.AppGUID) {
+		h.logger.Debug("mtls-authorization-granted",
 			slog.String("host", r.Host),
 			slog.String("endpoint-app", endpoint.ApplicationId),
-			slog.String("caller-app", callerAppGUID),
-			slog.String("reason", "app-not-in-allowed-sources"))
-		w.WriteHeader(http.StatusForbidden)
+			slog.String("caller-app", identity.AppGUID),
+			slog.String("reason", "app-in-allowed-list"))
+		next(w, r)
 		return
 	}
 
-	// Authorization successful
-	h.logger.Debug("mtls-authorization-granted",
+	// Check if caller's space GUID is in the allowed spaces list
+	if identity.SpaceGUID != "" && slices.Contains(allowedSources.Spaces, identity.SpaceGUID) {
+		h.logger.Debug("mtls-authorization-granted",
+			slog.String("host", r.Host),
+			slog.String("endpoint-app", endpoint.ApplicationId),
+			slog.String("caller-app", identity.AppGUID),
+			slog.String("caller-space", identity.SpaceGUID),
+			slog.String("reason", "space-in-allowed-list"))
+		next(w, r)
+		return
+	}
+
+	// Check if caller's org GUID is in the allowed orgs list
+	if identity.OrgGUID != "" && slices.Contains(allowedSources.Orgs, identity.OrgGUID) {
+		h.logger.Debug("mtls-authorization-granted",
+			slog.String("host", r.Host),
+			slog.String("endpoint-app", endpoint.ApplicationId),
+			slog.String("caller-app", identity.AppGUID),
+			slog.String("caller-org", identity.OrgGUID),
+			slog.String("reason", "org-in-allowed-list"))
+		next(w, r)
+		return
+	}
+
+	// Caller not authorized
+	h.logger.Info("mtls-authorization-denied",
 		slog.String("host", r.Host),
 		slog.String("endpoint-app", endpoint.ApplicationId),
-		slog.String("caller-app", callerAppGUID))
-
-	next(w, r)
+		slog.String("caller-app", identity.AppGUID),
+		slog.String("caller-space", identity.SpaceGUID),
+		slog.String("caller-org", identity.OrgGUID),
+		slog.String("reason", "not-in-allowed-sources"))
+	w.WriteHeader(http.StatusForbidden)
 }
