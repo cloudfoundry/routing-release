@@ -368,6 +368,16 @@ func InitClientCertMetadataRules(rules []VerifyClientCertificateMetadataRule, ce
 	return nil
 }
 
+// MtlsDomainConfig defines TLS settings for a specific domain that requires mutual TLS
+type MtlsDomainConfig struct {
+	Domain              string         `yaml:"domain"`
+	CAPool              *x509.CertPool `yaml:"-"`
+	CACerts             string         `yaml:"ca_certs"`
+	ForwardedClientCert string         `yaml:"forwarded_client_cert"`
+	// Computed fields
+	RequireClientCert bool `yaml:"-"` // Always true for mTLS domains
+}
+
 type Config struct {
 	Status                         StatusConfig      `yaml:"status,omitempty"`
 	Nats                           NatsConfig        `yaml:"nats,omitempty"`
@@ -393,6 +403,12 @@ type Config struct {
 	CAPool                         *x509.CertPool    `yaml:"-"`
 	ClientCACerts                  string            `yaml:"client_ca_certs,omitempty"`
 	ClientCAPool                   *x509.CertPool    `yaml:"-"`
+
+	// MtlsDomains configures domains that require client certificates (mTLS)
+	// Routes on these domains will require valid instance identity certificates
+	MtlsDomains []MtlsDomainConfig `yaml:"mtls_domains,omitempty"`
+	// Computed: map of domain -> config for fast lookup
+	mtlsDomainMap map[string]*MtlsDomainConfig `yaml:"-"`
 
 	SkipSSLValidation        bool     `yaml:"skip_ssl_validation,omitempty"`
 	ForwardedClientCert      string   `yaml:"forwarded_client_cert,omitempty"`
@@ -802,6 +818,9 @@ func (c *Config) Process() error {
 	if err := c.buildClientCertPool(); err != nil {
 		return err
 	}
+	if err := c.processMtlsDomains(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -902,6 +921,45 @@ func (c *Config) buildClientCertPool() error {
 	return nil
 }
 
+func (c *Config) processMtlsDomains() error {
+	// Initialize mTLS domain map
+	c.mtlsDomainMap = make(map[string]*MtlsDomainConfig)
+
+	for i := range c.MtlsDomains {
+		domain := &c.MtlsDomains[i]
+		domain.RequireClientCert = true
+
+		// Validate forwarded_client_cert mode
+		if domain.ForwardedClientCert == "" {
+			domain.ForwardedClientCert = SANITIZE_SET // Default to most secure
+		}
+		if !slices.Contains(AllowedForwardedClientCertModes, domain.ForwardedClientCert) {
+			return fmt.Errorf("mtls_domains[%d].forwarded_client_cert must be one of %v",
+				i, AllowedForwardedClientCertModes)
+		}
+
+		// Build CA pool for this domain
+		if domain.CACerts != "" {
+			pool := x509.NewCertPool()
+			if !pool.AppendCertsFromPEM([]byte(domain.CACerts)) {
+				return fmt.Errorf("mtls_domains[%d].ca_certs contains invalid certificates", i)
+			}
+			domain.CAPool = pool
+		} else {
+			return fmt.Errorf("mtls_domains[%d].ca_certs is required", i)
+		}
+
+		// Validate domain is not empty
+		if domain.Domain == "" {
+			return fmt.Errorf("mtls_domains[%d].domain is required", i)
+		}
+
+		c.mtlsDomainMap[domain.Domain] = domain
+	}
+
+	return nil
+}
+
 func convertCipherStringToInt(cipherStrs []string, cipherMap map[string]uint16) ([]uint16, error) {
 	ciphers := []uint16{}
 	for _, cipher := range cipherStrs {
@@ -935,6 +993,30 @@ func (c *Config) NatsServers() []string {
 
 func (c *Config) RoutingApiEnabled() bool {
 	return (c.RoutingApi.Uri != "") && (c.RoutingApi.Port != 0)
+}
+
+// GetMtlsDomainConfig returns the mTLS domain configuration for a given host.
+// It checks for exact matches first, then wildcard matches (e.g., *.apps.mtls.internal).
+// Returns nil if the host is not an mTLS domain.
+func (c *Config) GetMtlsDomainConfig(host string) *MtlsDomainConfig {
+	// Check exact match first
+	if cfg, ok := c.mtlsDomainMap[host]; ok {
+		return cfg
+	}
+	// Check wildcard match (e.g., *.apps.mtls.internal)
+	parts := strings.SplitN(host, ".", 2)
+	if len(parts) == 2 {
+		wildcardDomain := "*." + parts[1]
+		if cfg, ok := c.mtlsDomainMap[wildcardDomain]; ok {
+			return cfg
+		}
+	}
+	return nil
+}
+
+// IsMtlsDomain returns true if the given host is configured as an mTLS domain
+func (c *Config) IsMtlsDomain(host string) bool {
+	return c.GetMtlsDomainConfig(host) != nil
 }
 
 func (c *Config) Initialize(configYAML []byte) error {
