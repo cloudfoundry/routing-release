@@ -505,6 +505,45 @@ if p('router.client_ca_certs')
   params['client_ca_certs'] = client_ca_certs
 end
 
+if_p('router.mtls_domains') do |mtls_domains|
+  if !mtls_domains.is_a?(Array)
+    raise 'router.mtls_domains must be provided as an array'
+  end
+
+  processed_domains = []
+  mtls_domains.each do |domain_config|
+    if !domain_config.is_a?(Hash)
+      raise 'Each entry in router.mtls_domains must be a hash'
+    end
+
+    if !domain_config.key?('domain') || domain_config['domain'].nil? || domain_config['domain'].strip.empty?
+      raise 'Each entry in router.mtls_domains must have a "domain" key'
+    end
+
+    if !domain_config.key?('ca_certs') || domain_config['ca_certs'].nil? || domain_config['ca_certs'].strip.empty?
+      raise 'Each entry in router.mtls_domains must have a "ca_certs" key with certificate content'
+    end
+
+    processed_entry = {
+      'domain' => domain_config['domain'],
+      'ca_certs' => domain_config['ca_certs']
+    }
+
+    if domain_config.key?('forwarded_client_cert') && !domain_config['forwarded_client_cert'].nil?
+      valid_modes = ['always_forward', 'forward', 'sanitize_set']
+      mode = domain_config['forwarded_client_cert']
+      unless valid_modes.include?(mode)
+        raise "Invalid forwarded_client_cert mode '#{mode}' for domain '#{domain_config['domain']}'. Must be one of: #{valid_modes.join(', ')}"
+      end
+      processed_entry['forwarded_client_cert'] = mode
+    end
+
+    processed_domains << processed_entry
+  end
+
+  params['mtls_domains'] = processed_domains
+end
+
 if_p('router.http_rewrite') do |r|
   params['http_rewrite'] = r
 end

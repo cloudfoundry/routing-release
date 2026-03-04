@@ -200,6 +200,25 @@ properties:
   router.only_trust_client_ca_certs:
     description: "When router.only_trust_client_ca_certs is true, router.client_ca_certs are the only trusted CA certs for client requests. When router.only_trust_client_ca_certs is false, router.client_ca_certs are trusted in addition to router.ca_certs and the CA certificates installed on the filesystem. This will have no affect if the `router.client_cert_validation` property is set to none."
     default: false
+  router.mtls_domains:
+    description: |
+      Array of domains requiring mutual TLS authentication. Each domain can have its own CA certificate pool and forwarded_client_cert mode.
+      For non-wildcard domains, the domain must match the request host exactly.
+      For wildcard domains (e.g., *.apps.internal), the wildcard must be the leftmost label and matches any single label.
+    default: []
+    example:
+    - domain: "*.apps.internal"
+      ca_certs: |
+        -----BEGIN CERTIFICATE-----
+        <CA certificate for apps.internal domain>
+        -----END CERTIFICATE-----
+      forwarded_client_cert: sanitize_set
+    - domain: "secure.example.com"
+      ca_certs: |
+        -----BEGIN CERTIFICATE-----
+        <CA certificate for secure.example.com>
+        -----END CERTIFICATE-----
+      forwarded_client_cert: forward
   router.backends.max_attempts:
     description: |
       Maximum number of attempts on failing requests against backend routes.
