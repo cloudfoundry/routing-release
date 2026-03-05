@@ -9,6 +9,7 @@ import (
 
 	"code.cloudfoundry.org/gorouter/config"
 	"code.cloudfoundry.org/gorouter/logger"
+	"code.cloudfoundry.org/gorouter/route"
 )
 
 // mtlsAuthorization enforces authorization checks on mTLS domains by verifying
@@ -23,6 +24,20 @@ func NewMtlsAuthorization(cfg *config.Config, logger *slog.Logger) negroni.Handl
 	return &mtlsAuthorization{
 		config: cfg,
 		logger: logger,
+	}
+}
+
+// setRouteEndpointForAccessLog sets the RouteEndpoint on reqInfo so that access logs
+// are emitted to the target app even when the request is denied by authorization.
+// This allows operators to see denied requests in the app's log stream.
+func setRouteEndpointForAccessLog(reqInfo *RequestInfo, pool *route.EndpointPool, logger *slog.Logger) {
+	if pool == nil || reqInfo.RouteEndpoint != nil {
+		return
+	}
+	// Get an endpoint from the pool for access logging purposes
+	iter := pool.Endpoints(logger, "", false, "", "")
+	if endpoint := iter.Next(0); endpoint != nil {
+		reqInfo.RouteEndpoint = endpoint
 	}
 }
 
@@ -66,6 +81,7 @@ func (h *mtlsAuthorization) ServeHTTP(w http.ResponseWriter, r *http.Request, ne
 			slog.String("host", r.Host),
 			slog.String("endpoint-app", applicationId),
 			slog.String("reason", "no-mtls-allowed-sources"))
+		setRouteEndpointForAccessLog(reqInfo, pool, h.logger)
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
@@ -78,6 +94,7 @@ func (h *mtlsAuthorization) ServeHTTP(w http.ResponseWriter, r *http.Request, ne
 				slog.String("host", r.Host),
 				slog.String("endpoint-app", applicationId),
 				slog.String("reason", "no-caller-identity"))
+			setRouteEndpointForAccessLog(reqInfo, pool, h.logger)
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -99,6 +116,7 @@ func (h *mtlsAuthorization) ServeHTTP(w http.ResponseWriter, r *http.Request, ne
 			slog.String("host", r.Host),
 			slog.String("endpoint-app", applicationId),
 			slog.String("reason", "empty-mtls-allowed-sources"))
+		setRouteEndpointForAccessLog(reqInfo, pool, h.logger)
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
@@ -109,6 +127,7 @@ func (h *mtlsAuthorization) ServeHTTP(w http.ResponseWriter, r *http.Request, ne
 			slog.String("host", r.Host),
 			slog.String("endpoint-app", applicationId),
 			slog.String("reason", "no-caller-identity"))
+		setRouteEndpointForAccessLog(reqInfo, pool, h.logger)
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -158,5 +177,6 @@ func (h *mtlsAuthorization) ServeHTTP(w http.ResponseWriter, r *http.Request, ne
 		slog.String("caller-space", identity.SpaceGUID),
 		slog.String("caller-org", identity.OrgGUID),
 		slog.String("reason", "not-in-mtls-allowed-sources"))
+	setRouteEndpointForAccessLog(reqInfo, pool, h.logger)
 	w.WriteHeader(http.StatusForbidden)
 }

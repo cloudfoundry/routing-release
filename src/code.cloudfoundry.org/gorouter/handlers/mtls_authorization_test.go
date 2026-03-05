@@ -728,4 +728,209 @@ var _ = Describe("MtlsAuthorization", func() {
 			})
 		})
 	})
+
+	Context("RouteEndpoint is set for access logging on denial", func() {
+		// These tests verify that when a request is denied, RouteEndpoint is set
+		// so that RTR logs are emitted to the target app's log stream
+		BeforeEach(func() {
+			request = test_util.NewRequest("GET", "backend.apps.mtls.internal", "/", nil)
+		})
+
+		Context("when route pool has no allowed sources (403)", func() {
+			var capturedReqInfo *handlers.RequestInfo
+
+			BeforeEach(func() {
+				endpoint := route.NewEndpoint(&route.EndpointOpts{
+					AppId:             "backend-app-id",
+					Host:              "192.168.1.1",
+					Port:              8080,
+					PrivateInstanceId: "backend-instance-id",
+				})
+				pool := createPoolWithEndpoint(endpoint)
+
+				reqInfoHandler := handlers.NewRequestInfo()
+				n := negroni.New()
+				n.Use(reqInfoHandler)
+				n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+					reqInfo, err := handlers.ContextRequestInfo(r)
+					Expect(err).NotTo(HaveOccurred())
+					reqInfo.RoutePool = pool
+					capturedReqInfo = reqInfo
+					request = r
+					next(w, r)
+				})
+				n.Use(handler)
+				n.UseHandlerFunc(nextHandler)
+
+				n.ServeHTTP(recorder, request)
+			})
+
+			It("sets RouteEndpoint for access logging", func() {
+				Expect(recorder.Code).To(Equal(http.StatusForbidden))
+				Expect(capturedReqInfo.RouteEndpoint).NotTo(BeNil())
+				Expect(capturedReqInfo.RouteEndpoint.ApplicationId).To(Equal("backend-app-id"))
+			})
+		})
+
+		Context("when route pool has empty allowed sources (403)", func() {
+			var capturedReqInfo *handlers.RequestInfo
+
+			BeforeEach(func() {
+				endpoint := route.NewEndpoint(&route.EndpointOpts{
+					AppId:              "backend-app-id",
+					Host:               "192.168.1.1",
+					Port:               8080,
+					PrivateInstanceId:  "backend-instance-id",
+					MtlsAllowedSources: &route.MtlsAllowedSources{},
+				})
+				pool := createPoolWithEndpoint(endpoint)
+
+				reqInfoHandler := handlers.NewRequestInfo()
+				n := negroni.New()
+				n.Use(reqInfoHandler)
+				n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+					reqInfo, err := handlers.ContextRequestInfo(r)
+					Expect(err).NotTo(HaveOccurred())
+					reqInfo.RoutePool = pool
+					capturedReqInfo = reqInfo
+					request = r
+					next(w, r)
+				})
+				n.Use(handler)
+				n.UseHandlerFunc(nextHandler)
+
+				n.ServeHTTP(recorder, request)
+			})
+
+			It("sets RouteEndpoint for access logging", func() {
+				Expect(recorder.Code).To(Equal(http.StatusForbidden))
+				Expect(capturedReqInfo.RouteEndpoint).NotTo(BeNil())
+				Expect(capturedReqInfo.RouteEndpoint.ApplicationId).To(Equal("backend-app-id"))
+			})
+		})
+
+		Context("when caller is not authenticated with Any=true (401)", func() {
+			var capturedReqInfo *handlers.RequestInfo
+
+			BeforeEach(func() {
+				endpoint := route.NewEndpoint(&route.EndpointOpts{
+					AppId:             "backend-app-id",
+					Host:              "192.168.1.1",
+					Port:              8080,
+					PrivateInstanceId: "backend-instance-id",
+					MtlsAllowedSources: &route.MtlsAllowedSources{
+						Any: true,
+					},
+				})
+				pool := createPoolWithEndpoint(endpoint)
+
+				reqInfoHandler := handlers.NewRequestInfo()
+				n := negroni.New()
+				n.Use(reqInfoHandler)
+				n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+					reqInfo, err := handlers.ContextRequestInfo(r)
+					Expect(err).NotTo(HaveOccurred())
+					reqInfo.RoutePool = pool
+					// Don't set CallerIdentity
+					capturedReqInfo = reqInfo
+					request = r
+					next(w, r)
+				})
+				n.Use(handler)
+				n.UseHandlerFunc(nextHandler)
+
+				n.ServeHTTP(recorder, request)
+			})
+
+			It("sets RouteEndpoint for access logging", func() {
+				Expect(recorder.Code).To(Equal(http.StatusUnauthorized))
+				Expect(capturedReqInfo.RouteEndpoint).NotTo(BeNil())
+				Expect(capturedReqInfo.RouteEndpoint.ApplicationId).To(Equal("backend-app-id"))
+			})
+		})
+
+		Context("when caller is not authenticated with specific sources (401)", func() {
+			var capturedReqInfo *handlers.RequestInfo
+
+			BeforeEach(func() {
+				endpoint := route.NewEndpoint(&route.EndpointOpts{
+					AppId:             "backend-app-id",
+					Host:              "192.168.1.1",
+					Port:              8080,
+					PrivateInstanceId: "backend-instance-id",
+					MtlsAllowedSources: &route.MtlsAllowedSources{
+						Apps: []string{"allowed-app"},
+					},
+				})
+				pool := createPoolWithEndpoint(endpoint)
+
+				reqInfoHandler := handlers.NewRequestInfo()
+				n := negroni.New()
+				n.Use(reqInfoHandler)
+				n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+					reqInfo, err := handlers.ContextRequestInfo(r)
+					Expect(err).NotTo(HaveOccurred())
+					reqInfo.RoutePool = pool
+					// Don't set CallerIdentity
+					capturedReqInfo = reqInfo
+					request = r
+					next(w, r)
+				})
+				n.Use(handler)
+				n.UseHandlerFunc(nextHandler)
+
+				n.ServeHTTP(recorder, request)
+			})
+
+			It("sets RouteEndpoint for access logging", func() {
+				Expect(recorder.Code).To(Equal(http.StatusUnauthorized))
+				Expect(capturedReqInfo.RouteEndpoint).NotTo(BeNil())
+				Expect(capturedReqInfo.RouteEndpoint.ApplicationId).To(Equal("backend-app-id"))
+			})
+		})
+
+		Context("when caller is not in allowed sources list (403)", func() {
+			var capturedReqInfo *handlers.RequestInfo
+
+			BeforeEach(func() {
+				endpoint := route.NewEndpoint(&route.EndpointOpts{
+					AppId:             "backend-app-id",
+					Host:              "192.168.1.1",
+					Port:              8080,
+					PrivateInstanceId: "backend-instance-id",
+					MtlsAllowedSources: &route.MtlsAllowedSources{
+						Apps: []string{"allowed-app-1", "allowed-app-2"},
+					},
+				})
+				pool := createPoolWithEndpoint(endpoint)
+
+				reqInfoHandler := handlers.NewRequestInfo()
+				n := negroni.New()
+				n.Use(reqInfoHandler)
+				n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+					reqInfo, err := handlers.ContextRequestInfo(r)
+					Expect(err).NotTo(HaveOccurred())
+					reqInfo.RoutePool = pool
+					reqInfo.CallerIdentity = &handlers.CallerIdentity{
+						AppGUID:   "unauthorized-app",
+						SpaceGUID: "some-space",
+						OrgGUID:   "some-org",
+					}
+					capturedReqInfo = reqInfo
+					request = r
+					next(w, r)
+				})
+				n.Use(handler)
+				n.UseHandlerFunc(nextHandler)
+
+				n.ServeHTTP(recorder, request)
+			})
+
+			It("sets RouteEndpoint for access logging", func() {
+				Expect(recorder.Code).To(Equal(http.StatusForbidden))
+				Expect(capturedReqInfo.RouteEndpoint).NotTo(BeNil())
+				Expect(capturedReqInfo.RouteEndpoint.ApplicationId).To(Equal("backend-app-id"))
+			})
+		})
+	})
 })
