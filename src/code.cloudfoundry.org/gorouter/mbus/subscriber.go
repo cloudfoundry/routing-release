@@ -71,6 +71,20 @@ func getAllowedSources(as *AllowedSources) *route.AllowedSources {
 	}
 }
 
+// getEffectiveAllowedSources returns AllowedSources from either top-level or nested in options.
+// Top-level takes precedence (used by route-registrar), nested is used by CAPI/Diego.
+func (rm *RegistryMessage) getEffectiveAllowedSources() *route.AllowedSources {
+	// Top-level allowed_sources takes precedence (route-registrar uses this)
+	if rm.AllowedSources != nil {
+		return getAllowedSources(rm.AllowedSources)
+	}
+	// Fall back to options.allowed_sources (CAPI/Diego uses this)
+	if rm.Options.AllowedSources != nil {
+		return getAllowedSources(rm.Options.AllowedSources)
+	}
+	return nil
+}
+
 func (rm *RegistryMessage) makeEndpoint(http2Enabled bool, globalRoutingAlgo string) (*route.Endpoint, error) {
 	port, useTLS, err := rm.port()
 	if err != nil {
@@ -110,7 +124,7 @@ func (rm *RegistryMessage) makeEndpoint(http2Enabled bool, globalRoutingAlgo str
 		LoadBalancingAlgorithm:  lbAlgo,
 		HashHeaderName:          rm.Options.HashHeaderName,
 		HashBalanceFactor:       rm.Options.HashBalance,
-		AllowedSources:          getAllowedSources(rm.AllowedSources),
+		AllowedSources:          rm.getEffectiveAllowedSources(),
 	}), nil
 }
 
