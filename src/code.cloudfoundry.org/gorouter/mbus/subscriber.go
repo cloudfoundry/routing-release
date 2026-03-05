@@ -58,6 +58,25 @@ type MtlsAllowedSources struct {
 	Any    bool     `json:"any,omitempty"`
 }
 
+// parseCommaSeparatedGUIDs splits a comma-separated string into a slice of GUIDs
+func parseCommaSeparatedGUIDs(s string) []string {
+	if s == "" {
+		return nil
+	}
+	parts := strings.Split(s, ",")
+	result := make([]string, 0, len(parts))
+	for _, p := range parts {
+		trimmed := strings.TrimSpace(p)
+		if trimmed != "" {
+			result = append(result, trimmed)
+		}
+	}
+	if len(result) == 0 {
+		return nil
+	}
+	return result
+}
+
 // getMtlsAllowedSources returns the MtlsAllowedSources, or nil if not present
 func getMtlsAllowedSources(as *MtlsAllowedSources) *route.MtlsAllowedSources {
 	if as == nil {
@@ -71,18 +90,30 @@ func getMtlsAllowedSources(as *MtlsAllowedSources) *route.MtlsAllowedSources {
 	}
 }
 
-// getEffectiveMtlsAllowedSources returns MtlsAllowedSources from either top-level or nested in options.
-// Top-level takes precedence (used by route-registrar), nested is used by CAPI/Diego.
+// getEffectiveMtlsAllowedSources returns MtlsAllowedSources from either top-level or flat options.
+// Top-level takes precedence (used by route-registrar), flat options are RFC-0027 compliant (used by CAPI/Diego).
 func (rm *RegistryMessage) getEffectiveMtlsAllowedSources() *route.MtlsAllowedSources {
 	// Top-level mtls_allowed_sources takes precedence (route-registrar uses this)
 	if rm.MtlsAllowedSources != nil {
 		return getMtlsAllowedSources(rm.MtlsAllowedSources)
 	}
-	// Fall back to options.mtls_allowed_sources (CAPI/Diego uses this)
-	if rm.Options.MtlsAllowedSources != nil {
-		return getMtlsAllowedSources(rm.Options.MtlsAllowedSources)
+	// Fall back to RFC-0027 compliant flat options
+	apps := parseCommaSeparatedGUIDs(rm.Options.MtlsAllowedApps)
+	spaces := parseCommaSeparatedGUIDs(rm.Options.MtlsAllowedSpaces)
+	orgs := parseCommaSeparatedGUIDs(rm.Options.MtlsAllowedOrgs)
+	allowAny := rm.Options.MtlsAllowAny
+
+	// If no mTLS options are set, return nil
+	if apps == nil && spaces == nil && orgs == nil && !allowAny {
+		return nil
 	}
-	return nil
+
+	return &route.MtlsAllowedSources{
+		Apps:   apps,
+		Spaces: spaces,
+		Orgs:   orgs,
+		Any:    allowAny,
+	}
 }
 
 func (rm *RegistryMessage) makeEndpoint(http2Enabled bool, globalRoutingAlgo string) (*route.Endpoint, error) {

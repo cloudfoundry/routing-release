@@ -100,7 +100,7 @@ var _ = Describe("RegistryMessage", func() {
 			})
 		})
 
-		Describe("With mtls_allowed_sources nested in options (CAPI/Diego format)", func() {
+		Describe("With flat mTLS options in options (RFC-0027 compliant CAPI/Diego format)", func() {
 			BeforeEach(func() {
 				payload = []byte(`{
 					"app":"app1",
@@ -111,24 +111,26 @@ var _ = Describe("RegistryMessage", func() {
 					"private_instance_id":"private_instance_id",
 					"options": {
 						"loadbalancing": "round-robin",
-						"mtls_allowed_sources": {
-							"apps": ["nested-app-guid"],
-							"any": true
-						}
+						"mtls_allowed_apps": "app-guid-1,app-guid-2",
+						"mtls_allowed_spaces": "space-guid-1",
+						"mtls_allowed_orgs": "org-guid-1",
+						"mtls_allow_any": true
 					}
 				}`)
 			})
 
-			It("parses nested mtls_allowed_sources correctly", func() {
+			It("parses flat mTLS options correctly", func() {
 				endpoint, err := message.MakeEndpoint(false)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(endpoint.MtlsAllowedSources).NotTo(BeNil())
-				Expect(endpoint.MtlsAllowedSources.Apps).To(ConsistOf("nested-app-guid"))
+				Expect(endpoint.MtlsAllowedSources.Apps).To(ConsistOf("app-guid-1", "app-guid-2"))
+				Expect(endpoint.MtlsAllowedSources.Spaces).To(ConsistOf("space-guid-1"))
+				Expect(endpoint.MtlsAllowedSources.Orgs).To(ConsistOf("org-guid-1"))
 				Expect(endpoint.MtlsAllowedSources.Any).To(BeTrue())
 			})
 		})
 
-		Describe("With mtls_allowed_sources at both top-level and nested", func() {
+		Describe("With mtls_allowed_sources at top-level and flat options", func() {
 			BeforeEach(func() {
 				payload = []byte(`{
 					"app":"app1",
@@ -141,9 +143,7 @@ var _ = Describe("RegistryMessage", func() {
 						"apps": ["top-level-app"]
 					},
 					"options": {
-						"mtls_allowed_sources": {
-							"apps": ["nested-app"]
-						}
+						"mtls_allowed_apps": "flat-options-app"
 					}
 				}`)
 			})
