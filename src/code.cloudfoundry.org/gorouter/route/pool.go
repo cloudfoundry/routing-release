@@ -608,6 +608,33 @@ func (p *EndpointPool) IsEmpty() bool {
 	return l == 0
 }
 
+// AllowedSources returns the AllowedSources from the first endpoint in the pool.
+// All endpoints in a pool should have the same AllowedSources since they are
+// instances of the same application route registered with the same authorization rules.
+func (p *EndpointPool) AllowedSources() *AllowedSources {
+	p.Lock()
+	defer p.Unlock()
+
+	if len(p.endpoints) == 0 {
+		return nil
+	}
+
+	return p.endpoints[0].endpoint.AllowedSources
+}
+
+// ApplicationId returns the ApplicationId from the first endpoint in the pool.
+// All endpoints in a pool should have the same ApplicationId.
+func (p *EndpointPool) ApplicationId() string {
+	p.Lock()
+	defer p.Unlock()
+
+	if len(p.endpoints) == 0 {
+		return ""
+	}
+
+	return p.endpoints[0].endpoint.ApplicationId
+}
+
 func (p *EndpointPool) NextIndex() int {
 	if p.NextIdx == -1 {
 		p.NextIdx = p.random.Intn(len(p.endpoints))

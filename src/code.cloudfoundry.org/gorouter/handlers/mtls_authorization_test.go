@@ -1,6 +1,7 @@
 package handlers_test
 
 import (
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 
@@ -24,6 +25,17 @@ var _ = Describe("MtlsAuthorization", func() {
 		recorder    *httptest.ResponseRecorder
 		request     *http.Request
 	)
+
+	// Helper to create a pool with an endpoint
+	createPoolWithEndpoint := func(endpoint *route.Endpoint) *route.EndpointPool {
+		pool := route.NewPool(&route.PoolOpts{
+			Host:                   "backend.apps.mtls.internal",
+			Logger:                 slog.Default(),
+			LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
+		})
+		pool.Put(endpoint)
+		return pool
+	}
 
 	BeforeEach(func() {
 		logger = test_util.NewTestLogger("mtls-authorization")
@@ -94,9 +106,9 @@ var _ = Describe("MtlsAuthorization", func() {
 			request = test_util.NewRequest("GET", "backend.apps.mtls.internal", "/", nil)
 		})
 
-		Context("when no route endpoint is set", func() {
+		Context("when no route pool is set", func() {
 			BeforeEach(func() {
-				// Don't set RouteEndpoint in RequestInfo
+				// Don't set RoutePool in RequestInfo
 			})
 
 			It("returns 404 Not Found", func() {
@@ -107,7 +119,7 @@ var _ = Describe("MtlsAuthorization", func() {
 			})
 		})
 
-		Context("when route endpoint has no allowed sources", func() {
+		Context("when route pool has no allowed sources", func() {
 			BeforeEach(func() {
 				// Create endpoint without allowed sources
 				endpoint := route.NewEndpoint(&route.EndpointOpts{
@@ -117,14 +129,16 @@ var _ = Describe("MtlsAuthorization", func() {
 					PrivateInstanceId: "backend-instance-id",
 				})
 
-				// Set up request with endpoint but no allowed sources
+				pool := createPoolWithEndpoint(endpoint)
+
+				// Set up request with pool but no allowed sources
 				reqInfoHandler := handlers.NewRequestInfo()
 				n := negroni.New()
 				n.Use(reqInfoHandler)
 				n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 					reqInfo, err := handlers.ContextRequestInfo(r)
 					Expect(err).NotTo(HaveOccurred())
-					reqInfo.RouteEndpoint = endpoint
+					reqInfo.RoutePool = pool
 					request = r
 					next(w, r)
 				})
@@ -140,7 +154,7 @@ var _ = Describe("MtlsAuthorization", func() {
 			})
 		})
 
-		Context("when route endpoint has empty allowed sources", func() {
+		Context("when route pool has empty allowed sources", func() {
 			BeforeEach(func() {
 				// Create endpoint with empty allowed sources (default deny)
 				endpoint := route.NewEndpoint(&route.EndpointOpts{
@@ -151,13 +165,15 @@ var _ = Describe("MtlsAuthorization", func() {
 					AllowedSources:    &route.AllowedSources{},
 				})
 
+				pool := createPoolWithEndpoint(endpoint)
+
 				reqInfoHandler := handlers.NewRequestInfo()
 				n := negroni.New()
 				n.Use(reqInfoHandler)
 				n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 					reqInfo, err := handlers.ContextRequestInfo(r)
 					Expect(err).NotTo(HaveOccurred())
-					reqInfo.RouteEndpoint = endpoint
+					reqInfo.RoutePool = pool
 					request = r
 					next(w, r)
 				})
@@ -173,8 +189,9 @@ var _ = Describe("MtlsAuthorization", func() {
 			})
 		})
 
-		Context("when route endpoint has allowed sources", func() {
+		Context("when route pool has allowed sources", func() {
 			var endpoint *route.Endpoint
+			var pool *route.EndpointPool
 
 			BeforeEach(func() {
 				// Create endpoint with allowed sources
@@ -187,18 +204,19 @@ var _ = Describe("MtlsAuthorization", func() {
 						Apps: []string{"allowed-app-1", "allowed-app-2"},
 					},
 				})
+				pool = createPoolWithEndpoint(endpoint)
 			})
 
 			Context("when caller identity is not set", func() {
 				BeforeEach(func() {
-					// Set up request with endpoint but no caller identity
+					// Set up request with pool but no caller identity
 					reqInfoHandler := handlers.NewRequestInfo()
 					n := negroni.New()
 					n.Use(reqInfoHandler)
 					n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 						reqInfo, err := handlers.ContextRequestInfo(r)
 						Expect(err).NotTo(HaveOccurred())
-						reqInfo.RouteEndpoint = endpoint
+						reqInfo.RoutePool = pool
 						// Don't set CallerIdentity
 						request = r
 						next(w, r)
@@ -217,14 +235,14 @@ var _ = Describe("MtlsAuthorization", func() {
 
 			Context("when caller is not in allowed sources list", func() {
 				BeforeEach(func() {
-					// Set up request with endpoint and caller identity that's not allowed
+					// Set up request with pool and caller identity that's not allowed
 					reqInfoHandler := handlers.NewRequestInfo()
 					n := negroni.New()
 					n.Use(reqInfoHandler)
 					n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 						reqInfo, err := handlers.ContextRequestInfo(r)
 						Expect(err).NotTo(HaveOccurred())
-						reqInfo.RouteEndpoint = endpoint
+						reqInfo.RoutePool = pool
 						reqInfo.CallerIdentity = &handlers.CallerIdentity{
 							AppGUID: "unauthorized-app",
 						}
@@ -245,14 +263,14 @@ var _ = Describe("MtlsAuthorization", func() {
 
 			Context("when caller is in allowed sources list", func() {
 				BeforeEach(func() {
-					// Set up request with endpoint and authorized caller identity
+					// Set up request with pool and authorized caller identity
 					reqInfoHandler := handlers.NewRequestInfo()
 					n := negroni.New()
 					n.Use(reqInfoHandler)
 					n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 						reqInfo, err := handlers.ContextRequestInfo(r)
 						Expect(err).NotTo(HaveOccurred())
-						reqInfo.RouteEndpoint = endpoint
+						reqInfo.RoutePool = pool
 						reqInfo.CallerIdentity = &handlers.CallerIdentity{
 							AppGUID: "allowed-app-2",
 						}
@@ -280,7 +298,7 @@ var _ = Describe("MtlsAuthorization", func() {
 					n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 						reqInfo, err := handlers.ContextRequestInfo(r)
 						Expect(err).NotTo(HaveOccurred())
-						reqInfo.RouteEndpoint = endpoint
+						reqInfo.RoutePool = pool
 						reqInfo.CallerIdentity = &handlers.CallerIdentity{
 							AppGUID: "allowed-app-1",
 						}
@@ -306,7 +324,7 @@ var _ = Describe("MtlsAuthorization", func() {
 				request = test_util.NewRequest("GET", "my-service.apps.mtls.internal", "/", nil)
 			})
 
-			Context("when endpoint has no allowed sources", func() {
+			Context("when pool has no allowed sources", func() {
 				BeforeEach(func() {
 					endpoint := route.NewEndpoint(&route.EndpointOpts{
 						AppId:             "backend-app-id",
@@ -315,13 +333,15 @@ var _ = Describe("MtlsAuthorization", func() {
 						PrivateInstanceId: "backend-instance-id",
 					})
 
+					pool := createPoolWithEndpoint(endpoint)
+
 					reqInfoHandler := handlers.NewRequestInfo()
 					n := negroni.New()
 					n.Use(reqInfoHandler)
 					n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 						reqInfo, err := handlers.ContextRequestInfo(r)
 						Expect(err).NotTo(HaveOccurred())
-						reqInfo.RouteEndpoint = endpoint
+						reqInfo.RoutePool = pool
 						request = r
 						next(w, r)
 					})
@@ -370,19 +390,21 @@ var _ = Describe("MtlsAuthorization", func() {
 			})
 
 			It("enforces authorization for first domain", func() {
+				endpoint := route.NewEndpoint(&route.EndpointOpts{
+					AppId:             "backend-app",
+					Host:              "192.168.1.1",
+					Port:              8080,
+					PrivateInstanceId: "instance-id",
+				})
+				pool := createPoolWithEndpoint(endpoint)
+
 				reqInfoHandler := handlers.NewRequestInfo()
 				n := negroni.New()
 				n.Use(reqInfoHandler)
 				n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 					reqInfo, err := handlers.ContextRequestInfo(r)
 					Expect(err).NotTo(HaveOccurred())
-					endpoint := route.NewEndpoint(&route.EndpointOpts{
-						AppId:             "backend-app",
-						Host:              "192.168.1.1",
-						Port:              8080,
-						PrivateInstanceId: "instance-id",
-					})
-					reqInfo.RouteEndpoint = endpoint
+					reqInfo.RoutePool = pool
 					request = r
 					next(w, r)
 				})
@@ -402,19 +424,21 @@ var _ = Describe("MtlsAuthorization", func() {
 			})
 
 			It("enforces authorization for second domain", func() {
+				endpoint := route.NewEndpoint(&route.EndpointOpts{
+					AppId:             "backend-app",
+					Host:              "192.168.1.1",
+					Port:              8080,
+					PrivateInstanceId: "instance-id",
+				})
+				pool := createPoolWithEndpoint(endpoint)
+
 				reqInfoHandler := handlers.NewRequestInfo()
 				n := negroni.New()
 				n.Use(reqInfoHandler)
 				n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 					reqInfo, err := handlers.ContextRequestInfo(r)
 					Expect(err).NotTo(HaveOccurred())
-					endpoint := route.NewEndpoint(&route.EndpointOpts{
-						AppId:             "backend-app",
-						Host:              "192.168.1.1",
-						Port:              8080,
-						PrivateInstanceId: "instance-id",
-					})
-					reqInfo.RouteEndpoint = endpoint
+					reqInfo.RoutePool = pool
 					request = r
 					next(w, r)
 				})
@@ -436,6 +460,7 @@ var _ = Describe("MtlsAuthorization", func() {
 
 		Context("when AllowedSources.Any is true", func() {
 			var endpoint *route.Endpoint
+			var pool *route.EndpointPool
 
 			BeforeEach(func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
@@ -447,6 +472,7 @@ var _ = Describe("MtlsAuthorization", func() {
 						Any: true,
 					},
 				})
+				pool = createPoolWithEndpoint(endpoint)
 			})
 
 			Context("when caller is authenticated", func() {
@@ -457,7 +483,7 @@ var _ = Describe("MtlsAuthorization", func() {
 					n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 						reqInfo, err := handlers.ContextRequestInfo(r)
 						Expect(err).NotTo(HaveOccurred())
-						reqInfo.RouteEndpoint = endpoint
+						reqInfo.RoutePool = pool
 						reqInfo.CallerIdentity = &handlers.CallerIdentity{
 							AppGUID: "random-app-guid",
 						}
@@ -484,7 +510,7 @@ var _ = Describe("MtlsAuthorization", func() {
 					n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 						reqInfo, err := handlers.ContextRequestInfo(r)
 						Expect(err).NotTo(HaveOccurred())
-						reqInfo.RouteEndpoint = endpoint
+						reqInfo.RoutePool = pool
 						// Don't set CallerIdentity
 						request = r
 						next(w, r)
@@ -513,6 +539,7 @@ var _ = Describe("MtlsAuthorization", func() {
 						Spaces: []string{"allowed-space-1", "allowed-space-2"},
 					},
 				})
+				pool := createPoolWithEndpoint(endpoint)
 
 				reqInfoHandler := handlers.NewRequestInfo()
 				n := negroni.New()
@@ -520,7 +547,7 @@ var _ = Describe("MtlsAuthorization", func() {
 				n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 					reqInfo, err := handlers.ContextRequestInfo(r)
 					Expect(err).NotTo(HaveOccurred())
-					reqInfo.RouteEndpoint = endpoint
+					reqInfo.RoutePool = pool
 					reqInfo.CallerIdentity = &handlers.CallerIdentity{
 						AppGUID:   "caller-app-guid",
 						SpaceGUID: "allowed-space-2",
@@ -551,6 +578,7 @@ var _ = Describe("MtlsAuthorization", func() {
 						Spaces: []string{"allowed-space-1", "allowed-space-2"},
 					},
 				})
+				pool := createPoolWithEndpoint(endpoint)
 
 				reqInfoHandler := handlers.NewRequestInfo()
 				n := negroni.New()
@@ -558,7 +586,7 @@ var _ = Describe("MtlsAuthorization", func() {
 				n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 					reqInfo, err := handlers.ContextRequestInfo(r)
 					Expect(err).NotTo(HaveOccurred())
-					reqInfo.RouteEndpoint = endpoint
+					reqInfo.RoutePool = pool
 					reqInfo.CallerIdentity = &handlers.CallerIdentity{
 						AppGUID:   "caller-app-guid",
 						SpaceGUID: "different-space",
@@ -589,6 +617,7 @@ var _ = Describe("MtlsAuthorization", func() {
 						Orgs: []string{"allowed-org-1", "allowed-org-2"},
 					},
 				})
+				pool := createPoolWithEndpoint(endpoint)
 
 				reqInfoHandler := handlers.NewRequestInfo()
 				n := negroni.New()
@@ -596,7 +625,7 @@ var _ = Describe("MtlsAuthorization", func() {
 				n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 					reqInfo, err := handlers.ContextRequestInfo(r)
 					Expect(err).NotTo(HaveOccurred())
-					reqInfo.RouteEndpoint = endpoint
+					reqInfo.RoutePool = pool
 					reqInfo.CallerIdentity = &handlers.CallerIdentity{
 						AppGUID: "caller-app-guid",
 						OrgGUID: "allowed-org-1",
@@ -627,6 +656,7 @@ var _ = Describe("MtlsAuthorization", func() {
 						Orgs: []string{"allowed-org-1", "allowed-org-2"},
 					},
 				})
+				pool := createPoolWithEndpoint(endpoint)
 
 				reqInfoHandler := handlers.NewRequestInfo()
 				n := negroni.New()
@@ -634,7 +664,7 @@ var _ = Describe("MtlsAuthorization", func() {
 				n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 					reqInfo, err := handlers.ContextRequestInfo(r)
 					Expect(err).NotTo(HaveOccurred())
-					reqInfo.RouteEndpoint = endpoint
+					reqInfo.RoutePool = pool
 					reqInfo.CallerIdentity = &handlers.CallerIdentity{
 						AppGUID: "caller-app-guid",
 						OrgGUID: "different-org",
@@ -668,6 +698,7 @@ var _ = Describe("MtlsAuthorization", func() {
 						Orgs:   []string{"org-1"},
 					},
 				})
+				pool := createPoolWithEndpoint(endpoint)
 
 				reqInfoHandler := handlers.NewRequestInfo()
 				n := negroni.New()
@@ -675,7 +706,7 @@ var _ = Describe("MtlsAuthorization", func() {
 				n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 					reqInfo, err := handlers.ContextRequestInfo(r)
 					Expect(err).NotTo(HaveOccurred())
-					reqInfo.RouteEndpoint = endpoint
+					reqInfo.RoutePool = pool
 					// Caller is not in the app list, but is in the allowed space
 					reqInfo.CallerIdentity = &handlers.CallerIdentity{
 						AppGUID:   "app-3",

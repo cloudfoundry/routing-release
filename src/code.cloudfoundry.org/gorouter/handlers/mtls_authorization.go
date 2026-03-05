@@ -42,29 +42,33 @@ func (h *mtlsAuthorization) ServeHTTP(w http.ResponseWriter, r *http.Request, ne
 		return
 	}
 
-	// On mTLS domains, we need a valid endpoint to check authorization
-	if reqInfo.RouteEndpoint == nil {
+	// On mTLS domains, we need a valid route pool to check authorization
+	// Note: RoutePool is set by the Lookup handler, RouteEndpoint is set later by the proxy
+	if reqInfo.RoutePool == nil || reqInfo.RoutePool.IsEmpty() {
 		h.logger.Info("mtls-authorization-denied",
 			slog.String("host", r.Host),
-			slog.String("reason", "no-endpoint"))
+			slog.String("reason", "no-route-pool"))
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	endpoint := reqInfo.RouteEndpoint
+	pool := reqInfo.RoutePool
+	applicationId := pool.ApplicationId()
 
-	// If endpoint has no allowed sources, deny by default on mTLS domains
+	// Get AllowedSources from the pool
+	// All endpoints in a pool have the same AllowedSources
+	allowedSources := pool.AllowedSources()
+
+	// If pool has no allowed sources, deny by default on mTLS domains
 	// Per RFC: if Any is not set and no Apps/Spaces/Orgs are specified, default-deny
-	if endpoint.AllowedSources == nil {
+	if allowedSources == nil {
 		h.logger.Info("mtls-authorization-denied",
 			slog.String("host", r.Host),
-			slog.String("endpoint-app", endpoint.ApplicationId),
+			slog.String("endpoint-app", applicationId),
 			slog.String("reason", "no-allowed-sources"))
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
-
-	allowedSources := endpoint.AllowedSources
 
 	// If Any is true, allow any authenticated app
 	if allowedSources.Any {
@@ -72,7 +76,7 @@ func (h *mtlsAuthorization) ServeHTTP(w http.ResponseWriter, r *http.Request, ne
 		if reqInfo.CallerIdentity == nil {
 			h.logger.Info("mtls-authorization-denied",
 				slog.String("host", r.Host),
-				slog.String("endpoint-app", endpoint.ApplicationId),
+				slog.String("endpoint-app", applicationId),
 				slog.String("reason", "no-caller-identity"))
 			w.WriteHeader(http.StatusUnauthorized)
 			return
@@ -81,7 +85,7 @@ func (h *mtlsAuthorization) ServeHTTP(w http.ResponseWriter, r *http.Request, ne
 		// Any authenticated app is allowed
 		h.logger.Debug("mtls-authorization-granted",
 			slog.String("host", r.Host),
-			slog.String("endpoint-app", endpoint.ApplicationId),
+			slog.String("endpoint-app", applicationId),
 			slog.String("caller-app", reqInfo.CallerIdentity.AppGUID),
 			slog.String("reason", "any-authenticated-app"))
 		next(w, r)
@@ -93,7 +97,7 @@ func (h *mtlsAuthorization) ServeHTTP(w http.ResponseWriter, r *http.Request, ne
 	if len(allowedSources.Apps) == 0 && len(allowedSources.Spaces) == 0 && len(allowedSources.Orgs) == 0 {
 		h.logger.Info("mtls-authorization-denied",
 			slog.String("host", r.Host),
-			slog.String("endpoint-app", endpoint.ApplicationId),
+			slog.String("endpoint-app", applicationId),
 			slog.String("reason", "empty-allowed-sources"))
 		w.WriteHeader(http.StatusForbidden)
 		return
@@ -103,7 +107,7 @@ func (h *mtlsAuthorization) ServeHTTP(w http.ResponseWriter, r *http.Request, ne
 	if reqInfo.CallerIdentity == nil {
 		h.logger.Info("mtls-authorization-denied",
 			slog.String("host", r.Host),
-			slog.String("endpoint-app", endpoint.ApplicationId),
+			slog.String("endpoint-app", applicationId),
 			slog.String("reason", "no-caller-identity"))
 		w.WriteHeader(http.StatusUnauthorized)
 		return
@@ -115,7 +119,7 @@ func (h *mtlsAuthorization) ServeHTTP(w http.ResponseWriter, r *http.Request, ne
 	if slices.Contains(allowedSources.Apps, identity.AppGUID) {
 		h.logger.Debug("mtls-authorization-granted",
 			slog.String("host", r.Host),
-			slog.String("endpoint-app", endpoint.ApplicationId),
+			slog.String("endpoint-app", applicationId),
 			slog.String("caller-app", identity.AppGUID),
 			slog.String("reason", "app-in-allowed-list"))
 		next(w, r)
@@ -126,7 +130,7 @@ func (h *mtlsAuthorization) ServeHTTP(w http.ResponseWriter, r *http.Request, ne
 	if identity.SpaceGUID != "" && slices.Contains(allowedSources.Spaces, identity.SpaceGUID) {
 		h.logger.Debug("mtls-authorization-granted",
 			slog.String("host", r.Host),
-			slog.String("endpoint-app", endpoint.ApplicationId),
+			slog.String("endpoint-app", applicationId),
 			slog.String("caller-app", identity.AppGUID),
 			slog.String("caller-space", identity.SpaceGUID),
 			slog.String("reason", "space-in-allowed-list"))
@@ -138,7 +142,7 @@ func (h *mtlsAuthorization) ServeHTTP(w http.ResponseWriter, r *http.Request, ne
 	if identity.OrgGUID != "" && slices.Contains(allowedSources.Orgs, identity.OrgGUID) {
 		h.logger.Debug("mtls-authorization-granted",
 			slog.String("host", r.Host),
-			slog.String("endpoint-app", endpoint.ApplicationId),
+			slog.String("endpoint-app", applicationId),
 			slog.String("caller-app", identity.AppGUID),
 			slog.String("caller-org", identity.OrgGUID),
 			slog.String("reason", "org-in-allowed-list"))
@@ -149,7 +153,7 @@ func (h *mtlsAuthorization) ServeHTTP(w http.ResponseWriter, r *http.Request, ne
 	// Caller not authorized
 	h.logger.Info("mtls-authorization-denied",
 		slog.String("host", r.Host),
-		slog.String("endpoint-app", endpoint.ApplicationId),
+		slog.String("endpoint-app", applicationId),
 		slog.String("caller-app", identity.AppGUID),
 		slog.String("caller-space", identity.SpaceGUID),
 		slog.String("caller-org", identity.OrgGUID),
