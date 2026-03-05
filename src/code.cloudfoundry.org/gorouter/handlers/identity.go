@@ -59,18 +59,31 @@ func (h *identityHandler) ServeHTTP(w http.ResponseWriter, r *http.Request, next
 // OU (Organizational Unit) field.
 //
 // Supported XFCC formats:
-// 1. GoRouter format: raw base64 (no PEM markers) - produced by clientcert.go sanitize()
-// 2. Envoy format: Cert="<PEM-encoded-cert>" - for compatibility
+// 1. Envoy compact format: Hash=<sha256>;Subject="<DN>" - parse OUs from Subject string
+// 2. Envoy format with cert: Cert="<PEM-encoded-cert>"
+// 3. GoRouter format: raw base64 (no PEM markers) - produced by clientcert.go sanitize()
 //
-// Expected cert OU formats:
+// Expected OU formats:
 // - "app:<app-guid>"
 // - "space:<space-guid>"
 // - "organization:<org-guid>"
 func extractIdentityFromXFCC(xfcc string) (*CallerIdentity, error) {
+	// Try Envoy compact format first: Subject="<DN>"
+	// This is the most efficient format since we don't need to decode a certificate
+	if subjectStart := strings.Index(xfcc, "Subject=\""); subjectStart != -1 {
+		subjectStart += len("Subject=\"")
+		subjectEnd := strings.Index(xfcc[subjectStart:], "\"")
+		if subjectEnd == -1 {
+			return nil, errors.New("malformed Subject field in XFCC header")
+		}
+		subjectDN := xfcc[subjectStart : subjectStart+subjectEnd]
+		return extractIdentityFromSubjectDN(subjectDN)
+	}
+
+	// Try Envoy format with cert: Cert="<PEM>"
 	var certDER []byte
 	var err error
 
-	// Try Envoy format first: Cert="<PEM>"
 	if certStart := strings.Index(xfcc, "Cert=\""); certStart != -1 {
 		certStart += len("Cert=\"")
 		certEnd := strings.Index(xfcc[certStart:], "\"")
@@ -100,7 +113,64 @@ func extractIdentityFromXFCC(xfcc string) (*CallerIdentity, error) {
 		return nil, err
 	}
 
-	// Extract GUIDs from OU fields
+	return extractIdentityFromCert(cert)
+}
+
+// extractIdentityFromSubjectDN parses a Subject DN string and extracts GUIDs
+// DN format: "CN=instance-id,OU=app:guid,OU=space:guid,OU=organization:guid"
+func extractIdentityFromSubjectDN(subjectDN string) (*CallerIdentity, error) {
+	identity := &CallerIdentity{}
+
+	// Split DN into RDNs (Relative Distinguished Names)
+	// Handle both comma and slash separators
+	var rdns []string
+	if strings.Contains(subjectDN, ",") {
+		rdns = strings.Split(subjectDN, ",")
+	} else if strings.Contains(subjectDN, "/") {
+		// Some formats use "/" as separator
+		rdns = strings.Split(subjectDN, "/")
+	} else {
+		return nil, errors.New("unrecognized DN format")
+	}
+
+	for _, rdn := range rdns {
+		rdn = strings.TrimSpace(rdn)
+		if rdn == "" {
+			continue
+		}
+
+		// Parse OU fields
+		if strings.HasPrefix(rdn, "OU=") {
+			ouValue := strings.TrimPrefix(rdn, "OU=")
+			if strings.HasPrefix(ouValue, "app:") {
+				appGUID := strings.TrimPrefix(ouValue, "app:")
+				if appGUID != "" {
+					identity.AppGUID = appGUID
+				}
+			} else if strings.HasPrefix(ouValue, "space:") {
+				spaceGUID := strings.TrimPrefix(ouValue, "space:")
+				if spaceGUID != "" {
+					identity.SpaceGUID = spaceGUID
+				}
+			} else if strings.HasPrefix(ouValue, "organization:") {
+				orgGUID := strings.TrimPrefix(ouValue, "organization:")
+				if orgGUID != "" {
+					identity.OrgGUID = orgGUID
+				}
+			}
+		}
+	}
+
+	// At minimum, require app GUID to be present
+	if identity.AppGUID == "" {
+		return nil, errors.New("no app GUID found in Subject DN")
+	}
+
+	return identity, nil
+}
+
+// extractIdentityFromCert extracts GUIDs from an X.509 certificate's OU fields
+func extractIdentityFromCert(cert *x509.Certificate) (*CallerIdentity, error) {
 	identity := &CallerIdentity{}
 	for _, ou := range cert.Subject.OrganizationalUnit {
 		if strings.HasPrefix(ou, "app:") {

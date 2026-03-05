@@ -211,3 +211,201 @@ func sanitize(cert []byte) string {
 		"\n", "")
 	return r.Replace(s)
 }
+
+var _ = Describe("Clientcert mTLS Domain XFCC Format", func() {
+	var (
+		dontForceDeleteHeader = func(req *http.Request) (bool, error) { return false, nil }
+		dontSkipSanitization  = func(req *http.Request) bool { return false }
+		errorWriter           = errorwriter.NewPlaintextErrorWriter()
+		logger                *test_util.TestLogger
+	)
+
+	Describe("Envoy XFCC Format", func() {
+		It("uses Envoy format when configured for mTLS domain", func() {
+			logger = test_util.NewTestLogger("test")
+
+			// Create instance identity cert with Diego format OUs
+			certChain := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+				CommonName: "instance-id-123",
+				AppGUID:    "app-guid-456",
+				SpaceGUID:  "space-guid-789",
+				OrgGUID:    "org-guid-abc",
+			})
+
+			// Configure mTLS domain with Envoy format
+			cfg, err := config.DefaultConfig()
+			Expect(err).NotTo(HaveOccurred())
+
+			cfg.MtlsDomains = []config.MtlsDomainConfig{{
+				Domain:              "*.apps.mtls.internal",
+				CACerts:             string(certChain.CACertPEM),
+				ForwardedClientCert: config.SANITIZE_SET,
+				XFCCFormat:          config.XFCC_FORMAT_ENVOY,
+			}}
+			err = cfg.Process()
+			Expect(err).NotTo(HaveOccurred())
+
+			clientCertHandler := handlers.NewClientCert(dontSkipSanitization, dontForceDeleteHeader, config.SANITIZE_SET, cfg, logger.Logger, errorWriter)
+
+			var capturedXFCC string
+			nextHandler := http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
+				capturedXFCC = r.Header.Get("X-Forwarded-Client-Cert")
+			})
+
+			n := negroni.New()
+			n.Use(clientCertHandler)
+			n.UseHandlerFunc(nextHandler)
+
+			// Setup mTLS test server
+			tlsCert, err := tls.X509KeyPair(certChain.CertPEM, certChain.PrivKeyPEM)
+			Expect(err).ToNot(HaveOccurred())
+
+			certPool := x509.NewCertPool()
+			certPool.AddCert(certChain.CACert)
+
+			serverTLSConfig := &tls.Config{
+				Certificates: []tls.Certificate{tlsCert},
+				ClientCAs:    certPool,
+				ClientAuth:   tls.RequestClientCert,
+			}
+
+			server := httptest.NewUnstartedServer(n)
+			server.TLS = serverTLSConfig
+			server.StartTLS()
+			defer server.Close()
+
+			// Create client with mTLS cert
+			clientTLSConfig := &tls.Config{
+				Certificates:       []tls.Certificate{tlsCert},
+				RootCAs:            certPool,
+				InsecureSkipVerify: true, // Test server uses 127.0.0.1 which isn't in cert SANs
+			}
+
+			transport := &http.Transport{TLSClientConfig: clientTLSConfig}
+			client := &http.Client{Transport: transport}
+
+			// Make request to mTLS domain
+			req, err := http.NewRequest("GET", server.URL, nil)
+			Expect(err).NotTo(HaveOccurred())
+			req.Host = "myapp.apps.mtls.internal"
+
+			_, err = client.Do(req)
+			Expect(err).ToNot(HaveOccurred())
+
+			// Verify Envoy format: Hash=<sha256>;Subject="<DN>"
+			Expect(capturedXFCC).To(HavePrefix("Hash="))
+			Expect(capturedXFCC).To(ContainSubstring(";Subject=\""))
+
+			// Verify Subject contains OUs
+			Expect(capturedXFCC).To(ContainSubstring("OU=app:app-guid-456"))
+			Expect(capturedXFCC).To(ContainSubstring("OU=space:space-guid-789"))
+			Expect(capturedXFCC).To(ContainSubstring("OU=organization:org-guid-abc"))
+			Expect(capturedXFCC).To(ContainSubstring("CN=instance-id-123"))
+
+			// Verify it doesn't contain base64-encoded cert (which would be much longer)
+			Expect(len(capturedXFCC)).To(BeNumerically("<", 500)) // Envoy format is ~300 bytes
+		})
+
+		It("uses raw format when configured for mTLS domain", func() {
+			logger = test_util.NewTestLogger("test")
+
+			// Create instance identity cert
+			certChain := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+				CommonName: "instance-id-123",
+				AppGUID:    "app-guid-456",
+			})
+
+			// Configure mTLS domain with raw format (default)
+			cfg, err := config.DefaultConfig()
+			Expect(err).NotTo(HaveOccurred())
+
+			cfg.MtlsDomains = []config.MtlsDomainConfig{{
+				Domain:              "*.apps.mtls.internal",
+				CACerts:             string(certChain.CACertPEM),
+				ForwardedClientCert: config.SANITIZE_SET,
+				XFCCFormat:          config.XFCC_FORMAT_RAW,
+			}}
+			err = cfg.Process()
+			Expect(err).NotTo(HaveOccurred())
+
+			clientCertHandler := handlers.NewClientCert(dontSkipSanitization, dontForceDeleteHeader, config.SANITIZE_SET, cfg, logger.Logger, errorWriter)
+
+			var capturedXFCC string
+			nextHandler := http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
+				capturedXFCC = r.Header.Get("X-Forwarded-Client-Cert")
+			})
+
+			n := negroni.New()
+			n.Use(clientCertHandler)
+			n.UseHandlerFunc(nextHandler)
+
+			// Setup mTLS test server
+			tlsCert, err := tls.X509KeyPair(certChain.CertPEM, certChain.PrivKeyPEM)
+			Expect(err).ToNot(HaveOccurred())
+
+			certPool := x509.NewCertPool()
+			certPool.AddCert(certChain.CACert)
+
+			serverTLSConfig := &tls.Config{
+				Certificates: []tls.Certificate{tlsCert},
+				ClientCAs:    certPool,
+				ClientAuth:   tls.RequestClientCert,
+			}
+
+			server := httptest.NewUnstartedServer(n)
+			server.TLS = serverTLSConfig
+			server.StartTLS()
+			defer server.Close()
+
+			// Create client with mTLS cert
+			clientTLSConfig := &tls.Config{
+				Certificates:       []tls.Certificate{tlsCert},
+				RootCAs:            certPool,
+				InsecureSkipVerify: true, // Test server uses 127.0.0.1 which isn't in cert SANs
+			}
+
+			transport := &http.Transport{TLSClientConfig: clientTLSConfig}
+			client := &http.Client{Transport: transport}
+
+			// Make request to mTLS domain
+			req, err := http.NewRequest("GET", server.URL, nil)
+			Expect(err).NotTo(HaveOccurred())
+			req.Host = "myapp.apps.mtls.internal"
+
+			_, err = client.Do(req)
+			Expect(err).ToNot(HaveOccurred())
+
+			// Verify raw format: base64-encoded certificate (no "Hash=" or "Subject=")
+			Expect(capturedXFCC).NotTo(HavePrefix("Hash="))
+			Expect(capturedXFCC).NotTo(ContainSubstring("Subject="))
+
+			// Raw format is base64-encoded cert, much larger
+			Expect(len(capturedXFCC)).To(BeNumerically(">", 1000))
+		})
+
+		It("defaults to raw format when xfcc_format is not specified", func() {
+			logger = test_util.NewTestLogger("test")
+
+			certChain := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+				CommonName: "instance-id-123",
+				AppGUID:    "app-guid-456",
+			})
+
+			// Configure mTLS domain without xfcc_format
+			cfg, err := config.DefaultConfig()
+			Expect(err).NotTo(HaveOccurred())
+
+			cfg.MtlsDomains = []config.MtlsDomainConfig{{
+				Domain:              "*.apps.mtls.internal",
+				CACerts:             string(certChain.CACertPEM),
+				ForwardedClientCert: config.SANITIZE_SET,
+				// XFCCFormat not set - should default to "raw"
+			}}
+			err = cfg.Process()
+			Expect(err).NotTo(HaveOccurred())
+
+			// After Process(), XFCCFormat should be set to "raw"
+			Expect(cfg.MtlsDomains[0].XFCCFormat).To(Equal(config.XFCC_FORMAT_RAW))
+		})
+	})
+})

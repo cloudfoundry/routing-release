@@ -412,3 +412,146 @@ func buildXFCCHeader(certPEM string) string {
 func buildGoRouterXFCCHeader(cert *x509.Certificate) string {
 	return base64.StdEncoding.EncodeToString(cert.Raw)
 }
+
+var _ = Describe("Identity with Envoy Subject DN format", func() {
+	var (
+		handler     negroni.Handler
+		nextCalled  bool
+		recorder    *httptest.ResponseRecorder
+		request     *http.Request
+		requestInfo *handlers.RequestInfo
+	)
+
+	BeforeEach(func() {
+		handler = handlers.NewIdentity()
+		nextCalled = false
+		recorder = httptest.NewRecorder()
+
+		request = test_util.NewRequest("GET", "backend.apps.mtls.internal", "/", nil)
+	})
+
+	var runHandler = func() {
+		// Add RequestInfo to context
+		reqInfoHandler := handlers.NewRequestInfo()
+		n := negroni.New()
+		n.Use(reqInfoHandler)
+		n.Use(handler)
+		n.UseHandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			nextCalled = true
+			request = r
+			// Capture RequestInfo for assertions
+			var err error
+			requestInfo, err = handlers.ContextRequestInfo(r)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		n.ServeHTTP(recorder, request)
+	}
+
+	Context("when XFCC header is in Envoy compact format with Subject DN", func() {
+		Context("with comma-separated DN format", func() {
+			BeforeEach(func() {
+				// Envoy format: Hash=<sha256>;Subject="<DN>"
+				xfccHeader := `Hash=abc123;Subject="CN=instance-id,OU=app:envoy-app-guid,OU=space:envoy-space-guid,OU=organization:envoy-org-guid"`
+				request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+			})
+
+			It("extracts all GUIDs from Subject DN", func() {
+				runHandler()
+				Expect(nextCalled).To(BeTrue())
+				Expect(requestInfo.CallerIdentity).NotTo(BeNil())
+				Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("envoy-app-guid"))
+				Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal("envoy-space-guid"))
+				Expect(requestInfo.CallerIdentity.OrgGUID).To(Equal("envoy-org-guid"))
+			})
+		})
+
+		Context("with slash-separated DN format", func() {
+			BeforeEach(func() {
+				// Some systems use slash-separated format
+				xfccHeader := `Hash=abc123;Subject="/CN=instance-id/OU=app:slash-app-guid/OU=space:slash-space-guid/OU=organization:slash-org-guid"`
+				request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+			})
+
+			It("extracts all GUIDs from Subject DN", func() {
+				runHandler()
+				Expect(nextCalled).To(BeTrue())
+				Expect(requestInfo.CallerIdentity).NotTo(BeNil())
+				Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("slash-app-guid"))
+				Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal("slash-space-guid"))
+				Expect(requestInfo.CallerIdentity.OrgGUID).To(Equal("slash-org-guid"))
+			})
+		})
+
+		Context("with only app GUID in Subject", func() {
+			BeforeEach(func() {
+				xfccHeader := `Hash=def456;Subject="CN=instance,OU=app:only-app-guid"`
+				request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+			})
+
+			It("extracts app GUID", func() {
+				runHandler()
+				Expect(nextCalled).To(BeTrue())
+				Expect(requestInfo.CallerIdentity).NotTo(BeNil())
+				Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("only-app-guid"))
+				Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal(""))
+				Expect(requestInfo.CallerIdentity.OrgGUID).To(Equal(""))
+			})
+		})
+
+		Context("with Subject but no app GUID", func() {
+			BeforeEach(func() {
+				xfccHeader := `Hash=ghi789;Subject="CN=instance,OU=space:some-space,OU=organization:some-org"`
+				request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+			})
+
+			It("does not set caller identity (app GUID required)", func() {
+				runHandler()
+				Expect(nextCalled).To(BeTrue())
+				Expect(requestInfo.CallerIdentity).To(BeNil())
+			})
+		})
+
+		Context("with malformed Subject field", func() {
+			BeforeEach(func() {
+				// Missing closing quote
+				xfccHeader := `Hash=jkl012;Subject="CN=instance,OU=app:test-app`
+				request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+			})
+
+			It("does not set caller identity", func() {
+				runHandler()
+				Expect(nextCalled).To(BeTrue())
+				Expect(requestInfo.CallerIdentity).To(BeNil())
+			})
+		})
+
+		Context("with empty Subject", func() {
+			BeforeEach(func() {
+				xfccHeader := `Hash=mno345;Subject=""`
+				request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+			})
+
+			It("does not set caller identity", func() {
+				runHandler()
+				Expect(nextCalled).To(BeTrue())
+				Expect(requestInfo.CallerIdentity).To(BeNil())
+			})
+		})
+
+		Context("with Subject containing extra whitespace", func() {
+			BeforeEach(func() {
+				xfccHeader := `Hash=pqr678;Subject="CN=instance, OU=app:whitespace-app-guid, OU=space:whitespace-space-guid"`
+				request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+			})
+
+			It("trims whitespace and extracts GUIDs", func() {
+				runHandler()
+				Expect(nextCalled).To(BeTrue())
+				Expect(requestInfo.CallerIdentity).NotTo(BeNil())
+				Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("whitespace-app-guid"))
+				Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal("whitespace-space-guid"))
+			})
+		})
+	})
+})

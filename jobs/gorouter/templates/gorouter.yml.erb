@@ -538,6 +538,15 @@ if_p('router.mtls_domains') do |mtls_domains|
       processed_entry['forwarded_client_cert'] = mode
     end
 
+    if domain_config.key?('xfcc_format') && !domain_config['xfcc_format'].nil?
+      valid_formats = ['raw', 'envoy']
+      format = domain_config['xfcc_format']
+      unless valid_formats.include?(format)
+        raise "Invalid xfcc_format '#{format}' for domain '#{domain_config['domain']}'. Must be one of: #{valid_formats.join(', ')}"
+      end
+      processed_entry['xfcc_format'] = format
+    end
+
     processed_domains << processed_entry
   end
 

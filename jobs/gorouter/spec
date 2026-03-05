@@ -202,9 +202,13 @@ properties:
     default: false
   router.mtls_domains:
     description: |
-      Array of domains requiring mutual TLS authentication. Each domain can have its own CA certificate pool and forwarded_client_cert mode.
+      Array of domains requiring mutual TLS authentication. Each domain can have its own CA certificate pool, forwarded_client_cert mode, and xfcc_format.
       For non-wildcard domains, the domain must match the request host exactly.
       For wildcard domains (e.g., *.apps.mtls.internal), the wildcard must be the leftmost label and matches any single label.
+      
+      xfcc_format controls the format of the X-Forwarded-Client-Cert header:
+      - "raw" (default): Full base64-encoded certificate (~1.5KB)
+      - "envoy": Compact Hash=<sha256>;Subject="<DN>" format (~300 bytes)
     default: []
     example:
     - domain: "*.apps.mtls.internal"
@@ -213,12 +217,14 @@ properties:
         <CA certificate for apps.mtls.internal domain>
         -----END CERTIFICATE-----
       forwarded_client_cert: sanitize_set
+      xfcc_format: envoy
     - domain: "secure.example.com"
       ca_certs: |
         -----BEGIN CERTIFICATE-----
         <CA certificate for secure.example.com>
         -----END CERTIFICATE-----
       forwarded_client_cert: forward
+      xfcc_format: raw
   router.backends.max_attempts:
     description: |
       Maximum number of attempts on failing requests against backend routes.

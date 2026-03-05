@@ -36,6 +36,10 @@ const (
 	REDACT_QUERY_PARMS_NONE   string = "none"
 	REDACT_QUERY_PARMS_ALL    string = "all"
 	REDACT_QUERY_PARMS_HASH   string = "hash"
+
+	// XFCC format constants for mTLS domains
+	XFCC_FORMAT_RAW   string = "raw"   // Full base64-encoded certificate
+	XFCC_FORMAT_ENVOY string = "envoy" // Hash=<sha256>;Subject="<DN>" format
 )
 
 var (
@@ -45,6 +49,7 @@ var (
 	AllowedShardingModes            = []string{SHARD_ALL, SHARD_SEGMENTS, SHARD_SHARED_AND_SEGMENTS}
 	AllowedForwardedClientCertModes = []string{ALWAYS_FORWARD, FORWARD, SANITIZE_SET}
 	AllowedQueryParmRedactionModes  = []string{REDACT_QUERY_PARMS_NONE, REDACT_QUERY_PARMS_ALL, REDACT_QUERY_PARMS_HASH}
+	AllowedXFCCFormats              = []string{XFCC_FORMAT_RAW, XFCC_FORMAT_ENVOY}
 )
 
 type StringSet map[string]struct{}
@@ -374,6 +379,7 @@ type MtlsDomainConfig struct {
 	CAPool              *x509.CertPool `yaml:"-"`
 	CACerts             string         `yaml:"ca_certs"`
 	ForwardedClientCert string         `yaml:"forwarded_client_cert"`
+	XFCCFormat          string         `yaml:"xfcc_format"` // "raw" (default) or "envoy"
 	// Computed fields
 	RequireClientCert bool `yaml:"-"` // Always true for mTLS domains
 }
@@ -936,6 +942,15 @@ func (c *Config) processMtlsDomains() error {
 		if !slices.Contains(AllowedForwardedClientCertModes, domain.ForwardedClientCert) {
 			return fmt.Errorf("mtls_domains[%d].forwarded_client_cert must be one of %v",
 				i, AllowedForwardedClientCertModes)
+		}
+
+		// Validate xfcc_format
+		if domain.XFCCFormat == "" {
+			domain.XFCCFormat = XFCC_FORMAT_RAW // Default to raw for backwards compatibility
+		}
+		if !slices.Contains(AllowedXFCCFormats, domain.XFCCFormat) {
+			return fmt.Errorf("mtls_domains[%d].xfcc_format must be one of %v",
+				i, AllowedXFCCFormats)
 		}
 
 		// Build CA pool for this domain
