@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/pem"
 	"errors"
 	"net/http"
@@ -57,35 +58,44 @@ func (h *identityHandler) ServeHTTP(w http.ResponseWriter, r *http.Request, next
 // the application, space, and organization GUIDs from the client certificate's
 // OU (Organizational Unit) field.
 //
-// Expected XFCC format: Cert="<PEM-encoded-cert>"
+// Supported XFCC formats:
+// 1. GoRouter format: raw base64 (no PEM markers) - produced by clientcert.go sanitize()
+// 2. Envoy format: Cert="<PEM-encoded-cert>" - for compatibility
+//
 // Expected cert OU formats:
 // - "app:<app-guid>"
 // - "space:<space-guid>"
 // - "organization:<org-guid>"
 func extractIdentityFromXFCC(xfcc string) (*CallerIdentity, error) {
-	// Parse XFCC header to extract PEM certificate
-	// Format: Cert="<PEM>"
-	certStart := strings.Index(xfcc, "Cert=\"")
-	if certStart == -1 {
-		return nil, errors.New("no Cert field in XFCC header")
-	}
+	var certDER []byte
+	var err error
 
-	certStart += len("Cert=\"")
-	certEnd := strings.Index(xfcc[certStart:], "\"")
-	if certEnd == -1 {
-		return nil, errors.New("malformed Cert field in XFCC header")
-	}
+	// Try Envoy format first: Cert="<PEM>"
+	if certStart := strings.Index(xfcc, "Cert=\""); certStart != -1 {
+		certStart += len("Cert=\"")
+		certEnd := strings.Index(xfcc[certStart:], "\"")
+		if certEnd == -1 {
+			return nil, errors.New("malformed Cert field in XFCC header")
+		}
+		pemData := xfcc[certStart : certStart+certEnd]
 
-	pemData := xfcc[certStart : certStart+certEnd]
-
-	// Decode PEM block
-	block, _ := pem.Decode([]byte(pemData))
-	if block == nil {
-		return nil, errors.New("failed to decode PEM certificate")
+		// Decode PEM block
+		block, _ := pem.Decode([]byte(pemData))
+		if block == nil {
+			return nil, errors.New("failed to decode PEM certificate")
+		}
+		certDER = block.Bytes
+	} else {
+		// GoRouter format: raw base64 without PEM markers
+		// The clientcert.go sanitize() function strips PEM markers and newlines
+		certDER, err = base64.StdEncoding.DecodeString(strings.TrimSpace(xfcc))
+		if err != nil {
+			return nil, errors.New("failed to decode base64 certificate: " + err.Error())
+		}
 	}
 
 	// Parse X.509 certificate
-	cert, err := x509.ParseCertificate(block.Bytes)
+	cert, err := x509.ParseCertificate(certDER)
 	if err != nil {
 		return nil, err
 	}

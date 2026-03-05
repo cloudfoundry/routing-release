@@ -5,6 +5,7 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"crypto/x509/pkix"
+	"encoding/base64"
 	"encoding/pem"
 	"math/big"
 	"net/http"
@@ -92,6 +93,21 @@ var _ = Describe("Identity", func() {
 					Expect(nextCalled).To(BeTrue())
 					Expect(requestInfo.CallerIdentity).NotTo(BeNil())
 					Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("test-app-guid-123"))
+				})
+			})
+
+			Context("with valid cert in GoRouter format (raw base64)", func() {
+				BeforeEach(func() {
+					cert := generateTestCert("app:gorouter-format-app-guid")
+					xfccHeader := buildGoRouterXFCCHeader(cert)
+					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+				})
+
+				It("extracts caller identity with app GUID", func() {
+					runHandler()
+					Expect(nextCalled).To(BeTrue())
+					Expect(requestInfo.CallerIdentity).NotTo(BeNil())
+					Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("gorouter-format-app-guid"))
 				})
 			})
 
@@ -389,4 +405,10 @@ func encodeCertToPEM(cert *x509.Certificate) string {
 func buildXFCCHeader(certPEM string) string {
 	// XFCC header format: Cert="<PEM-with-newlines>"
 	return "Cert=\"" + certPEM + "\""
+}
+
+// buildGoRouterXFCCHeader produces the format that GoRouter's clientcert.go uses:
+// raw base64 without PEM markers (produced by sanitize() function)
+func buildGoRouterXFCCHeader(cert *x509.Certificate) string {
+	return base64.StdEncoding.EncodeToString(cert.Raw)
 }
