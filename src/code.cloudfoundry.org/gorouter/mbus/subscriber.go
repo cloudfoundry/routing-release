@@ -38,7 +38,7 @@ type RegistryMessage struct {
 	Tags                    map[string]string   `json:"tags"`
 	Uris                    []route.Uri         `json:"uris"`
 	Options                 RegistryMessageOpts `json:"options"`
-	AllowedSources          *AllowedSources     `json:"allowed_sources,omitempty"`
+	MtlsAllowedSources      *MtlsAllowedSources `json:"mtls_allowed_sources,omitempty"`
 }
 
 type RegistryMessageOpts struct {
@@ -47,23 +47,23 @@ type RegistryMessageOpts struct {
 	HashBalance            float64 `json:"hash_balance,string"`
 }
 
-// AllowedSources contains authorization rules for which sources can communicate
+// MtlsAllowedSources contains authorization rules for which sources can communicate
 // with this endpoint on mTLS domains. Per RFC specification:
 // - If Any is true, any authenticated app is allowed (mutually exclusive with Apps/Spaces/Orgs)
 // - If Any is false, at least one of Apps/Spaces/Orgs must be specified (default-deny)
-type AllowedSources struct {
+type MtlsAllowedSources struct {
 	Apps   []string `json:"apps,omitempty"`
 	Spaces []string `json:"spaces,omitempty"`
 	Orgs   []string `json:"orgs,omitempty"`
 	Any    bool     `json:"any,omitempty"`
 }
 
-// getAllowedSources returns the AllowedSources, or nil if not present
-func getAllowedSources(as *AllowedSources) *route.AllowedSources {
+// getMtlsAllowedSources returns the MtlsAllowedSources, or nil if not present
+func getMtlsAllowedSources(as *MtlsAllowedSources) *route.MtlsAllowedSources {
 	if as == nil {
 		return nil
 	}
-	return &route.AllowedSources{
+	return &route.MtlsAllowedSources{
 		Apps:   as.Apps,
 		Spaces: as.Spaces,
 		Orgs:   as.Orgs,
@@ -71,16 +71,16 @@ func getAllowedSources(as *AllowedSources) *route.AllowedSources {
 	}
 }
 
-// getEffectiveAllowedSources returns AllowedSources from either top-level or nested in options.
+// getEffectiveMtlsAllowedSources returns MtlsAllowedSources from either top-level or nested in options.
 // Top-level takes precedence (used by route-registrar), nested is used by CAPI/Diego.
-func (rm *RegistryMessage) getEffectiveAllowedSources() *route.AllowedSources {
-	// Top-level allowed_sources takes precedence (route-registrar uses this)
-	if rm.AllowedSources != nil {
-		return getAllowedSources(rm.AllowedSources)
+func (rm *RegistryMessage) getEffectiveMtlsAllowedSources() *route.MtlsAllowedSources {
+	// Top-level mtls_allowed_sources takes precedence (route-registrar uses this)
+	if rm.MtlsAllowedSources != nil {
+		return getMtlsAllowedSources(rm.MtlsAllowedSources)
 	}
-	// Fall back to options.allowed_sources (CAPI/Diego uses this)
-	if rm.Options.AllowedSources != nil {
-		return getAllowedSources(rm.Options.AllowedSources)
+	// Fall back to options.mtls_allowed_sources (CAPI/Diego uses this)
+	if rm.Options.MtlsAllowedSources != nil {
+		return getMtlsAllowedSources(rm.Options.MtlsAllowedSources)
 	}
 	return nil
 }
@@ -124,7 +124,7 @@ func (rm *RegistryMessage) makeEndpoint(http2Enabled bool, globalRoutingAlgo str
 		LoadBalancingAlgorithm:  lbAlgo,
 		HashHeaderName:          rm.Options.HashHeaderName,
 		HashBalanceFactor:       rm.Options.HashBalance,
-		AllowedSources:          rm.getEffectiveAllowedSources(),
+		MtlsAllowedSources:      rm.getEffectiveMtlsAllowedSources(),
 	}), nil
 }
 

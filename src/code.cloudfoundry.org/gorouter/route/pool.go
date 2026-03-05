@@ -63,19 +63,19 @@ type Stats struct {
 	NumberConnections *Counter
 }
 
-// AllowedSources contains authorization rules for which sources can communicate
+// MtlsAllowedSources contains authorization rules for which sources can communicate
 // with this endpoint on mTLS domains. Per RFC specification:
 // - If Any is true, any authenticated app is allowed (mutually exclusive with Apps/Spaces/Orgs)
 // - If Any is false, at least one of Apps/Spaces/Orgs must be specified (default-deny)
-type AllowedSources struct {
+type MtlsAllowedSources struct {
 	Apps   []string
 	Spaces []string
 	Orgs   []string
 	Any    bool
 }
 
-// Equal compares two AllowedSources for equality
-func (as *AllowedSources) Equal(other *AllowedSources) bool {
+// Equal compares two MtlsAllowedSources for equality
+func (as *MtlsAllowedSources) Equal(other *MtlsAllowedSources) bool {
 	if as == nil && other == nil {
 		return true
 	}
@@ -143,7 +143,7 @@ type Endpoint struct {
 	LoadBalancingAlgorithm string
 	HashHeaderName         string
 	HashBalanceFactor      float64
-	AllowedSources         *AllowedSources
+	MtlsAllowedSources     *MtlsAllowedSources
 }
 
 func (e *Endpoint) RoundTripper() ProxyRoundTripper {
@@ -190,7 +190,7 @@ func (e *Endpoint) Equal(e2 *Endpoint) bool {
 		e.HashHeaderName == e2.HashHeaderName &&
 		e.HashBalanceFactor == e2.HashBalanceFactor &&
 		maps.Equal(e.Tags, e2.Tags) &&
-		e.AllowedSources.Equal(e2.AllowedSources)
+		e.MtlsAllowedSources.Equal(e2.MtlsAllowedSources)
 
 }
 
@@ -258,7 +258,7 @@ type EndpointOpts struct {
 	LoadBalancingAlgorithm  string
 	HashHeaderName          string
 	HashBalanceFactor       float64
-	AllowedSources          *AllowedSources
+	MtlsAllowedSources      *MtlsAllowedSources
 }
 
 func NewEndpoint(opts *EndpointOpts) *Endpoint {
@@ -279,7 +279,7 @@ func NewEndpoint(opts *EndpointOpts) *Endpoint {
 		IsolationSegment:       opts.IsolationSegment,
 		UpdatedAt:              opts.UpdatedAt,
 		LoadBalancingAlgorithm: opts.LoadBalancingAlgorithm,
-		AllowedSources:         opts.AllowedSources,
+		MtlsAllowedSources:     opts.MtlsAllowedSources,
 	}
 
 	if opts.LoadBalancingAlgorithm == config.LOAD_BALANCE_HB && opts.HashHeaderName != "" { // BalanceFactor is optional
@@ -608,10 +608,10 @@ func (p *EndpointPool) IsEmpty() bool {
 	return l == 0
 }
 
-// AllowedSources returns the AllowedSources from the first endpoint in the pool.
-// All endpoints in a pool should have the same AllowedSources since they are
+// MtlsAllowedSources returns the MtlsAllowedSources from the first endpoint in the pool.
+// All endpoints in a pool should have the same MtlsAllowedSources since they are
 // instances of the same application route registered with the same authorization rules.
-func (p *EndpointPool) AllowedSources() *AllowedSources {
+func (p *EndpointPool) MtlsAllowedSources() *MtlsAllowedSources {
 	p.Lock()
 	defer p.Unlock()
 
@@ -619,7 +619,7 @@ func (p *EndpointPool) AllowedSources() *AllowedSources {
 		return nil
 	}
 
-	return p.endpoints[0].endpoint.AllowedSources
+	return p.endpoints[0].endpoint.MtlsAllowedSources
 }
 
 // ApplicationId returns the ApplicationId from the first endpoint in the pool.

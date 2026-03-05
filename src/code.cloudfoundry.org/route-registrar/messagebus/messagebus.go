@@ -30,25 +30,25 @@ type msgBus struct {
 }
 
 type Message struct {
-	URIs                []string          `json:"uris"`
-	Host                string            `json:"host"`
-	Protocol            string            `json:"protocol,omitempty"`
-	Port                *uint16           `json:"port,omitempty"`
-	TLSPort             *uint16           `json:"tls_port,omitempty"`
-	Tags                map[string]string `json:"tags"`
-	RouteServiceUrl     string            `json:"route_service_url,omitempty"`
-	PrivateInstanceId   string            `json:"private_instance_id"`
-	ServerCertDomainSAN string            `json:"server_cert_domain_san,omitempty"`
-	AvailabilityZone    string            `json:"availability_zone,omitempty"`
-	Options             map[string]string `json:"options,omitempty"`
-	AllowedSources      *AllowedSources   `json:"allowed_sources,omitempty"`
+	URIs                []string            `json:"uris"`
+	Host                string              `json:"host"`
+	Protocol            string              `json:"protocol,omitempty"`
+	Port                *uint16             `json:"port,omitempty"`
+	TLSPort             *uint16             `json:"tls_port,omitempty"`
+	Tags                map[string]string   `json:"tags"`
+	RouteServiceUrl     string              `json:"route_service_url,omitempty"`
+	PrivateInstanceId   string              `json:"private_instance_id"`
+	ServerCertDomainSAN string              `json:"server_cert_domain_san,omitempty"`
+	AvailabilityZone    string              `json:"availability_zone,omitempty"`
+	Options             map[string]string   `json:"options,omitempty"`
+	MtlsAllowedSources  *MtlsAllowedSources `json:"mtls_allowed_sources,omitempty"`
 }
 
-// AllowedSources contains authorization rules for which sources can communicate
+// MtlsAllowedSources contains authorization rules for which sources can communicate
 // with this endpoint on mTLS domains. Per RFC specification:
 // - If Any is true, any authenticated app is allowed (mutually exclusive with Apps/Spaces/Orgs)
 // - If Any is false, at least one of Apps/Spaces/Orgs must be specified (default-deny)
-type AllowedSources struct {
+type MtlsAllowedSources struct {
 	Apps   []string `json:"apps,omitempty"`
 	Spaces []string `json:"spaces,omitempty"`
 	Orgs   []string `json:"orgs,omitempty"`
@@ -121,7 +121,7 @@ func (m msgBus) SendMessage(subject string, route config.Route, privateInstanceI
 	m.logger.Debug("creating-message", lager.Data{"subject": subject, "route": route, "privateInstanceId": privateInstanceId})
 
 	routeOptions := m.mapRouteOptions(route)
-	allowedSources := m.mapAllowedSources(route)
+	mtlsAllowedSources := m.mapMtlsAllowedSources(route)
 
 	msg := &Message{
 		URIs:                route.URIs,
@@ -135,7 +135,7 @@ func (m msgBus) SendMessage(subject string, route config.Route, privateInstanceI
 		PrivateInstanceId:   privateInstanceId,
 		AvailabilityZone:    m.availabilityZone,
 		Options:             routeOptions,
-		AllowedSources:      allowedSources,
+		MtlsAllowedSources:  mtlsAllowedSources,
 	}
 
 	json, err := json.Marshal(msg)
@@ -160,13 +160,13 @@ func (m msgBus) mapRouteOptions(route config.Route) map[string]string {
 	return nil
 }
 
-func (m msgBus) mapAllowedSources(route config.Route) *AllowedSources {
-	if route.AllowedSources != nil {
-		return &AllowedSources{
-			Apps:   route.AllowedSources.Apps,
-			Spaces: route.AllowedSources.Spaces,
-			Orgs:   route.AllowedSources.Orgs,
-			Any:    route.AllowedSources.Any,
+func (m msgBus) mapMtlsAllowedSources(route config.Route) *MtlsAllowedSources {
+	if route.MtlsAllowedSources != nil {
+		return &MtlsAllowedSources{
+			Apps:   route.MtlsAllowedSources.Apps,
+			Spaces: route.MtlsAllowedSources.Spaces,
+			Orgs:   route.MtlsAllowedSources.Orgs,
+			Any:    route.MtlsAllowedSources.Any,
 		}
 	}
 	return nil

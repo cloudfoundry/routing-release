@@ -158,11 +158,11 @@ var _ = Describe("MtlsAuthorization", func() {
 			BeforeEach(func() {
 				// Create endpoint with empty allowed sources (default deny)
 				endpoint := route.NewEndpoint(&route.EndpointOpts{
-					AppId:             "backend-app-id",
-					Host:              "192.168.1.1",
-					Port:              8080,
-					PrivateInstanceId: "backend-instance-id",
-					AllowedSources:    &route.AllowedSources{},
+					AppId:              "backend-app-id",
+					Host:               "192.168.1.1",
+					Port:               8080,
+					PrivateInstanceId:  "backend-instance-id",
+					MtlsAllowedSources: &route.MtlsAllowedSources{},
 				})
 
 				pool := createPoolWithEndpoint(endpoint)
@@ -200,7 +200,7 @@ var _ = Describe("MtlsAuthorization", func() {
 					Host:              "192.168.1.1",
 					Port:              8080,
 					PrivateInstanceId: "backend-instance-id",
-					AllowedSources: &route.AllowedSources{
+					MtlsAllowedSources: &route.MtlsAllowedSources{
 						Apps: []string{"allowed-app-1", "allowed-app-2"},
 					},
 				})
@@ -453,12 +453,12 @@ var _ = Describe("MtlsAuthorization", func() {
 		})
 	})
 
-	Context("with RFC-compliant AllowedSources authorization", func() {
+	Context("with RFC-compliant MtlsAllowedSources authorization", func() {
 		BeforeEach(func() {
 			request = test_util.NewRequest("GET", "backend.apps.mtls.internal", "/", nil)
 		})
 
-		Context("when AllowedSources.Any is true", func() {
+		Context("when MtlsAllowedSources.Any is true", func() {
 			var endpoint *route.Endpoint
 			var pool *route.EndpointPool
 
@@ -468,7 +468,7 @@ var _ = Describe("MtlsAuthorization", func() {
 					Host:              "192.168.1.1",
 					Port:              8080,
 					PrivateInstanceId: "backend-instance-id",
-					AllowedSources: &route.AllowedSources{
+					MtlsAllowedSources: &route.MtlsAllowedSources{
 						Any: true,
 					},
 				})
@@ -528,14 +528,14 @@ var _ = Describe("MtlsAuthorization", func() {
 			})
 		})
 
-		Context("when caller's space is in AllowedSources.Spaces", func() {
+		Context("when caller's space is in MtlsAllowedSources.Spaces", func() {
 			BeforeEach(func() {
 				endpoint := route.NewEndpoint(&route.EndpointOpts{
 					AppId:             "backend-app-id",
 					Host:              "192.168.1.1",
 					Port:              8080,
 					PrivateInstanceId: "backend-instance-id",
-					AllowedSources: &route.AllowedSources{
+					MtlsAllowedSources: &route.MtlsAllowedSources{
 						Spaces: []string{"allowed-space-1", "allowed-space-2"},
 					},
 				})
@@ -567,14 +567,14 @@ var _ = Describe("MtlsAuthorization", func() {
 			})
 		})
 
-		Context("when caller's space is not in AllowedSources.Spaces", func() {
+		Context("when caller's space is not in MtlsAllowedSources.Spaces", func() {
 			BeforeEach(func() {
 				endpoint := route.NewEndpoint(&route.EndpointOpts{
 					AppId:             "backend-app-id",
 					Host:              "192.168.1.1",
 					Port:              8080,
 					PrivateInstanceId: "backend-instance-id",
-					AllowedSources: &route.AllowedSources{
+					MtlsAllowedSources: &route.MtlsAllowedSources{
 						Spaces: []string{"allowed-space-1", "allowed-space-2"},
 					},
 				})
@@ -606,14 +606,14 @@ var _ = Describe("MtlsAuthorization", func() {
 			})
 		})
 
-		Context("when caller's org is in AllowedSources.Orgs", func() {
+		Context("when caller's org is in MtlsAllowedSources.Orgs", func() {
 			BeforeEach(func() {
 				endpoint := route.NewEndpoint(&route.EndpointOpts{
 					AppId:             "backend-app-id",
 					Host:              "192.168.1.1",
 					Port:              8080,
 					PrivateInstanceId: "backend-instance-id",
-					AllowedSources: &route.AllowedSources{
+					MtlsAllowedSources: &route.MtlsAllowedSources{
 						Orgs: []string{"allowed-org-1", "allowed-org-2"},
 					},
 				})
@@ -645,14 +645,14 @@ var _ = Describe("MtlsAuthorization", func() {
 			})
 		})
 
-		Context("when caller's org is not in AllowedSources.Orgs", func() {
+		Context("when caller's org is not in MtlsAllowedSources.Orgs", func() {
 			BeforeEach(func() {
 				endpoint := route.NewEndpoint(&route.EndpointOpts{
 					AppId:             "backend-app-id",
 					Host:              "192.168.1.1",
 					Port:              8080,
 					PrivateInstanceId: "backend-instance-id",
-					AllowedSources: &route.AllowedSources{
+					MtlsAllowedSources: &route.MtlsAllowedSources{
 						Orgs: []string{"allowed-org-1", "allowed-org-2"},
 					},
 				})
@@ -692,7 +692,7 @@ var _ = Describe("MtlsAuthorization", func() {
 					Host:              "192.168.1.1",
 					Port:              8080,
 					PrivateInstanceId: "backend-instance-id",
-					AllowedSources: &route.AllowedSources{
+					MtlsAllowedSources: &route.MtlsAllowedSources{
 						Apps:   []string{"app-1", "app-2"},
 						Spaces: []string{"space-1"},
 						Orgs:   []string{"org-1"},

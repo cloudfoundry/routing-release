@@ -535,7 +535,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 		})
 
 		Describe("default-deny behavior", func() {
-			It("denies requests when no allowed_sources are configured", func() {
+			It("denies requests when no mtls_allowed_sources are configured", func() {
 				// Register route WITHOUT allowed sources
 				testState.register(backendApp, mtlsDomain)
 
@@ -557,7 +557,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 				Expect(resp.StatusCode).To(Equal(http.StatusForbidden))
 			})
 
-			It("denies requests when allowed_sources are empty", func() {
+			It("denies requests when mtls_allowed_sources are empty", func() {
 				// Register route with empty allowed sources
 				testState.registerWithAllowedSources(
 					backendApp,

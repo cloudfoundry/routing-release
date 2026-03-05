@@ -51,35 +51,35 @@ type ConfigSchema struct {
 }
 
 type RouteSchema struct {
-	Type                 string             `json:"type" yaml:"type"`
-	Name                 string             `json:"name" yaml:"name"`
-	Host                 string             `json:"host" yaml:"host"`
-	Port                 *uint16            `json:"port" yaml:"port"`
-	Protocol             string             `json:"protocol" yaml:"protocol"`
-	SniPort              *uint16            `json:"sni_port" yaml:"sni_port"`
-	TLSPort              *uint16            `json:"tls_port" yaml:"tls_port"`
-	Tags                 map[string]string  `json:"tags" yaml:"tags"`
-	URIs                 []string           `json:"uris" yaml:"uris"`
-	RouterGroup          string             `json:"router_group" yaml:"router_group"`
-	ExternalPort         *uint16            `json:"external_port,omitempty" yaml:"external_port,omitempty"`
-	RouteServiceUrl      string             `json:"route_service_url" yaml:"route_service_url"`
-	RegistrationInterval string             `json:"registration_interval,omitempty" yaml:"registration_interval,omitempty"`
-	HealthCheck          *HealthCheckSchema `json:"health_check,omitempty" yaml:"health_check,omitempty"`
-	ServerCertDomainSAN  string             `json:"server_cert_domain_san,omitempty" yaml:"server_cert_domain_san,omitempty"`
-	SniRoutableSan       string             `json:"sni_routable_san,omitempty" yaml:"sni_routable_san,omitempty"`
-	SniRewriteSan        string             `json:"sni_rewrite_san,omitempty" yaml:"sni_rewrite_san,omitempty"`
-	TerminateFrontendTLS bool               `json:"terminate_frontend_tls,omitempty" yaml:"terminate_frontend_tls,omitempty"`
-	EnableBackendTLS     bool               `json:"enable_backend_tls,omitempty" yaml:"enable_backend_tls,omitempty"`
-	ALPNs                []string           `json:"alpns,omitempty" yaml:"alpns,omitempty"`
-	Options              *Options           `json:"options,omitempty" yaml:"options,omitempty"`
-	AllowedSources       *AllowedSources    `json:"allowed_sources,omitempty" yaml:"allowed_sources,omitempty"`
+	Type                 string              `json:"type" yaml:"type"`
+	Name                 string              `json:"name" yaml:"name"`
+	Host                 string              `json:"host" yaml:"host"`
+	Port                 *uint16             `json:"port" yaml:"port"`
+	Protocol             string              `json:"protocol" yaml:"protocol"`
+	SniPort              *uint16             `json:"sni_port" yaml:"sni_port"`
+	TLSPort              *uint16             `json:"tls_port" yaml:"tls_port"`
+	Tags                 map[string]string   `json:"tags" yaml:"tags"`
+	URIs                 []string            `json:"uris" yaml:"uris"`
+	RouterGroup          string              `json:"router_group" yaml:"router_group"`
+	ExternalPort         *uint16             `json:"external_port,omitempty" yaml:"external_port,omitempty"`
+	RouteServiceUrl      string              `json:"route_service_url" yaml:"route_service_url"`
+	RegistrationInterval string              `json:"registration_interval,omitempty" yaml:"registration_interval,omitempty"`
+	HealthCheck          *HealthCheckSchema  `json:"health_check,omitempty" yaml:"health_check,omitempty"`
+	ServerCertDomainSAN  string              `json:"server_cert_domain_san,omitempty" yaml:"server_cert_domain_san,omitempty"`
+	SniRoutableSan       string              `json:"sni_routable_san,omitempty" yaml:"sni_routable_san,omitempty"`
+	SniRewriteSan        string              `json:"sni_rewrite_san,omitempty" yaml:"sni_rewrite_san,omitempty"`
+	TerminateFrontendTLS bool                `json:"terminate_frontend_tls,omitempty" yaml:"terminate_frontend_tls,omitempty"`
+	EnableBackendTLS     bool                `json:"enable_backend_tls,omitempty" yaml:"enable_backend_tls,omitempty"`
+	ALPNs                []string            `json:"alpns,omitempty" yaml:"alpns,omitempty"`
+	Options              *Options            `json:"options,omitempty" yaml:"options,omitempty"`
+	MtlsAllowedSources   *MtlsAllowedSources `json:"mtls_allowed_sources,omitempty" yaml:"mtls_allowed_sources,omitempty"`
 }
 
-// AllowedSources contains authorization rules for which sources can communicate
+// MtlsAllowedSources contains authorization rules for which sources can communicate
 // with this endpoint on mTLS domains. Per RFC specification:
 // - If Any is true, any authenticated app is allowed (mutually exclusive with Apps/Spaces/Orgs)
 // - If Any is false, at least one of Apps/Spaces/Orgs must be specified (default-deny)
-type AllowedSources struct {
+type MtlsAllowedSources struct {
 	Apps   []string `json:"apps,omitempty" yaml:"apps,omitempty"`
 	Spaces []string `json:"spaces,omitempty" yaml:"spaces,omitempty"`
 	Orgs   []string `json:"orgs,omitempty" yaml:"orgs,omitempty"`
@@ -171,7 +171,7 @@ type Route struct {
 	ALPNs                []string
 	EnableBackendTLS     bool
 	Options              *Options
-	AllowedSources       *AllowedSources
+	MtlsAllowedSources   *MtlsAllowedSources
 }
 
 func NewConfigSchemaFromFile(configFile string) (ConfigSchema, error) {
@@ -379,7 +379,7 @@ func RouteFromSchema(r RouteSchema, index int, host string) (*Route, error) {
 		ALPNs:                r.ALPNs,
 		EnableBackendTLS:     r.EnableBackendTLS,
 		Options:              r.Options,
-		AllowedSources:       r.AllowedSources,
+		MtlsAllowedSources:   r.MtlsAllowedSources,
 	}
 
 	if r.Type == "sni" {

@@ -61,7 +61,7 @@ var _ = Describe("RegistryMessage", func() {
 		})
 	})
 
-	Describe("MakeEndpoint with AllowedSources", func() {
+	Describe("MakeEndpoint with MtlsAllowedSources", func() {
 		var message *RegistryMessage
 		var payload []byte
 
@@ -71,7 +71,7 @@ var _ = Describe("RegistryMessage", func() {
 			Expect(err).NotTo(HaveOccurred())
 		})
 
-		Describe("With allowed_sources at top level", func() {
+		Describe("With mtls_allowed_sources at top level", func() {
 			BeforeEach(func() {
 				payload = []byte(`{
 					"app":"app1",
@@ -80,7 +80,7 @@ var _ = Describe("RegistryMessage", func() {
 					"port":1234,
 					"tags":{},
 					"private_instance_id":"private_instance_id",
-					"allowed_sources": {
+					"mtls_allowed_sources": {
 						"apps": ["app-guid-1", "app-guid-2"],
 						"spaces": ["space-guid-1"],
 						"orgs": ["org-guid-1"],
@@ -89,18 +89,18 @@ var _ = Describe("RegistryMessage", func() {
 				}`)
 			})
 
-			It("parses allowed_sources correctly", func() {
+			It("parses mtls_allowed_sources correctly", func() {
 				endpoint, err := message.MakeEndpoint(false)
 				Expect(err).NotTo(HaveOccurred())
-				Expect(endpoint.AllowedSources).NotTo(BeNil())
-				Expect(endpoint.AllowedSources.Apps).To(ConsistOf("app-guid-1", "app-guid-2"))
-				Expect(endpoint.AllowedSources.Spaces).To(ConsistOf("space-guid-1"))
-				Expect(endpoint.AllowedSources.Orgs).To(ConsistOf("org-guid-1"))
-				Expect(endpoint.AllowedSources.Any).To(BeFalse())
+				Expect(endpoint.MtlsAllowedSources).NotTo(BeNil())
+				Expect(endpoint.MtlsAllowedSources.Apps).To(ConsistOf("app-guid-1", "app-guid-2"))
+				Expect(endpoint.MtlsAllowedSources.Spaces).To(ConsistOf("space-guid-1"))
+				Expect(endpoint.MtlsAllowedSources.Orgs).To(ConsistOf("org-guid-1"))
+				Expect(endpoint.MtlsAllowedSources.Any).To(BeFalse())
 			})
 		})
 
-		Describe("With allowed_sources nested in options (CAPI/Diego format)", func() {
+		Describe("With mtls_allowed_sources nested in options (CAPI/Diego format)", func() {
 			BeforeEach(func() {
 				payload = []byte(`{
 					"app":"app1",
@@ -111,7 +111,7 @@ var _ = Describe("RegistryMessage", func() {
 					"private_instance_id":"private_instance_id",
 					"options": {
 						"loadbalancing": "round-robin",
-						"allowed_sources": {
+						"mtls_allowed_sources": {
 							"apps": ["nested-app-guid"],
 							"any": true
 						}
@@ -119,16 +119,16 @@ var _ = Describe("RegistryMessage", func() {
 				}`)
 			})
 
-			It("parses nested allowed_sources correctly", func() {
+			It("parses nested mtls_allowed_sources correctly", func() {
 				endpoint, err := message.MakeEndpoint(false)
 				Expect(err).NotTo(HaveOccurred())
-				Expect(endpoint.AllowedSources).NotTo(BeNil())
-				Expect(endpoint.AllowedSources.Apps).To(ConsistOf("nested-app-guid"))
-				Expect(endpoint.AllowedSources.Any).To(BeTrue())
+				Expect(endpoint.MtlsAllowedSources).NotTo(BeNil())
+				Expect(endpoint.MtlsAllowedSources.Apps).To(ConsistOf("nested-app-guid"))
+				Expect(endpoint.MtlsAllowedSources.Any).To(BeTrue())
 			})
 		})
 
-		Describe("With allowed_sources at both top-level and nested", func() {
+		Describe("With mtls_allowed_sources at both top-level and nested", func() {
 			BeforeEach(func() {
 				payload = []byte(`{
 					"app":"app1",
@@ -137,26 +137,26 @@ var _ = Describe("RegistryMessage", func() {
 					"port":1234,
 					"tags":{},
 					"private_instance_id":"private_instance_id",
-					"allowed_sources": {
+					"mtls_allowed_sources": {
 						"apps": ["top-level-app"]
 					},
 					"options": {
-						"allowed_sources": {
+						"mtls_allowed_sources": {
 							"apps": ["nested-app"]
 						}
 					}
 				}`)
 			})
 
-			It("uses top-level allowed_sources (takes precedence)", func() {
+			It("uses top-level mtls_allowed_sources (takes precedence)", func() {
 				endpoint, err := message.MakeEndpoint(false)
 				Expect(err).NotTo(HaveOccurred())
-				Expect(endpoint.AllowedSources).NotTo(BeNil())
-				Expect(endpoint.AllowedSources.Apps).To(ConsistOf("top-level-app"))
+				Expect(endpoint.MtlsAllowedSources).NotTo(BeNil())
+				Expect(endpoint.MtlsAllowedSources.Apps).To(ConsistOf("top-level-app"))
 			})
 		})
 
-		Describe("With no allowed_sources", func() {
+		Describe("With no mtls_allowed_sources", func() {
 			BeforeEach(func() {
 				payload = []byte(`{
 					"app":"app1",
@@ -168,10 +168,10 @@ var _ = Describe("RegistryMessage", func() {
 				}`)
 			})
 
-			It("returns nil for allowed_sources", func() {
+			It("returns nil for mtls_allowed_sources", func() {
 				endpoint, err := message.MakeEndpoint(false)
 				Expect(err).NotTo(HaveOccurred())
-				Expect(endpoint.AllowedSources).To(BeNil())
+				Expect(endpoint.MtlsAllowedSources).To(BeNil())
 			})
 		})
 	})

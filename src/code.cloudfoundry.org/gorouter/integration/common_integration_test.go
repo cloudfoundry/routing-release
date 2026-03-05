@@ -247,21 +247,21 @@ func (s *testState) registerWithInternalRouteService(appBackend, routeServiceSer
 	s.registerAndWait(rm)
 }
 
-func (s *testState) registerWithAllowedSources(backend *httptest.Server, routeURI string, allowedSources map[string]interface{}) {
+func (s *testState) registerWithAllowedSources(backend *httptest.Server, routeURI string, mtlsAllowedSources map[string]interface{}) {
 	_, backendPort := hostnameAndPort(backend.Listener.Addr().String())
 
-	// Convert map to AllowedSources struct
-	as := &mbus.AllowedSources{}
-	if apps, ok := allowedSources["apps"].([]string); ok {
+	// Convert map to MtlsAllowedSources struct
+	as := &mbus.MtlsAllowedSources{}
+	if apps, ok := mtlsAllowedSources["apps"].([]string); ok {
 		as.Apps = apps
 	}
-	if spaces, ok := allowedSources["spaces"].([]string); ok {
+	if spaces, ok := mtlsAllowedSources["spaces"].([]string); ok {
 		as.Spaces = spaces
 	}
-	if orgs, ok := allowedSources["orgs"].([]string); ok {
+	if orgs, ok := mtlsAllowedSources["orgs"].([]string); ok {
 		as.Orgs = orgs
 	}
-	if any, ok := allowedSources["any"].(bool); ok {
+	if any, ok := mtlsAllowedSources["any"].(bool); ok {
 		as.Any = any
 	}
 
@@ -271,7 +271,7 @@ func (s *testState) registerWithAllowedSources(backend *httptest.Server, routeUR
 		Uris:                    []route.Uri{route.Uri(routeURI)},
 		StaleThresholdInSeconds: 10,
 		PrivateInstanceID:       fmt.Sprintf("%x", rand.Int31()),
-		AllowedSources:          as,
+		MtlsAllowedSources:      as,
 	}
 	s.registerAndWait(rm)
 }
