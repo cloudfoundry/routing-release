@@ -130,10 +130,10 @@ func (rt *roundTripper) RoundTrip(originalRequest *http.Request) (*http.Response
 	numberOfEndpoints := reqInfo.RoutePool.NumEndpoints()
 	locallyOptimistic := rt.config.LoadBalanceAZPreference == config.AZ_PREF_LOCAL
 	routingProperties := route.RoutingProperties{
-		RequestHeaders:    &request.Header,
-		LocallyOptimistic: locallyOptimistic,
-		GlobalLB:          rt.config.LoadBalance,
-		AZ:                rt.config.Zone,
+		RequestHeaders:         &request.Header,
+		LocallyOptimistic:      locallyOptimistic,
+		GlobalRoutingAlgorithm: rt.config.LoadBalance,
+		AZ:                     rt.config.Zone,
 	}
 
 	iter := reqInfo.RoutePool.Endpoints(rt.logger, stickyEndpointID, mustBeSticky, routingProperties)

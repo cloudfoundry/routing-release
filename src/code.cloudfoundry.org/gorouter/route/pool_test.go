@@ -243,9 +243,9 @@ var _ = Describe("EndpointPool", func() {
 				Expect(pool.Put(endpoint1)).To(Equal(route.EndpointAdded))
 
 				routingProps = route.RoutingProperties{
-					LocallyOptimistic: locallyOptimistic,
-					GlobalLB:          config.LOAD_BALANCE_RR,
-					AZ:                az,
+					LocallyOptimistic:      locallyOptimistic,
+					GlobalRoutingAlgorithm: config.LOAD_BALANCE_RR,
+					AZ:                     az,
 				}
 			})
 
@@ -311,9 +311,9 @@ var _ = Describe("EndpointPool", func() {
 
 		BeforeEach(func() {
 			routingProps = route.RoutingProperties{
-				LocallyOptimistic: locallyOptimistic,
-				GlobalLB:          config.LOAD_BALANCE_RR,
-				AZ:                "az",
+				LocallyOptimistic:      locallyOptimistic,
+				GlobalRoutingAlgorithm: config.LOAD_BALANCE_RR,
+				AZ:                     "az",
 			}
 		})
 		Context("Load Balancing Algorithm of a pool", func() {
@@ -557,9 +557,9 @@ var _ = Describe("EndpointPool", func() {
 					az := "meow-zone"
 					locallyOptimistic := false
 					routingProps := route.RoutingProperties{
-						LocallyOptimistic: locallyOptimistic,
-						GlobalLB:          config.LOAD_BALANCE_RR,
-						AZ:                az,
+						LocallyOptimistic:      locallyOptimistic,
+						GlobalRoutingAlgorithm: config.LOAD_BALANCE_RR,
+						AZ:                     az,
 					}
 					connectionResetError := &net.OpError{Op: "read", Err: errors.New("read: connection reset by peer")}
 					pool.EndpointFailed(failedEndpoint, connectionResetError)

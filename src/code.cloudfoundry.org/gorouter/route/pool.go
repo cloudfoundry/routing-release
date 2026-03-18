@@ -75,10 +75,10 @@ type ProxyRoundTripper interface {
 }
 
 type RoutingProperties struct {
-	RequestHeaders    *http.Header
-	LocallyOptimistic bool
-	GlobalLB          string
-	AZ                string
+	RequestHeaders         *http.Header
+	LocallyOptimistic      bool
+	GlobalRoutingAlgorithm string
+	AZ                     string
 }
 
 type HashRoutingProperties struct {
@@ -483,18 +483,18 @@ func (p *EndpointPool) removeEndpoint(e *endpointElem) {
 }
 
 func (p *EndpointPool) Endpoints(logger *slog.Logger, initial string, mustBeSticky bool, routingProps RoutingProperties) EndpointIterator {
-	lbAlgo := p.LoadBalancingAlgorithm
+	routingAlgorithm := p.LoadBalancingAlgorithm
 	// Handle hash-based routing as special case
-	if lbAlgo == config.LOAD_BALANCE_HB {
+	if routingAlgorithm == config.LOAD_BALANCE_HB {
 		// TODO: add VCAP-ID to logs after extracting handlers.VcapRequestIdHeader to new package "constants" (to avoid cyclic imports)
 		headerValue := p.GetValidHashHeaderValue(routingProps.RequestHeaders, logger)
 		if headerValue != "" {
 			return NewHashBased(logger, p, initial, mustBeSticky, headerValue)
 		}
-		lbAlgo = routingProps.GlobalLB
+		routingAlgorithm = routingProps.GlobalRoutingAlgorithm
 	}
 
-	switch lbAlgo {
+	switch routingAlgorithm {
 	case config.LOAD_BALANCE_LC:
 		logger.Debug("endpoint-iterator-with-least-connection-lb-algo")
 		return NewLeastConnection(logger, p, initial, mustBeSticky, routingProps.LocallyOptimistic, routingProps.AZ)
@@ -503,7 +503,7 @@ func (p *EndpointPool) Endpoints(logger *slog.Logger, initial string, mustBeStic
 		return NewRoundRobin(logger, p, initial, mustBeSticky, routingProps.LocallyOptimistic, routingProps.AZ)
 	default:
 		logger.Error("invalid-pool-load-balancing-algorithm",
-			slog.String("poolLBAlgorithm", lbAlgo),
+			slog.String("poolLBAlgorithm", routingAlgorithm),
 			slog.String("Host", p.host),
 			slog.String("Path", p.contextPath))
 		logger.Debug("endpoint-iterator-with-round-robin-lb-algo")

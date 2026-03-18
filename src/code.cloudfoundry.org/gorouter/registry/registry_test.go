@@ -402,9 +402,9 @@ var _ = Describe("RouteRegistry", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{ModificationTag: modTag})
 				r.Register("foo.com", endpoint)
 				routingProps = route.RoutingProperties{
-					LocallyOptimistic: locallyOptimistic,
-					GlobalLB:          config.LOAD_BALANCE_RR,
-					AZ:                r.DefaultLoadBalancingAlgorithm,
+					LocallyOptimistic:      locallyOptimistic,
+					GlobalRoutingAlgorithm: config.LOAD_BALANCE_RR,
+					AZ:                     r.DefaultLoadBalancingAlgorithm,
 				}
 			})
 

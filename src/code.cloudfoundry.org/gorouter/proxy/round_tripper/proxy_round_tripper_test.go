@@ -37,7 +37,6 @@ import (
 
 const StickyCookieKey = "JSESSIONID"
 const AZ = "meow-zone"
-const AZPreference = "none"
 
 type testBody struct {
 	bytes.Buffer
@@ -276,10 +275,10 @@ var _ = Describe("ProxyRoundTripper", func() {
 					res, err := proxyRoundTripper.RoundTrip(req)
 					Expect(err).NotTo(HaveOccurred())
 					routingProps := route.RoutingProperties{
-						LocallyOptimistic: false,
-						GlobalLB:          cfg.LoadBalance,
-						AZ:                AZ,
-						RequestHeaders:    &req.Header,
+						LocallyOptimistic:      false,
+						GlobalRoutingAlgorithm: cfg.LoadBalance,
+						AZ:                     AZ,
+						RequestHeaders:         &req.Header,
 					}
 
 					iter := routePool.Endpoints(logger.Logger, "", false, routingProps)
@@ -611,10 +610,10 @@ var _ = Describe("ProxyRoundTripper", func() {
 					})
 
 					routingProps := route.RoutingProperties{
-						LocallyOptimistic: false,
-						GlobalLB:          cfg.LoadBalance,
-						AZ:                AZ,
-						RequestHeaders:    &req.Header,
+						LocallyOptimistic:      false,
+						GlobalRoutingAlgorithm: cfg.LoadBalance,
+						AZ:                     AZ,
+						RequestHeaders:         &req.Header,
 					}
 
 					added := routePool.Put(endpoint)
@@ -2481,46 +2480,43 @@ var _ = Describe("ProxyRoundTripper", func() {
 
 					})
 
-					Context("when there is a JSESSIONID and __VCAP_ID__ set on the request", func() {
-						It("will always route to the instance specified with the __VCAP_ID__ cookie", func() {
+					It("will always route to the instance specified with the __VCAP_ID__ cookie", func() {
 
-							// Generate 20 random values for the hash header, so chance that all go to instanceID1
-							// by accident is 0.33^20
-							for i := 0; i < 20; i++ {
-								randomStr := make([]byte, 8)
-								for j := range randomStr {
-									randomStr[j] = byte('a' + rand.Intn(26))
-								}
-
-								req.Header.Set("X-Hash", string(randomStr))
-								reqInfo, err := handlers.ContextRequestInfo(req)
-								req.AddCookie(&http.Cookie{Name: round_tripper.VcapCookieId, Value: "instanceID1"})
-								req.AddCookie(&http.Cookie{Name: StickyCookieKey, Value: "abc"})
-
-								Expect(err).ToNot(HaveOccurred())
-								reqInfo.RoutePool = routePool
-
-								resp, err := proxyRoundTripper.RoundTrip(req)
-								Expect(err).ToNot(HaveOccurred())
-
-								new_cookies := resp.Cookies()
-								Expect(new_cookies).To(HaveLen(2))
-
-								for _, cookie := range new_cookies {
-									Expect(cookie.Name).To(SatisfyAny(
-										Equal(StickyCookieKey),
-										Equal(round_tripper.VcapCookieId),
-									))
-									if cookie.Name == StickyCookieKey {
-										Expect(cookie.Value).To(Equal("abc"))
-									} else {
-										Expect(cookie.Value).To(Equal("instanceID1"))
-									}
-								}
-
+						// Generate 20 random values for the hash header, so chance that all go to instanceID1
+						// by accident is 0.33^20
+						for i := 0; i < 20; i++ {
+							randomStr := make([]byte, 8)
+							for j := range randomStr {
+								randomStr[j] = byte('a' + rand.Intn(26))
 							}
 
-						})
+							req.Header.Set("X-Hash", string(randomStr))
+							reqInfo, err := handlers.ContextRequestInfo(req)
+							req.AddCookie(&http.Cookie{Name: round_tripper.VcapCookieId, Value: "instanceID1"})
+							req.AddCookie(&http.Cookie{Name: StickyCookieKey, Value: "abc"})
+
+							Expect(err).ToNot(HaveOccurred())
+							reqInfo.RoutePool = routePool
+
+							resp, err := proxyRoundTripper.RoundTrip(req)
+							Expect(err).ToNot(HaveOccurred())
+
+							new_cookies := resp.Cookies()
+							Expect(new_cookies).To(HaveLen(2))
+
+							for _, cookie := range new_cookies {
+								Expect(cookie.Name).To(SatisfyAny(
+									Equal(StickyCookieKey),
+									Equal(round_tripper.VcapCookieId),
+								))
+								if cookie.Name == StickyCookieKey {
+									Expect(cookie.Value).To(Equal("abc"))
+								} else {
+									Expect(cookie.Value).To(Equal("instanceID1"))
+								}
+							}
+
+						}
 					})
 				})
 			})
