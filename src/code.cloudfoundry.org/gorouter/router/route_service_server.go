@@ -1,8 +1,3 @@
-// @AI-Generated
-// Generated in whole or in part by Cursor with a mix of different LLM models (Auto select mode)
-// Description:
-// 2026-03-17: Apply TLS cipher and version settings to internal route services server (TNZ-79284)
-
 package router
 
 import (
@@ -37,9 +32,6 @@ type RouteServicesServer struct {
 	rootCA            *x509.CertPool
 	clientCert        tls.Certificate
 	serverCert        tls.Certificate
-	cipherSuites      []uint16
-	minTLSVersion     uint16
-	maxTLSVersion     uint16
 }
 
 func NewRouteServicesServer(cfg *config.Config) (*RouteServicesServer, error) {
@@ -77,9 +69,6 @@ func NewRouteServicesServer(cfg *config.Config) (*RouteServicesServer, error) {
 		rootCA:            rootCertPool,
 		clientCert:        clientCert,
 		serverCert:        serverCert,
-		cipherSuites:      cfg.CipherSuites,
-		minTLSVersion:     cfg.MinTLSVersion,
-		maxTLSVersion:     cfg.MaxTLSVersion,
 	}, nil
 }
 
@@ -94,11 +83,6 @@ func (rs *RouteServicesServer) Serve(handler http.Handler, errChan chan error) e
 		ClientAuth:   tls.RequireAndVerifyClientCert,
 		Certificates: []tls.Certificate{rs.serverCert},
 		ClientCAs:    rs.rootCA,
-		MinVersion:   rs.minTLSVersion,
-		MaxVersion:   rs.maxTLSVersion,
-	}
-	if len(rs.cipherSuites) > 0 {
-		tlsConfig.CipherSuites = rs.cipherSuites
 	}
 
 	go func() {
@@ -114,19 +98,13 @@ func (rs *RouteServicesServer) Stop() error {
 }
 
 func (rs *RouteServicesServer) GetRoundTripper() RouteServiceRoundTripper {
-	clientTLSConfig := &tls.Config{
-		Certificates: []tls.Certificate{rs.clientCert},
-		RootCAs:      rs.rootCA,
-		MinVersion:   rs.minTLSVersion,
-		MaxVersion:   rs.maxTLSVersion,
-	}
-	if len(rs.cipherSuites) > 0 {
-		clientTLSConfig.CipherSuites = rs.cipherSuites
-	}
 	return RouteServiceRoundTripper{
 		port: rs.port,
 		transport: &http.Transport{
-			TLSClientConfig: clientTLSConfig,
+			TLSClientConfig: &tls.Config{
+				Certificates: []tls.Certificate{rs.clientCert},
+				RootCAs:      rs.rootCA,
+			},
 		},
 	}
 }
