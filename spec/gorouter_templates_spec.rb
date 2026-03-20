@@ -911,8 +911,13 @@ describe 'gorouter' do
               end
         end
         context 'when egress_blocklist is not set' do
-          it 'parses to an empty list' do
-            expect(parsed_yaml['route_services']['egress_blocklist']).to eq([])
+          it 'parses to the default blocklist' do
+            expect(parsed_yaml['route_services']['egress_blocklist']).to eq([
+              '10.0.0.0/8',
+              '169.254.0.0/16',
+              '172.16.0.0/12',
+              '192.168.0.0/16'
+            ])
           end
         end
         context 'when egress_blocklist is set' do
