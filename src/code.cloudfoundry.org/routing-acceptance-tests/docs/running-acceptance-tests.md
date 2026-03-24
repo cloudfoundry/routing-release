@@ -38,17 +38,17 @@ Acceptance Tests Complete; exit status: 0
 
 ### System Tools
 
-| Tool | Minimum Version | Purpose |
-|------|----------------|---------|
-| `docker` | 20+ | Inspects the `cfk8s-worker` kind node to resolve its IP |
-| `kind` | 0.20+ | Provides the local Kubernetes cluster running CF |
-| `kubectl` | 1.26+ | Interacts with the kind cluster |
-| `jq` | 1.6+ | Parses and patches the test config JSON |
-| `cf` CLI | v7+ | Manages CF resources (orgs, spaces, routes, domains) |
-| `ginkgo` | v2+ | Runs the Go-based acceptance test suites |
-| `make` | any | Bootstraps CF buildpacks if not yet uploaded |
-| `go` | 1.21+ | Required to build the `rtr` binary and compile test assets |
-| `kind-deployment` | any | Required to run the CF on Kind setup. Please checkout the following [documentation](https://github.com/cloudfoundry/kind-deployment?tab=readme-ov-file#run-the-installation) |
+| Tool              | Minimum Version | Purpose                                                                                                                                                                      |
+|-------------------|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `docker`          | 20+             | Inspects the `cfk8s-worker` kind node to resolve its IP                                                                                                                      |
+| `kind`            | 0.31+           | Provides the local Kubernetes cluster running CF                                                                                                                             |
+| `kubectl`         | 1.35.1+         | Interacts with the kind cluster                                                                                                                                              |
+| `jq`              | 1.6+            | Parses and patches the test config JSON                                                                                                                                      |
+| `cf` CLI          | v7+             | Manages CF resources (orgs, spaces, routes, domains)                                                                                                                         |
+| `ginkgo`          | v2+             | Runs the Go-based acceptance test suites                                                                                                                                     |
+| `make`            | any             | Bootstraps CF buildpacks if not yet uploaded                                                                                                                                 |
+| `go`              | 1.21+           | Required to build the `rtr` binary and compile test assets                                                                                                                   |
+| `kind-deployment` | any             | Required to run the CF on Kind setup. Please checkout the following [documentation](https://github.com/cloudfoundry/kind-deployment?tab=readme-ov-file#run-the-installation) |
 
 Install `ginkgo`:
 ```bash
@@ -62,7 +62,7 @@ the Envoy sidecar proxy will crash with exit code 134 (SIGABRT).
 
 Check current values:
 ```bash
-sysctl fs.inotify.max_user_instances fs.inotify.max_user_watches
+sudo sysctl fs.inotify.max_user_instances fs.inotify.max_user_watches
 ```
 
 Apply immediately (no reboot needed):
@@ -93,11 +93,11 @@ docker inspect cfk8s-worker --format '{{range .NetworkSettings.Networks}}{{.IPAd
 The `rtr` (Routing API CLI) binary must be built before running the tests:
 
 ```bash
-cd src/code.cloudfoundry.org/rtr
+cd src/code.cloudfoundry.org/routing-api-cli
 go build -o rtr .
 ```
 
-The script automatically prepends the `rtr` directory to `$PATH`.
+The script automatically prepends the `rtr` binary to `$PATH`.
 
 ---
 
@@ -126,7 +126,7 @@ The tests are configured via a JSON file. A template is provided at `config.json
 | `oauth.port` | UAA port | `443` |
 
 > [!NOTE]
-> The `addresses` field is automatically updated by the script on each run — you do not need to set it manually.
+> The `addresses` field is automatically updated by the script on each run — you do not need to set it manually. You can find the `admin_password` and the `oauth.client_secret` value in the secrets file of the `kind-deployment/temp` folder.  
 
 ### Verified Working Configuration
 
