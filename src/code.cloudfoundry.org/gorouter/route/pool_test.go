@@ -452,6 +452,7 @@ var _ = Describe("EndpointPool", func() {
 				pool := route.NewPool(&route.PoolOpts{
 					Logger:                 logger.Logger,
 					LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
+					HashLookupTableSize:    "S",
 				})
 
 				endpointOpts := route.EndpointOpts{
@@ -976,21 +977,45 @@ var _ = Describe("EndpointPool", func() {
 			Port:                    5678,
 			Protocol:                "http2",
 			StaleThresholdInSeconds: -1,
-			ServerCertDomainSAN:     "pvt_test_san",
-			PrivateInstanceId:       "pvt_test_instance_id",
+			ServerCertDomainSAN:     "pvt_test_san_1",
+			PrivateInstanceId:       "pvt_test_instance_id_1",
 			UseTLS:                  true,
 			LoadBalancingAlgorithm:  "hash",
 			HashHeaderName:          "X-Header",
 			HashBalanceFactor:       1.25,
 		})
 
+		e3 := route.NewEndpoint(&route.EndpointOpts{
+			Host:                    "3.3.3.3",
+			Port:                    5678,
+			StaleThresholdInSeconds: -1,
+			ServerCertDomainSAN:     "pvt_test_san_2",
+			PrivateInstanceId:       "pvt_test_instance_id_2",
+			UseTLS:                  true,
+			LoadBalancingAlgorithm:  "hash",
+			HashHeaderName:          "My-X-Header",
+			HashBalanceFactor:       0.0,
+		})
+
+		e4 := route.NewEndpoint(&route.EndpointOpts{
+			Host:                    "4.4.4.4",
+			Port:                    5678,
+			StaleThresholdInSeconds: -1,
+			ServerCertDomainSAN:     "pvt_test_san_3",
+			PrivateInstanceId:       "pvt_test_instance_id_3",
+			UseTLS:                  true,
+			LoadBalancingAlgorithm:  "hash",
+			HashHeaderName:          "My-Hash-Header",
+		})
+
 		pool.Put(e)
 		pool.Put(e2)
+		pool.Put(e3)
+		pool.Put(e4)
 
 		json, err := pool.MarshalJSON()
 		Expect(err).ToNot(HaveOccurred())
-
-		Expect(string(json)).To(Equal(`[{"address":"1.2.3.4:5678","availability_zone":"az-meow","protocol":"http1","tls":false,"ttl":-1,"route_service_url":"https://my-rs.com","tags":null},{"address":"5.6.7.8:5678","availability_zone":"","protocol":"http2","tls":true,"ttl":-1,"tags":null,"private_instance_id":"pvt_test_instance_id","server_cert_domain_san":"pvt_test_san","load_balancing_algorithm":"hash","hash_header":"X-Header","hash_balance":"1.25"}]`))
+		Expect(string(json)).To(Equal(`[{"address":"1.2.3.4:5678","availability_zone":"az-meow","protocol":"http1","tls":false,"ttl":-1,"route_service_url":"https://my-rs.com","tags":null},{"address":"5.6.7.8:5678","availability_zone":"","protocol":"http2","tls":true,"ttl":-1,"tags":null,"private_instance_id":"pvt_test_instance_id_1","server_cert_domain_san":"pvt_test_san_1","load_balancing_algorithm":"hash","hash_header":"X-Header","hash_balance":1.25},{"address":"3.3.3.3:5678","availability_zone":"","protocol":"","tls":true,"ttl":-1,"tags":null,"private_instance_id":"pvt_test_instance_id_2","server_cert_domain_san":"pvt_test_san_2","load_balancing_algorithm":"hash","hash_header":"My-X-Header","hash_balance":0},{"address":"4.4.4.4:5678","availability_zone":"","protocol":"","tls":true,"ttl":-1,"tags":null,"private_instance_id":"pvt_test_instance_id_3","server_cert_domain_san":"pvt_test_san_3","load_balancing_algorithm":"hash","hash_header":"My-Hash-Header","hash_balance":0}]`))
 	})
 
 	Context("when endpoints do not have empty tags", func() {

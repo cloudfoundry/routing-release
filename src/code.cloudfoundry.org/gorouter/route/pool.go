@@ -737,7 +737,7 @@ func (e *Endpoint) MarshalJSON() ([]byte, error) {
 		ServerCertDomainSAN    string            `json:"server_cert_domain_san,omitempty"`
 		LoadBalancingAlgorithm string            `json:"load_balancing_algorithm,omitempty"`
 		HashHeader             string            `json:"hash_header,omitempty"`
-		HashBalance            float64           `json:"hash_balance,omitempty,string"`
+		HashBalance            *float64          `json:"hash_balance,omitempty"` // omitempty on a float64 field will omit the field when the value is 0.0, to keep 0 use pointer of float64
 	}
 
 	jsonObj.Address = e.addr
@@ -752,8 +752,11 @@ func (e *Endpoint) MarshalJSON() ([]byte, error) {
 	jsonObj.ServerCertDomainSAN = e.ServerCertDomainSAN
 	jsonObj.LoadBalancingAlgorithm = e.LoadBalancingAlgorithm
 	jsonObj.HashHeader = e.HashHeaderName
-	jsonObj.HashBalance = e.HashBalanceFactor
 
+	// marshal balance factor only if load balancing algorithm is hash-based
+	if e.LoadBalancingAlgorithm == config.LOAD_BALANCE_HB {
+		jsonObj.HashBalance = &e.HashBalanceFactor
+	}
 	return json.Marshal(jsonObj)
 }
 
