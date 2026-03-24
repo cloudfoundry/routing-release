@@ -629,9 +629,9 @@ describe 'gorouter' do
             it 'should configure the property' do
               expect(parsed_yaml['tls_pem'].length).to eq(2)
               expect(parsed_yaml['tls_pem'][0]).to eq('cert_chain' => TEST_CERT,
-                                                      'private_key' => 'test-key')
+                'private_key' => 'test-key')
               expect(parsed_yaml['tls_pem'][1]).to eq('cert_chain' => TEST_CERT2,
-                                                      'private_key' => 'test-key2')
+                'private_key' => 'test-key2')
             end
           end
 
@@ -654,7 +654,7 @@ describe 'gorouter' do
             it 'should configure the property' do
               expect(parsed_yaml['tls_pem'].length).to eq(2)
               expect(parsed_yaml['tls_pem'][0]).to eq('cert_chain' => ECDSA_TEST_CERT,
-                                                      'private_key' => ECDSA_TEST_KEY)
+                'private_key' => ECDSA_TEST_KEY)
             end
           end
 
@@ -903,12 +903,12 @@ describe 'gorouter' do
           end
         end
         context 'when enable_websockets is disabled' do
-              before do
-                deployment_manifest_fragment['router']['route_services']['enable_websockets'] = false
-              end
-              it 'parses to true' do
-                expect(parsed_yaml['route_services']['enable_websockets']).to eq(false)
-              end
+          before do
+            deployment_manifest_fragment['router']['route_services']['enable_websockets'] = false
+          end
+          it 'parses to false' do
+            expect(parsed_yaml['route_services']['enable_websockets']).to eq(false)
+          end
         end
         context 'when egress_blocklist is not set' do
           it 'parses to the default blocklist' do
@@ -922,10 +922,10 @@ describe 'gorouter' do
         end
         context 'when egress_blocklist is set' do
           before do
-            deployment_manifest_fragment['router']['route_services']['egress_blocklist'] = ['10.9.8.7/8','100.200.300.400/16']
+            deployment_manifest_fragment['router']['route_services']['egress_blocklist'] = ['10.9.8.7/8', '100.200.300.400/16']
           end
           it 'parses to the specified list' do
-            expect(parsed_yaml['route_services']['egress_blocklist']).to eq(['10.9.8.7/8','100.200.300.400/16'])
+            expect(parsed_yaml['route_services']['egress_blocklist']).to eq(['10.9.8.7/8', '100.200.300.400/16'])
           end
         end
       end
