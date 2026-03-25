@@ -87,9 +87,15 @@ func GetStickySession(request *http.Request, stickySessionCookieNames config.Str
 			}
 		}
 	}
-	// Try choosing a backend using sticky session
-	for stickyCookieName := range stickySessionCookieNames {
-		if _, err := request.Cookie(stickyCookieName); err == nil {
+
+	// Try choosing a backend using sticky session.
+	// Also match the "__Host-" prefixed variant of each configured cookie name (RFC 6265bis).
+	for _, c := range request.Cookies() {
+		name := c.Name
+		if strings.HasPrefix(name, "__Host-") {
+			name = name[7:]
+		}
+		if _, ok := stickySessionCookieNames[name]; ok {
 			if sticky, err := request.Cookie(VcapCookieId); err == nil {
 				return sticky.Value, false
 			}

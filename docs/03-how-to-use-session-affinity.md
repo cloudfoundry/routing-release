@@ -106,6 +106,21 @@ for the old non-partitioned `__VCAP_ID__` cookie alongside the new partitioned o
 
 <img src="images/sticky_sessions_chips_migration.png" alt="Sticky Sessions - CHIPS migration sequence" width="800">
 
+### Does Gorouter support `__Host-` prefixed session cookies?
+Yes. [RFC 6265bis](https://www.rfc-editor.org/rfc/draft-ietf-httpbis-rfc6265bis-19.html#name-the-__host-prefix) defines
+the `__Host-` cookie prefix, which instructs browsers to enforce additional security constraints
+(the cookie must be `Secure`, must not specify a `Domain`, and the `Path` must be `/`).
+
+Gorouter recognises cookies that use the exact `__Host-` prefix (case-sensitive, matching the
+canonical casing mandated by the RFC) in front of a configured sticky session cookie name. For
+example, if `JSESSIONID` is configured as a sticky session cookie name, Gorouter will also
+recognise `__Host-JSESSIONID` as a sticky session cookie — both in application responses (to
+create the `__VCAP_ID__` + `__VCAP_ID_META__` pair) and in client requests (to route to the
+sticky backend).
+
+No additional configuration is required; the `__Host-` prefix is handled automatically for every
+name listed in `router.sticky_session_cookie_names`.
+
 ### What happens if only one of `JSESSIONID` or `__VCAP_ID__` cookies is set on a request?
 Gorouter requires both `JSESSIONID` and `__VCAP_ID__` to be present for sticky session routing.
 If only one of them is present, Gorouter will route the request to a random available application
