@@ -922,10 +922,10 @@ describe 'gorouter' do
         end
         context 'when egress_blocklist is set' do
           before do
-            deployment_manifest_fragment['router']['route_services']['egress_blocklist'] = ['10.9.8.7/8', '100.200.300.400/16']
+            deployment_manifest_fragment['router']['route_services']['egress_blocklist'] = ['10.9.8.7/8', '100.200.0.0/16']
           end
           it 'parses to the specified list' do
-            expect(parsed_yaml['route_services']['egress_blocklist']).to eq(['10.9.8.7/8', '100.200.300.400/16'])
+            expect(parsed_yaml['route_services']['egress_blocklist']).to eq(['10.9.8.7/8', '100.200.0.0/16'])
           end
         end
       end
