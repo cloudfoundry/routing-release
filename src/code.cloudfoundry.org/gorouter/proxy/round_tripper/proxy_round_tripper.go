@@ -519,7 +519,7 @@ func setupStickySession(
 	authNegotiateSticky bool,
 	logger *slog.Logger,
 ) {
-	sessionCookie, vcapCookie := getSessionCookies(response, stickySessionCookieNames)
+	sessionCookies, vcapCookie := getSessionCookies(response, stickySessionCookieNames)
 
 	// When the application sets VCAP_ID, Gorouter does not overwrite it
 	if vcapCookie != nil {
@@ -535,67 +535,65 @@ func setupStickySession(
 	// Auth Negotiation: Auth negotiation headers in request, and session has not yet been established or is stale
 	authNegotiateScenario := hasAuthNegotiate && (originalEndpointId == "" || staleSessionScenario)
 	// New Session: The application sets a session cookie in the response
-	newSessionScenario := sessionCookie != nil
+	newSessionScenario := len(sessionCookies) > 0
 
 	// Early return: Not a sticky session scenario
 	if !(staleSessionScenario || authNegotiateScenario || newSessionScenario) {
 		return
 	}
 
-	// Create VCAP_ID cookie with default cookie attributes
-	vcapCookie = &http.Cookie{
-		Name:     VcapCookieId,
-		Value:    endpoint.PrivateInstanceId,
-		Path:     path,
-		HttpOnly: true,
+	newVcapCookie := func() *http.Cookie {
+		return &http.Cookie{
+			Name:     VcapCookieId,
+			Value:    endpoint.PrivateInstanceId,
+			Path:     path,
+			HttpOnly: true,
+			Secure:   secureCookies,
+		}
 	}
-	createMetaCookie := false
 
 	if authNegotiateScenario {
+		vcapCookie := newVcapCookie()
 		vcapCookie.MaxAge = AuthNegotiateHeaderCookieMaxAgeInSeconds
 		vcapCookie.SameSite = http.SameSiteStrictMode
+		addCookieToResponse(response, vcapCookie, logger)
 	} else if newSessionScenario {
-		vcapCookie.Secure = sessionCookie.Secure
-		vcapCookie.SameSite = sessionCookie.SameSite
-		vcapCookie.Partitioned = sessionCookie.Partitioned
-		vcapCookie.MaxAge = sessionCookie.MaxAge
-		vcapCookie.Expires = sessionCookie.Expires
-		createMetaCookie = true
+		for _, sc := range sessionCookies {
+			vcapCookie := newVcapCookie()
+			vcapCookie.Secure = vcapCookie.Secure || sc.Secure // config.SecureCookies (via newVcapCookie) always overrules
+			vcapCookie.SameSite = sc.SameSite
+			vcapCookie.Partitioned = sc.Partitioned
+			vcapCookie.MaxAge = sc.MaxAge
+			vcapCookie.Expires = sc.Expires
+			addCookieToResponse(response, vcapCookie, logger)
+			addCookieToResponse(response, createVcapMetaCookie(vcapCookie), logger)
+		}
 	} else if staleSessionScenario {
-		if m := getAttributesFromMetaCookie(requestCookies, logger); m != nil {
-			// Take cookie attributes from __VCAP_ID_META__ in request
-			vcapCookie.Secure = m.secure
+		vcapCookie := newVcapCookie()
+		if m := getAttributesFromMetaCookie(requestCookies, logger); m != nil { // Take cookie attributes from __VCAP_ID_META__ in request
+			vcapCookie.Secure = vcapCookie.Secure || m.secure // config.SecureCookies (via newVcapCookie) always overrules
 			vcapCookie.SameSite = m.sameSite
 			vcapCookie.Partitioned = m.partitioned
 			vcapCookie.MaxAge = m.getMaxAgeFromMetaCookie()
 			vcapCookie.Expires = m.getExpiresFromMetaCookie()
 		}
-	}
-
-	if secureCookies { // see config.SecureCookies
-		vcapCookie.Secure = true
-	}
-
-	addCookieToResponse(response, vcapCookie, logger)
-	if createMetaCookie {
-		addCookieToResponse(response, createVcapMetaCookie(vcapCookie), logger)
+		addCookieToResponse(response, vcapCookie, logger)
 	}
 }
 
-// getSessionCookies returns the session cookie and __VCAP_ID__ cookie from the response, when they exist
-func getSessionCookies(response *http.Response, stickySessionCookieNames config.StringSet) (sessionCookie *http.Cookie, vcapIdCookie *http.Cookie) {
+// getSessionCookies returns either the __VCAP_ID__ cookie if present, or all session cookies from the response.
+// Multiple session cookies may be present during a CHIPS migration (partitioned + non-partitioned delete).
+func getSessionCookies(response *http.Response, stickySessionCookieNames config.StringSet) ([]*http.Cookie, *http.Cookie) {
+	var sessionCookies []*http.Cookie
 	for _, cookie := range response.Cookies() {
 		if cookie.Name == VcapCookieId {
-			vcapIdCookie = cookie
-			return
+			return nil, cookie
 		}
-		if sessionCookie == nil {
-			if _, ok := stickySessionCookieNames[cookie.Name]; ok {
-				sessionCookie = cookie
-			}
+		if _, ok := stickySessionCookieNames[cookie.Name]; ok {
+			sessionCookies = append(sessionCookies, cookie)
 		}
 	}
-	return
+	return sessionCookies, nil
 }
 
 // getAttributesFromMetaCookie returns the __VCAP_ID_META__ cookie from the request cookies, when it exists

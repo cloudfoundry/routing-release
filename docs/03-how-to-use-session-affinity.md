@@ -21,15 +21,17 @@ additional cookie names that the routing tier recognizes for sticky sessions by 
 the `router.sticky_session_cookie_names` configuration key in the deployment manifest.
 
 When Gorouter receives a response from an application with a `JSESSIONID` cookie (or other
-configured sticky session cookie), Gorouter sets a `__VCAP_ID__` cookie containing the
-instance GUID of the responding application. The `__VCAP_ID__` cookie inherits all relevant
-attributes from the `JSESSIONID` cookie, including `Max-Age`, `Expires`, `SameSite`, `Secure`,
-and `Partitioned`.
+configured sticky session cookie), Gorouter creates a `__VCAP_ID__` + `__VCAP_ID_META__`
+cookie pair for each matching session cookie in the response. The `__VCAP_ID__` cookie
+contains the instance GUID of the responding application and inherits all relevant attributes
+from the corresponding `JSESSIONID` cookie, including `Max-Age`, `Expires`, `SameSite`,
+`Secure`, and `Partitioned`. This per-cookie translation is important during a
+[CHIPS migration](#how-does-gorouter-support-chips-cookie-migration), where an application may
+set multiple session cookies with the same name in a single response.
 
-Gorouter also sets a companion `__VCAP_ID_META__` cookie alongside `__VCAP_ID__`. This
-metadata cookie stores the attributes of the session (such as `Secure`, `SameSite`, and
-expiry) so they can be restored if the application instance becomes unavailable and the
-application does not set a new `JSESSIONID` cookie on the replacement instance. See
+The companion `__VCAP_ID_META__` cookie stores the attributes of the session (such as `Secure`,
+`SameSite`, and expiry) so they can be restored if the application instance becomes unavailable
+and the application does not set a new `JSESSIONID` cookie on the replacement instance. See
 [`__VCAP_ID_META__`](#what-is-the-__vcap_id_meta__-cookie) for details.
 
 In subsequent requests, the client sends the `__VCAP_ID__`, `__VCAP_ID_META__`, and
@@ -86,6 +88,24 @@ and share the same security constraints.
 
 <img src="images/sticky_sessions_partitioned.png" alt="Sticky Sessions - Stale instance with partitioned cookies" width="800">
 
+### How does Gorouter support CHIPS cookie migration?
+
+[CHIPS (Cookies Having Independent Partitioned State)](https://developers.google.com/privacy-sandbox/cookies/chips)
+is a browser initiative that requires third-party cookies to use the `Partitioned` attribute.
+When an application migrates from non-partitioned to partitioned session cookies, it typically
+sets **two** `JSESSIONID` cookies in a single response during the transition:
+
+1. A new **partitioned** `JSESSIONID` — establishing the new partitioned session.
+2. A **non-partitioned** `JSESSIONID` with `Max-Age=0` — deleting the old non-partitioned
+   cookie from the browser.
+
+Gorouter translates **each** `JSESSIONID` cookie in the response into its own
+`__VCAP_ID__` + `__VCAP_ID_META__` pair, preserving the per-cookie attributes (`Partitioned`,
+`SameSite`, `Max-Age`, etc.). This ensures the browser receives the correct delete instruction
+for the old non-partitioned `__VCAP_ID__` cookie alongside the new partitioned one.
+
+<img src="images/sticky_sessions_chips_migration.png" alt="Sticky Sessions - CHIPS migration sequence" width="800">
+
 ### What happens if only one of `JSESSIONID` or `__VCAP_ID__` cookies is set on a request?
 Gorouter requires both `JSESSIONID` and `__VCAP_ID__` to be present for sticky session routing.
 If only one of them is present, Gorouter will route the request to a random available application
@@ -137,7 +157,10 @@ externally deployed route services. The `__VCAP_ID__` cookie is properly forward
 the route service chain.
 
 ### What cookie attributes does `__VCAP_ID__` inherit from `JSESSIONID`?
-The `__VCAP_ID__` cookie inherits most attributes from the `JSESSIONID` cookie set by the application.
+Each `__VCAP_ID__` cookie inherits its attributes from the corresponding `JSESSIONID` cookie in the
+response. When multiple `JSESSIONID` cookies are present (e.g., during a
+[CHIPS migration](#how-does-gorouter-support-chips-cookie-migration)), each one gets its own
+`__VCAP_ID__` + `__VCAP_ID_META__` pair with independently inherited attributes.
 [See implementation](https://github.com/cloudfoundry/routing-release/blob/e9683b43dec98ee211390c28cc8611d6869de801/src/code.cloudfoundry.org/gorouter/proxy/round_tripper/proxy_round_tripper.go#L508-L512).
 
 #### Expires, SameSite, Max-Age, Partitioned
