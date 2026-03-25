@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -eo pipefail
 
 ACCEPTANCE_DIR=${ACCEPTANCE_DIR:?"ACCEPTANCE_DIR must be set"}
 KIND_DEPLOYMENT_DIR=${KIND_DEPLOYMENT_DIR:?"KIND_DEPLOYMENT_DIR must be set"}
@@ -9,12 +9,12 @@ RTR_BIN=${RTR_BIN:?"RTR_BIN must be set"}
 EXIT_STATUS=0
 VERBOSE_MODE="${VERBOSE:+-v}"
 
-routing_api_ip=$(docker inspect cfk8s-worker --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}')
-tcp_apps_domain=$(cat "$CONFIG" | jq -r '.tcp_apps_domain')
-jq --arg ip "$routing_api_ip" '.addresses = [$ip]' "$CONFIG" > "${CONFIG}.tmp" && mv "${CONFIG}.tmp" "$CONFIG"
-
 export PATH=${RTR_BIN}:${PATH}
 export CONFIG
+
+routing_api_ip=$(docker inspect cfk8s-worker --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}')
+tcp_apps_domain=$(jq -r '.tcp_apps_domain' "$CONFIG")
+jq --arg ip "$routing_api_ip" '.addresses = [$ip]' "$CONFIG" > "${CONFIG}.tmp" && mv "${CONFIG}.tmp" "$CONFIG"
 
 make -C $KIND_DEPLOYMENT_DIR login
 cf target -o system && cf buildpacks | grep -q "go_buildpack" || make -C $KIND_DEPLOYMENT_DIR bootstrap
