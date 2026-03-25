@@ -68,7 +68,7 @@ When inside a docker container:
 - `/repo/scripts/docker/lint.bash`: This will run required linters.
 
 > [!IMPORTANT]
-> If you are about to submit a PR, please make sure to run `./scripts/test-in-docker.bash` or `DB=postgres ./scripts/test-in-docker.bash` for MySQL and Postgres to ensure everything is tested in clean container. If you are developing, you can create a docker container first, then the only required script to run before testing your specific component is `build-binaries.bash`.
+> If you are about to submit a PR, please make sure to run `DB=mysql ./scripts/test-in-docker.bash` (for MySQL) or `DB=postgres ./scripts/test-in-docker.bash` (for Postgres) to ensure everything is tested in a clean environment. If you are developing, you can create a docker container first. In this case, the script `build-binaries.bash` must be executed before testing your specific component.
 
 Running Routing Acceptance Tests (RATS)
 ---------------
