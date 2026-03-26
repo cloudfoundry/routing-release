@@ -56,7 +56,6 @@ type RouteRegistry struct {
 	isolationSegments        []string
 
 	maxConnsPerBackend  int64
-	hashLookupTableSize string
 
 	EmptyPoolTimeout              time.Duration
 	EmptyPoolResponseCode503      bool
@@ -78,7 +77,6 @@ func NewRouteRegistry(logger *slog.Logger, c *config.Config, reporter metrics.Me
 	r.isolationSegments = c.IsolationSegments
 
 	r.maxConnsPerBackend = c.Backends.MaxConns
-	r.hashLookupTableSize = c.HashBasedRouting.LookupTableSize
 	r.EmptyPoolTimeout = c.EmptyPoolTimeout
 	r.EmptyPoolResponseCode503 = c.EmptyPoolResponseCode503
 	r.DefaultLoadBalancingAlgorithm = c.LoadBalance
@@ -171,7 +169,6 @@ func (r *RouteRegistry) insertRouteKey(routekey route.Uri, uri route.Uri) (pool 
 		ContextPath:            contextPath,
 		MaxConnsPerBackend:     r.maxConnsPerBackend,
 		LoadBalancingAlgorithm: r.DefaultLoadBalancingAlgorithm,
-		HashLookupTableSize:    r.hashLookupTableSize,
 	})
 	r.byURI.Insert(routekey, pool)
 
@@ -295,8 +292,7 @@ func (r *RouteRegistry) LookupWithAppInstance(uri route.Uri, appID string, appIn
 				ContextPath:            p.ContextPath(),
 				MaxConnsPerBackend:     p.MaxConnsPerBackend(),
 				LoadBalancingAlgorithm: p.LoadBalancingAlgorithm,
-				HashLookupTableSize:    r.hashLookupTableSize,
-			})
+					})
 			surgicalPool.Put(e)
 		}
 	})
@@ -324,8 +320,7 @@ func (r *RouteRegistry) LookupWithProcessInstance(uri route.Uri, processID strin
 					ContextPath:            p.ContextPath(),
 					MaxConnsPerBackend:     p.MaxConnsPerBackend(),
 					LoadBalancingAlgorithm: p.LoadBalancingAlgorithm,
-					HashLookupTableSize:    r.hashLookupTableSize,
-				})
+							})
 			}
 			surgicalPool.Put(e)
 		}

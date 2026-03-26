@@ -45,7 +45,6 @@ var (
 	AllowedShardingModes            = []string{SHARD_ALL, SHARD_SEGMENTS, SHARD_SHARED_AND_SEGMENTS}
 	AllowedForwardedClientCertModes = []string{ALWAYS_FORWARD, FORWARD, SANITIZE_SET}
 	AllowedQueryParmRedactionModes  = []string{REDACT_QUERY_PARMS_NONE, REDACT_QUERY_PARMS_ALL, REDACT_QUERY_PARMS_HASH}
-	HashBasedLookupTableSizes       = []string{"XS", "S", "M", "L", "XL"}
 )
 
 type StringSet map[string]struct{}
@@ -178,10 +177,6 @@ type RouteServiceConfig struct {
 	TLSPem                    `yaml:",inline"` // embed to get cert_chain and private_key for client authentication
 	EnableWebsockets          bool             `yaml:"enable_websockets"`
 	EgressBlocklist           []string         `yaml:"egress_blocklist,omitempty"`
-}
-
-type HashBasedRoutingConfig struct {
-	LookupTableSize string `yaml:"lookup_table_size"`
 }
 
 type LoggingConfig struct {
@@ -463,7 +458,6 @@ type Config struct {
 	ExtraHeadersToLog           []string      `yaml:"extra_headers_to_log,omitempty"`
 
 	RouteServiceConfig RouteServiceConfig     `yaml:"route_services,omitempty"`
-	HashBasedRouting   HashBasedRoutingConfig `yaml:"hash_based_routing,omitempty"`
 
 	TokenFetcherMaxRetries                    uint32        `yaml:"token_fetcher_max_retries,omitempty"`
 	TokenFetcherRetryInterval                 time.Duration `yaml:"token_fetcher_retry_interval,omitempty"`
@@ -576,9 +570,6 @@ var defaultConfig = Config{
 	HealthCheckPollInterval: 10 * time.Second,
 	HealthCheckTimeout:      5 * time.Second,
 
-	HashBasedRouting: HashBasedRoutingConfig{
-		LookupTableSize: "S",
-	},
 }
 
 func DefaultConfig() (*Config, error) {
@@ -592,10 +583,6 @@ func IsGlobalLoadBalancingAlgorithmValid(lbAlgo string) bool {
 
 func IsLoadBalancingAlgorithmValid(lbAlgo string) bool {
 	return slices.Contains(LoadBalancingStrategies, lbAlgo)
-}
-
-func IsHashBasedLookupTableSizeValid(size string) bool {
-	return len(size) == 0 || slices.Contains(HashBasedLookupTableSizes, size)
 }
 
 func (c *Config) Process() error {
@@ -808,10 +795,6 @@ func (c *Config) Process() error {
 	}
 	if !validQueryParamRedaction {
 		return fmt.Errorf("Invalid query param redaction mode: %s. Allowed values are %s", c.Logging.RedactQueryParams, AllowedQueryParmRedactionModes)
-	}
-
-	if !IsHashBasedLookupTableSizeValid(c.HashBasedRouting.LookupTableSize) {
-		return fmt.Errorf("Invalid size %s of lookup table for hash-based routing. Allowed values are %s", c.HashBasedRouting.LookupTableSize, HashBasedLookupTableSizes)
 	}
 
 	if err := c.buildCertPool(); err != nil {

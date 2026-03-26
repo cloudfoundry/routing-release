@@ -27,14 +27,8 @@ import (
 )
 
 // Int subtype of lookup table (int16/int32/int64) limits the maximum possible size.
-// Remember to adapt type of lookupTable and permutation properties if you want to use larger sizes.
-var lookupTableSizeNames = map[string]uint64{
-	"XS": 1009,
-	"S":  3001,
-	"M":  5003,
-	"L":  10007,
-	"XL": 32003, // this size requires at least int16 for values in `lookupTable`.
-}
+// The table size is a prime number, which offers effective distribution for applications with up to 30 endpoints. //
+const lookupTableSize uint64 = 3001
 
 // permutationParams stores the parameters needed to compute permutation values on-the-fly
 type permutationParams struct {
@@ -83,12 +77,7 @@ type Maglev struct {
 }
 
 // NewMaglev initializes an empty maglev lookupTable table
-func NewMaglev(logger *slog.Logger, lookupTableSizeName string) *Maglev {
-	lookupTableSize, exists := lookupTableSizeNames[lookupTableSizeName]
-	if !exists {
-		lookupTableSize = lookupTableSizeNames["S"] // default to "S" if invalid name is provided
-		logger.Warn("Invalid name of lookup table size, defaulted to S", slog.String("size-name", lookupTableSizeName))
-	}
+func NewMaglev(logger *slog.Logger) *Maglev {
 	if logger.Enabled(context.Background(), slog.LevelDebug) {
 		logger.Debug("maglev-initialized", slog.Uint64("lookup-table-size", lookupTableSize))
 	}

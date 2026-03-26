@@ -92,14 +92,6 @@ def validate_header_count_limit (limit)
   return limit
 end
 
-def validate_lookup_table_size(size)
-  valid_sizes = ['XS', 'S', 'M', 'L', 'XL']
-  unless valid_sizes.include?(size)
-    raise "router.hash_based_routing.lookup_table_size must be one of #{valid_sizes.join(', ')}"
-  end
-  return size
-end
-
 params = {
   'zone' => spec.az,
   'status' => {
@@ -329,12 +321,6 @@ backends = {
 }
 
 params['backends'] = backends
-
-hash_based_routing = {
-  'lookup_table_size' => validate_lookup_table_size(p('router.hash_based_routing.lookup_table_size'))
-}
-
-params['hash_based_routing'] = hash_based_routing
 
 route_services_cert_chain = ''
 route_services_private_key = ''

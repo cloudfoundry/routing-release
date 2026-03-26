@@ -452,7 +452,6 @@ var _ = Describe("EndpointPool", func() {
 				pool := route.NewPool(&route.PoolOpts{
 					Logger:                 logger.Logger,
 					LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
-					HashLookupTableSize:    "S",
 				})
 
 				endpointOpts := route.EndpointOpts{

@@ -986,40 +986,6 @@ describe 'gorouter' do
         end
       end
 
-      describe 'hash_based_routing' do
-        context 'lookup_table_size' do
-          context 'as a default' do
-            it 'should set lookup_table_size to "S"' do
-              expect(parsed_yaml['hash_based_routing']['lookup_table_size']).to eq('S')
-            end
-          end
-
-          context 'when set to a custom value' do
-            before do
-              deployment_manifest_fragment['router']['hash_based_routing'] = {
-                'lookup_table_size' => 'XS'
-              }
-            end
-
-            it 'should set lookup_table_size to the custom value' do
-              expect(parsed_yaml['hash_based_routing']['lookup_table_size']).to eq('XS')
-            end
-          end
-
-          context 'when set to not valid value' do
-            before do
-              deployment_manifest_fragment['router']['hash_based_routing'] = {
-                'lookup_table_size' => 'XXX'
-              }
-            end
-
-            it 'should error' do
-              expect { raise parsed_yaml }.to raise_error(RuntimeError, /router.hash_based_routing.lookup_table_size must be one of/)
-            end
-          end
-        end
-      end
-
       context 'certificate authorities' do
         context 'client_ca_certs' do
           context 'are not provided' do
