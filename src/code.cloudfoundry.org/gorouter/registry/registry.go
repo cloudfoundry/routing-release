@@ -55,7 +55,7 @@ type RouteRegistry struct {
 	routingTableShardingMode string
 	isolationSegments        []string
 
-	maxConnsPerBackend  int64
+	maxConnsPerBackend int64
 
 	EmptyPoolTimeout              time.Duration
 	EmptyPoolResponseCode503      bool
@@ -292,7 +292,7 @@ func (r *RouteRegistry) LookupWithAppInstance(uri route.Uri, appID string, appIn
 				ContextPath:            p.ContextPath(),
 				MaxConnsPerBackend:     p.MaxConnsPerBackend(),
 				LoadBalancingAlgorithm: p.LoadBalancingAlgorithm,
-					})
+			})
 			surgicalPool.Put(e)
 		}
 	})
@@ -320,7 +320,7 @@ func (r *RouteRegistry) LookupWithProcessInstance(uri route.Uri, processID strin
 					ContextPath:            p.ContextPath(),
 					MaxConnsPerBackend:     p.MaxConnsPerBackend(),
 					LoadBalancingAlgorithm: p.LoadBalancingAlgorithm,
-							})
+				})
 			}
 			surgicalPool.Put(e)
 		}

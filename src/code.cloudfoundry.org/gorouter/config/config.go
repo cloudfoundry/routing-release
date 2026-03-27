@@ -457,7 +457,7 @@ type Config struct {
 	Backends                    BackendConfig `yaml:"backends,omitempty"`
 	ExtraHeadersToLog           []string      `yaml:"extra_headers_to_log,omitempty"`
 
-	RouteServiceConfig RouteServiceConfig     `yaml:"route_services,omitempty"`
+	RouteServiceConfig RouteServiceConfig `yaml:"route_services,omitempty"`
 
 	TokenFetcherMaxRetries                    uint32        `yaml:"token_fetcher_max_retries,omitempty"`
 	TokenFetcherRetryInterval                 time.Duration `yaml:"token_fetcher_retry_interval,omitempty"`
@@ -569,7 +569,6 @@ var defaultConfig = Config{
 	// Default load balancer values
 	HealthCheckPollInterval: 10 * time.Second,
 	HealthCheckTimeout:      5 * time.Second,
-
 }
 
 func DefaultConfig() (*Config, error) {

@@ -2476,7 +2476,7 @@ var _ = Describe("ProxyRoundTripper", func() {
 						Expect(err).ToNot(HaveOccurred())
 
 						cookies = resp.Cookies()
-						Expect(cookies).To(HaveLen(2))
+						Expect(cookies).To(HaveLen(3)) // JSESSIONID + VCAP_ID + VCAP_ID_META
 
 					})
 
@@ -2502,16 +2502,17 @@ var _ = Describe("ProxyRoundTripper", func() {
 							Expect(err).ToNot(HaveOccurred())
 
 							new_cookies := resp.Cookies()
-							Expect(new_cookies).To(HaveLen(2))
+							Expect(new_cookies).To(HaveLen(3))
 
 							for _, cookie := range new_cookies {
 								Expect(cookie.Name).To(SatisfyAny(
 									Equal(StickyCookieKey),
 									Equal(round_tripper.VcapCookieId),
+									Equal(round_tripper.VcapMetaCookieId),
 								))
 								if cookie.Name == StickyCookieKey {
 									Expect(cookie.Value).To(Equal("abc"))
-								} else {
+								} else if cookie.Name == round_tripper.VcapCookieId {
 									Expect(cookie.Value).To(Equal("instanceID1"))
 								}
 							}
