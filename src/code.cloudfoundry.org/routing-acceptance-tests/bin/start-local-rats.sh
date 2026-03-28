@@ -16,7 +16,7 @@ routing_api_ip=$(docker inspect cfk8s-worker --format '{{range .NetworkSettings.
 tcp_apps_domain=$(jq -r '.tcp_apps_domain' "$CONFIG")
 jq --arg ip "$routing_api_ip" '.addresses = [$ip]' "$CONFIG" > "${CONFIG}.tmp" && mv "${CONFIG}.tmp" "$CONFIG"
 
-make -C $KIND_DEPLOYMENT_DIR login
+make -C $KIND_DEPLOYMENT_DIR login </dev/null
 cf target -o system && cf buildpacks | grep -q "go_buildpack" || make -C $KIND_DEPLOYMENT_DIR bootstrap
 cf target -o system && cf domains | grep -q "$tcp_apps_domain" || cf create-shared-domain $tcp_apps_domain --router-group default-tcp
 

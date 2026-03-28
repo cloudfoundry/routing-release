@@ -130,7 +130,7 @@ The tests are configured via a JSON file. A template is provided at `config.json
 
 ### Verified Working Configuration
 
-A tested and working `config.json` looks like:
+A tested and working `config.json` could look like this. Make sure to replace `<secret>` with the actual values (`admin_password` and `oauth.client_secret`) from the `kind-deployment/temp` folder:
 
 ```json
 {
