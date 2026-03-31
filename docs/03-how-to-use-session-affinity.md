@@ -121,6 +121,22 @@ sticky backend).
 No additional configuration is required; the `__Host-` prefix is handled automatically for every
 name listed in `router.sticky_session_cookie_names`.
 
+### What happens when both `JSESSIONID` and `__Host-JSESSIONID` are in the same response?
+Gorouter creates a `__VCAP_ID__` + `__VCAP_ID_META__` pair for each session cookie — the same
+behaviour as [CHIPS migration](#how-does-gorouter-support-chips-cookie-migration). Since both
+`__VCAP_ID__` cookies share the same name and (unless one is `Partitioned`) the same browser
+cookie jar slot, the browser will only retain the last one.
+
+In practice this is not a concern: unlike CHIPS migration, there is no need to set both cookies in
+the same response. Because `JSESSIONID` and `__Host-JSESSIONID` are distinct cookie names in the
+browser's jar, the expected migration path is for the application to simply stop setting
+`JSESSIONID` and start setting `__Host-JSESSIONID` — the old cookie expires naturally.
+
+Note: if an application were to set a new `__Host-JSESSIONID` alongside a delete (`Max-Age=0`) for
+the old `JSESSIONID` in the same response, both would produce a `__VCAP_ID__` in the same cookie
+jar partition. Depending on processing order, the browser could apply the delete `__VCAP_ID__`
+after the new one, effectively removing it.
+
 ### What happens if only one of `JSESSIONID` or `__VCAP_ID__` cookies is set on a request?
 Gorouter requires both `JSESSIONID` and `__VCAP_ID__` to be present for sticky session routing.
 If only one of them is present, Gorouter will route the request to a random available application
