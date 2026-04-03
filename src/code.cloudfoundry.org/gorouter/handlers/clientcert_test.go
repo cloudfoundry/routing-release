@@ -236,7 +236,7 @@ var _ = Describe("Clientcert mTLS Domain XFCC Format", func() {
 			cfg, err := config.DefaultConfig()
 			Expect(err).NotTo(HaveOccurred())
 
-			cfg.MtlsDomains = []config.MtlsDomainConfig{{
+			cfg.Domains = []config.MtlsDomainConfig{{
 				Domain:              "*.apps.mtls.internal",
 				CACerts:             string(certChain.CACertPEM),
 				ForwardedClientCert: config.SANITIZE_SET,
@@ -319,7 +319,7 @@ var _ = Describe("Clientcert mTLS Domain XFCC Format", func() {
 			cfg, err := config.DefaultConfig()
 			Expect(err).NotTo(HaveOccurred())
 
-			cfg.MtlsDomains = []config.MtlsDomainConfig{{
+			cfg.Domains = []config.MtlsDomainConfig{{
 				Domain:              "*.apps.mtls.internal",
 				CACerts:             string(certChain.CACertPEM),
 				ForwardedClientCert: config.SANITIZE_SET,
@@ -395,7 +395,7 @@ var _ = Describe("Clientcert mTLS Domain XFCC Format", func() {
 			cfg, err := config.DefaultConfig()
 			Expect(err).NotTo(HaveOccurred())
 
-			cfg.MtlsDomains = []config.MtlsDomainConfig{{
+			cfg.Domains = []config.MtlsDomainConfig{{
 				Domain:              "*.apps.mtls.internal",
 				CACerts:             string(certChain.CACertPEM),
 				ForwardedClientCert: config.SANITIZE_SET,
@@ -405,7 +405,7 @@ var _ = Describe("Clientcert mTLS Domain XFCC Format", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// After Process(), XFCCFormat should be set to "raw"
-			Expect(cfg.MtlsDomains[0].XFCCFormat).To(Equal(config.XFCC_FORMAT_RAW))
+			Expect(cfg.Domains[0].XFCCFormat).To(Equal(config.XFCC_FORMAT_RAW))
 		})
 	})
 })

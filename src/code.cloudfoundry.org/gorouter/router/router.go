@@ -3,6 +3,7 @@ package router
 import (
 	"bytes"
 	"compress/zlib"
+	"context"
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
@@ -215,6 +216,12 @@ func (r *Router) Run(signals <-chan os.Signal, ready chan<- struct{}) error {
 		IdleTimeout:       r.config.FrontendIdleTimeout,
 		ReadHeaderTimeout: r.config.ReadHeaderTimeout,
 		MaxHeaderBytes:    MAX_HEADER_BYTES,
+		// ConnContext injects a mutable *TLSConnState per connection so that
+		// getTLSConfigForClient can populate it during the TLS handshake and
+		// the authorization handler can read it later.
+		ConnContext: func(ctx context.Context, c net.Conn) context.Context {
+			return handlers.SetTLSConnState(ctx, &handlers.TLSConnState{})
+		},
 	}
 
 	err = r.serveHTTP(server, r.errChan)
@@ -367,13 +374,24 @@ func (r *Router) verifyMtlsMetadata(_ [][]byte, chains [][]*x509.Certificate) er
 func (r *Router) getTLSConfigForClient(hello *tls.ClientHelloInfo, baseConfig *tls.Config) (*tls.Config, error) {
 	serverName := hello.ServerName
 
+	// Populate TLSConnState in the connection context (set by ConnContext above).
+	// The pointer was allocated in ConnContext; we mutate it here during the handshake.
+	if connState, ok := hello.Context().Value(handlers.TLSConnStateKey{}).(*handlers.TLSConnState); ok && connState != nil {
+		connState.SNI = serverName
+	}
+
 	mtlsDomainConfig := r.config.GetMtlsDomainConfig(serverName)
 	if mtlsDomainConfig == nil {
 		// Not an mTLS domain, use base config
 		return baseConfig, nil
 	}
 
-	// mTLS domain - require client certificate
+	// mTLS domain — require client certificate and record the state.
+	if connState, ok := hello.Context().Value(handlers.TLSConnStateKey{}).(*handlers.TLSConnState); ok && connState != nil {
+		connState.ClientCertRequired = true
+		connState.MtlsDomain = mtlsDomainConfig.Domain
+	}
+
 	mtlsConfig := baseConfig.Clone()
 	mtlsConfig.ClientAuth = tls.RequireAndVerifyClientCert
 	mtlsConfig.ClientCAs = mtlsDomainConfig.CAPool

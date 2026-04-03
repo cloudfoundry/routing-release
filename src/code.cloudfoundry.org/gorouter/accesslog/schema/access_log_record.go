@@ -127,6 +127,20 @@ type AccessLogRecord struct {
 	GorouterTime                float64
 
 	LocalAddress string
+
+	// mTLS authorization fields (populated for mTLS domains only).
+	// MtlsAuth is "allowed" or "denied"; empty for non-mTLS requests.
+	MtlsAuth string
+	// MtlsRule identifies the rule that matched or caused denial.
+	MtlsRule string
+	// MtlsDeniedReason is a human-readable denial explanation (empty on allow).
+	MtlsDeniedReason string
+	// CallerApp/Space/Org are the CF identity fields from the client certificate.
+	CallerApp   string
+	CallerSpace string
+	CallerOrg   string
+	// TlsSNI is the SNI used during TLS (logged on 421 rejections).
+	TlsSNI string
 }
 
 func (r *AccessLogRecord) formatStartedAt() string {
@@ -315,6 +329,43 @@ func (r *AccessLogRecord) makeRecord(performTruncate bool) []byte {
 	// #nosec  G104 - ignore errors from writing the access log as it will only cause more errors to log this error
 	b.WriteString(`x_cf_routererror:`)
 	b.WriteDashOrStringValue(r.RouterError)
+
+	// mTLS identity and authorization fields (only emitted when present)
+	if r.TlsSNI != "" {
+		// #nosec G104
+		b.WriteString(` tls_sni:`)
+		b.WriteDashOrStringValue(r.TlsSNI)
+	}
+	if r.CallerApp != "" {
+		// #nosec G104
+		b.WriteString(` caller_app:`)
+		b.WriteDashOrStringValue(r.CallerApp)
+	}
+	if r.CallerSpace != "" {
+		// #nosec G104
+		b.WriteString(` caller_space:`)
+		b.WriteDashOrStringValue(r.CallerSpace)
+	}
+	if r.CallerOrg != "" {
+		// #nosec G104
+		b.WriteString(` caller_org:`)
+		b.WriteDashOrStringValue(r.CallerOrg)
+	}
+	if r.MtlsAuth != "" {
+		// #nosec G104
+		b.WriteString(` mtls_auth:`)
+		b.WriteDashOrStringValue(r.MtlsAuth)
+	}
+	if r.MtlsRule != "" {
+		// #nosec G104
+		b.WriteString(` mtls_rule:`)
+		b.WriteDashOrStringValue(r.MtlsRule)
+	}
+	if r.MtlsDeniedReason != "" {
+		// #nosec G104
+		b.WriteString(` mtls_denied_reason:`)
+		b.WriteDashOrStringValue(r.MtlsDeniedReason)
+	}
 
 	r.addExtraHeaders(b, performTruncate)
 

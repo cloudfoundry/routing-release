@@ -72,22 +72,17 @@ type RouteSchema struct {
 	EnableBackendTLS     bool                `json:"enable_backend_tls,omitempty" yaml:"enable_backend_tls,omitempty"`
 	ALPNs                []string            `json:"alpns,omitempty" yaml:"alpns,omitempty"`
 	Options              *Options            `json:"options,omitempty" yaml:"options,omitempty"`
-	MtlsAllowedSources   *MtlsAllowedSources `json:"mtls_allowed_sources,omitempty" yaml:"mtls_allowed_sources,omitempty"`
 }
 
-// MtlsAllowedSources contains authorization rules for which sources can communicate
-// with this endpoint on mTLS domains. Per RFC specification:
-// - If Any is true, any authenticated app is allowed (mutually exclusive with Apps/Spaces/Orgs)
-// - If Any is false, at least one of Apps/Spaces/Orgs must be specified (default-deny)
-type MtlsAllowedSources struct {
-	Apps   []string `json:"apps,omitempty" yaml:"apps,omitempty"`
-	Spaces []string `json:"spaces,omitempty" yaml:"spaces,omitempty"`
-	Orgs   []string `json:"orgs,omitempty" yaml:"orgs,omitempty"`
-	Any    bool     `json:"any,omitempty" yaml:"any,omitempty"`
-}
-
+// Options configures per-route options passed to GoRouter via NATS.
 type Options struct {
 	LoadBalancingAlgorithm LoadBalancingAlgorithm `json:"loadbalancing,omitempty" yaml:"loadbalancing,omitempty"`
+	// AccessScope is the operator-level scope boundary: "any", "org", or "space".
+	// Non-empty means access control enforcement is active for this route.
+	AccessScope string `json:"access_scope,omitempty" yaml:"access_scope,omitempty"`
+	// AccessRules is a comma-separated list of selectors (e.g. "cf:app:<guid>").
+	// Requires AccessScope to be set. Empty + non-empty AccessScope = default-deny.
+	AccessRules string `json:"access_rules,omitempty" yaml:"access_rules,omitempty"`
 }
 
 type LoadBalancingAlgorithm string
@@ -171,7 +166,6 @@ type Route struct {
 	ALPNs                []string
 	EnableBackendTLS     bool
 	Options              *Options
-	MtlsAllowedSources   *MtlsAllowedSources
 }
 
 func NewConfigSchemaFromFile(configFile string) (ConfigSchema, error) {
@@ -379,7 +373,6 @@ func RouteFromSchema(r RouteSchema, index int, host string) (*Route, error) {
 		ALPNs:                r.ALPNs,
 		EnableBackendTLS:     r.EnableBackendTLS,
 		Options:              r.Options,
-		MtlsAllowedSources:   r.MtlsAllowedSources,
 	}
 
 	if r.Type == "sni" {

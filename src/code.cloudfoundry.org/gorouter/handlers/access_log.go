@@ -92,6 +92,15 @@ func (a *accessLog) ServeHTTP(rw http.ResponseWriter, r *http.Request, next http
 
 	alr.LocalAddress = reqInfo.LocalAddress
 
+	// mTLS authorization fields
+	alr.MtlsAuth = reqInfo.MtlsAuth
+	alr.MtlsRule = reqInfo.MtlsRule
+	alr.MtlsDeniedReason = reqInfo.MtlsDeniedReason
+	alr.CallerApp = reqInfo.CallerApp
+	alr.CallerSpace = reqInfo.CallerSpace
+	alr.CallerOrg = reqInfo.CallerOrg
+	alr.TlsSNI = reqInfo.TlsSNI
+
 	a.accessLogger.Log(*alr)
 
 	if panicVal != nil {

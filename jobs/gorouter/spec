@@ -200,25 +200,25 @@ properties:
   router.only_trust_client_ca_certs:
     description: "When router.only_trust_client_ca_certs is true, router.client_ca_certs are the only trusted CA certs for client requests. When router.only_trust_client_ca_certs is false, router.client_ca_certs are trusted in addition to router.ca_certs and the CA certificates installed on the filesystem. This will have no affect if the `router.client_cert_validation` property is set to none."
     default: false
-  router.mtls_domains:
+  router.domains:
     description: |
       Array of domains requiring mutual TLS authentication. Each domain can have its own CA certificate pool, forwarded_client_cert mode, and xfcc_format.
       For non-wildcard domains, the domain must match the request host exactly.
-      For wildcard domains (e.g., *.apps.mtls.internal), the wildcard must be the leftmost label and matches any single label.
+      For wildcard domains (e.g., *.apps.identity), the wildcard must be the leftmost label and matches any single label.
       
       xfcc_format controls the format of the X-Forwarded-Client-Cert header:
       - "raw" (default): Full base64-encoded certificate (~1.5KB)
       - "envoy": Compact Hash=<sha256>;Subject="<DN>" format (~300 bytes)
     default: []
     example:
-    - domain: "*.apps.mtls.internal"
+    - name: "*.apps.identity"
       ca_certs: |
         -----BEGIN CERTIFICATE-----
-        <CA certificate for apps.mtls.internal domain>
+        <CA certificate for apps.identity domain>
         -----END CERTIFICATE-----
       forwarded_client_cert: sanitize_set
       xfcc_format: envoy
-    - domain: "secure.example.com"
+    - name: "secure.example.com"
       ca_certs: |
         -----BEGIN CERTIFICATE-----
         <CA certificate for secure.example.com>

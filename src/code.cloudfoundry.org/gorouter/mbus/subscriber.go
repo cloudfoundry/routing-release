@@ -22,44 +22,36 @@ import (
 )
 
 type RegistryMessage struct {
-	App                     string              `json:"app"`
-	AvailabilityZone        string              `json:"availability_zone"`
-	EndpointUpdatedAtNs     int64               `json:"endpoint_updated_at_ns"`
-	Host                    string              `json:"host"`
-	IsolationSegment        string              `json:"isolation_segment"`
-	Port                    uint16              `json:"port"`
-	PrivateInstanceID       string              `json:"private_instance_id"`
-	PrivateInstanceIndex    string              `json:"private_instance_index"`
-	Protocol                string              `json:"protocol"`
-	RouteServiceURL         string              `json:"route_service_url"`
-	ServerCertDomainSAN     string              `json:"server_cert_domain_san"`
-	StaleThresholdInSeconds int                 `json:"stale_threshold_in_seconds"`
-	TLSPort                 uint16              `json:"tls_port"`
-	Tags                    map[string]string   `json:"tags"`
-	Uris                    []route.Uri         `json:"uris"`
+	App                     string            `json:"app"`
+	AvailabilityZone        string            `json:"availability_zone"`
+	EndpointUpdatedAtNs     int64             `json:"endpoint_updated_at_ns"`
+	Host                    string            `json:"host"`
+	IsolationSegment        string            `json:"isolation_segment"`
+	Port                    uint16            `json:"port"`
+	PrivateInstanceID       string            `json:"private_instance_id"`
+	PrivateInstanceIndex    string            `json:"private_instance_index"`
+	Protocol                string            `json:"protocol"`
+	RouteServiceURL         string            `json:"route_service_url"`
+	ServerCertDomainSAN     string            `json:"server_cert_domain_san"`
+	StaleThresholdInSeconds int               `json:"stale_threshold_in_seconds"`
+	TLSPort                 uint16            `json:"tls_port"`
+	Tags                    map[string]string `json:"tags"`
+	Uris                    []route.Uri       `json:"uris"`
 	Options                 RegistryMessageOpts `json:"options"`
-	MtlsAllowedSources      *MtlsAllowedSources `json:"mtls_allowed_sources,omitempty"`
 }
 
 type RegistryMessageOpts struct {
 	LoadBalancingAlgorithm string  `json:"loadbalancing"`
 	HashHeaderName         string  `json:"hash_header"`
-	HashBalance            float64 `json:"hash_balance,string"`
+	HashBalance            float64 `json:"hash_balance"`
+	// RFC access control options (from Cloud Controller via Diego sync)
+	AccessScope string `json:"access_scope,omitempty"`
+	AccessRules string `json:"access_rules,omitempty"`
 }
 
-// MtlsAllowedSources contains authorization rules for which sources can communicate
-// with this endpoint on mTLS domains. Per RFC specification:
-// - If Any is true, any authenticated app is allowed (mutually exclusive with Apps/Spaces/Orgs)
-// - If Any is false, at least one of Apps/Spaces/Orgs must be specified (default-deny)
-type MtlsAllowedSources struct {
-	Apps   []string `json:"apps,omitempty"`
-	Spaces []string `json:"spaces,omitempty"`
-	Orgs   []string `json:"orgs,omitempty"`
-	Any    bool     `json:"any,omitempty"`
-}
-
-// parseCommaSeparatedGUIDs splits a comma-separated string into a slice of GUIDs
-func parseCommaSeparatedGUIDs(s string) []string {
+// parseCommaSeparatedSelectors splits a comma-separated string into a slice of selectors.
+// Returns nil if the input is empty.
+func parseCommaSeparatedSelectors(s string) []string {
 	if s == "" {
 		return nil
 	}
@@ -75,45 +67,6 @@ func parseCommaSeparatedGUIDs(s string) []string {
 		return nil
 	}
 	return result
-}
-
-// getMtlsAllowedSources returns the MtlsAllowedSources, or nil if not present
-func getMtlsAllowedSources(as *MtlsAllowedSources) *route.MtlsAllowedSources {
-	if as == nil {
-		return nil
-	}
-	return &route.MtlsAllowedSources{
-		Apps:   as.Apps,
-		Spaces: as.Spaces,
-		Orgs:   as.Orgs,
-		Any:    as.Any,
-	}
-}
-
-// getEffectiveMtlsAllowedSources returns MtlsAllowedSources from either top-level or flat options.
-// Top-level takes precedence (used by route-registrar), flat options are RFC-0027 compliant (used by CAPI/Diego).
-func (rm *RegistryMessage) getEffectiveMtlsAllowedSources() *route.MtlsAllowedSources {
-	// Top-level mtls_allowed_sources takes precedence (route-registrar uses this)
-	if rm.MtlsAllowedSources != nil {
-		return getMtlsAllowedSources(rm.MtlsAllowedSources)
-	}
-	// Fall back to RFC-0027 compliant flat options
-	apps := parseCommaSeparatedGUIDs(rm.Options.MtlsAllowedApps)
-	spaces := parseCommaSeparatedGUIDs(rm.Options.MtlsAllowedSpaces)
-	orgs := parseCommaSeparatedGUIDs(rm.Options.MtlsAllowedOrgs)
-	allowAny := rm.Options.MtlsAllowAny
-
-	// If no mTLS options are set, return nil
-	if apps == nil && spaces == nil && orgs == nil && !allowAny {
-		return nil
-	}
-
-	return &route.MtlsAllowedSources{
-		Apps:   apps,
-		Spaces: spaces,
-		Orgs:   orgs,
-		Any:    allowAny,
-	}
 }
 
 func (rm *RegistryMessage) makeEndpoint(http2Enabled bool, globalRoutingAlgo string) (*route.Endpoint, error) {
@@ -155,7 +108,8 @@ func (rm *RegistryMessage) makeEndpoint(http2Enabled bool, globalRoutingAlgo str
 		LoadBalancingAlgorithm:  lbAlgo,
 		HashHeaderName:          rm.Options.HashHeaderName,
 		HashBalanceFactor:       rm.Options.HashBalance,
-		MtlsAllowedSources:      rm.getEffectiveMtlsAllowedSources(),
+		AccessScope:             rm.Options.AccessScope,
+		AccessRules:             parseCommaSeparatedSelectors(rm.Options.AccessRules),
 	}), nil
 }
 

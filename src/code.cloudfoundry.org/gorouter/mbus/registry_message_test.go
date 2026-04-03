@@ -61,7 +61,7 @@ var _ = Describe("RegistryMessage", func() {
 		})
 	})
 
-	Describe("MakeEndpoint with MtlsAllowedSources", func() {
+	Describe("MakeEndpoint with access_scope and access_rules", func() {
 		var message *RegistryMessage
 		var payload []byte
 
@@ -71,36 +71,7 @@ var _ = Describe("RegistryMessage", func() {
 			Expect(err).NotTo(HaveOccurred())
 		})
 
-		Describe("With mtls_allowed_sources at top level", func() {
-			BeforeEach(func() {
-				payload = []byte(`{
-					"app":"app1",
-					"uris":["test.com"],
-					"host":"1.2.3.4",
-					"port":1234,
-					"tags":{},
-					"private_instance_id":"private_instance_id",
-					"mtls_allowed_sources": {
-						"apps": ["app-guid-1", "app-guid-2"],
-						"spaces": ["space-guid-1"],
-						"orgs": ["org-guid-1"],
-						"any": false
-					}
-				}`)
-			})
-
-			It("parses mtls_allowed_sources correctly", func() {
-				endpoint, err := message.MakeEndpoint(false)
-				Expect(err).NotTo(HaveOccurred())
-				Expect(endpoint.MtlsAllowedSources).NotTo(BeNil())
-				Expect(endpoint.MtlsAllowedSources.Apps).To(ConsistOf("app-guid-1", "app-guid-2"))
-				Expect(endpoint.MtlsAllowedSources.Spaces).To(ConsistOf("space-guid-1"))
-				Expect(endpoint.MtlsAllowedSources.Orgs).To(ConsistOf("org-guid-1"))
-				Expect(endpoint.MtlsAllowedSources.Any).To(BeFalse())
-			})
-		})
-
-		Describe("With flat mTLS options in options (RFC-0027 compliant CAPI/Diego format)", func() {
+		Describe("With access_scope=any and no access_rules", func() {
 			BeforeEach(func() {
 				payload = []byte(`{
 					"app":"app1",
@@ -110,27 +81,20 @@ var _ = Describe("RegistryMessage", func() {
 					"tags":{},
 					"private_instance_id":"private_instance_id",
 					"options": {
-						"loadbalancing": "round-robin",
-						"mtls_allowed_apps": "app-guid-1,app-guid-2",
-						"mtls_allowed_spaces": "space-guid-1",
-						"mtls_allowed_orgs": "org-guid-1",
-						"mtls_allow_any": true
+						"access_scope": "any"
 					}
 				}`)
 			})
 
-			It("parses flat mTLS options correctly", func() {
+			It("parses access_scope correctly with empty rules", func() {
 				endpoint, err := message.MakeEndpoint(false)
 				Expect(err).NotTo(HaveOccurred())
-				Expect(endpoint.MtlsAllowedSources).NotTo(BeNil())
-				Expect(endpoint.MtlsAllowedSources.Apps).To(ConsistOf("app-guid-1", "app-guid-2"))
-				Expect(endpoint.MtlsAllowedSources.Spaces).To(ConsistOf("space-guid-1"))
-				Expect(endpoint.MtlsAllowedSources.Orgs).To(ConsistOf("org-guid-1"))
-				Expect(endpoint.MtlsAllowedSources.Any).To(BeTrue())
+				Expect(endpoint.AccessScope).To(Equal("any"))
+				Expect(endpoint.AccessRules).To(BeEmpty())
 			})
 		})
 
-		Describe("With mtls_allowed_sources at top-level and flat options", func() {
+		Describe("With access_scope=org and access_rules listing apps and spaces", func() {
 			BeforeEach(func() {
 				payload = []byte(`{
 					"app":"app1",
@@ -139,24 +103,50 @@ var _ = Describe("RegistryMessage", func() {
 					"port":1234,
 					"tags":{},
 					"private_instance_id":"private_instance_id",
-					"mtls_allowed_sources": {
-						"apps": ["top-level-app"]
-					},
 					"options": {
-						"mtls_allowed_apps": "flat-options-app"
+						"access_scope": "org",
+						"access_rules": "cf:app:app-guid-1,cf:space:space-guid-1,cf:org:org-guid-1"
 					}
 				}`)
 			})
 
-			It("uses top-level mtls_allowed_sources (takes precedence)", func() {
+			It("parses access_scope and access_rules correctly", func() {
 				endpoint, err := message.MakeEndpoint(false)
 				Expect(err).NotTo(HaveOccurred())
-				Expect(endpoint.MtlsAllowedSources).NotTo(BeNil())
-				Expect(endpoint.MtlsAllowedSources.Apps).To(ConsistOf("top-level-app"))
+				Expect(endpoint.AccessScope).To(Equal("org"))
+				Expect(endpoint.AccessRules).To(ConsistOf(
+					"cf:app:app-guid-1",
+					"cf:space:space-guid-1",
+					"cf:org:org-guid-1",
+				))
 			})
 		})
 
-		Describe("With no mtls_allowed_sources", func() {
+		Describe("With access_scope=space and cf:any rule", func() {
+			BeforeEach(func() {
+				payload = []byte(`{
+					"app":"app1",
+					"uris":["test.com"],
+					"host":"1.2.3.4",
+					"port":1234,
+					"tags":{},
+					"private_instance_id":"private_instance_id",
+					"options": {
+						"access_scope": "space",
+						"access_rules": "cf:any"
+					}
+				}`)
+			})
+
+			It("parses cf:any rule correctly", func() {
+				endpoint, err := message.MakeEndpoint(false)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(endpoint.AccessScope).To(Equal("space"))
+				Expect(endpoint.AccessRules).To(ConsistOf("cf:any"))
+			})
+		})
+
+		Describe("With no access_scope or access_rules", func() {
 			BeforeEach(func() {
 				payload = []byte(`{
 					"app":"app1",
@@ -168,10 +158,11 @@ var _ = Describe("RegistryMessage", func() {
 				}`)
 			})
 
-			It("returns nil for mtls_allowed_sources", func() {
+			It("leaves AccessScope empty and AccessRules nil", func() {
 				endpoint, err := message.MakeEndpoint(false)
 				Expect(err).NotTo(HaveOccurred())
-				Expect(endpoint.MtlsAllowedSources).To(BeNil())
+				Expect(endpoint.AccessScope).To(BeEmpty())
+				Expect(endpoint.AccessRules).To(BeEmpty())
 			})
 		})
 	})

@@ -410,9 +410,10 @@ type Config struct {
 	ClientCACerts                  string            `yaml:"client_ca_certs,omitempty"`
 	ClientCAPool                   *x509.CertPool    `yaml:"-"`
 
-	// MtlsDomains configures domains that require client certificates (mTLS)
-	// Routes on these domains will require valid instance identity certificates
-	MtlsDomains []MtlsDomainConfig `yaml:"mtls_domains,omitempty"`
+	// Domains configures domains that require client certificates (mTLS).
+	// Corresponds to router.domains in the BOSH manifest (RFC: router.domains).
+	// Routes on these domains will require valid instance identity certificates.
+	Domains []MtlsDomainConfig `yaml:"domains,omitempty"`
 	// Computed: map of domain -> config for fast lookup
 	mtlsDomainMap map[string]*MtlsDomainConfig `yaml:"-"`
 
@@ -931,8 +932,8 @@ func (c *Config) processMtlsDomains() error {
 	// Initialize mTLS domain map
 	c.mtlsDomainMap = make(map[string]*MtlsDomainConfig)
 
-	for i := range c.MtlsDomains {
-		domain := &c.MtlsDomains[i]
+	for i := range c.Domains {
+		domain := &c.Domains[i]
 		domain.RequireClientCert = true
 
 		// Validate forwarded_client_cert mode
@@ -940,7 +941,7 @@ func (c *Config) processMtlsDomains() error {
 			domain.ForwardedClientCert = SANITIZE_SET // Default to most secure
 		}
 		if !slices.Contains(AllowedForwardedClientCertModes, domain.ForwardedClientCert) {
-			return fmt.Errorf("mtls_domains[%d].forwarded_client_cert must be one of %v",
+			return fmt.Errorf("domains[%d].forwarded_client_cert must be one of %v",
 				i, AllowedForwardedClientCertModes)
 		}
 
@@ -949,7 +950,7 @@ func (c *Config) processMtlsDomains() error {
 			domain.XFCCFormat = XFCC_FORMAT_RAW // Default to raw for backwards compatibility
 		}
 		if !slices.Contains(AllowedXFCCFormats, domain.XFCCFormat) {
-			return fmt.Errorf("mtls_domains[%d].xfcc_format must be one of %v",
+			return fmt.Errorf("domains[%d].xfcc_format must be one of %v",
 				i, AllowedXFCCFormats)
 		}
 
@@ -957,16 +958,16 @@ func (c *Config) processMtlsDomains() error {
 		if domain.CACerts != "" {
 			pool := x509.NewCertPool()
 			if !pool.AppendCertsFromPEM([]byte(domain.CACerts)) {
-				return fmt.Errorf("mtls_domains[%d].ca_certs contains invalid certificates", i)
+				return fmt.Errorf("domains[%d].ca_certs contains invalid certificates", i)
 			}
 			domain.CAPool = pool
 		} else {
-			return fmt.Errorf("mtls_domains[%d].ca_certs is required", i)
+			return fmt.Errorf("domains[%d].ca_certs is required", i)
 		}
 
 		// Validate domain is not empty
 		if domain.Domain == "" {
-			return fmt.Errorf("mtls_domains[%d].domain is required", i)
+			return fmt.Errorf("domains[%d].domain is required", i)
 		}
 
 		c.mtlsDomainMap[domain.Domain] = domain

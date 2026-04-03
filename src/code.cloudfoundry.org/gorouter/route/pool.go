@@ -63,30 +63,13 @@ type Stats struct {
 	NumberConnections *Counter
 }
 
-// MtlsAllowedSources contains authorization rules for which sources can communicate
-// with this endpoint on mTLS domains. Per RFC specification:
-// - If Any is true, any authenticated app is allowed (mutually exclusive with Apps/Spaces/Orgs)
-// - If Any is false, at least one of Apps/Spaces/Orgs must be specified (default-deny)
-type MtlsAllowedSources struct {
-	Apps   []string
-	Spaces []string
-	Orgs   []string
-	Any    bool
-}
-
-// Equal compares two MtlsAllowedSources for equality
-func (as *MtlsAllowedSources) Equal(other *MtlsAllowedSources) bool {
-	if as == nil && other == nil {
-		return true
-	}
-	if as == nil || other == nil {
-		return false
-	}
-	return slices.Equal(as.Apps, other.Apps) &&
-		slices.Equal(as.Spaces, other.Spaces) &&
-		slices.Equal(as.Orgs, other.Orgs) &&
-		as.Any == other.Any
-}
+// AccessScopeAny, AccessScopeOrg, AccessScopeSpace are the valid values for AccessScope.
+// They correspond to the access_rules_scope field in Cloud Controller.
+const (
+	AccessScopeAny   = "any"
+	AccessScopeOrg   = "org"
+	AccessScopeSpace = "space"
+)
 
 func NewStats() *Stats {
 	return &Stats{
@@ -143,7 +126,12 @@ type Endpoint struct {
 	LoadBalancingAlgorithm string
 	HashHeaderName         string
 	HashBalanceFactor      float64
-	MtlsAllowedSources     *MtlsAllowedSources
+	// AccessScope is the operator-level scope boundary: "any", "org", or "space".
+	// Non-empty means access control is enforced for this endpoint's route.
+	AccessScope string
+	// AccessRules is the list of parsed selectors (e.g. "cf:app:<guid>", "cf:space:<guid>",
+	// "cf:org:<guid>", "cf:any"). Empty with a non-empty AccessScope means default-deny.
+	AccessRules []string
 }
 
 func (e *Endpoint) RoundTripper() ProxyRoundTripper {
@@ -190,7 +178,8 @@ func (e *Endpoint) Equal(e2 *Endpoint) bool {
 		e.HashHeaderName == e2.HashHeaderName &&
 		e.HashBalanceFactor == e2.HashBalanceFactor &&
 		maps.Equal(e.Tags, e2.Tags) &&
-		e.MtlsAllowedSources.Equal(e2.MtlsAllowedSources)
+		e.AccessScope == e2.AccessScope &&
+		slices.Equal(e.AccessRules, e2.AccessRules)
 
 }
 
@@ -258,7 +247,12 @@ type EndpointOpts struct {
 	LoadBalancingAlgorithm  string
 	HashHeaderName          string
 	HashBalanceFactor       float64
-	MtlsAllowedSources      *MtlsAllowedSources
+	// AccessScope is the operator-level scope: "any", "org", or "space".
+	// Non-empty means enforcement is active for this route.
+	AccessScope string
+	// AccessRules are the parsed selectors for this route.
+	// Empty + non-empty AccessScope means default-deny.
+	AccessRules []string
 }
 
 func NewEndpoint(opts *EndpointOpts) *Endpoint {
@@ -279,7 +273,8 @@ func NewEndpoint(opts *EndpointOpts) *Endpoint {
 		IsolationSegment:       opts.IsolationSegment,
 		UpdatedAt:              opts.UpdatedAt,
 		LoadBalancingAlgorithm: opts.LoadBalancingAlgorithm,
-		MtlsAllowedSources:     opts.MtlsAllowedSources,
+		AccessScope:            opts.AccessScope,
+		AccessRules:            opts.AccessRules,
 	}
 
 	if opts.LoadBalancingAlgorithm == config.LOAD_BALANCE_HB && opts.HashHeaderName != "" { // BalanceFactor is optional
@@ -608,10 +603,25 @@ func (p *EndpointPool) IsEmpty() bool {
 	return l == 0
 }
 
-// MtlsAllowedSources returns the MtlsAllowedSources from the first endpoint in the pool.
-// All endpoints in a pool should have the same MtlsAllowedSources since they are
-// instances of the same application route registered with the same authorization rules.
-func (p *EndpointPool) MtlsAllowedSources() *MtlsAllowedSources {
+// AccessScope returns the access scope from the first endpoint in the pool.
+// All endpoints in a pool share the same access scope since they represent
+// instances of the same application route registered with the same options.
+// Returns empty string if the pool is empty or enforcement is not active.
+func (p *EndpointPool) AccessScope() string {
+	p.Lock()
+	defer p.Unlock()
+
+	if len(p.endpoints) == 0 {
+		return ""
+	}
+
+	return p.endpoints[0].endpoint.AccessScope
+}
+
+// AccessRules returns the access rules from the first endpoint in the pool.
+// All endpoints in a pool share the same access rules.
+// Returns nil if the pool is empty.
+func (p *EndpointPool) AccessRules() []string {
 	p.Lock()
 	defer p.Unlock()
 
@@ -619,7 +629,45 @@ func (p *EndpointPool) MtlsAllowedSources() *MtlsAllowedSources {
 		return nil
 	}
 
-	return p.endpoints[0].endpoint.MtlsAllowedSources
+	return p.endpoints[0].endpoint.AccessRules
+}
+
+// EndpointOrgIDs returns all unique organization_id tag values from endpoints in the pool.
+// Used for scope=org evaluation across shared routes.
+func (p *EndpointPool) EndpointOrgIDs() []string {
+	p.Lock()
+	defer p.Unlock()
+
+	seen := make(map[string]struct{})
+	var result []string
+	for _, e := range p.endpoints {
+		if id := e.endpoint.Tags["organization_id"]; id != "" {
+			if _, ok := seen[id]; !ok {
+				seen[id] = struct{}{}
+				result = append(result, id)
+			}
+		}
+	}
+	return result
+}
+
+// EndpointSpaceIDs returns all unique space_id tag values from endpoints in the pool.
+// Used for scope=space evaluation across shared routes.
+func (p *EndpointPool) EndpointSpaceIDs() []string {
+	p.Lock()
+	defer p.Unlock()
+
+	seen := make(map[string]struct{})
+	var result []string
+	for _, e := range p.endpoints {
+		if id := e.endpoint.Tags["space_id"]; id != "" {
+			if _, ok := seen[id]; !ok {
+				seen[id] = struct{}{}
+				result = append(result, id)
+			}
+		}
+	}
+	return result
 }
 
 // ApplicationId returns the ApplicationId from the first endpoint in the pool.

@@ -23,6 +23,39 @@ type key string
 
 const RequestInfoCtxKey key = "RequestInfo"
 
+// TLSConnStateKey is the context key type for TLSConnState.
+// Exported so router.go can retrieve the pointer during the TLS handshake.
+type TLSConnStateKey struct{}
+
+// TLSConnState captures per-connection TLS handshake state.
+// It is stored in a connection-scoped context via http.Server.ConnContext
+// (set by router.go) and retrieved per-request in authorization handlers.
+type TLSConnState struct {
+	// SNI is the Server Name Indication value from the TLS ClientHello.
+	SNI string
+	// MtlsDomain is the matched mTLS domain name (empty if none matched).
+	MtlsDomain string
+	// ClientCertRequired is true when GoRouter required and validated a client
+	// certificate during the TLS handshake for this connection.
+	ClientCertRequired bool
+}
+
+// SetTLSConnState stores the TLSConnState in a context (for use in ConnContext).
+func SetTLSConnState(ctx context.Context, state *TLSConnState) context.Context {
+	return context.WithValue(ctx, TLSConnStateKey{}, state)
+}
+
+// GetTLSConnectionState retrieves the TLSConnState from the request context.
+// Returns a zero-value TLSConnState (not nil) if none was set (e.g. plain HTTP).
+func GetTLSConnectionState(r *http.Request) TLSConnState {
+	if v := r.Context().Value(TLSConnStateKey{}); v != nil {
+		if state, ok := v.(*TLSConnState); ok && state != nil {
+			return *state
+		}
+	}
+	return TLSConnState{}
+}
+
 type TraceInfo struct {
 	TraceID string
 	SpanID  string
@@ -85,6 +118,23 @@ type RequestInfo struct {
 	// CallerIdentity contains the identity of the calling application extracted
 	// from the client certificate on mTLS domains. Will be nil for non-mTLS requests.
 	CallerIdentity *CallerIdentity
+
+	// MtlsAuth is the authorization outcome for RTR log: "allowed" or "denied".
+	// Empty for non-mTLS requests.
+	MtlsAuth string
+	// MtlsRule identifies which rule matched or caused denial, e.g.
+	// "route:cf:app:<guid>", "domain:scope=org", "route:no_access_rules".
+	MtlsRule string
+	// MtlsDeniedReason is a human-readable explanation for denial, empty on allow.
+	MtlsDeniedReason string
+	// CallerApp is the CF app GUID from the client certificate (for RTR log).
+	CallerApp string
+	// CallerSpace is the CF space GUID from the client certificate (for RTR log).
+	CallerSpace string
+	// CallerOrg is the CF org GUID from the client certificate (for RTR log).
+	CallerOrg string
+	// TlsSNI is the SNI value used during the TLS handshake (for RTR log on 421).
+	TlsSNI string
 }
 
 func (r *RequestInfo) ProvideTraceInfo() (TraceInfo, error) {
