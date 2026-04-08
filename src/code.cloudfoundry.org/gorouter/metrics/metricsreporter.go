@@ -206,7 +206,7 @@ func (m *Metrics) CaptureEndpointsPerPool(endpoints int, route string, lbAlgo st
 }
 
 // Empty implementation here is to fulfil interface
-func (m *Metrics) DeleteEndpointsPerPool(route string, lbAlgo string) {
+func (m *Metrics) UncaptureEndpointsPerPool(route string, lbAlgo string) {
 }
 
 func getResponseCounterName(statusCode int) string {

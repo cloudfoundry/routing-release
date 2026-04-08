@@ -558,6 +558,310 @@ var _ = Describe("RouteRegistry", func() {
 		})
 	})
 
+	Context("endpoints_per_pool metric", func() {
+		It("reports the metric when registering an endpoint with hash-based routing", func() {
+			hbEndpoint1 := route.NewEndpoint(&route.EndpointOpts{
+				Host:                   "192.168.1.1",
+				Port:                   8080,
+				PrivateInstanceId:      "id-hb-1",
+				LoadBalancingAlgorithm: config.LOAD_BALANCE_HB,
+			})
+			hbEndpoint2 := route.NewEndpoint(&route.EndpointOpts{
+				Host:                   "192.168.1.2",
+				Port:                   8080,
+				PrivateInstanceId:      "id-hb-2",
+				LoadBalancingAlgorithm: config.LOAD_BALANCE_HB,
+			})
+
+			r.Register("hb.example.com", hbEndpoint1)
+			Expect(reporter.CaptureEndpointsPerPoolCallCount()).To(BeNumerically(">=", 1))
+			count, uri, algo := reporter.CaptureEndpointsPerPoolArgsForCall(0)
+			Expect(count).To(Equal(1))
+			Expect(uri).To(Equal("hb.example.com"))
+			Expect(algo).To(Equal(config.LOAD_BALANCE_HB))
+
+			r.Register("hb.example.com", hbEndpoint2)
+			lastCall := reporter.CaptureEndpointsPerPoolCallCount() - 1
+			count, uri, algo = reporter.CaptureEndpointsPerPoolArgsForCall(lastCall)
+			Expect(count).To(Equal(2))
+			Expect(uri).To(Equal("hb.example.com"))
+			Expect(algo).To(Equal(config.LOAD_BALANCE_HB))
+		})
+
+		It("does not delete the metric immediately after capturing it for HB endpoints", func() {
+			hbEndpoint := route.NewEndpoint(&route.EndpointOpts{
+				Host:                   "192.168.1.1",
+				Port:                   8080,
+				PrivateInstanceId:      "id-hb-1",
+				LoadBalancingAlgorithm: config.LOAD_BALANCE_HB,
+			})
+
+			r.Register("hb.example.com", hbEndpoint)
+
+			captureCount := reporter.CaptureEndpointsPerPoolCallCount()
+			deleteCount := reporter.UncaptureEndpointsPerPoolCallCount()
+
+			// The metric should be captured but NOT deleted for an active HB route
+			Expect(captureCount).To(Equal(1))
+			Expect(deleteCount).To(Equal(0), "UncaptureEndpointsPerPool should not be called when registering an HB endpoint with a live pool")
+		})
+
+		It("does not report the metric for non-HB endpoints", func() {
+			rrEndpoint := route.NewEndpoint(&route.EndpointOpts{
+				Host:                   "192.168.1.1",
+				Port:                   8080,
+				PrivateInstanceId:      "id-rr-1",
+				LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
+			})
+
+			r.Register("rr.example.com", rrEndpoint)
+			Expect(reporter.CaptureEndpointsPerPoolCallCount()).To(Equal(0))
+		})
+
+		It("deletes the metric when the last HB endpoint is unregistered", func() {
+			hbEndpoint := route.NewEndpoint(&route.EndpointOpts{
+				Host:                   "192.168.1.1",
+				Port:                   8080,
+				PrivateInstanceId:      "id-hb-1",
+				LoadBalancingAlgorithm: config.LOAD_BALANCE_HB,
+			})
+
+			r.Register("hb.example.com", hbEndpoint)
+			Expect(reporter.CaptureEndpointsPerPoolCallCount()).To(BeNumerically(">=", 1))
+
+			r.Unregister("hb.example.com", hbEndpoint)
+			// After unregistering the last endpoint, the metric should be deleted
+			Expect(reporter.UncaptureEndpointsPerPoolCallCount()).To(BeNumerically(">=", 1))
+			lastCall := reporter.UncaptureEndpointsPerPoolCallCount() - 1
+			uri, algo := reporter.UncaptureEndpointsPerPoolArgsForCall(lastCall)
+			Expect(uri).To(Equal("hb.example.com"))
+			Expect(algo).To(Equal(config.LOAD_BALANCE_HB))
+		})
+
+		It("updates the metric when an HB endpoint is removed but others remain", func() {
+			hbEndpoint1 := route.NewEndpoint(&route.EndpointOpts{
+				Host:                   "192.168.1.1",
+				Port:                   8080,
+				PrivateInstanceId:      "id-hb-1",
+				LoadBalancingAlgorithm: config.LOAD_BALANCE_HB,
+			})
+			hbEndpoint2 := route.NewEndpoint(&route.EndpointOpts{
+				Host:                   "192.168.1.2",
+				Port:                   8080,
+				PrivateInstanceId:      "id-hb-2",
+				LoadBalancingAlgorithm: config.LOAD_BALANCE_HB,
+			})
+
+			r.Register("hb.example.com", hbEndpoint1)
+			r.Register("hb.example.com", hbEndpoint2)
+
+			r.Unregister("hb.example.com", hbEndpoint1)
+			lastCall := reporter.CaptureEndpointsPerPoolCallCount() - 1
+			count, uri, algo := reporter.CaptureEndpointsPerPoolArgsForCall(lastCall)
+			Expect(count).To(Equal(1))
+			Expect(uri).To(Equal("hb.example.com"))
+			Expect(algo).To(Equal(config.LOAD_BALANCE_HB))
+		})
+
+		It("deletes the HB metric when a route switches from hash-based to round-robin", func() {
+			hbEndpoint := route.NewEndpoint(&route.EndpointOpts{
+				Host:                   "192.168.1.1",
+				Port:                   8080,
+				PrivateInstanceId:      "id-1",
+				LoadBalancingAlgorithm: config.LOAD_BALANCE_HB,
+			})
+
+			r.Register("switching.example.com", hbEndpoint)
+			Expect(reporter.CaptureEndpointsPerPoolCallCount()).To(BeNumerically(">=", 1))
+
+			// Same endpoint now registers with round-robin algorithm
+			rrEndpoint := route.NewEndpoint(&route.EndpointOpts{
+				Host:                   "192.168.1.1",
+				Port:                   8080,
+				PrivateInstanceId:      "id-1",
+				LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
+			})
+
+			deleteBefore := reporter.UncaptureEndpointsPerPoolCallCount()
+			r.Register("switching.example.com", rrEndpoint)
+
+			// Should have called delete to clean up the stale HB metric
+			Expect(reporter.UncaptureEndpointsPerPoolCallCount()).To(BeNumerically(">", deleteBefore))
+			found := false
+			for i := deleteBefore; i < reporter.UncaptureEndpointsPerPoolCallCount(); i++ {
+				uri, algo := reporter.UncaptureEndpointsPerPoolArgsForCall(i)
+				if uri == "switching.example.com" && algo == config.LOAD_BALANCE_HB {
+					found = true
+					break
+				}
+			}
+			Expect(found).To(BeTrue(), "expected UncaptureEndpointsPerPool to be called for the switched route")
+		})
+
+		It("deletes the HB metric when the HB algorithm is removed and endpoint registers with the platform default", func() {
+			hbEndpoint := route.NewEndpoint(&route.EndpointOpts{
+				Host:                   "192.168.1.1",
+				Port:                   8080,
+				PrivateInstanceId:      "id-1",
+				LoadBalancingAlgorithm: config.LOAD_BALANCE_HB,
+			})
+
+			r.Register("removed-hb.example.com", hbEndpoint)
+			Expect(reporter.CaptureEndpointsPerPoolCallCount()).To(BeNumerically(">=", 1))
+
+			// Endpoint re-registers with platform default algorithm (HB setting explicitly removed from route)
+			defaultAlgoEndpoint := route.NewEndpoint(&route.EndpointOpts{
+				Host:                   "192.168.1.1",
+				Port:                   8080,
+				PrivateInstanceId:      "id-1",
+				LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
+			})
+
+			deleteBefore := reporter.UncaptureEndpointsPerPoolCallCount()
+			r.Register("removed-hb.example.com", defaultAlgoEndpoint)
+
+			Expect(reporter.UncaptureEndpointsPerPoolCallCount()).To(BeNumerically(">", deleteBefore))
+			found := false
+			for i := deleteBefore; i < reporter.UncaptureEndpointsPerPoolCallCount(); i++ {
+				uri, algo := reporter.UncaptureEndpointsPerPoolArgsForCall(i)
+				if uri == "removed-hb.example.com" && algo == config.LOAD_BALANCE_HB {
+					found = true
+					break
+				}
+			}
+			Expect(found).To(BeTrue(), "expected UncaptureEndpointsPerPool to be called when HB algorithm is removed")
+		})
+
+		It("calls uncapture for non-HB endpoints", func() {
+			rrEndpoint := route.NewEndpoint(&route.EndpointOpts{
+				Host:                   "192.168.1.1",
+				Port:                   8080,
+				PrivateInstanceId:      "id-1",
+				LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
+			})
+
+			r.Register("rr-route.example.com", rrEndpoint)
+			Expect(reporter.CaptureEndpointsPerPoolCallCount()).To(Equal(0))
+			Expect(reporter.UncaptureEndpointsPerPoolCallCount()).To(BeNumerically(">=", 1))
+		})
+
+		It("does not change the metric count when an existing HB endpoint is updated", func() {
+			hbEndpoint := route.NewEndpoint(&route.EndpointOpts{
+				Host:                   "192.168.1.1",
+				Port:                   8080,
+				PrivateInstanceId:      "id-hb-1",
+				LoadBalancingAlgorithm: config.LOAD_BALANCE_HB,
+				Tags:                   map[string]string{"version": "v1"},
+			})
+
+			r.Register("hb.example.com", hbEndpoint)
+			Expect(reporter.CaptureEndpointsPerPoolCallCount()).To(Equal(1))
+			count, _, _ := reporter.CaptureEndpointsPerPoolArgsForCall(0)
+			Expect(count).To(Equal(1))
+
+			// Re-register the same endpoint with updated tags (triggers EndpointUpdated)
+			hbEndpointUpdated := route.NewEndpoint(&route.EndpointOpts{
+				Host:                   "192.168.1.1",
+				Port:                   8080,
+				PrivateInstanceId:      "id-hb-1",
+				LoadBalancingAlgorithm: config.LOAD_BALANCE_HB,
+				Tags:                   map[string]string{"version": "v2"},
+			})
+
+			r.Register("hb.example.com", hbEndpointUpdated)
+			lastCall := reporter.CaptureEndpointsPerPoolCallCount() - 1
+			count, _, _ = reporter.CaptureEndpointsPerPoolArgsForCall(lastCall)
+			Expect(count).To(Equal(1), "endpoint count should remain 1 after updating an existing endpoint")
+		})
+
+		It("deletes the metric when HB endpoints are pruned", func() {
+			hbEndpoint := route.NewEndpoint(&route.EndpointOpts{
+				Host:                    "192.168.1.1",
+				Port:                    8080,
+				PrivateInstanceId:       "id-hb-1",
+				LoadBalancingAlgorithm:  config.LOAD_BALANCE_HB,
+				StaleThresholdInSeconds: int(configObj.DropletStaleThreshold.Seconds()),
+			})
+
+			r.Register("hb-prune.example.com", hbEndpoint)
+			Expect(reporter.CaptureEndpointsPerPoolCallCount()).To(BeNumerically(">=", 1))
+
+			r.StartPruningCycle()
+			defer r.StopPruningCycle()
+
+			// Wait for the endpoint to go stale and be pruned
+			Eventually(func() int {
+				return reporter.UncaptureEndpointsPerPoolCallCount()
+			}, configObj.PruneStaleDropletsInterval+configObj.DropletStaleThreshold+100*time.Millisecond).Should(BeNumerically(">=", 1))
+
+			found := false
+			for i := 0; i < reporter.UncaptureEndpointsPerPoolCallCount(); i++ {
+				uri, algo := reporter.UncaptureEndpointsPerPoolArgsForCall(i)
+				if uri == "hb-prune.example.com" && algo == config.LOAD_BALANCE_HB {
+					found = true
+					break
+				}
+			}
+			Expect(found).To(BeTrue(), "expected UncaptureEndpointsPerPool to be called when HB endpoints are pruned")
+		})
+
+		It("updates the metric when some HB endpoints are pruned but others remain", func() {
+			freshEndpoint := route.NewEndpoint(&route.EndpointOpts{
+				Host:                   "192.168.1.1",
+				Port:                   8080,
+				PrivateInstanceId:      "id-hb-1",
+				LoadBalancingAlgorithm: config.LOAD_BALANCE_HB,
+			})
+			staleEndpoint := route.NewEndpoint(&route.EndpointOpts{
+				Host:                    "192.168.1.2",
+				Port:                    8080,
+				PrivateInstanceId:       "id-hb-2",
+				LoadBalancingAlgorithm:  config.LOAD_BALANCE_HB,
+				StaleThresholdInSeconds: int(configObj.DropletStaleThreshold.Seconds()),
+			})
+
+			r.Register("hb-partial-prune.example.com", freshEndpoint)
+			r.Register("hb-partial-prune.example.com", staleEndpoint)
+
+			doneChan := make(chan struct{})
+			defer close(doneChan)
+
+			// Keep the fresh endpoint alive during pruning
+			go func() {
+				for {
+					select {
+					case <-doneChan:
+						return
+					default:
+						r.Register("hb-partial-prune.example.com", freshEndpoint)
+						time.Sleep(configObj.DropletStaleThreshold / 2)
+					}
+				}
+			}()
+
+			captureCountBefore := reporter.CaptureEndpointsPerPoolCallCount()
+
+			r.StartPruningCycle()
+			defer r.StopPruningCycle()
+
+			// Wait for the stale endpoint to be pruned
+			Eventually(func() int {
+				return reporter.CaptureEndpointsPerPoolCallCount()
+			}, 2*(configObj.PruneStaleDropletsInterval+configObj.DropletStaleThreshold)).Should(BeNumerically(">", captureCountBefore))
+
+			// Find the capture call from pruning that shows count decreased to 1
+			found := false
+			for i := captureCountBefore; i < reporter.CaptureEndpointsPerPoolCallCount(); i++ {
+				count, uri, algo := reporter.CaptureEndpointsPerPoolArgsForCall(i)
+				if uri == "hb-partial-prune.example.com" && algo == config.LOAD_BALANCE_HB && count == 1 {
+					found = true
+					break
+				}
+			}
+			Expect(found).To(BeTrue(), "expected CaptureEndpointsPerPool to be called with count=1 after partial pruning")
+		})
+	})
+
 	Context("Unregister", func() {
 		Context("when endpoint has component tagged", func() {
 			BeforeEach(func() {

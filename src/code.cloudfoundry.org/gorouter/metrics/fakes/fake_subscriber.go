@@ -151,10 +151,6 @@ func (fake *FakeSubscriber) PendingReturnsOnCall(i int, result1 int, result2 err
 func (fake *FakeSubscriber) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
-	fake.droppedMutex.RLock()
-	defer fake.droppedMutex.RUnlock()
-	fake.pendingMutex.RLock()
-	defer fake.pendingMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value

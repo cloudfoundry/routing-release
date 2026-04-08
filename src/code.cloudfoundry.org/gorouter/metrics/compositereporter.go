@@ -48,7 +48,7 @@ type MetricReporter interface {
 	CaptureNATSDroppedMessages(messages int)
 	UnmuzzleRouteRegistrationLatency()
 	CaptureEndpointsPerPool(endpoints int, route string, lbAlgo string)
-	DeleteEndpointsPerPool(route, lbAlgo string)
+	UncaptureEndpointsPerPool(route, lbAlgo string)
 }
 
 type ComponentTagged interface {
@@ -238,9 +238,9 @@ func (m MultiMetricReporter) CaptureEndpointsPerPool(endpoints int, route string
 	}
 }
 
-func (m MultiMetricReporter) DeleteEndpointsPerPool(route, lbAlgo string) {
+func (m MultiMetricReporter) UncaptureEndpointsPerPool(route, lbAlgo string) {
 	for _, r := range m {
-		r.DeleteEndpointsPerPool(route, lbAlgo)
+		r.UncaptureEndpointsPerPool(route, lbAlgo)
 	}
 }
 
@@ -276,6 +276,6 @@ func (c *CompositeReporter) CaptureEndpointsPerPool(endpoints int, route string,
 	c.MetricReporter.CaptureEndpointsPerPool(endpoints, route, lbAlgo)
 }
 
-func (c *CompositeReporter) DeleteEndpointsPerPool(route, lbAlgo string) {
-	c.MetricReporter.DeleteEndpointsPerPool(route, lbAlgo)
+func (c *CompositeReporter) UncaptureEndpointsPerPool(route, lbAlgo string) {
+	c.MetricReporter.UncaptureEndpointsPerPool(route, lbAlgo)
 }

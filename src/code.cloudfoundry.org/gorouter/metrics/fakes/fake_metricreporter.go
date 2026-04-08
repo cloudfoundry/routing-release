@@ -39,6 +39,13 @@ type FakeMetricReporter struct {
 	captureEmptyContentLengthHeaderMutex       sync.RWMutex
 	captureEmptyContentLengthHeaderArgsForCall []struct {
 	}
+	CaptureEndpointsPerPoolStub        func(int, string, string)
+	captureEndpointsPerPoolMutex       sync.RWMutex
+	captureEndpointsPerPoolArgsForCall []struct {
+		arg1 int
+		arg2 string
+		arg3 string
+	}
 	CaptureFoundFileDescriptorsStub        func(int)
 	captureFoundFileDescriptorsMutex       sync.RWMutex
 	captureFoundFileDescriptorsArgsForCall []struct {
@@ -135,6 +142,12 @@ type FakeMetricReporter struct {
 	CaptureWebSocketUpdateStub        func()
 	captureWebSocketUpdateMutex       sync.RWMutex
 	captureWebSocketUpdateArgsForCall []struct {
+	}
+	UncaptureEndpointsPerPoolStub        func(string, string)
+	uncaptureEndpointsPerPoolMutex       sync.RWMutex
+	uncaptureEndpointsPerPoolArgsForCall []struct {
+		arg1 string
+		arg2 string
 	}
 	UnmuzzleRouteRegistrationLatencyStub        func()
 	unmuzzleRouteRegistrationLatencyMutex       sync.RWMutex
@@ -310,6 +323,40 @@ func (fake *FakeMetricReporter) CaptureEmptyContentLengthHeaderCalls(stub func()
 	fake.captureEmptyContentLengthHeaderMutex.Lock()
 	defer fake.captureEmptyContentLengthHeaderMutex.Unlock()
 	fake.CaptureEmptyContentLengthHeaderStub = stub
+}
+
+func (fake *FakeMetricReporter) CaptureEndpointsPerPool(arg1 int, arg2 string, arg3 string) {
+	fake.captureEndpointsPerPoolMutex.Lock()
+	fake.captureEndpointsPerPoolArgsForCall = append(fake.captureEndpointsPerPoolArgsForCall, struct {
+		arg1 int
+		arg2 string
+		arg3 string
+	}{arg1, arg2, arg3})
+	stub := fake.CaptureEndpointsPerPoolStub
+	fake.recordInvocation("CaptureEndpointsPerPool", []interface{}{arg1, arg2, arg3})
+	fake.captureEndpointsPerPoolMutex.Unlock()
+	if stub != nil {
+		fake.CaptureEndpointsPerPoolStub(arg1, arg2, arg3)
+	}
+}
+
+func (fake *FakeMetricReporter) CaptureEndpointsPerPoolCallCount() int {
+	fake.captureEndpointsPerPoolMutex.RLock()
+	defer fake.captureEndpointsPerPoolMutex.RUnlock()
+	return len(fake.captureEndpointsPerPoolArgsForCall)
+}
+
+func (fake *FakeMetricReporter) CaptureEndpointsPerPoolCalls(stub func(int, string, string)) {
+	fake.captureEndpointsPerPoolMutex.Lock()
+	defer fake.captureEndpointsPerPoolMutex.Unlock()
+	fake.CaptureEndpointsPerPoolStub = stub
+}
+
+func (fake *FakeMetricReporter) CaptureEndpointsPerPoolArgsForCall(i int) (int, string, string) {
+	fake.captureEndpointsPerPoolMutex.RLock()
+	defer fake.captureEndpointsPerPoolMutex.RUnlock()
+	argsForCall := fake.captureEndpointsPerPoolArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
 func (fake *FakeMetricReporter) CaptureFoundFileDescriptors(arg1 int) {
@@ -894,6 +941,39 @@ func (fake *FakeMetricReporter) CaptureWebSocketUpdateCalls(stub func()) {
 	fake.CaptureWebSocketUpdateStub = stub
 }
 
+func (fake *FakeMetricReporter) UncaptureEndpointsPerPool(arg1 string, arg2 string) {
+	fake.uncaptureEndpointsPerPoolMutex.Lock()
+	fake.uncaptureEndpointsPerPoolArgsForCall = append(fake.uncaptureEndpointsPerPoolArgsForCall, struct {
+		arg1 string
+		arg2 string
+	}{arg1, arg2})
+	stub := fake.UncaptureEndpointsPerPoolStub
+	fake.recordInvocation("UncaptureEndpointsPerPool", []interface{}{arg1, arg2})
+	fake.uncaptureEndpointsPerPoolMutex.Unlock()
+	if stub != nil {
+		fake.UncaptureEndpointsPerPoolStub(arg1, arg2)
+	}
+}
+
+func (fake *FakeMetricReporter) UncaptureEndpointsPerPoolCallCount() int {
+	fake.uncaptureEndpointsPerPoolMutex.RLock()
+	defer fake.uncaptureEndpointsPerPoolMutex.RUnlock()
+	return len(fake.uncaptureEndpointsPerPoolArgsForCall)
+}
+
+func (fake *FakeMetricReporter) UncaptureEndpointsPerPoolCalls(stub func(string, string)) {
+	fake.uncaptureEndpointsPerPoolMutex.Lock()
+	defer fake.uncaptureEndpointsPerPoolMutex.Unlock()
+	fake.UncaptureEndpointsPerPoolStub = stub
+}
+
+func (fake *FakeMetricReporter) UncaptureEndpointsPerPoolArgsForCall(i int) (string, string) {
+	fake.uncaptureEndpointsPerPoolMutex.RLock()
+	defer fake.uncaptureEndpointsPerPoolMutex.RUnlock()
+	argsForCall := fake.uncaptureEndpointsPerPoolArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
 func (fake *FakeMetricReporter) UnmuzzleRouteRegistrationLatency() {
 	fake.unmuzzleRouteRegistrationLatencyMutex.Lock()
 	fake.unmuzzleRouteRegistrationLatencyArgsForCall = append(fake.unmuzzleRouteRegistrationLatencyArgsForCall, struct {
@@ -921,60 +1001,6 @@ func (fake *FakeMetricReporter) UnmuzzleRouteRegistrationLatencyCalls(stub func(
 func (fake *FakeMetricReporter) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
-	fake.captureBackendExhaustedConnsMutex.RLock()
-	defer fake.captureBackendExhaustedConnsMutex.RUnlock()
-	fake.captureBackendInvalidIDMutex.RLock()
-	defer fake.captureBackendInvalidIDMutex.RUnlock()
-	fake.captureBackendInvalidTLSCertMutex.RLock()
-	defer fake.captureBackendInvalidTLSCertMutex.RUnlock()
-	fake.captureBackendTLSHandshakeFailedMutex.RLock()
-	defer fake.captureBackendTLSHandshakeFailedMutex.RUnlock()
-	fake.captureBadGatewayMutex.RLock()
-	defer fake.captureBadGatewayMutex.RUnlock()
-	fake.captureBadRequestMutex.RLock()
-	defer fake.captureBadRequestMutex.RUnlock()
-	fake.captureEmptyContentLengthHeaderMutex.RLock()
-	defer fake.captureEmptyContentLengthHeaderMutex.RUnlock()
-	fake.captureFoundFileDescriptorsMutex.RLock()
-	defer fake.captureFoundFileDescriptorsMutex.RUnlock()
-	fake.captureGorouterTimeMutex.RLock()
-	defer fake.captureGorouterTimeMutex.RUnlock()
-	fake.captureHTTPLatencyMutex.RLock()
-	defer fake.captureHTTPLatencyMutex.RUnlock()
-	fake.captureLookupTimeMutex.RLock()
-	defer fake.captureLookupTimeMutex.RUnlock()
-	fake.captureNATSBufferedMessagesMutex.RLock()
-	defer fake.captureNATSBufferedMessagesMutex.RUnlock()
-	fake.captureNATSDroppedMessagesMutex.RLock()
-	defer fake.captureNATSDroppedMessagesMutex.RUnlock()
-	fake.captureRegistryMessageMutex.RLock()
-	defer fake.captureRegistryMessageMutex.RUnlock()
-	fake.captureRouteRegistrationLatencyMutex.RLock()
-	defer fake.captureRouteRegistrationLatencyMutex.RUnlock()
-	fake.captureRouteServiceResponseMutex.RLock()
-	defer fake.captureRouteServiceResponseMutex.RUnlock()
-	fake.captureRouteStatsMutex.RLock()
-	defer fake.captureRouteStatsMutex.RUnlock()
-	fake.captureRoutesPrunedMutex.RLock()
-	defer fake.captureRoutesPrunedMutex.RUnlock()
-	fake.captureRoutesRegisteredMutex.RLock()
-	defer fake.captureRoutesRegisteredMutex.RUnlock()
-	fake.captureRoutesUnregisteredMutex.RLock()
-	defer fake.captureRoutesUnregisteredMutex.RUnlock()
-	fake.captureRoutingRequestMutex.RLock()
-	defer fake.captureRoutingRequestMutex.RUnlock()
-	fake.captureRoutingResponseMutex.RLock()
-	defer fake.captureRoutingResponseMutex.RUnlock()
-	fake.captureRoutingResponseLatencyMutex.RLock()
-	defer fake.captureRoutingResponseLatencyMutex.RUnlock()
-	fake.captureUnregistryMessageMutex.RLock()
-	defer fake.captureUnregistryMessageMutex.RUnlock()
-	fake.captureWebSocketFailureMutex.RLock()
-	defer fake.captureWebSocketFailureMutex.RUnlock()
-	fake.captureWebSocketUpdateMutex.RLock()
-	defer fake.captureWebSocketUpdateMutex.RUnlock()
-	fake.unmuzzleRouteRegistrationLatencyMutex.RLock()
-	defer fake.unmuzzleRouteRegistrationLatencyMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value
