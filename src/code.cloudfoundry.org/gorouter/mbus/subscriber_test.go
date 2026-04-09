@@ -566,7 +566,7 @@ var _ = Describe("Subscriber", func() {
 					App:      "app",
 					Protocol: "http2",
 					Uris:     []route.Uri{"test.example.com"},
-					Options:  mbus.RegistryMessageOpts{LoadBalancingAlgorithm: expectedLBAlgo},
+					Options:  mbus.RegistryMessageOpts{LoadBalancingAlgorithm: &expectedLBAlgo},
 				}
 				data, err := json.Marshal(msg)
 				Expect(err).NotTo(HaveOccurred())
@@ -618,6 +618,33 @@ var _ = Describe("Subscriber", func() {
 				Expect(originalEndpoint).To(Equal(expectedEndpoint))
 			})
 
+			It("endpoint gets the reset sentinel when the algorithm is explicitly set to empty string", func() {
+				emptyStr := ""
+				var msg = mbus.RegistryMessage{
+					Host:     "host",
+					App:      "app",
+					Protocol: "http2",
+					Uris:     []route.Uri{"test.example.com"},
+					Options:  mbus.RegistryMessageOpts{LoadBalancingAlgorithm: &emptyStr},
+				}
+				data, err := json.Marshal(msg)
+				Expect(err).NotTo(HaveOccurred())
+
+				err = natsClient.Publish("router.register", data)
+				Expect(err).ToNot(HaveOccurred())
+
+				Eventually(registry.RegisterCallCount).Should(Equal(1))
+				_, originalEndpoint := registry.RegisterArgsForCall(0)
+				expectedEndpoint := route.NewEndpoint(&route.EndpointOpts{
+					Host:                   "host",
+					AppId:                  "app",
+					Protocol:               "http2",
+					LoadBalancingAlgorithm: config.LOAD_BALANCE_DEFAULT,
+				})
+
+				Expect(originalEndpoint).To(Equal(expectedEndpoint))
+			})
+
 		})
 
 		Context("when the message contains hash-based load balancing options", func() {
@@ -635,7 +662,7 @@ var _ = Describe("Subscriber", func() {
 					Protocol: "http2",
 					Uris:     []route.Uri{"test.example.com"},
 					Options: mbus.RegistryMessageOpts{
-						LoadBalancingAlgorithm: expectedLBAlgo,
+						LoadBalancingAlgorithm: &expectedLBAlgo,
 						HashHeaderName:         "X-Header",
 						HashBalance:            1.5,
 					},
@@ -669,7 +696,7 @@ var _ = Describe("Subscriber", func() {
 					Protocol: "http2",
 					Uris:     []route.Uri{"test.example.com"},
 					Options: mbus.RegistryMessageOpts{
-						LoadBalancingAlgorithm: expectedLBAlgo,
+						LoadBalancingAlgorithm: &expectedLBAlgo,
 						HashHeaderName:         "X-Header",
 					},
 				}
@@ -703,7 +730,7 @@ var _ = Describe("Subscriber", func() {
 					Protocol: "http2",
 					Uris:     []route.Uri{"test.example.com"},
 					Options: mbus.RegistryMessageOpts{
-						LoadBalancingAlgorithm: expectedLBAlgo,
+						LoadBalancingAlgorithm: &expectedLBAlgo,
 						HashHeaderName:         "X-Header",
 					},
 				}

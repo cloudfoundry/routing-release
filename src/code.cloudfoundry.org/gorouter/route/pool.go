@@ -207,9 +207,10 @@ type EndpointPool struct {
 	random                 *rand.Rand
 	logger                 *slog.Logger
 	updatedAt              time.Time
-	LoadBalancingAlgorithm string
-	HashRoutingProperties  *HashRoutingProperties
-	HashLookupTable        MaglevLookup
+	LoadBalancingAlgorithm        string
+	defaultLoadBalancingAlgorithm string
+	HashRoutingProperties         *HashRoutingProperties
+	HashLookupTable               MaglevLookup
 }
 
 type EndpointOpts struct {
@@ -278,17 +279,18 @@ type PoolOpts struct {
 
 func NewPool(opts *PoolOpts) *EndpointPool {
 	pool := &EndpointPool{
-		endpoints:              make([]*endpointElem, 0, 1),
-		index:                  make(map[string]*endpointElem),
-		retryAfterFailure:      opts.RetryAfterFailure,
-		NextIdx:                -1,
-		maxConnsPerBackend:     opts.MaxConnsPerBackend,
-		host:                   opts.Host,
-		contextPath:            opts.ContextPath,
-		random:                 rand.New(rand.NewSource(time.Now().UnixNano())),
-		logger:                 opts.Logger,
-		updatedAt:              time.Now(),
-		LoadBalancingAlgorithm: opts.LoadBalancingAlgorithm,
+		endpoints:                     make([]*endpointElem, 0, 1),
+		index:                         make(map[string]*endpointElem),
+		retryAfterFailure:             opts.RetryAfterFailure,
+		NextIdx:                       -1,
+		maxConnsPerBackend:            opts.MaxConnsPerBackend,
+		host:                          opts.Host,
+		contextPath:                   opts.ContextPath,
+		random:                        rand.New(rand.NewSource(time.Now().UnixNano())),
+		logger:                        opts.Logger,
+		updatedAt:                     time.Now(),
+		LoadBalancingAlgorithm:        opts.LoadBalancingAlgorithm,
+		defaultLoadBalancingAlgorithm: opts.LoadBalancingAlgorithm,
 	}
 	if pool.LoadBalancingAlgorithm == config.LOAD_BALANCE_HB {
 		pool.HashLookupTable = NewMaglev(opts.Logger)
@@ -667,8 +669,22 @@ func (p *EndpointPool) MarshalJSON() ([]byte, error) {
 }
 
 // setPoolLoadBalancingAlgorithm overwrites the load balancing algorithm of a pool by that of a specified endpoint, if that is valid.
+// An empty algorithm means the field was not specified and the pool keeps its current algorithm.
+// The sentinel value LOAD_BALANCE_RESET means the per-route algorithm was explicitly cleared, reverting the pool to the platform default.
 func (p *EndpointPool) setPoolLoadBalancingAlgorithm(endpoint *Endpoint) {
 	if endpoint.LoadBalancingAlgorithm == "" {
+		return
+	}
+
+	if endpoint.LoadBalancingAlgorithm == config.LOAD_BALANCE_DEFAULT {
+		if p.LoadBalancingAlgorithm != p.defaultLoadBalancingAlgorithm {
+			p.logger.Debug("resetting-pool-load-balancing-algorithm-to-default",
+				slog.String("previousLBAlgorithm", p.LoadBalancingAlgorithm),
+				slog.String("defaultLBAlgorithm", p.defaultLoadBalancingAlgorithm))
+			p.LoadBalancingAlgorithm = p.defaultLoadBalancingAlgorithm
+			p.HashLookupTable = nil
+			p.HashRoutingProperties = nil
+		}
 		return
 	}
 

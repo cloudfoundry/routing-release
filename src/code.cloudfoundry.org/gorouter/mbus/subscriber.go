@@ -41,7 +41,7 @@ type RegistryMessage struct {
 }
 
 type RegistryMessageOpts struct {
-	LoadBalancingAlgorithm string  `json:"loadbalancing"`
+	LoadBalancingAlgorithm *string `json:"loadbalancing"`
 	HashHeaderName         string  `json:"hash_header"`
 	HashBalance            float64 `json:"hash_balance,string"`
 }
@@ -61,6 +61,14 @@ func (rm *RegistryMessage) makeEndpoint(http2Enabled bool) (*route.Endpoint, err
 		protocol = "http1"
 	}
 
+	lbAlgo := ""
+	if rm.Options.LoadBalancingAlgorithm != nil {
+		lbAlgo = *rm.Options.LoadBalancingAlgorithm
+		if lbAlgo == "" {
+			lbAlgo = config.LOAD_BALANCE_DEFAULT
+		}
+	}
+
 	return route.NewEndpoint(&route.EndpointOpts{
 		AppId:                   rm.App,
 		AvailabilityZone:        rm.AvailabilityZone,
@@ -77,7 +85,7 @@ func (rm *RegistryMessage) makeEndpoint(http2Enabled bool) (*route.Endpoint, err
 		IsolationSegment:        rm.IsolationSegment,
 		UseTLS:                  useTLS,
 		UpdatedAt:               updatedAt,
-		LoadBalancingAlgorithm:  rm.Options.LoadBalancingAlgorithm,
+		LoadBalancingAlgorithm:  lbAlgo,
 		HashHeaderName:          rm.Options.HashHeaderName,
 		HashBalanceFactor:       rm.Options.HashBalance,
 	}), nil
