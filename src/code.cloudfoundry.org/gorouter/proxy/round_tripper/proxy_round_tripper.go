@@ -607,14 +607,9 @@ func getSessionCookies(response *http.Response, stickySessionCookieNames config.
 // IsSessionCookie reports whether cookieName matches a configured sticky session cookie name,
 // either directly or after stripping the "__Host-" prefix (RFC 6265bis).
 func IsSessionCookie(cookieName string, stickySessionCookieNames config.StringSet) bool {
-	if _, ok := stickySessionCookieNames[cookieName]; ok {
-		return true
-	}
-	if strings.HasPrefix(cookieName, "__Host-") {
-		_, ok := stickySessionCookieNames[cookieName[7:]]
-		return ok
-	}
-	return false
+	name := strings.TrimPrefix(cookieName, "__Host-")
+	_, ok := stickySessionCookieNames[name]
+	return ok
 }
 
 // getAttributesFromMetaCookie returns the __VCAP_ID_META__ cookie from the request cookies, when it exists
