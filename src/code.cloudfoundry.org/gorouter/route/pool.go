@@ -667,7 +667,7 @@ func (p *EndpointPool) MarshalJSON() ([]byte, error) {
 }
 
 // setPoolLoadBalancingAlgorithm overwrites the load balancing algorithm of a pool by that of a specified endpoint, if that is valid.
-// An empty algorithm means the field was not specified and the pool keeps its current algorithm.
+// An empty algorithm is treated as "no change" — the pool keeps its current algorithm.
 func (p *EndpointPool) setPoolLoadBalancingAlgorithm(endpoint *Endpoint) {
 	if endpoint.LoadBalancingAlgorithm == "" {
 		return
