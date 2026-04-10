@@ -25,7 +25,6 @@ const (
 	LOAD_BALANCE_RR           string = "round-robin"
 	LOAD_BALANCE_LC           string = "least-connection"
 	LOAD_BALANCE_HB           string = "hash"
-	LOAD_BALANCE_DEFAULT      string = "_default"
 	AZ_PREF_NONE              string = "none"
 	AZ_PREF_LOCAL             string = "locally-optimistic"
 	SHARD_ALL                 string = "all"

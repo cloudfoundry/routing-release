@@ -507,18 +507,17 @@ var _ = Describe("EndpointPool", func() {
 				Expect(pool.HashLookupTable).ToNot(BeNil())
 				Expect(pool.HashRoutingProperties).ToNot(BeNil())
 
-				// Explicitly reset per-route algorithm via the sentinel value
+				// Revert to the platform default (as the subscriber would do when the option is removed)
 				resetEndpoint := route.NewEndpoint(&route.EndpointOpts{
 					Host:                   "host-1",
 					Port:                   1234,
 					PrivateInstanceId:      "id-1",
-					LoadBalancingAlgorithm: config.LOAD_BALANCE_DEFAULT,
+					LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
 				})
 				pool.Put(resetEndpoint)
 				Expect(pool.LoadBalancingAlgorithm).To(Equal(config.LOAD_BALANCE_RR))
 				Expect(pool.HashLookupTable).To(BeNil())
 				Expect(pool.HashRoutingProperties).To(BeNil())
-				Eventually(logger).Should(gbytes.Say(`resetting-pool-load-balancing-algorithm-to-default`))
 			})
 
 			It("keeps the current algorithm when the endpoint does not specify one", func() {
@@ -547,22 +546,6 @@ var _ = Describe("EndpointPool", func() {
 				})
 				pool.Put(noAlgoEndpoint)
 				Expect(pool.LoadBalancingAlgorithm).To(Equal(config.LOAD_BALANCE_HB))
-			})
-
-			It("is a no-op when the pool already uses the platform default", func() {
-				pool := route.NewPool(&route.PoolOpts{
-					Logger:                 logger.Logger,
-					LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
-				})
-
-				endpoint := route.NewEndpoint(&route.EndpointOpts{
-					Host:                   "host-1",
-					Port:                   1234,
-					PrivateInstanceId:      "id-1",
-					LoadBalancingAlgorithm: config.LOAD_BALANCE_DEFAULT,
-				})
-				pool.Put(endpoint)
-				Expect(pool.LoadBalancingAlgorithm).To(Equal(config.LOAD_BALANCE_RR))
 			})
 		})
 		It("returns the route_service_url associated with the pool", func() {

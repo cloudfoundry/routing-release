@@ -594,7 +594,7 @@ var _ = Describe("Subscriber", func() {
 				Eventually(process.Ready()).Should(BeClosed())
 			})
 
-			It("endpoint is constructed with the empty string load balancing algorithm", func() {
+			It("endpoint is constructed with the global default load balancing algorithm", func() {
 				var msg = mbus.RegistryMessage{
 					Host:     "host",
 					App:      "app",
@@ -610,15 +610,16 @@ var _ = Describe("Subscriber", func() {
 				Eventually(registry.RegisterCallCount).Should(Equal(1))
 				_, originalEndpoint := registry.RegisterArgsForCall(0)
 				expectedEndpoint := route.NewEndpoint(&route.EndpointOpts{
-					Host:     "host",
-					AppId:    "app",
-					Protocol: "http2",
+					Host:                   "host",
+					AppId:                  "app",
+					Protocol:               "http2",
+					LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
 				})
 
 				Expect(originalEndpoint).To(Equal(expectedEndpoint))
 			})
 
-			It("endpoint gets the reset sentinel when the algorithm is explicitly set to empty string", func() {
+			It("endpoint gets the global default algorithm when the algorithm is explicitly set to empty string", func() {
 				emptyStr := ""
 				var msg = mbus.RegistryMessage{
 					Host:     "host",
@@ -639,7 +640,7 @@ var _ = Describe("Subscriber", func() {
 					Host:                   "host",
 					AppId:                  "app",
 					Protocol:               "http2",
-					LoadBalancingAlgorithm: config.LOAD_BALANCE_DEFAULT,
+					LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
 				})
 
 				Expect(originalEndpoint).To(Equal(expectedEndpoint))
