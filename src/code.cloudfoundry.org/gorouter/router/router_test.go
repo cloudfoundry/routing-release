@@ -229,7 +229,7 @@ var _ = Describe("Router", func() {
 			tr := &http.Transport{
 				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			}
-			client := http.Client{Transport: tr}
+			client := http.Client{Transport: tr, Timeout: 500 * time.Millisecond}
 			resp, err := client.Do(req)
 			if err != nil {
 				return 0, err
