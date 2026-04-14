@@ -685,6 +685,7 @@ var _ = Describe("Router", func() {
 		conn, err := net.DialTimeout("tcp", host, 10*time.Second)
 		Expect(err).ToNot(HaveOccurred())
 		defer conn.Close()
+		conn.SetDeadline(time.Now().Add(10 * time.Second))
 
 		fmt.Fprintf(conn, "POST / HTTP/1.1\r\n"+
 			"Host: %s\r\n"+
@@ -838,6 +839,10 @@ var _ = Describe("Router", func() {
 	})
 
 	Context("HTTP keep-alive", func() {
+		BeforeEach(func() {
+			config.EndpointTimeout = 2 * time.Second
+			backendIdleTimeout = config.EndpointTimeout
+		})
 		It("reuses the same connection on subsequent calls", func() {
 			app := test.NewGreetApp([]route.Uri{"keepalive." + test_util.LocalhostDNS}, config.Port, mbusClient, nil)
 			app.RegisterAndListen()
