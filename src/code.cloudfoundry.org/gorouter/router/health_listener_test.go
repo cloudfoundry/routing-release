@@ -182,7 +182,7 @@ var _ = Describe("HealthListener", func() {
 				router.stopping = true
 			})
 			It("does not log an error message", func() {
-				Eventually(logger).ShouldNot(gbytes.Say("health-listener-failed"))
+				Consistently(logger).ShouldNot(gbytes.Say("health-listener-failed"))
 			})
 		})
 	})

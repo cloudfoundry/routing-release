@@ -1288,7 +1288,7 @@ var _ = Describe("Router Integration", func() {
 
 		It("doesn't start the route fetcher", func() {
 			gorouterSession = startGorouterSession(cfgFile)
-			Eventually(gorouterSession).ShouldNot(Say("setting-up-routing-api"))
+			Consistently(gorouterSession).ShouldNot(Say("setting-up-routing-api"))
 			stopGorouter(gorouterSession)
 		})
 	})
