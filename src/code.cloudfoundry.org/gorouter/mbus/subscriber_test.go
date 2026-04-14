@@ -372,10 +372,11 @@ var _ = Describe("Subscriber", func() {
 			Eventually(registry.RegisterCallCount).Should(Equal(1))
 			_, originalEndpoint := registry.RegisterArgsForCall(0)
 			expectedEndpoint := route.NewEndpoint(&route.EndpointOpts{
-				Host:             "host",
-				AppId:            "app",
-				Protocol:         "http1",
-				AvailabilityZone: "zone-meow",
+				Host:                   "host",
+				AppId:                  "app",
+				Protocol:               "http1",
+				AvailabilityZone:       "zone-meow",
+				LoadBalancingAlgorithm: cfg.LoadBalance,
 			})
 
 			Expect(originalEndpoint).To(Equal(expectedEndpoint))
@@ -405,9 +406,10 @@ var _ = Describe("Subscriber", func() {
 			Eventually(registry.RegisterCallCount).Should(Equal(1))
 			_, originalEndpoint := registry.RegisterArgsForCall(0)
 			expectedEndpoint := route.NewEndpoint(&route.EndpointOpts{
-				Host:     "host",
-				AppId:    "app",
-				Protocol: "http1",
+				Host:                   "host",
+				AppId:                  "app",
+				Protocol:               "http1",
+				LoadBalancingAlgorithm: cfg.LoadBalance,
 			})
 
 			Expect(originalEndpoint).To(Equal(expectedEndpoint))
@@ -436,9 +438,10 @@ var _ = Describe("Subscriber", func() {
 			Eventually(registry.RegisterCallCount).Should(Equal(1))
 			_, originalEndpoint := registry.RegisterArgsForCall(0)
 			expectedEndpoint := route.NewEndpoint(&route.EndpointOpts{
-				Host:     "host",
-				AppId:    "app",
-				Protocol: "http1",
+				Host:                   "host",
+				AppId:                  "app",
+				Protocol:               "http1",
+				LoadBalancingAlgorithm: cfg.LoadBalance,
 			})
 
 			Expect(originalEndpoint).To(Equal(expectedEndpoint))
@@ -468,9 +471,10 @@ var _ = Describe("Subscriber", func() {
 			Eventually(registry.RegisterCallCount).Should(Equal(1))
 			_, originalEndpoint := registry.RegisterArgsForCall(0)
 			expectedEndpoint := route.NewEndpoint(&route.EndpointOpts{
-				Host:     "host",
-				AppId:    "app",
-				Protocol: "http2",
+				Host:                   "host",
+				AppId:                  "app",
+				Protocol:               "http2",
+				LoadBalancingAlgorithm: cfg.LoadBalance,
 			})
 
 			Expect(originalEndpoint).To(Equal(expectedEndpoint))
@@ -497,9 +501,10 @@ var _ = Describe("Subscriber", func() {
 				Eventually(registry.RegisterCallCount).Should(Equal(1))
 				_, originalEndpoint := registry.RegisterArgsForCall(0)
 				expectedEndpoint := route.NewEndpoint(&route.EndpointOpts{
-					Host:     "host",
-					AppId:    "app",
-					Protocol: "http1",
+					Host:                   "host",
+					AppId:                  "app",
+					Protocol:               "http1",
+					LoadBalancingAlgorithm: cfg.LoadBalance,
 				})
 
 				Expect(originalEndpoint).To(Equal(expectedEndpoint))
@@ -545,6 +550,7 @@ var _ = Describe("Subscriber", func() {
 				PrivateInstanceIndex:    "index",
 				StaleThresholdInSeconds: 120,
 				Tags:                    map[string]string{"key": "value"},
+				LoadBalancingAlgorithm:  cfg.LoadBalance,
 			})
 
 			Expect(originalEndpoint).To(Equal(expectedEndpoint))
@@ -613,7 +619,7 @@ var _ = Describe("Subscriber", func() {
 					Host:                   "host",
 					AppId:                  "app",
 					Protocol:               "http2",
-					LoadBalancingAlgorithm: config.LOAD_BALANCE_RR,
+					LoadBalancingAlgorithm: cfg.LoadBalance,
 				})
 
 				Expect(originalEndpoint).To(Equal(expectedEndpoint))
@@ -747,10 +753,11 @@ var _ = Describe("Subscriber", func() {
 		Eventually(registry.RegisterCallCount).Should(Equal(1))
 		_, originalEndpoint := registry.RegisterArgsForCall(0)
 		expectedEndpoint := route.NewEndpoint(&route.EndpointOpts{
-			Host:      "host",
-			Port:      1111,
-			Protocol:  "http1",
-			UpdatedAt: time.Unix(0, 1234).UTC(),
+			Host:                   "host",
+			Port:                   1111,
+			Protocol:               "http1",
+			UpdatedAt:              time.Unix(0, 1234).UTC(),
+			LoadBalancingAlgorithm: cfg.LoadBalance,
 		})
 
 		Expect(originalEndpoint.UpdatedAt).To(Equal(expectedEndpoint.UpdatedAt))
@@ -795,6 +802,7 @@ var _ = Describe("Subscriber", func() {
 				PrivateInstanceIndex:    "index",
 				StaleThresholdInSeconds: 120,
 				Tags:                    map[string]string{"key": "value"},
+				LoadBalancingAlgorithm:  cfg.LoadBalance,
 			})
 
 			Expect(originalEndpoint).To(Equal(expectedEndpoint))

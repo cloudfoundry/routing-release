@@ -668,6 +668,9 @@ func (p *EndpointPool) MarshalJSON() ([]byte, error) {
 
 // setPoolLoadBalancingAlgorithm overwrites the load balancing algorithm of a pool by that of a specified endpoint, if that is valid.
 func (p *EndpointPool) setPoolLoadBalancingAlgorithm(endpoint *Endpoint) {
+	if endpoint.LoadBalancingAlgorithm == "" {
+		return
+	}
 	if endpoint.LoadBalancingAlgorithm != p.LoadBalancingAlgorithm {
 		if config.IsLoadBalancingAlgorithmValid(endpoint.LoadBalancingAlgorithm) {
 			previousAlgorithm := p.LoadBalancingAlgorithm
