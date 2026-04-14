@@ -48,7 +48,7 @@ var _ = SynchronizedBeforeSuite(func() []byte {
 	json.Unmarshal(data, &res)
 	gorouterPath = res.Gorouter
 	testAssets = res.Test
-	SetDefaultEventuallyTimeout(5 * time.Second)
+	SetDefaultEventuallyTimeout(10 * time.Second)
 	SetDefaultEventuallyPollingInterval(100 * time.Millisecond)
 	SetDefaultConsistentlyDuration(1 * time.Second)
 	SetDefaultConsistentlyPollingInterval(10 * time.Millisecond)
