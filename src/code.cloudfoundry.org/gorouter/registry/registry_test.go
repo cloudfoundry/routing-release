@@ -824,10 +824,11 @@ var _ = Describe("RouteRegistry", func() {
 			r.Register("hb-partial-prune.example.com", staleEndpoint)
 
 			doneChan := make(chan struct{})
-			defer close(doneChan)
+			stoppedChan := make(chan struct{})
 
 			// Keep the fresh endpoint alive during pruning
 			go func() {
+				defer close(stoppedChan)
 				for {
 					select {
 					case <-doneChan:
@@ -837,6 +838,10 @@ var _ = Describe("RouteRegistry", func() {
 						time.Sleep(configObj.DropletStaleThreshold / 2)
 					}
 				}
+			}()
+			defer func() {
+				close(doneChan)
+				<-stoppedChan
 			}()
 
 			captureCountBefore := reporter.CaptureEndpointsPerPoolCallCount()
