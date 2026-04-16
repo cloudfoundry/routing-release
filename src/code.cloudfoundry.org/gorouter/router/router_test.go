@@ -842,6 +842,7 @@ var _ = Describe("Router", func() {
 		BeforeEach(func() {
 			config.EndpointTimeout = 2 * time.Second
 			backendIdleTimeout = config.EndpointTimeout
+			requestTimeout = config.EndpointTimeout
 		})
 		It("reuses the same connection on subsequent calls", func() {
 			app := test.NewGreetApp([]route.Uri{"keepalive." + test_util.LocalhostDNS}, config.Port, mbusClient, nil)
