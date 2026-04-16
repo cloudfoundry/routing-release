@@ -635,7 +635,7 @@ var _ = Describe("Router Integration", func() {
 
 		BeforeEach(func() {
 			testState = NewTestState()
-			testState.cfg.DebugAddr = "127.0.0.1:17017"
+			testState.cfg.DebugAddr = fmt.Sprintf("127.0.0.1:%d", test_util.NextAvailPort())
 			testState.StartGorouterOrFail()
 			gorouterSession = testState.gorouterSession
 
