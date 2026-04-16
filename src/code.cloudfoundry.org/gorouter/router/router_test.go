@@ -130,12 +130,12 @@ var _ = Describe("Router", func() {
 	})
 
 	AfterEach(func() {
-		if natsRunner != nil {
-			natsRunner.Stop()
-		}
-
 		if router != nil {
 			router.Stop()
+		}
+
+		if natsRunner != nil {
+			natsRunner.Stop()
 		}
 	})
 
