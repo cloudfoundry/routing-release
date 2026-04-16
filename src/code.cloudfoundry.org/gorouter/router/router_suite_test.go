@@ -26,6 +26,7 @@ var _ = SynchronizedBeforeSuite(func() []byte {
 	dropsonde.InitializeWithEmitter(fakeEmitter)
 	return nil
 }, func([]byte) {
+	http.DefaultClient.Timeout = 10 * time.Second
 	SetDefaultEventuallyTimeout(10 * time.Second)
 	SetDefaultEventuallyPollingInterval(100 * time.Millisecond)
 	SetDefaultConsistentlyDuration(1 * time.Second)

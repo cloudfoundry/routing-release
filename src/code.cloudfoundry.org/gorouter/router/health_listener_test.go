@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -129,7 +130,7 @@ var _ = Describe("HealthListener", func() {
 			tr := &http.Transport{
 				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			}
-			client := http.Client{Transport: tr}
+			client := http.Client{Transport: tr, Timeout: 10 * time.Second}
 			resp, err := client.Do(req)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(resp).ToNot(BeNil())
@@ -154,7 +155,7 @@ var _ = Describe("HealthListener", func() {
 				tr := &http.Transport{
 					TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 				}
-				client := http.Client{Transport: tr}
+				client := http.Client{Transport: tr, Timeout: 10 * time.Second}
 				resp, err := client.Do(req)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(resp).ToNot(BeNil())

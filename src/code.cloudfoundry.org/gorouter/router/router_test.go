@@ -514,7 +514,7 @@ var _ = Describe("Router", func() {
 
 			req, err = http.NewRequest("GET", app.Endpoint(), nil)
 			Expect(err).ToNot(HaveOccurred())
-			client := http.Client{}
+			client := http.Client{Timeout: 10 * time.Second}
 			_, err = client.Do(req)
 			Expect(err).To(HaveOccurred())
 		})
@@ -610,7 +610,7 @@ var _ = Describe("Router", func() {
 			tr := &http.Transport{
 				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			}
-			client := http.Client{Transport: tr}
+			client := http.Client{Transport: tr, Timeout: 10 * time.Second}
 			resp, err := client.Do(req)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(resp).ToNot(BeNil())
@@ -652,7 +652,7 @@ var _ = Describe("Router", func() {
 		r, err := http.NewRequest("PUT", url, buf)
 		Expect(err).ToNot(HaveOccurred())
 
-		client := http.Client{}
+		client := http.Client{Timeout: 10 * time.Second}
 		resp, err := client.Do(r)
 		Expect(err).ToNot(HaveOccurred())
 		Expect(resp.StatusCode).To(Equal(http.StatusOK))
@@ -824,7 +824,7 @@ var _ = Describe("Router", func() {
 			tr := &http.Transport{
 				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			}
-			client := http.Client{Transport: tr}
+			client := http.Client{Transport: tr, Timeout: 10 * time.Second}
 
 			resp, err := client.Do(req)
 			Expect(err).ToNot(HaveOccurred())
@@ -1037,7 +1037,7 @@ var _ = Describe("Router", func() {
 		var client http.Client
 
 		BeforeEach(func() {
-			client = http.Client{}
+			client = http.Client{Timeout: 10 * time.Second}
 		})
 
 		JustBeforeEach(func() {
@@ -1094,7 +1094,7 @@ var _ = Describe("Router", func() {
 				requestTimeout = 1 * time.Second
 				backendIdleTimeout = 3 * time.Second
 				appResponseTime = 2 * time.Second
-				client = http.Client{}
+				client = http.Client{Timeout: 10 * time.Second}
 			})
 			JustBeforeEach(func() {
 				app := newSlowApp(
@@ -1156,7 +1156,7 @@ var _ = Describe("Router", func() {
 				requestTimeout = 3 * time.Second
 				backendIdleTimeout = 1 * time.Second
 				appResponseTime = 2 * time.Second
-				client = http.Client{}
+				client = http.Client{Timeout: 10 * time.Second}
 			})
 			JustBeforeEach(func() {
 				app := newSlowApp(
@@ -1344,9 +1344,10 @@ var _ = Describe("Router", func() {
 				RootCAs: rootCAs,
 			}
 
-			httpClient = &http.Client{Transport: &http.Transport{
-				TLSClientConfig: tlsClientConfig,
-			}}
+			httpClient = &http.Client{
+				Transport: &http.Transport{TLSClientConfig: tlsClientConfig},
+				Timeout:   10 * time.Second,
+			}
 		})
 
 		JustBeforeEach(func() {
@@ -1649,9 +1650,10 @@ var _ = Describe("Router", func() {
 			tlsClientConfig := &tls.Config{
 				RootCAs: rootCAs,
 			}
-			client := &http.Client{Transport: &http.Transport{
-				TLSClientConfig: tlsClientConfig,
-			}}
+			client := &http.Client{
+				Transport: &http.Transport{TLSClientConfig: tlsClientConfig},
+				Timeout:   10 * time.Second,
+			}
 
 			app := test.NewGreetApp([]route.Uri{"test." + test_util.LocalhostDNS}, config.Port, mbusClient, nil)
 			app.RegisterAndListen()
@@ -1694,9 +1696,10 @@ var _ = Describe("Router", func() {
 			tlsClientConfig = &tls.Config{
 				RootCAs: rootCAs,
 			}
-			client = &http.Client{Transport: &http.Transport{
-				TLSClientConfig: tlsClientConfig,
-			}}
+			client = &http.Client{
+				Transport: &http.Transport{TLSClientConfig: tlsClientConfig},
+				Timeout:   10 * time.Second,
+			}
 		})
 
 		It("serves ssl traffic", func() {
@@ -1735,9 +1738,10 @@ var _ = Describe("Router", func() {
 					RootCAs: rootCAs,
 				}
 				tlsClientConfig.CipherSuites = []uint16{tls.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256}
-				client = &http.Client{Transport: &http.Transport{
-					TLSClientConfig: tlsClientConfig,
-				}}
+				client = &http.Client{
+					Transport: &http.Transport{TLSClientConfig: tlsClientConfig},
+					Timeout:   10 * time.Second,
+				}
 			})
 
 			It("serves ssl traffic", func() {
@@ -2027,7 +2031,7 @@ var _ = Describe("Router", func() {
 					},
 				}
 
-				client := http.Client{Transport: tr}
+				client := http.Client{Transport: tr, Timeout: 10 * time.Second}
 				resp, err := client.Do(req)
 				Expect(err).To(MatchError(ContainSubstring("remote error: tls: handshake failure")))
 				Expect(resp).To(BeNil())
@@ -2263,7 +2267,7 @@ var _ = Describe("Router", func() {
 							},
 						}
 
-						client := http.Client{Transport: tr}
+						client := http.Client{Transport: tr, Timeout: 10 * time.Second}
 						resp, err := client.Do(req)
 						Expect(err).ToNot(HaveOccurred())
 						defer resp.Body.Close()
@@ -2295,7 +2299,7 @@ var _ = Describe("Router", func() {
 							},
 						}
 
-						client := http.Client{Transport: tr}
+						client := http.Client{Transport: tr, Timeout: 10 * time.Second}
 						resp, err := client.Do(req)
 						Expect(err).To(HaveOccurred())
 						Expect(resp).To(BeNil())
@@ -2355,7 +2359,7 @@ var _ = Describe("Router", func() {
 						RootCAs: certPool,
 					},
 				}
-				client := http.Client{Transport: tr}
+				client := http.Client{Transport: tr, Timeout: 10 * time.Second}
 				req, err := http.NewRequest("GET", fmt.Sprintf("https://myapp.%s:%d/", test_util.LocalhostDNS, config.SSLPort), nil)
 				Expect(err).NotTo(HaveOccurred())
 				_, err = client.Do(req)
