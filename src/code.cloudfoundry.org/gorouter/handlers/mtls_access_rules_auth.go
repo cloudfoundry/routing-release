@@ -88,6 +88,3 @@ func (h *MtlsAccessRulesAuth) Check(endpoint *route.Endpoint, reqInfo *RequestIn
 
 	return nil
 }
-
-// Note: evaluateAccessRules is defined in mtls_authorization.go
-// and is shared between the old and new authorization handlers.

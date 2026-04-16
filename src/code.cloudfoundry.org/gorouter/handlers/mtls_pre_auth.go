@@ -111,6 +111,3 @@ func (h *mtlsPreAuth) ServeHTTP(w http.ResponseWriter, r *http.Request, next htt
 	// checked post-selection in the round tripper).
 	next(w, r)
 }
-
-// Note: Helper functions domainMatches and setRouteEndpointForAccessLog are
-// defined in mtls_authorization.go and shared between old and new handlers.
