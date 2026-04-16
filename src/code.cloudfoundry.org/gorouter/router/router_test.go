@@ -2173,7 +2173,9 @@ var _ = Describe("Router", func() {
 									tlsClientConfig.Certificates = []tls.Certificate{*clientCert}
 
 									resp, err := client.Do(req)
-									println("Error", err.Error())
+									if err != nil {
+										println("Error", err.Error())
+									}
 									Expect(err).To(HaveOccurred())
 									Expect(err).To(MatchError(ContainSubstring("remote error: tls: bad certificate")))
 									Expect(resp).To(BeNil())
@@ -2203,7 +2205,9 @@ var _ = Describe("Router", func() {
 									tlsClientConfig.Certificates = []tls.Certificate{*clientCert}
 
 									resp, err := client.Do(req)
-									println("Error", err.Error())
+									if err != nil {
+										println("Error", err.Error())
+									}
 									Expect(err).To(HaveOccurred())
 									Expect(err).To(MatchError(ContainSubstring("remote error: tls: bad certificate")))
 									Expect(resp).To(BeNil())
