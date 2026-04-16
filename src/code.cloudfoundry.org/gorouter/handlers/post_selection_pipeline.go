@@ -16,7 +16,7 @@ import (
 //go:generate counterfeiter -o fakes/fake_post_selection_handler.go . PostSelectionHandler
 type PostSelectionHandler interface {
 	// Check performs an authorization check against the selected endpoint.
-	// Returns nil if authorized, or an MtlsAuthError if denied.
+	// Returns nil if authorized, or an AuthError if denied.
 	Check(endpoint *route.Endpoint, reqInfo *RequestInfo) error
 }
 

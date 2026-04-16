@@ -31,7 +31,7 @@ func NewMtlsScopeAuth(cfg *config.Config, logger *slog.Logger) *MtlsScopeAuth {
 }
 
 // Check performs post-selection scope authorization against the selected endpoint.
-// Returns nil if authorized, or an MtlsAuthError if the caller's org/space
+// Returns nil if authorized, or an AuthError if the caller's org/space
 // does not match the selected endpoint's org/space tags.
 func (h *MtlsScopeAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) error {
 	// Get access scope from pool
@@ -64,7 +64,7 @@ func (h *MtlsScopeAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) er
 				slog.String("endpoint-org", endpointOrg),
 				slog.String("endpoint", endpoint.CanonicalAddr()))
 
-			return NewMtlsAuthError(
+			return NewAuthError(
 				"domain:scope=org:post-selection",
 				fmt.Sprintf("caller org %s does not match selected backend org %s",
 					identity.OrgGUID, endpointOrg),
@@ -81,7 +81,7 @@ func (h *MtlsScopeAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) er
 				slog.String("endpoint-space", endpointSpace),
 				slog.String("endpoint", endpoint.CanonicalAddr()))
 
-			return NewMtlsAuthError(
+			return NewAuthError(
 				"domain:scope=space:post-selection",
 				fmt.Sprintf("caller space %s does not match selected backend space %s",
 					identity.SpaceGUID, endpointSpace),
@@ -98,7 +98,7 @@ func (h *MtlsScopeAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) er
 			slog.String("route", poolHost),
 			slog.String("unknown-scope", accessScope))
 
-		return NewMtlsAuthError(
+		return NewAuthError(
 			"domain:scope=unknown:post-selection",
 			fmt.Sprintf("unknown access scope %q", accessScope),
 		)

@@ -25,7 +25,7 @@ func NewMtlsAccessRulesAuth(logger *slog.Logger) *MtlsAccessRulesAuth {
 }
 
 // Check performs post-selection access rules authorization.
-// Returns nil if authorized, or an MtlsAuthError if no access rule matches
+// Returns nil if authorized, or an AuthError if no access rule matches
 // the caller's identity.
 func (h *MtlsAccessRulesAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) error {
 	// Only enforce access rules if enforcement is active
@@ -54,7 +54,7 @@ func (h *MtlsAccessRulesAuth) Check(endpoint *route.Endpoint, reqInfo *RequestIn
 			slog.String("reason", "no-access-rules"),
 			slog.String("endpoint", endpoint.CanonicalAddr()))
 
-		return NewMtlsAuthError(
+		return NewAuthError(
 			"route:no_access_rules",
 			"route has no access rules configured",
 		)
@@ -71,7 +71,7 @@ func (h *MtlsAccessRulesAuth) Check(endpoint *route.Endpoint, reqInfo *RequestIn
 			slog.String("reason", "access-rules-deny"),
 			slog.String("endpoint", endpoint.CanonicalAddr()))
 
-		return NewMtlsAuthError(
+		return NewAuthError(
 			"route:access_rules",
 			fmt.Sprintf("caller app %s not in access_rules", identity.AppGUID),
 		)

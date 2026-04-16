@@ -202,15 +202,15 @@ func (rt *roundTripper) RoundTrip(originalRequest *http.Request) (*http.Response
 			// post-selection scope and access rules checking.
 			if rt.postSelectionPipeline != nil {
 				if authErr := rt.postSelectionPipeline.Run(endpoint, reqInfo); authErr != nil {
-					// Authorization failed - handle as MtlsAuthError
-					if mtlsErr, ok := authErr.(*handlers.MtlsAuthError); ok {
+					// Authorization failed - handle as AuthError
+					if authError, ok := authErr.(*handlers.AuthError); ok {
 						reqInfo.MtlsAuth = "denied"
-						reqInfo.MtlsRule = mtlsErr.Rule
-						reqInfo.MtlsDeniedReason = mtlsErr.Reason
+						reqInfo.MtlsRule = authError.Rule
+						reqInfo.MtlsDeniedReason = authError.Reason
 
 						logger.Info("post-selection-auth-denied",
-							slog.String("rule", mtlsErr.Rule),
-							slog.String("reason", mtlsErr.Reason),
+							slog.String("rule", authError.Rule),
+							slog.String("reason", authError.Reason),
 							slog.String("endpoint", endpoint.CanonicalAddr()))
 
 						// Return authorization error - will be converted to 403 by error handler

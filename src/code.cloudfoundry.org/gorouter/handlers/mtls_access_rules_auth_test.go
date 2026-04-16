@@ -83,7 +83,7 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 		})
 
 		Context("when no access rules are configured", func() {
-			It("denies with MtlsAuthError (default deny)", func() {
+			It("denies with AuthError (default deny)", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
 					AppId:       "backend-app",
 					Host:        "192.168.1.1",
@@ -100,7 +100,7 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.MtlsAuthError)
+				mtlsErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(mtlsErr.Rule).To(Equal("route:no_access_rules"))
 				Expect(mtlsErr.Reason).To(Equal("route has no access rules configured"))
@@ -170,7 +170,7 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.MtlsAuthError)
+				mtlsErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(mtlsErr.Rule).To(Equal("route:access_rules"))
 				Expect(mtlsErr.Reason).To(ContainSubstring("caller app other-app-456 not in access_rules"))
@@ -218,7 +218,7 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.MtlsAuthError)
+				mtlsErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(mtlsErr.Rule).To(Equal("route:access_rules"))
 			})
@@ -265,7 +265,7 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.MtlsAuthError)
+				mtlsErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(mtlsErr.Rule).To(Equal("route:access_rules"))
 			})
@@ -366,7 +366,7 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.MtlsAuthError)
+				mtlsErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(mtlsErr.Rule).To(Equal("route:access_rules"))
 			})

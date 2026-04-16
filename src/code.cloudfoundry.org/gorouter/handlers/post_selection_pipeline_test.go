@@ -20,7 +20,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 		handler3    *fakes.FakePostSelectionHandler
 		endpoint    *route.Endpoint
 		reqInfo     *handlers.RequestInfo
-		authError   *handlers.MtlsAuthError
+		authError   *handlers.AuthError
 		genericErr  error
 	)
 
@@ -37,7 +37,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 
 		reqInfo = &handlers.RequestInfo{}
 
-		authError = handlers.NewMtlsAuthError("test:rule", "test reason")
+		authError = handlers.NewAuthError("test:rule", "test reason")
 		genericErr = errors.New("generic error")
 	})
 
@@ -153,7 +153,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 		})
 
 		Context("error type handling", func() {
-		It("returns MtlsAuthError as-is", func() {
+		It("returns AuthError as-is", func() {
 			logger := test_util.NewTestLogger("pipeline")
 			handler1.CheckReturns(authError)
 			pipeline = handlers.NewPostSelectionPipeline(logger.Logger, handler1)
@@ -161,7 +161,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 			err := pipeline.Run(endpoint, reqInfo)
 
 			Expect(err).To(Equal(authError))
-			mtlsErr, ok := err.(*handlers.MtlsAuthError)
+			mtlsErr, ok := err.(*handlers.AuthError)
 			Expect(ok).To(BeTrue())
 			Expect(mtlsErr.Rule).To(Equal("test:rule"))
 			Expect(mtlsErr.Reason).To(Equal("test reason"))
@@ -228,7 +228,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 
 		It("returns error from scope check before running access rules", func() {
 			logger := test_util.NewTestLogger("pipeline")
-			scopeErr := handlers.NewMtlsAuthError(
+			scopeErr := handlers.NewAuthError(
 				"domain:scope=org:post-selection",
 				"caller org mismatch",
 			)
@@ -252,7 +252,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 
 		It("returns error from access rules check when scope passes", func() {
 			logger := test_util.NewTestLogger("pipeline")
-			accessErr := handlers.NewMtlsAuthError(
+			accessErr := handlers.NewAuthError(
 				"route:access_rules",
 				"caller not in access rules",
 			)

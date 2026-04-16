@@ -127,7 +127,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 				Expect(err).To(BeNil())
 			})
 
-			It("denies caller from different org with MtlsAuthError", func() {
+			It("denies caller from different org with AuthError", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
 					AppId:       "backend-app",
 					Host:        "192.168.1.1",
@@ -145,8 +145,8 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.MtlsAuthError)
-				Expect(ok).To(BeTrue(), "error should be MtlsAuthError")
+				mtlsErr, ok := err.(*handlers.AuthError)
+				Expect(ok).To(BeTrue(), "error should be AuthError")
 				Expect(mtlsErr.Rule).To(Equal("domain:scope=org:post-selection"))
 				Expect(mtlsErr.Reason).To(ContainSubstring("caller org org-456 does not match selected backend org org-123"))
 				Expect(mtlsErr.HTTPStatus).To(Equal(http.StatusForbidden))
@@ -170,7 +170,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.MtlsAuthError)
+				mtlsErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(mtlsErr.Rule).To(Equal("domain:scope=org:post-selection"))
 				Expect(mtlsErr.Reason).To(ContainSubstring("caller org org-123 does not match selected backend org "))
@@ -194,7 +194,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.MtlsAuthError)
+				mtlsErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(mtlsErr.Rule).To(Equal("domain:scope=org:post-selection"))
 			})
@@ -222,7 +222,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 				Expect(err).To(BeNil())
 			})
 
-			It("denies caller from different space with MtlsAuthError", func() {
+			It("denies caller from different space with AuthError", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
 					AppId:       "backend-app",
 					Host:        "192.168.1.1",
@@ -240,7 +240,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.MtlsAuthError)
+				mtlsErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(mtlsErr.Rule).To(Equal("domain:scope=space:post-selection"))
 				Expect(mtlsErr.Reason).To(ContainSubstring("caller space space-xyz does not match selected backend space space-abc"))
@@ -265,7 +265,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.MtlsAuthError)
+				mtlsErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(mtlsErr.Rule).To(Equal("domain:scope=space:post-selection"))
 			})
@@ -288,7 +288,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.MtlsAuthError)
+				mtlsErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(mtlsErr.Rule).To(Equal("domain:scope=space:post-selection"))
 			})
@@ -370,7 +370,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.MtlsAuthError)
+				mtlsErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(mtlsErr.Rule).To(Equal("domain:scope=space:post-selection"))
 				Expect(mtlsErr.Reason).To(ContainSubstring("caller space space-abc does not match selected backend space space-xyz"))
