@@ -1840,6 +1840,7 @@ var _ = Describe("Router", func() {
 
 			It("refuses connections to the SSL port", func() {
 				_, err := net.Dial("tcp", fmt.Sprintf("127.0.0.1:%d", config.SSLPort))
+				Expect(err).To(HaveOccurred())
 				Expect(err.Error()).To(ContainSubstring("connection refused"))
 			})
 		})
