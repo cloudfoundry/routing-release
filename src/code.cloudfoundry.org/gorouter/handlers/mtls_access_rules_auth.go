@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"code.cloudfoundry.org/gorouter/route"
 )
@@ -22,6 +23,42 @@ func NewMtlsAccessRulesAuth(logger *slog.Logger) *MtlsAccessRulesAuth {
 	return &MtlsAccessRulesAuth{
 		logger: logger,
 	}
+}
+
+// evaluateAccessRules checks whether the caller identity satisfies any of the
+// access rules. Rules use the selector syntax from the RFC:
+//
+//	cf:any             — allow any authenticated caller
+//	cf:app:<guid>      — allow a specific app
+//	cf:space:<guid>    — allow all apps in a space
+//	cf:org:<guid>      — allow all apps in an org
+//
+// Returns the matched selector string and true on success; empty string and false
+// if no rule matches.
+func evaluateAccessRules(rules []string, identity *CallerIdentity) (string, bool) {
+	for _, rule := range rules {
+		rule = strings.TrimSpace(rule)
+		switch {
+		case rule == "cf:any":
+			return rule, true
+		case strings.HasPrefix(rule, "cf:app:"):
+			guid := strings.TrimPrefix(rule, "cf:app:")
+			if guid == identity.AppGUID {
+				return rule, true
+			}
+		case strings.HasPrefix(rule, "cf:space:"):
+			guid := strings.TrimPrefix(rule, "cf:space:")
+			if guid != "" && guid == identity.SpaceGUID {
+				return rule, true
+			}
+		case strings.HasPrefix(rule, "cf:org:"):
+			guid := strings.TrimPrefix(rule, "cf:org:")
+			if guid != "" && guid == identity.OrgGUID {
+				return rule, true
+			}
+		}
+	}
+	return "", false
 }
 
 // Check performs post-selection access rules authorization.

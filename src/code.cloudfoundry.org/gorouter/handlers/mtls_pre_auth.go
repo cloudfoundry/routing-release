@@ -3,12 +3,12 @@ package handlers
 import (
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"code.cloudfoundry.org/gorouter/config"
 	logger "code.cloudfoundry.org/gorouter/logger"
 	"code.cloudfoundry.org/gorouter/route"
 )
-
 
 // mtlsPreAuth performs pre-selection mTLS authorization checks that can be
 // validated before endpoint selection (load balancing). This includes:
@@ -27,6 +27,37 @@ func NewMtlsPreAuth(cfg *config.Config, logger *slog.Logger) *mtlsPreAuth {
 	return &mtlsPreAuth{
 		config: cfg,
 		logger: logger,
+	}
+}
+
+// domainMatches checks if a hostname matches a domain pattern (supports wildcard domains).
+// Examples:
+//   - domainMatches("mtls-backend.apps.identity", "*.apps.identity") => true
+//   - domainMatches("mtls-backend.apps.identity", "mtls-backend.apps.identity") => true
+//   - domainMatches("foo.bar.com", "*.apps.identity") => false
+func domainMatches(hostname, domainPattern string) bool {
+	// Exact match
+	if hostname == domainPattern {
+		return true
+	}
+	// Wildcard match
+	if strings.HasPrefix(domainPattern, "*.") {
+		suffix := domainPattern[1:] // Remove the '*'
+		return strings.HasSuffix(hostname, suffix)
+	}
+	return false
+}
+
+// setRouteEndpointForAccessLog sets the RouteEndpoint on reqInfo so that access
+// logs are emitted to the target app even when the request is denied before the
+// proxy has a chance to select an endpoint.
+func setRouteEndpointForAccessLog(reqInfo *RequestInfo, pool *route.EndpointPool, logger *slog.Logger) {
+	if pool == nil || reqInfo.RouteEndpoint != nil {
+		return
+	}
+	iter := pool.Endpoints(logger, "", false, route.RoutingProperties{})
+	if endpoint := iter.Next(0); endpoint != nil {
+		reqInfo.RouteEndpoint = endpoint
 	}
 }
 
