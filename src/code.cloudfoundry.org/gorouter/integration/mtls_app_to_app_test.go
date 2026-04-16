@@ -66,7 +66,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 				mtlsDomain = "my-app.apps.mtls.internal"
 
 				// Configure mTLS domain in GoRouter
-				testState.cfg.MtlsDomains = []config.MtlsDomainConfig{
+				testState.cfg.Domains = []config.MtlsDomainConfig{
 					{
 						Domain:              "*.apps.mtls.internal",
 						CACerts:             string(mtlsDomainCA.CACertPEM),
@@ -165,7 +165,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 				regularDomain = "my-app.apps.internal"
 
 				// Configure only the mTLS domain
-				testState.cfg.MtlsDomains = []config.MtlsDomainConfig{
+				testState.cfg.Domains = []config.MtlsDomainConfig{
 					{
 						Domain:              "*.apps.mtls.internal",
 						CACerts:             string(mtlsDomainCA.CACertPEM),
@@ -219,7 +219,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 			// Configure GoRouter
 			testState.cfg.EnableSSL = true
 			testState.cfg.ClientCertificateValidationString = "request"
-			testState.cfg.MtlsDomains = []config.MtlsDomainConfig{
+			testState.cfg.Domains = []config.MtlsDomainConfig{
 				{
 					Domain:              "*.apps.mtls.internal",
 					CACerts:             string(mtlsDomainCA.CACertPEM),
@@ -624,6 +624,284 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 				var backendReq *http.Request
 				Eventually(backendReceivedReqs).Should(Receive(&backendReq))
 				Expect(backendReq.Header.Get("X-Forwarded-Client-Cert")).NotTo(BeEmpty())
+			})
+		})
+
+		// RFC Scenario: Shared routes with post-selection authorization
+		// This test validates the expected intermittent 403 behavior described in
+		// RFC lines 475-517 (Post-Selection Authorization).
+		Describe("shared routes with scope boundaries (intermittent 403s)", func() {
+			var (
+				sharedDomain  string
+				backendApp1   *httptest.Server
+				backendApp2   *httptest.Server
+				app1Requests  chan *http.Request
+				app2Requests  chan *http.Request
+			)
+
+			BeforeEach(func() {
+				sharedDomain = "shared.apps.mtls.internal"
+				app1Requests = make(chan *http.Request, 10)
+				app2Requests = make(chan *http.Request, 10)
+
+				// Setup two backend apps in DIFFERENT spaces
+				backendApp1 = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					app1Requests <- r
+					w.WriteHeader(http.StatusOK)
+					w.Write([]byte("backend-app-1"))
+				}))
+
+				backendApp2 = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					app2Requests <- r
+					w.WriteHeader(http.StatusOK)
+					w.Write([]byte("backend-app-2"))
+				}))
+			})
+
+			AfterEach(func() {
+				if backendApp1 != nil {
+					backendApp1.Close()
+				}
+				if backendApp2 != nil {
+					backendApp2.Close()
+				}
+			})
+
+			Context("when two apps register the same route in different spaces", func() {
+				It("allows requests to the same space and denies to different space (intermittent 403s)", func() {
+					// Register SAME route from two different spaces with scope=space
+					// Backend 1 is in space-alpha
+					testState.registerWithScopeAndAllowedSources(
+						backendApp1,
+						sharedDomain,
+						"space",
+						map[string]interface{}{
+							"any": true,
+						},
+						map[string]string{
+							"space_id": "space-alpha",
+						},
+					)
+
+					// Backend 2 is in space-beta
+					testState.registerWithScopeAndAllowedSources(
+						backendApp2,
+						sharedDomain,
+						"space",
+						map[string]interface{}{
+							"any": true,
+						},
+						map[string]string{
+							"space_id": "space-beta",
+						},
+					)
+
+					// Create caller from space-alpha
+					callerCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+						CommonName: "caller-app-instance",
+						AppGUID:    "caller-app-guid",
+						SpaceGUID:  "space-alpha",
+						OrgGUID:    "org-123",
+					})
+
+					testState.client.Transport.(*http.Transport).TLSClientConfig.Certificates = []tls.Certificate{
+						callerCert.TLSCert(),
+					}
+
+					// Make multiple requests and observe intermittent behavior
+					successCount := 0
+					forbiddenCount := 0
+					attempts := 10
+
+					for i := 0; i < attempts; i++ {
+						req := testState.newGetRequest(fmt.Sprintf("https://%s", sharedDomain))
+						resp, err := testState.client.Do(req)
+						Expect(err).NotTo(HaveOccurred())
+
+						if resp.StatusCode == http.StatusOK {
+							body, _ := io.ReadAll(resp.Body)
+							// Should only succeed when routed to space-alpha backend
+							Expect(string(body)).To(Equal("backend-app-1"))
+							successCount++
+						} else if resp.StatusCode == http.StatusForbidden {
+							// Expected: post-selection check failed (routed to space-beta backend)
+							forbiddenCount++
+						}
+						resp.Body.Close()
+					}
+
+					// Verify we got BOTH outcomes (RFC-compliant intermittent 403s)
+					// With round-robin load balancing, both endpoints should be hit
+					Expect(successCount).To(BeNumerically(">", 0), "Should have some successful requests (same-space)")
+					Expect(forbiddenCount).To(BeNumerically(">", 0), "Should have some 403 responses (cross-space)")
+					Expect(successCount + forbiddenCount).To(Equal(attempts))
+				})
+
+				It("always succeeds when caller is in same org with scope=org", func() {
+					// Register SAME route from two different spaces but SAME org with scope=org
+					// Backend 1 is in org-alpha/space-alpha
+					testState.registerWithScopeAndAllowedSources(
+						backendApp1,
+						sharedDomain,
+						"org",
+						map[string]interface{}{
+							"any": true,
+						},
+						map[string]string{
+							"organization_id": "org-alpha",
+							"space_id":        "space-alpha",
+						},
+					)
+
+					// Backend 2 is in org-alpha/space-beta (same org, different space)
+					testState.registerWithScopeAndAllowedSources(
+						backendApp2,
+						sharedDomain,
+						"org",
+						map[string]interface{}{
+							"any": true,
+						},
+						map[string]string{
+							"organization_id": "org-alpha",
+							"space_id":        "space-beta",
+						},
+					)
+
+					// Create caller from org-alpha
+					callerCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+						CommonName: "caller-app-instance",
+						AppGUID:    "caller-app-guid",
+						SpaceGUID:  "space-gamma", // Different space, but same org
+						OrgGUID:    "org-alpha",
+					})
+
+					testState.client.Transport.(*http.Transport).TLSClientConfig.Certificates = []tls.Certificate{
+						callerCert.TLSCert(),
+					}
+
+					// Make multiple requests - ALL should succeed (same org)
+					for i := 0; i < 10; i++ {
+						req := testState.newGetRequest(fmt.Sprintf("https://%s", sharedDomain))
+						resp, err := testState.client.Do(req)
+						Expect(err).NotTo(HaveOccurred())
+						Expect(resp.StatusCode).To(Equal(http.StatusOK))
+						resp.Body.Close()
+					}
+				})
+
+				It("always fails when caller is in different org with scope=org", func() {
+					// Register SAME route from two different orgs with scope=org
+					// Backend 1 is in org-alpha
+					testState.registerWithScopeAndAllowedSources(
+						backendApp1,
+						sharedDomain,
+						"org",
+						map[string]interface{}{
+							"any": true,
+						},
+						map[string]string{
+							"organization_id": "org-alpha",
+						},
+					)
+
+					// Backend 2 is in org-beta
+					testState.registerWithScopeAndAllowedSources(
+						backendApp2,
+						sharedDomain,
+						"org",
+						map[string]interface{}{
+							"any": true,
+						},
+						map[string]string{
+							"organization_id": "org-beta",
+						},
+					)
+
+					// Create caller from org-gamma (different from both backends)
+					callerCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+						CommonName: "caller-app-instance",
+						AppGUID:    "caller-app-guid",
+						SpaceGUID:  "space-123",
+						OrgGUID:    "org-gamma",
+					})
+
+					testState.client.Transport.(*http.Transport).TLSClientConfig.Certificates = []tls.Certificate{
+						callerCert.TLSCert(),
+					}
+
+					// Make multiple requests - ALL should fail (different org)
+					for i := 0; i < 10; i++ {
+						req := testState.newGetRequest(fmt.Sprintf("https://%s", sharedDomain))
+						resp, err := testState.client.Do(req)
+						Expect(err).NotTo(HaveOccurred())
+						Expect(resp.StatusCode).To(Equal(http.StatusForbidden))
+						resp.Body.Close()
+					}
+				})
+			})
+
+			Context("when shared route has app-specific access rules", func() {
+				It("allows only the specified app and denies others (per-endpoint rules)", func() {
+					// Backend 1 allows only "allowed-app-1"
+					testState.registerWithScopeAndAllowedSources(
+						backendApp1,
+						sharedDomain,
+						"any",
+						map[string]interface{}{
+							"apps": []string{"allowed-app-1"},
+						},
+						nil,
+					)
+
+					// Backend 2 allows only "allowed-app-2"
+					testState.registerWithScopeAndAllowedSources(
+						backendApp2,
+						sharedDomain,
+						"any",
+						map[string]interface{}{
+							"apps": []string{"allowed-app-2"},
+						},
+						nil,
+					)
+
+					// Create caller with allowed-app-1
+					callerCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+						CommonName: "caller-app-instance",
+						AppGUID:    "allowed-app-1",
+						SpaceGUID:  "space-123",
+						OrgGUID:    "org-123",
+					})
+
+					testState.client.Transport.(*http.Transport).TLSClientConfig.Certificates = []tls.Certificate{
+						callerCert.TLSCert(),
+					}
+
+					// Make multiple requests
+					successCount := 0
+					forbiddenCount := 0
+					attempts := 10
+
+					for i := 0; i < attempts; i++ {
+						req := testState.newGetRequest(fmt.Sprintf("https://%s", sharedDomain))
+						resp, err := testState.client.Do(req)
+						Expect(err).NotTo(HaveOccurred())
+
+						if resp.StatusCode == http.StatusOK {
+							body, _ := io.ReadAll(resp.Body)
+							// Should only succeed when routed to backend 1
+							Expect(string(body)).To(Equal("backend-app-1"))
+							successCount++
+						} else {
+							Expect(resp.StatusCode).To(Equal(http.StatusForbidden))
+							forbiddenCount++
+						}
+						resp.Body.Close()
+					}
+
+					// Verify intermittent behavior based on endpoint selection
+					Expect(successCount).To(BeNumerically(">", 0), "Should succeed when routed to backend-1")
+					Expect(forbiddenCount).To(BeNumerically(">", 0), "Should fail when routed to backend-2")
+				})
 			})
 		})
 	})

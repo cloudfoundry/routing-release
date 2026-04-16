@@ -250,19 +250,34 @@ func (s *testState) registerWithInternalRouteService(appBackend, routeServiceSer
 func (s *testState) registerWithAllowedSources(backend *httptest.Server, routeURI string, mtlsAllowedSources map[string]interface{}) {
 	_, backendPort := hostnameAndPort(backend.Listener.Addr().String())
 
-	// Convert map to MtlsAllowedSources struct
-	as := &mbus.MtlsAllowedSources{}
+	// Build access rules from allowed sources (using RFC-compliant format)
+	var accessRules []string
 	if apps, ok := mtlsAllowedSources["apps"].([]string); ok {
-		as.Apps = apps
+		for _, app := range apps {
+			accessRules = append(accessRules, fmt.Sprintf("cf:app:%s", app))
+		}
 	}
 	if spaces, ok := mtlsAllowedSources["spaces"].([]string); ok {
-		as.Spaces = spaces
+		for _, space := range spaces {
+			accessRules = append(accessRules, fmt.Sprintf("cf:space:%s", space))
+		}
 	}
 	if orgs, ok := mtlsAllowedSources["orgs"].([]string); ok {
-		as.Orgs = orgs
+		for _, org := range orgs {
+			accessRules = append(accessRules, fmt.Sprintf("cf:org:%s", org))
+		}
 	}
-	if any, ok := mtlsAllowedSources["any"].(bool); ok {
-		as.Any = any
+	if any, ok := mtlsAllowedSources["any"].(bool); ok && any {
+		accessRules = append(accessRules, "cf:any")
+	}
+
+	// Join access rules into comma-separated string
+	accessRulesStr := ""
+	if len(accessRules) > 0 {
+		accessRulesStr = accessRules[0]
+		for i := 1; i < len(accessRules); i++ {
+			accessRulesStr = fmt.Sprintf("%s,%s", accessRulesStr, accessRules[i])
+		}
 	}
 
 	rm := mbus.RegistryMessage{
@@ -271,7 +286,62 @@ func (s *testState) registerWithAllowedSources(backend *httptest.Server, routeUR
 		Uris:                    []route.Uri{route.Uri(routeURI)},
 		StaleThresholdInSeconds: 10,
 		PrivateInstanceID:       fmt.Sprintf("%x", rand.Int31()),
-		MtlsAllowedSources:      as,
+		Options: mbus.RegistryMessageOpts{
+			AccessScope: "any", // Default to any scope
+			AccessRules: accessRulesStr,
+		},
+	}
+	s.registerAndWait(rm)
+}
+
+// registerWithScopeAndAllowedSources registers a route with RFC-compliant access control.
+// scope: "any", "org", or "space"
+// allowedSources: map with "apps", "spaces", "orgs", or "any" keys
+// tags: endpoint tags like "organization_id" and "space_id"
+func (s *testState) registerWithScopeAndAllowedSources(backend *httptest.Server, routeURI string, scope string, allowedSources map[string]interface{}, tags map[string]string) {
+	_, backendPort := hostnameAndPort(backend.Listener.Addr().String())
+
+	// Build access rules from allowedSources
+	var accessRules []string
+	if apps, ok := allowedSources["apps"].([]string); ok {
+		for _, app := range apps {
+			accessRules = append(accessRules, fmt.Sprintf("cf:app:%s", app))
+		}
+	}
+	if spaces, ok := allowedSources["spaces"].([]string); ok {
+		for _, space := range spaces {
+			accessRules = append(accessRules, fmt.Sprintf("cf:space:%s", space))
+		}
+	}
+	if orgs, ok := allowedSources["orgs"].([]string); ok {
+		for _, org := range orgs {
+			accessRules = append(accessRules, fmt.Sprintf("cf:org:%s", org))
+		}
+	}
+	if any, ok := allowedSources["any"].(bool); ok && any {
+		accessRules = append(accessRules, "cf:any")
+	}
+
+	// Join access rules into comma-separated string
+	accessRulesStr := ""
+	if len(accessRules) > 0 {
+		accessRulesStr = fmt.Sprintf("%s", accessRules[0])
+		for i := 1; i < len(accessRules); i++ {
+			accessRulesStr = fmt.Sprintf("%s,%s", accessRulesStr, accessRules[i])
+		}
+	}
+
+	rm := mbus.RegistryMessage{
+		Host:                    "127.0.0.1",
+		Port:                    uint16(backendPort),
+		Uris:                    []route.Uri{route.Uri(routeURI)},
+		StaleThresholdInSeconds: 10,
+		PrivateInstanceID:       fmt.Sprintf("%x", rand.Int31()),
+		Tags:                    tags,
+		Options: mbus.RegistryMessageOpts{
+			AccessScope: scope,
+			AccessRules: accessRulesStr,
+		},
 	}
 	s.registerAndWait(rm)
 }

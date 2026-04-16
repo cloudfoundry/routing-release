@@ -14,14 +14,20 @@ import (
 	"code.cloudfoundry.org/gorouter/route"
 )
 
-// mtlsAuthorization enforces the RFC two-layer mTLS authorization model:
+// mtlsAuthorization enforces the RFC two-layer mTLS authorization model.
 //
+// Deprecated: This handler implements pre-selection (permissive) scope checking
+// which violates the RFC requirement to check against "the selected backend endpoint".
+// Use NewMtlsPreAuth for pre-selection checks and the post-selection pipeline
+// (MtlsScopeAuth + MtlsAccessRulesAuth) for RFC-compliant strict enforcement.
+//
+// The old behavior:
 //  1. SNI/Host mismatch check — returns 421 if the TLS handshake did not
 //     enforce mTLS for the requested mTLS domain.
 //
 //  2. Route-level authorization — only active when the pool's AccessScope is
 //     non-empty (set by Cloud Controller via route options):
-//     a. Scope boundary check (any / org / space)
+//     a. Scope boundary check (any / org / space) - PERMISSIVE (checks all endpoints)
 //     b. Access rules check (cf:app:<guid>, cf:space:<guid>, cf:org:<guid>, cf:any)
 //     c. Default-deny when AccessScope is set but no AccessRules are present
 //
@@ -33,6 +39,12 @@ type mtlsAuthorization struct {
 }
 
 // NewMtlsAuthorization creates a new mTLS authorization handler.
+//
+// Deprecated: Use NewMtlsPreAuth instead. This handler implements pre-selection
+// scope checking which allows requests if the caller matches ANY endpoint in the pool,
+// violating RFC strict enforcement requirements. The new architecture separates
+// pre-selection checks (SNI, route lookup, identity) from post-selection checks
+// (scope and access rules against the SELECTED endpoint).
 func NewMtlsAuthorization(cfg *config.Config, logger *slog.Logger) negroni.Handler {
 	return &mtlsAuthorization{
 		config: cfg,
@@ -51,6 +63,24 @@ func setRouteEndpointForAccessLog(reqInfo *RequestInfo, pool *route.EndpointPool
 	if endpoint := iter.Next(0); endpoint != nil {
 		reqInfo.RouteEndpoint = endpoint
 	}
+}
+
+// domainMatches checks if a hostname matches a domain pattern (supports wildcard domains).
+// Examples:
+//   - domainMatches("mtls-backend.apps.identity", "*.apps.identity") => true
+//   - domainMatches("mtls-backend.apps.identity", "mtls-backend.apps.identity") => true
+//   - domainMatches("foo.bar.com", "*.apps.identity") => false
+func domainMatches(hostname, domainPattern string) bool {
+	// Exact match
+	if hostname == domainPattern {
+		return true
+	}
+	// Wildcard match
+	if strings.HasPrefix(domainPattern, "*.") {
+		suffix := domainPattern[1:] // Remove the '*'
+		return strings.HasSuffix(hostname, suffix)
+	}
+	return false
 }
 
 func (h *mtlsAuthorization) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
@@ -77,7 +107,7 @@ func (h *mtlsAuthorization) ServeHTTP(w http.ResponseWriter, r *http.Request, ne
 	connState := GetTLSConnectionState(r)
 	reqInfo.TlsSNI = connState.SNI
 
-	if !connState.ClientCertRequired || connState.MtlsDomain != hostDomain {
+	if !connState.ClientCertRequired || !domainMatches(hostDomain, connState.MtlsDomain) {
 		h.logger.Warn("mtls-enforcement-mismatch",
 			slog.String("host", r.Host),
 			slog.String("tls_sni", connState.SNI),

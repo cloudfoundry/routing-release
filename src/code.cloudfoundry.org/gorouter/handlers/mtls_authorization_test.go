@@ -16,6 +16,11 @@ import (
 	"code.cloudfoundry.org/gorouter/test_util"
 )
 
+// NOTE: These tests are for the DEPRECATED MtlsAuthorization handler.
+// The handler is now split into:
+//   - MtlsPreAuth (pre-selection checks) - tested here
+//   - MtlsScopeAuth + MtlsAccessRulesAuth (post-selection checks) - see mtls_scope_auth_test.go and mtls_access_rules_auth_test.go
+// These tests remain to ensure the pre-selection behavior still works correctly.
 var _ = Describe("MtlsAuthorization", func() {
 	var (
 		handler     negroni.Handler

@@ -115,6 +115,15 @@ func NewProxy(
 		IsInstrumented: cfg.SendHttpStartStopClientEvent,
 	}
 
+	// Create post-selection authorization pipeline
+	// This runs after endpoint selection in the round tripper to enforce
+	// RFC-compliant strict scope and access rules checking.
+	postSelectionPipeline := handlers.NewPostSelectionPipeline(
+		logger,
+		handlers.NewMtlsScopeAuth(cfg, logger),
+		handlers.NewMtlsAccessRulesAuth(logger),
+	)
+
 	prt := round_tripper.NewProxyRoundTripper(
 		roundTripperFactory,
 		fails.RetriableClassifiers,
@@ -126,6 +135,7 @@ func NewProxy(
 		},
 		routeServicesTransport,
 		cfg,
+		postSelectionPipeline,
 	)
 
 	rproxy := &httputil.ReverseProxy{
@@ -177,7 +187,7 @@ func NewProxy(
 		errorWriter,
 	))
 	n.Use(handlers.NewIdentity())
-	n.Use(handlers.NewMtlsAuthorization(cfg, logger))
+	n.Use(handlers.NewMtlsPreAuth(cfg, logger))
 	n.Use(handlers.NewHopByHop(cfg, logger))
 	n.Use(&handlers.XForwardedProto{
 		SkipSanitization:         SkipSanitizeXFP(routeServiceHandler.(*handlers.RouteService)),

@@ -76,6 +76,7 @@ func NewProxyRoundTripper(
 	errHandler errorHandler,
 	routeServicesTransport http.RoundTripper,
 	cfg *config.Config,
+	postSelectionPipeline *handlers.PostSelectionPipeline,
 ) ProxyRoundTripper {
 
 	return &roundTripper{
@@ -86,6 +87,7 @@ func NewProxyRoundTripper(
 		errorHandler:           errHandler,
 		routeServicesTransport: routeServicesTransport,
 		config:                 cfg,
+		postSelectionPipeline:  postSelectionPipeline,
 	}
 }
 
@@ -97,6 +99,7 @@ type roundTripper struct {
 	errorHandler           errorHandler
 	routeServicesTransport http.RoundTripper
 	config                 *config.Config
+	postSelectionPipeline  *handlers.PostSelectionPipeline
 }
 
 func (rt *roundTripper) RoundTrip(originalRequest *http.Request) (*http.Response, error) {
@@ -192,6 +195,35 @@ func (rt *roundTripper) RoundTrip(originalRequest *http.Request) (*http.Response
 			logger = logger.With(slog.Group("route-endpoint", endpoint.ToLogData()...))
 			triedEndpoints[endpoint.CanonicalAddr()] = true
 			reqInfo.RouteEndpoint = endpoint
+
+			// ── Post-selection authorization ──────────────────────────────────────
+			// Run post-selection authorization pipeline after endpoint selection but
+			// before making the backend request. This enforces RFC-compliant strict
+			// post-selection scope and access rules checking.
+			if rt.postSelectionPipeline != nil {
+				if authErr := rt.postSelectionPipeline.Run(endpoint, reqInfo); authErr != nil {
+					// Authorization failed - handle as MtlsAuthError
+					if mtlsErr, ok := authErr.(*handlers.MtlsAuthError); ok {
+						reqInfo.MtlsAuth = "denied"
+						reqInfo.MtlsRule = mtlsErr.Rule
+						reqInfo.MtlsDeniedReason = mtlsErr.Reason
+
+						logger.Info("post-selection-auth-denied",
+							slog.String("rule", mtlsErr.Rule),
+							slog.String("reason", mtlsErr.Reason),
+							slog.String("endpoint", endpoint.CanonicalAddr()))
+
+						// Return authorization error - will be converted to 403 by error handler
+						return nil, authErr
+					}
+
+					// Unknown error type
+					logger.Error("post-selection-auth-error",
+						log.ErrAttr(authErr),
+						slog.String("endpoint", endpoint.CanonicalAddr()))
+					return nil, authErr
+				}
+			}
 
 			logger.Debug("backend", slog.Int("attempt", attempt))
 			if endpoint.IsTLS() {

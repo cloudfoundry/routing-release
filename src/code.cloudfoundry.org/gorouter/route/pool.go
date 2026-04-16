@@ -634,6 +634,10 @@ func (p *EndpointPool) AccessRules() []string {
 
 // EndpointOrgIDs returns all unique organization_id tag values from endpoints in the pool.
 // Used for scope=org evaluation across shared routes.
+//
+// Deprecated: This method is used by the deprecated pre-selection authorization handler.
+// Post-selection authorization checks org/space against the SELECTED endpoint's tags,
+// not against all endpoints in the pool.
 func (p *EndpointPool) EndpointOrgIDs() []string {
 	p.Lock()
 	defer p.Unlock()
@@ -653,6 +657,10 @@ func (p *EndpointPool) EndpointOrgIDs() []string {
 
 // EndpointSpaceIDs returns all unique space_id tag values from endpoints in the pool.
 // Used for scope=space evaluation across shared routes.
+//
+// Deprecated: This method is used by the deprecated pre-selection authorization handler.
+// Post-selection authorization checks org/space against the SELECTED endpoint's tags,
+// not against all endpoints in the pool.
 func (p *EndpointPool) EndpointSpaceIDs() []string {
 	p.Lock()
 	defer p.Unlock()

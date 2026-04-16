@@ -172,6 +172,7 @@ var _ = Describe("ProxyRoundTripper", func() {
 				errorHandler,
 				routeServicesTransport,
 				cfg,
+				nil, // postSelectionPipeline - not testing mTLS auth in these tests
 			)
 		})
 
