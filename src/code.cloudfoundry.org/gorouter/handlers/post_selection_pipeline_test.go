@@ -161,10 +161,10 @@ var _ = Describe("PostSelectionPipeline", func() {
 			err := pipeline.Run(endpoint, reqInfo)
 
 			Expect(err).To(Equal(authError))
-			mtlsErr, ok := err.(*handlers.AuthError)
+			authErr, ok := err.(*handlers.AuthError)
 			Expect(ok).To(BeTrue())
-			Expect(mtlsErr.Rule).To(Equal("test:rule"))
-			Expect(mtlsErr.Reason).To(Equal("test reason"))
+			Expect(authErr.Rule).To(Equal("test:rule"))
+			Expect(authErr.Reason).To(Equal("test reason"))
 		})
 
 		It("returns generic errors as-is", func() {

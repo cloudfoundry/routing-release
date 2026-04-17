@@ -100,11 +100,11 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
-				Expect(mtlsErr.Rule).To(Equal("route:no_access_rules"))
-				Expect(mtlsErr.Reason).To(Equal("route has no access rules configured"))
-				Expect(mtlsErr.HTTPStatus).To(Equal(http.StatusForbidden))
+				Expect(authErr.Rule).To(Equal("route:no_access_rules"))
+				Expect(authErr.Reason).To(Equal("route has no access rules configured"))
+				Expect(authErr.HTTPStatus).To(Equal(http.StatusForbidden))
 			})
 		})
 
@@ -170,10 +170,10 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
-				Expect(mtlsErr.Rule).To(Equal("route:access_rules"))
-				Expect(mtlsErr.Reason).To(ContainSubstring("caller app other-app-456 not in access_rules"))
+				Expect(authErr.Rule).To(Equal("route:access_rules"))
+				Expect(authErr.Reason).To(ContainSubstring("caller app other-app-456 not in access_rules"))
 			})
 		})
 
@@ -218,9 +218,9 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
-				Expect(mtlsErr.Rule).To(Equal("route:access_rules"))
+				Expect(authErr.Rule).To(Equal("route:access_rules"))
 			})
 		})
 
@@ -265,9 +265,9 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
-				Expect(mtlsErr.Rule).To(Equal("route:access_rules"))
+				Expect(authErr.Rule).To(Equal("route:access_rules"))
 			})
 		})
 
@@ -366,9 +366,9 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
-				Expect(mtlsErr.Rule).To(Equal("route:access_rules"))
+				Expect(authErr.Rule).To(Equal("route:access_rules"))
 			})
 		})
 

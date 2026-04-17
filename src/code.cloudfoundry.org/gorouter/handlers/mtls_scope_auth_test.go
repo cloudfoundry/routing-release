@@ -145,11 +145,11 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue(), "error should be AuthError")
-				Expect(mtlsErr.Rule).To(Equal("domain:scope=org:post-selection"))
-				Expect(mtlsErr.Reason).To(ContainSubstring("caller org org-456 does not match selected backend org org-123"))
-				Expect(mtlsErr.HTTPStatus).To(Equal(http.StatusForbidden))
+				Expect(authErr.Rule).To(Equal("domain:scope=org:post-selection"))
+				Expect(authErr.Reason).To(ContainSubstring("caller org org-456 does not match selected backend org org-123"))
+				Expect(authErr.HTTPStatus).To(Equal(http.StatusForbidden))
 			})
 
 			It("denies caller when endpoint has no organization_id tag", func() {
@@ -170,10 +170,10 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
-				Expect(mtlsErr.Rule).To(Equal("domain:scope=org:post-selection"))
-				Expect(mtlsErr.Reason).To(ContainSubstring("caller org org-123 does not match selected backend org "))
+				Expect(authErr.Rule).To(Equal("domain:scope=org:post-selection"))
+				Expect(authErr.Reason).To(ContainSubstring("caller org org-123 does not match selected backend org "))
 			})
 
 			It("denies caller when caller has no org", func() {
@@ -194,9 +194,9 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
-				Expect(mtlsErr.Rule).To(Equal("domain:scope=org:post-selection"))
+				Expect(authErr.Rule).To(Equal("domain:scope=org:post-selection"))
 			})
 		})
 
@@ -240,11 +240,11 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
-				Expect(mtlsErr.Rule).To(Equal("domain:scope=space:post-selection"))
-				Expect(mtlsErr.Reason).To(ContainSubstring("caller space space-xyz does not match selected backend space space-abc"))
-				Expect(mtlsErr.HTTPStatus).To(Equal(http.StatusForbidden))
+				Expect(authErr.Rule).To(Equal("domain:scope=space:post-selection"))
+				Expect(authErr.Reason).To(ContainSubstring("caller space space-xyz does not match selected backend space space-abc"))
+				Expect(authErr.HTTPStatus).To(Equal(http.StatusForbidden))
 			})
 
 			It("denies caller when endpoint has no space_id tag", func() {
@@ -265,9 +265,9 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
-				Expect(mtlsErr.Rule).To(Equal("domain:scope=space:post-selection"))
+				Expect(authErr.Rule).To(Equal("domain:scope=space:post-selection"))
 			})
 
 			It("denies caller when caller has no space", func() {
@@ -288,9 +288,9 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
-				Expect(mtlsErr.Rule).To(Equal("domain:scope=space:post-selection"))
+				Expect(authErr.Rule).To(Equal("domain:scope=space:post-selection"))
 			})
 		})
 
@@ -370,10 +370,10 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				mtlsErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
-				Expect(mtlsErr.Rule).To(Equal("domain:scope=space:post-selection"))
-				Expect(mtlsErr.Reason).To(ContainSubstring("caller space space-abc does not match selected backend space space-xyz"))
+				Expect(authErr.Rule).To(Equal("domain:scope=space:post-selection"))
+				Expect(authErr.Reason).To(ContainSubstring("caller space space-abc does not match selected backend space space-xyz"))
 			})
 		})
 	})
