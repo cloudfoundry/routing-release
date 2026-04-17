@@ -247,36 +247,36 @@ func (s *testState) registerWithInternalRouteService(appBackend, routeServiceSer
 	s.registerAndWait(rm)
 }
 
-func (s *testState) registerWithAllowedSources(backend *httptest.Server, routeURI string, allowedSources map[string]interface{}) {
+func (s *testState) registerWithAccessRules(backend *httptest.Server, routeURI string, accessRules map[string]interface{}) {
 	_, backendPort := hostnameAndPort(backend.Listener.Addr().String())
 
-	// Build access rules from allowed sources (using RFC-compliant format)
-	var accessRules []string
-	if apps, ok := allowedSources["apps"].([]string); ok {
+	// Build access rules from map (using RFC-compliant format)
+	var accessRulesList []string
+	if apps, ok := accessRules["apps"].([]string); ok {
 		for _, app := range apps {
-			accessRules = append(accessRules, fmt.Sprintf("cf:app:%s", app))
+			accessRulesList = append(accessRulesList, fmt.Sprintf("cf:app:%s", app))
 		}
 	}
-	if spaces, ok := allowedSources["spaces"].([]string); ok {
+	if spaces, ok := accessRules["spaces"].([]string); ok {
 		for _, space := range spaces {
-			accessRules = append(accessRules, fmt.Sprintf("cf:space:%s", space))
+			accessRulesList = append(accessRulesList, fmt.Sprintf("cf:space:%s", space))
 		}
 	}
-	if orgs, ok := allowedSources["orgs"].([]string); ok {
+	if orgs, ok := accessRules["orgs"].([]string); ok {
 		for _, org := range orgs {
-			accessRules = append(accessRules, fmt.Sprintf("cf:org:%s", org))
+			accessRulesList = append(accessRulesList, fmt.Sprintf("cf:org:%s", org))
 		}
 	}
-	if any, ok := allowedSources["any"].(bool); ok && any {
-		accessRules = append(accessRules, "cf:any")
+	if any, ok := accessRules["any"].(bool); ok && any {
+		accessRulesList = append(accessRulesList, "cf:any")
 	}
 
 	// Join access rules into comma-separated string
 	accessRulesStr := ""
-	if len(accessRules) > 0 {
-		accessRulesStr = accessRules[0]
-		for i := 1; i < len(accessRules); i++ {
-			accessRulesStr = fmt.Sprintf("%s,%s", accessRulesStr, accessRules[i])
+	if len(accessRulesList) > 0 {
+		accessRulesStr = accessRulesList[0]
+		for i := 1; i < len(accessRulesList); i++ {
+			accessRulesStr = fmt.Sprintf("%s,%s", accessRulesStr, accessRulesList[i])
 		}
 	}
 
@@ -294,40 +294,40 @@ func (s *testState) registerWithAllowedSources(backend *httptest.Server, routeUR
 	s.registerAndWait(rm)
 }
 
-// registerWithScopeAndAllowedSources registers a route with RFC-compliant access control.
+// registerWithScopeAndAccessRules registers a route with RFC-compliant access control.
 // scope: "any", "org", or "space"
-// allowedSources: map with "apps", "spaces", "orgs", or "any" keys
+// accessRules: map with "apps", "spaces", "orgs", or "any" keys
 // tags: endpoint tags like "organization_id" and "space_id"
-func (s *testState) registerWithScopeAndAllowedSources(backend *httptest.Server, routeURI string, scope string, allowedSources map[string]interface{}, tags map[string]string) {
+func (s *testState) registerWithScopeAndAccessRules(backend *httptest.Server, routeURI string, scope string, accessRules map[string]interface{}, tags map[string]string) {
 	_, backendPort := hostnameAndPort(backend.Listener.Addr().String())
 
-	// Build access rules from allowedSources
-	var accessRules []string
-	if apps, ok := allowedSources["apps"].([]string); ok {
+	// Build access rules from map
+	var accessRulesList []string
+	if apps, ok := accessRules["apps"].([]string); ok {
 		for _, app := range apps {
-			accessRules = append(accessRules, fmt.Sprintf("cf:app:%s", app))
+			accessRulesList = append(accessRulesList, fmt.Sprintf("cf:app:%s", app))
 		}
 	}
-	if spaces, ok := allowedSources["spaces"].([]string); ok {
+	if spaces, ok := accessRules["spaces"].([]string); ok {
 		for _, space := range spaces {
-			accessRules = append(accessRules, fmt.Sprintf("cf:space:%s", space))
+			accessRulesList = append(accessRulesList, fmt.Sprintf("cf:space:%s", space))
 		}
 	}
-	if orgs, ok := allowedSources["orgs"].([]string); ok {
+	if orgs, ok := accessRules["orgs"].([]string); ok {
 		for _, org := range orgs {
-			accessRules = append(accessRules, fmt.Sprintf("cf:org:%s", org))
+			accessRulesList = append(accessRulesList, fmt.Sprintf("cf:org:%s", org))
 		}
 	}
-	if any, ok := allowedSources["any"].(bool); ok && any {
-		accessRules = append(accessRules, "cf:any")
+	if any, ok := accessRules["any"].(bool); ok && any {
+		accessRulesList = append(accessRulesList, "cf:any")
 	}
 
 	// Join access rules into comma-separated string
 	accessRulesStr := ""
-	if len(accessRules) > 0 {
-		accessRulesStr = fmt.Sprintf("%s", accessRules[0])
-		for i := 1; i < len(accessRules); i++ {
-			accessRulesStr = fmt.Sprintf("%s,%s", accessRulesStr, accessRules[i])
+	if len(accessRulesList) > 0 {
+		accessRulesStr = fmt.Sprintf("%s", accessRulesList[0])
+		for i := 1; i < len(accessRulesList); i++ {
+			accessRulesStr = fmt.Sprintf("%s,%s", accessRulesStr, accessRulesList[i])
 		}
 	}
 

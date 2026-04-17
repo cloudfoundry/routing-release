@@ -14,7 +14,7 @@ import (
 	"code.cloudfoundry.org/gorouter/test_util"
 )
 
-var _ = Describe("App-to-App mTLS Routing", func() {
+var _ = Describe("Identity-Aware Routing", func() {
 	var testState *testState
 
 	BeforeEach(func() {
@@ -100,7 +100,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 				})
 
 				// Register route on mTLS domain with allowed sources
-				testState.registerWithAllowedSources(
+				testState.registerWithAccessRules(
 					backendApp,
 					mtlsDomain,
 					map[string]interface{}{
@@ -241,7 +241,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 				callerAppGUID := "caller-app-guid-123"
 
 				// Register route with app-level allowed sources
-				testState.registerWithAllowedSources(
+				testState.registerWithAccessRules(
 					backendApp,
 					mtlsDomain,
 					map[string]interface{}{
@@ -275,7 +275,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 
 			It("denies requests from apps not in the allowed list", func() {
 				// Register route with app-level allowed sources
-				testState.registerWithAllowedSources(
+				testState.registerWithAccessRules(
 					backendApp,
 					mtlsDomain,
 					map[string]interface{}{
@@ -309,7 +309,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 				callerSpaceGUID := "dev-space-guid"
 
 				// Register route with space-level allowed sources
-				testState.registerWithAllowedSources(
+				testState.registerWithAccessRules(
 					backendApp,
 					mtlsDomain,
 					map[string]interface{}{
@@ -343,7 +343,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 
 			It("denies requests from apps in non-allowed spaces", func() {
 				// Register route with space-level allowed sources
-				testState.registerWithAllowedSources(
+				testState.registerWithAccessRules(
 					backendApp,
 					mtlsDomain,
 					map[string]interface{}{
@@ -377,7 +377,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 				callerOrgGUID := "my-org-guid"
 
 				// Register route with org-level allowed sources
-				testState.registerWithAllowedSources(
+				testState.registerWithAccessRules(
 					backendApp,
 					mtlsDomain,
 					map[string]interface{}{
@@ -407,7 +407,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 
 			It("denies requests from apps in non-allowed orgs", func() {
 				// Register route with org-level allowed sources
-				testState.registerWithAllowedSources(
+				testState.registerWithAccessRules(
 					backendApp,
 					mtlsDomain,
 					map[string]interface{}{
@@ -439,7 +439,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 		Describe("multi-level authorization", func() {
 			It("allows requests if ANY authorization level matches", func() {
 				// Register route with multiple authorization levels
-				testState.registerWithAllowedSources(
+				testState.registerWithAccessRules(
 					backendApp,
 					mtlsDomain,
 					map[string]interface{}{
@@ -471,7 +471,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 
 			It("denies requests if NO authorization level matches", func() {
 				// Register route with multiple authorization levels
-				testState.registerWithAllowedSources(
+				testState.registerWithAccessRules(
 					backendApp,
 					mtlsDomain,
 					map[string]interface{}{
@@ -505,7 +505,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 		Describe("'any authenticated app' authorization", func() {
 			It("allows any authenticated app when any=true", func() {
 				// Register route with any=true
-				testState.registerWithAllowedSources(
+				testState.registerWithAccessRules(
 					backendApp,
 					mtlsDomain,
 					map[string]interface{}{
@@ -535,7 +535,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 		})
 
 		Describe("default-deny behavior", func() {
-			It("denies requests when no mtls_allowed_sources are configured", func() {
+			It("denies requests when no access rules are configured", func() {
 				// Register route WITHOUT allowed sources
 				testState.register(backendApp, mtlsDomain)
 
@@ -557,9 +557,9 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 				Expect(resp.StatusCode).To(Equal(http.StatusForbidden))
 			})
 
-			It("denies requests when mtls_allowed_sources are empty", func() {
+			It("denies requests when access rules are empty", func() {
 				// Register route with empty allowed sources
-				testState.registerWithAllowedSources(
+				testState.registerWithAccessRules(
 					backendApp,
 					mtlsDomain,
 					map[string]interface{}{
@@ -592,7 +592,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 		Describe("X-Forwarded-Client-Cert header", func() {
 			It("forwards sanitized client certificate to backend on mTLS domains", func() {
 				// Register route with allowed sources
-				testState.registerWithAllowedSources(
+				testState.registerWithAccessRules(
 					backendApp,
 					mtlsDomain,
 					map[string]interface{}{
@@ -671,7 +671,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 				It("allows requests to the same space and denies to different space (intermittent 403s)", func() {
 					// Register SAME route from two different spaces with scope=space
 					// Backend 1 is in space-alpha
-					testState.registerWithScopeAndAllowedSources(
+					testState.registerWithScopeAndAccessRules(
 						backendApp1,
 						sharedDomain,
 						"space",
@@ -684,7 +684,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 					)
 
 					// Backend 2 is in space-beta
-					testState.registerWithScopeAndAllowedSources(
+					testState.registerWithScopeAndAccessRules(
 						backendApp2,
 						sharedDomain,
 						"space",
@@ -740,7 +740,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 				It("always succeeds when caller is in same org with scope=org", func() {
 					// Register SAME route from two different spaces but SAME org with scope=org
 					// Backend 1 is in org-alpha/space-alpha
-					testState.registerWithScopeAndAllowedSources(
+					testState.registerWithScopeAndAccessRules(
 						backendApp1,
 						sharedDomain,
 						"org",
@@ -754,7 +754,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 					)
 
 					// Backend 2 is in org-alpha/space-beta (same org, different space)
-					testState.registerWithScopeAndAllowedSources(
+					testState.registerWithScopeAndAccessRules(
 						backendApp2,
 						sharedDomain,
 						"org",
@@ -792,7 +792,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 				It("always fails when caller is in different org with scope=org", func() {
 					// Register SAME route from two different orgs with scope=org
 					// Backend 1 is in org-alpha
-					testState.registerWithScopeAndAllowedSources(
+					testState.registerWithScopeAndAccessRules(
 						backendApp1,
 						sharedDomain,
 						"org",
@@ -805,7 +805,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 					)
 
 					// Backend 2 is in org-beta
-					testState.registerWithScopeAndAllowedSources(
+					testState.registerWithScopeAndAccessRules(
 						backendApp2,
 						sharedDomain,
 						"org",
@@ -843,7 +843,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 			Context("when shared route has app-specific access rules", func() {
 				It("allows only the specified app and denies others (per-endpoint rules)", func() {
 					// Backend 1 allows only "allowed-app-1"
-					testState.registerWithScopeAndAllowedSources(
+					testState.registerWithScopeAndAccessRules(
 						backendApp1,
 						sharedDomain,
 						"any",
@@ -854,7 +854,7 @@ var _ = Describe("App-to-App mTLS Routing", func() {
 					)
 
 					// Backend 2 allows only "allowed-app-2"
-					testState.registerWithScopeAndAllowedSources(
+					testState.registerWithScopeAndAccessRules(
 						backendApp2,
 						sharedDomain,
 						"any",
