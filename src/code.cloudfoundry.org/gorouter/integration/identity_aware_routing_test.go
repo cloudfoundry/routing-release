@@ -632,11 +632,11 @@ var _ = Describe("Identity-Aware Routing", func() {
 		// RFC lines 475-517 (Post-Selection Authorization).
 		Describe("shared routes with scope boundaries (intermittent 403s)", func() {
 			var (
-				sharedDomain  string
-				backendApp1   *httptest.Server
-				backendApp2   *httptest.Server
-				app1Requests  chan *http.Request
-				app2Requests  chan *http.Request
+				sharedDomain string
+				backendApp1  *httptest.Server
+				backendApp2  *httptest.Server
+				app1Requests chan *http.Request
+				app2Requests chan *http.Request
 			)
 
 			BeforeEach(func() {

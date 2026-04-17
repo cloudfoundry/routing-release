@@ -197,27 +197,27 @@ func (rt *roundTripper) RoundTrip(originalRequest *http.Request) (*http.Response
 			reqInfo.RouteEndpoint = endpoint
 
 			// ── Post-selection authorization ──────────────────────────────────────
-		// Run post-selection authorization pipeline after endpoint selection but
-		// before making the backend request. This enforces RFC-compliant strict
-		// post-selection scope and access rules checking.
-		if rt.postSelectionPipeline != nil {
-			if authErr := rt.postSelectionPipeline.Run(endpoint, reqInfo); authErr != nil {
-				// Authorization failed - handle as AuthError
-				if authError, ok := authErr.(*handlers.AuthError); ok {
-					reqInfo.AuthResult = &handlers.AuthResult{
-						Outcome:      "denied",
-						Rule:         authError.Rule,
-						DeniedReason: authError.Reason,
+			// Run post-selection authorization pipeline after endpoint selection but
+			// before making the backend request. This enforces RFC-compliant strict
+			// post-selection scope and access rules checking.
+			if rt.postSelectionPipeline != nil {
+				if authErr := rt.postSelectionPipeline.Run(endpoint, reqInfo); authErr != nil {
+					// Authorization failed - handle as AuthError
+					if authError, ok := authErr.(*handlers.AuthError); ok {
+						reqInfo.AuthResult = &handlers.AuthResult{
+							Outcome:      "denied",
+							Rule:         authError.Rule,
+							DeniedReason: authError.Reason,
+						}
+
+						logger.Info("post-selection-auth-denied",
+							slog.String("rule", authError.Rule),
+							slog.String("reason", authError.Reason),
+							slog.String("endpoint", endpoint.CanonicalAddr()))
+
+						// Return authorization error - will be converted to 403 by error handler
+						return nil, authErr
 					}
-
-					logger.Info("post-selection-auth-denied",
-						slog.String("rule", authError.Rule),
-						slog.String("reason", authError.Reason),
-						slog.String("endpoint", endpoint.CanonicalAddr()))
-
-					// Return authorization error - will be converted to 403 by error handler
-					return nil, authErr
-				}
 
 					// Unknown error type
 					logger.Error("post-selection-auth-error",

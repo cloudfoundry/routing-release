@@ -22,21 +22,21 @@ import (
 )
 
 type RegistryMessage struct {
-	App                     string            `json:"app"`
-	AvailabilityZone        string            `json:"availability_zone"`
-	EndpointUpdatedAtNs     int64             `json:"endpoint_updated_at_ns"`
-	Host                    string            `json:"host"`
-	IsolationSegment        string            `json:"isolation_segment"`
-	Port                    uint16            `json:"port"`
-	PrivateInstanceID       string            `json:"private_instance_id"`
-	PrivateInstanceIndex    string            `json:"private_instance_index"`
-	Protocol                string            `json:"protocol"`
-	RouteServiceURL         string            `json:"route_service_url"`
-	ServerCertDomainSAN     string            `json:"server_cert_domain_san"`
-	StaleThresholdInSeconds int               `json:"stale_threshold_in_seconds"`
-	TLSPort                 uint16            `json:"tls_port"`
-	Tags                    map[string]string `json:"tags"`
-	Uris                    []route.Uri       `json:"uris"`
+	App                     string              `json:"app"`
+	AvailabilityZone        string              `json:"availability_zone"`
+	EndpointUpdatedAtNs     int64               `json:"endpoint_updated_at_ns"`
+	Host                    string              `json:"host"`
+	IsolationSegment        string              `json:"isolation_segment"`
+	Port                    uint16              `json:"port"`
+	PrivateInstanceID       string              `json:"private_instance_id"`
+	PrivateInstanceIndex    string              `json:"private_instance_index"`
+	Protocol                string              `json:"protocol"`
+	RouteServiceURL         string              `json:"route_service_url"`
+	ServerCertDomainSAN     string              `json:"server_cert_domain_san"`
+	StaleThresholdInSeconds int                 `json:"stale_threshold_in_seconds"`
+	TLSPort                 uint16              `json:"tls_port"`
+	Tags                    map[string]string   `json:"tags"`
+	Uris                    []route.Uri         `json:"uris"`
 	Options                 RegistryMessageOpts `json:"options"`
 }
 
