@@ -34,3 +34,8 @@ tags
 src/golang.org/x/tools/
 src/github.com/kisielk/
 src/golang.org/x/sync/
+
+# Devbox local development environment
+devbox.json
+devbox.lock
+.devbox/
