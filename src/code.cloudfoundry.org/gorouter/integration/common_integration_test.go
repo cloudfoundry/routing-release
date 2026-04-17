@@ -247,27 +247,27 @@ func (s *testState) registerWithInternalRouteService(appBackend, routeServiceSer
 	s.registerAndWait(rm)
 }
 
-func (s *testState) registerWithAllowedSources(backend *httptest.Server, routeURI string, mtlsAllowedSources map[string]interface{}) {
+func (s *testState) registerWithAllowedSources(backend *httptest.Server, routeURI string, allowedSources map[string]interface{}) {
 	_, backendPort := hostnameAndPort(backend.Listener.Addr().String())
 
 	// Build access rules from allowed sources (using RFC-compliant format)
 	var accessRules []string
-	if apps, ok := mtlsAllowedSources["apps"].([]string); ok {
+	if apps, ok := allowedSources["apps"].([]string); ok {
 		for _, app := range apps {
 			accessRules = append(accessRules, fmt.Sprintf("cf:app:%s", app))
 		}
 	}
-	if spaces, ok := mtlsAllowedSources["spaces"].([]string); ok {
+	if spaces, ok := allowedSources["spaces"].([]string); ok {
 		for _, space := range spaces {
 			accessRules = append(accessRules, fmt.Sprintf("cf:space:%s", space))
 		}
 	}
-	if orgs, ok := mtlsAllowedSources["orgs"].([]string); ok {
+	if orgs, ok := allowedSources["orgs"].([]string); ok {
 		for _, org := range orgs {
 			accessRules = append(accessRules, fmt.Sprintf("cf:org:%s", org))
 		}
 	}
-	if any, ok := mtlsAllowedSources["any"].(bool); ok && any {
+	if any, ok := allowedSources["any"].(bool); ok && any {
 		accessRules = append(accessRules, "cf:any")
 	}
 
