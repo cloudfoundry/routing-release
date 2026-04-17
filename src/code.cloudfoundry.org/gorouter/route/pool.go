@@ -632,52 +632,6 @@ func (p *EndpointPool) AccessRules() []string {
 	return p.endpoints[0].endpoint.AccessRules
 }
 
-// EndpointOrgIDs returns all unique organization_id tag values from endpoints in the pool.
-// Used for scope=org evaluation across shared routes.
-//
-// Deprecated: This method is used by the deprecated pre-selection authorization handler.
-// Post-selection authorization checks org/space against the SELECTED endpoint's tags,
-// not against all endpoints in the pool.
-func (p *EndpointPool) EndpointOrgIDs() []string {
-	p.Lock()
-	defer p.Unlock()
-
-	seen := make(map[string]struct{})
-	var result []string
-	for _, e := range p.endpoints {
-		if id := e.endpoint.Tags["organization_id"]; id != "" {
-			if _, ok := seen[id]; !ok {
-				seen[id] = struct{}{}
-				result = append(result, id)
-			}
-		}
-	}
-	return result
-}
-
-// EndpointSpaceIDs returns all unique space_id tag values from endpoints in the pool.
-// Used for scope=space evaluation across shared routes.
-//
-// Deprecated: This method is used by the deprecated pre-selection authorization handler.
-// Post-selection authorization checks org/space against the SELECTED endpoint's tags,
-// not against all endpoints in the pool.
-func (p *EndpointPool) EndpointSpaceIDs() []string {
-	p.Lock()
-	defer p.Unlock()
-
-	seen := make(map[string]struct{})
-	var result []string
-	for _, e := range p.endpoints {
-		if id := e.endpoint.Tags["space_id"]; id != "" {
-			if _, ok := seen[id]; !ok {
-				seen[id] = struct{}{}
-				result = append(result, id)
-			}
-		}
-	}
-	return result
-}
-
 // ApplicationId returns the ApplicationId from the first endpoint in the pool.
 // All endpoints in a pool should have the same ApplicationId.
 func (p *EndpointPool) ApplicationId() string {
