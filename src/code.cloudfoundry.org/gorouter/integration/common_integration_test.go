@@ -325,7 +325,7 @@ func (s *testState) registerWithScopeAndAccessRules(backend *httptest.Server, ro
 	// Join access rules into comma-separated string
 	accessRulesStr := ""
 	if len(accessRulesList) > 0 {
-		accessRulesStr = fmt.Sprintf("%s", accessRulesList[0])
+		accessRulesStr = accessRulesList[0]
 		for i := 1; i < len(accessRulesList); i++ {
 			accessRulesStr = fmt.Sprintf("%s,%s", accessRulesStr, accessRulesList[i])
 		}

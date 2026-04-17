@@ -87,7 +87,7 @@ var _ = Describe("RegistryMessage", func() {
 			})
 
 			It("parses access_scope correctly with empty rules", func() {
-				endpoint, err := message.MakeEndpoint(false)
+				endpoint, err := message.MakeEndpoint(false, "round-robin")
 				Expect(err).NotTo(HaveOccurred())
 				Expect(endpoint.AccessScope).To(Equal("any"))
 				Expect(endpoint.AccessRules).To(BeEmpty())
@@ -111,7 +111,7 @@ var _ = Describe("RegistryMessage", func() {
 			})
 
 			It("parses access_scope and access_rules correctly", func() {
-				endpoint, err := message.MakeEndpoint(false)
+				endpoint, err := message.MakeEndpoint(false, "round-robin")
 				Expect(err).NotTo(HaveOccurred())
 				Expect(endpoint.AccessScope).To(Equal("org"))
 				Expect(endpoint.AccessRules).To(ConsistOf(
@@ -139,7 +139,7 @@ var _ = Describe("RegistryMessage", func() {
 			})
 
 			It("parses cf:any rule correctly", func() {
-				endpoint, err := message.MakeEndpoint(false)
+				endpoint, err := message.MakeEndpoint(false, "round-robin")
 				Expect(err).NotTo(HaveOccurred())
 				Expect(endpoint.AccessScope).To(Equal("space"))
 				Expect(endpoint.AccessRules).To(ConsistOf("cf:any"))
@@ -159,7 +159,7 @@ var _ = Describe("RegistryMessage", func() {
 			})
 
 			It("leaves AccessScope empty and AccessRules nil", func() {
-				endpoint, err := message.MakeEndpoint(false)
+				endpoint, err := message.MakeEndpoint(false, "round-robin")
 				Expect(err).NotTo(HaveOccurred())
 				Expect(endpoint.AccessScope).To(BeEmpty())
 				Expect(endpoint.AccessRules).To(BeEmpty())

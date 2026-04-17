@@ -69,7 +69,7 @@ func parseCommaSeparatedSelectors(s string) []string {
 	return result
 }
 
-func (rm *RegistryMessage) makeEndpoint(http2Enabled bool, globalRoutingAlgo string) (*route.Endpoint, error) {
+func (rm *RegistryMessage) MakeEndpoint(http2Enabled bool, globalRoutingAlgo string) (*route.Endpoint, error) {
 	port, useTLS, err := rm.port()
 	if err != nil {
 		return nil, err
@@ -275,7 +275,7 @@ func (s *Subscriber) subscribeRoutes() (*nats.Subscription, error) {
 }
 
 func (s *Subscriber) registerEndpoint(msg *RegistryMessage) {
-	endpoint, err := msg.makeEndpoint(s.http2Enabled, s.globalRoutingAlgo)
+	endpoint, err := msg.MakeEndpoint(s.http2Enabled, s.globalRoutingAlgo)
 	if err != nil {
 		s.logger.Error("Unable to register route",
 			log.ErrAttr(err),
@@ -290,7 +290,7 @@ func (s *Subscriber) registerEndpoint(msg *RegistryMessage) {
 }
 
 func (s *Subscriber) unregisterEndpoint(msg *RegistryMessage) {
-	endpoint, err := msg.makeEndpoint(s.http2Enabled, s.globalRoutingAlgo)
+	endpoint, err := msg.MakeEndpoint(s.http2Enabled, s.globalRoutingAlgo)
 	if err != nil {
 		s.logger.Error("Unable to unregister route",
 			log.ErrAttr(err),
