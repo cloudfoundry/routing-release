@@ -141,12 +141,6 @@ func (m msgBus) mapRouteOptions(route config.Route) map[string]string {
 		if route.Options.LoadBalancingAlgorithm != "" {
 			routeOptions[LoadBalancingAlgorithm] = string(route.Options.LoadBalancingAlgorithm)
 		}
-		if route.Options.AccessScope != "" {
-			routeOptions["access_scope"] = route.Options.AccessScope
-		}
-		if route.Options.AccessRules != "" {
-			routeOptions["access_rules"] = route.Options.AccessRules
-		}
 		return routeOptions
 	}
 	return nil

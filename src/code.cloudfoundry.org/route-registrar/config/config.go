@@ -74,15 +74,8 @@ type RouteSchema struct {
 	Options              *Options            `json:"options,omitempty" yaml:"options,omitempty"`
 }
 
-// Options configures per-route options passed to GoRouter via NATS.
 type Options struct {
 	LoadBalancingAlgorithm LoadBalancingAlgorithm `json:"loadbalancing,omitempty" yaml:"loadbalancing,omitempty"`
-	// AccessScope is the operator-level scope boundary: "any", "org", or "space".
-	// Non-empty means access control enforcement is active for this route.
-	AccessScope string `json:"access_scope,omitempty" yaml:"access_scope,omitempty"`
-	// AccessRules is a comma-separated list of selectors (e.g. "cf:app:<guid>").
-	// Requires AccessScope to be set. Empty + non-empty AccessScope = default-deny.
-	AccessRules string `json:"access_rules,omitempty" yaml:"access_rules,omitempty"`
 }
 
 type LoadBalancingAlgorithm string
