@@ -125,18 +125,14 @@ func (h *mtlsPreAuth) ServeHTTP(w http.ResponseWriter, r *http.Request, next htt
 			slog.String("endpoint-app", applicationId),
 			slog.String("reason", "identity-extraction-failed"))
 		setRouteEndpointForAccessLog(reqInfo, pool, h.logger)
-		reqInfo.MtlsAuth = "denied"
-		reqInfo.MtlsRule = "identity_extraction"
-		reqInfo.MtlsDeniedReason = "certificate does not contain CF identity OU fields"
+		reqInfo.AuthResult = &AuthResult{
+			Outcome:      "denied",
+			Rule:         "identity_extraction",
+			DeniedReason: "certificate does not contain CF identity OU fields",
+		}
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
-
-	identity := reqInfo.CallerIdentity
-	// Populate caller fields for RTR log.
-	reqInfo.CallerApp = identity.AppGUID
-	reqInfo.CallerSpace = identity.SpaceGUID
-	reqInfo.CallerOrg = identity.OrgGUID
 
 	// Pre-auth checks passed — continue to proxy (scope and access rules will be
 	// checked post-selection in the round tripper).

@@ -127,7 +127,7 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).To(BeNil())
-				Expect(reqInfo.MtlsRule).To(Equal("route:cf:any"))
+				Expect(reqInfo.AuthResult.Rule).To(Equal("route:cf:any"))
 			})
 		})
 
@@ -150,7 +150,7 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).To(BeNil())
-				Expect(reqInfo.MtlsRule).To(Equal("route:cf:app:allowed-app-123"))
+				Expect(reqInfo.AuthResult.Rule).To(Equal("route:cf:app:allowed-app-123"))
 			})
 
 			It("denies caller with different app GUID", func() {
@@ -197,7 +197,7 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).To(BeNil())
-				Expect(reqInfo.MtlsRule).To(Equal("route:cf:space:allowed-space-abc"))
+				Expect(reqInfo.AuthResult.Rule).To(Equal("route:cf:space:allowed-space-abc"))
 			})
 
 			It("denies caller from different space", func() {
@@ -244,7 +244,7 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).To(BeNil())
-				Expect(reqInfo.MtlsRule).To(Equal("route:cf:org:allowed-org-123"))
+				Expect(reqInfo.AuthResult.Rule).To(Equal("route:cf:org:allowed-org-123"))
 			})
 
 			It("denies caller from different org", func() {
@@ -294,7 +294,7 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).To(BeNil())
-				Expect(reqInfo.MtlsRule).To(Equal("route:cf:app:app-1"))
+				Expect(reqInfo.AuthResult.Rule).To(Equal("route:cf:app:app-1"))
 			})
 
 			It("allows caller matching second rule", func() {
@@ -317,7 +317,7 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).To(BeNil())
-				Expect(reqInfo.MtlsRule).To(Equal("route:cf:app:app-2"))
+				Expect(reqInfo.AuthResult.Rule).To(Equal("route:cf:app:app-2"))
 			})
 
 			It("allows caller matching third rule", func() {
@@ -341,7 +341,7 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).To(BeNil())
-				Expect(reqInfo.MtlsRule).To(Equal("route:cf:space:space-abc"))
+				Expect(reqInfo.AuthResult.Rule).To(Equal("route:cf:space:space-abc"))
 			})
 
 			It("denies caller matching no rules", func() {
@@ -391,7 +391,7 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).To(BeNil())
-				Expect(reqInfo.MtlsRule).To(Equal("route:cf:any"))
+				Expect(reqInfo.AuthResult.Rule).To(Equal("route:cf:any"))
 			})
 
 			It("skips malformed rules and evaluates valid ones", func() {
@@ -413,7 +413,7 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).To(BeNil())
-				Expect(reqInfo.MtlsRule).To(Equal("route:cf:app:allowed-app"))
+				Expect(reqInfo.AuthResult.Rule).To(Equal("route:cf:app:allowed-app"))
 			})
 		})
 	})

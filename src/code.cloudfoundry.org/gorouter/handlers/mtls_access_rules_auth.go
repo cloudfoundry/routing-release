@@ -115,7 +115,10 @@ func (h *MtlsAccessRulesAuth) Check(endpoint *route.Endpoint, reqInfo *RequestIn
 	}
 
 	// Access rule matched - populate reqInfo for RTR logs
-	reqInfo.MtlsRule = "route:" + matchedRule
+	if reqInfo.AuthResult == nil {
+		reqInfo.AuthResult = &AuthResult{}
+	}
+	reqInfo.AuthResult.Rule = "route:" + matchedRule
 
 	h.logger.Debug("mtls-access-rules-granted",
 		slog.String("route", poolHost),

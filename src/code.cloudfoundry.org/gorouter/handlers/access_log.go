@@ -92,13 +92,17 @@ func (a *accessLog) ServeHTTP(rw http.ResponseWriter, r *http.Request, next http
 
 	alr.LocalAddress = reqInfo.LocalAddress
 
-	// mTLS authorization fields
-	alr.MtlsAuth = reqInfo.MtlsAuth
-	alr.MtlsRule = reqInfo.MtlsRule
-	alr.MtlsDeniedReason = reqInfo.MtlsDeniedReason
-	alr.CallerApp = reqInfo.CallerApp
-	alr.CallerSpace = reqInfo.CallerSpace
-	alr.CallerOrg = reqInfo.CallerOrg
+	// Identity-aware routing authorization fields
+	if reqInfo.CallerIdentity != nil {
+		alr.CallerApp = reqInfo.CallerIdentity.AppGUID
+		alr.CallerSpace = reqInfo.CallerIdentity.SpaceGUID
+		alr.CallerOrg = reqInfo.CallerIdentity.OrgGUID
+	}
+	if reqInfo.AuthResult != nil {
+		alr.AuthOutcome = reqInfo.AuthResult.Outcome
+		alr.AuthRule = reqInfo.AuthResult.Rule
+		alr.AuthDeniedReason = reqInfo.AuthResult.DeniedReason
+	}
 	alr.TlsSNI = reqInfo.TlsSNI
 
 	a.accessLogger.Log(*alr)

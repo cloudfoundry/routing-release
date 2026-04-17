@@ -116,23 +116,13 @@ type RequestInfo struct {
 	BackendReqHeaders http.Header
 
 	// CallerIdentity contains the identity of the calling application extracted
-	// from the client certificate on mTLS domains. Will be nil for non-mTLS requests.
+	// from the client certificate. Will be nil for requests without identity.
 	CallerIdentity *CallerIdentity
 
-	// MtlsAuth is the authorization outcome for RTR log: "allowed" or "denied".
-	// Empty for non-mTLS requests.
-	MtlsAuth string
-	// MtlsRule identifies which rule matched or caused denial, e.g.
-	// "route:cf:app:<guid>", "domain:scope=org", "route:no_access_rules".
-	MtlsRule string
-	// MtlsDeniedReason is a human-readable explanation for denial, empty on allow.
-	MtlsDeniedReason string
-	// CallerApp is the CF app GUID from the client certificate (for RTR log).
-	CallerApp string
-	// CallerSpace is the CF space GUID from the client certificate (for RTR log).
-	CallerSpace string
-	// CallerOrg is the CF org GUID from the client certificate (for RTR log).
-	CallerOrg string
+	// AuthResult captures the outcome of identity-aware routing authorization.
+	// Will be nil if no authorization was performed.
+	AuthResult *AuthResult
+
 	// TlsSNI is the SNI value used during the TLS handshake (for RTR log on 421).
 	TlsSNI string
 }

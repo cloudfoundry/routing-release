@@ -182,24 +182,27 @@ var _ = Describe("PostSelectionPipeline", func() {
 		Context("handler state isolation", func() {
 		It("does not interfere with reqInfo modifications by handlers", func() {
 			logger := test_util.NewTestLogger("pipeline")
-			// Handler 1 modifies reqInfo
-			handler1.CheckStub = func(ep *route.Endpoint, ri *handlers.RequestInfo) error {
-				ri.MtlsRule = "first-rule"
-				return nil
+		// Handler 1 modifies reqInfo
+		handler1.CheckStub = func(ep *route.Endpoint, ri *handlers.RequestInfo) error {
+			if ri.AuthResult == nil {
+				ri.AuthResult = &handlers.AuthResult{}
 			}
+			ri.AuthResult.Rule = "first-rule"
+			return nil
+		}
 
-			// Handler 2 should see the modification
-			handler2.CheckStub = func(ep *route.Endpoint, ri *handlers.RequestInfo) error {
-				Expect(ri.MtlsRule).To(Equal("first-rule"))
-				ri.MtlsRule = "second-rule"
-				return nil
-			}
+		// Handler 2 should see the modification
+		handler2.CheckStub = func(ep *route.Endpoint, ri *handlers.RequestInfo) error {
+			Expect(ri.AuthResult.Rule).To(Equal("first-rule"))
+			ri.AuthResult.Rule = "second-rule"
+			return nil
+		}
 
 			pipeline = handlers.NewPostSelectionPipeline(logger.Logger, handler1, handler2)
 			err := pipeline.Run(endpoint, reqInfo)
 
 			Expect(err).To(BeNil())
-			Expect(reqInfo.MtlsRule).To(Equal("second-rule"))
+			Expect(reqInfo.AuthResult.Rule).To(Equal("second-rule"))
 		})
 		})
 
@@ -212,18 +215,21 @@ var _ = Describe("PostSelectionPipeline", func() {
 				return nil
 			}
 
-			// Simulate access rules check (passes and sets MtlsRule)
-			handler2.CheckStub = func(ep *route.Endpoint, ri *handlers.RequestInfo) error {
-				// Access rules matched
-				ri.MtlsRule = "route:cf:app:allowed-app"
-				return nil
+		// Simulate access rules check (passes and sets AuthResult.Rule)
+		handler2.CheckStub = func(ep *route.Endpoint, ri *handlers.RequestInfo) error {
+			// Access rules matched
+			if ri.AuthResult == nil {
+				ri.AuthResult = &handlers.AuthResult{}
 			}
+			ri.AuthResult.Rule = "route:cf:app:allowed-app"
+			return nil
+		}
 
 			pipeline = handlers.NewPostSelectionPipeline(logger.Logger, handler1, handler2)
 			err := pipeline.Run(endpoint, reqInfo)
 
 			Expect(err).To(BeNil())
-			Expect(reqInfo.MtlsRule).To(Equal("route:cf:app:allowed-app"))
+			Expect(reqInfo.AuthResult.Rule).To(Equal("route:cf:app:allowed-app"))
 		})
 
 		It("returns error from scope check before running access rules", func() {

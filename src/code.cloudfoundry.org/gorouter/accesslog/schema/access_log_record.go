@@ -128,13 +128,13 @@ type AccessLogRecord struct {
 
 	LocalAddress string
 
-	// mTLS authorization fields (populated for mTLS domains only).
-	// MtlsAuth is "allowed" or "denied"; empty for non-mTLS requests.
-	MtlsAuth string
-	// MtlsRule identifies the rule that matched or caused denial.
-	MtlsRule string
-	// MtlsDeniedReason is a human-readable denial explanation (empty on allow).
-	MtlsDeniedReason string
+	// Identity-aware routing authorization fields.
+	// AuthOutcome is "allowed" or "denied"; empty if no authorization was performed.
+	AuthOutcome string
+	// AuthRule identifies the rule that matched or caused denial.
+	AuthRule string
+	// AuthDeniedReason is a human-readable denial explanation (empty on allow).
+	AuthDeniedReason string
 	// CallerApp/Space/Org are the CF identity fields from the client certificate.
 	CallerApp   string
 	CallerSpace string
@@ -351,20 +351,20 @@ func (r *AccessLogRecord) makeRecord(performTruncate bool) []byte {
 		b.WriteString(` caller_org:`)
 		b.WriteDashOrStringValue(r.CallerOrg)
 	}
-	if r.MtlsAuth != "" {
+	if r.AuthOutcome != "" {
 		// #nosec G104
-		b.WriteString(` mtls_auth:`)
-		b.WriteDashOrStringValue(r.MtlsAuth)
+		b.WriteString(` auth:`)
+		b.WriteDashOrStringValue(r.AuthOutcome)
 	}
-	if r.MtlsRule != "" {
+	if r.AuthRule != "" {
 		// #nosec G104
-		b.WriteString(` mtls_rule:`)
-		b.WriteDashOrStringValue(r.MtlsRule)
+		b.WriteString(` auth_rule:`)
+		b.WriteDashOrStringValue(r.AuthRule)
 	}
-	if r.MtlsDeniedReason != "" {
+	if r.AuthDeniedReason != "" {
 		// #nosec G104
-		b.WriteString(` mtls_denied_reason:`)
-		b.WriteDashOrStringValue(r.MtlsDeniedReason)
+		b.WriteString(` auth_denied_reason:`)
+		b.WriteDashOrStringValue(r.AuthDeniedReason)
 	}
 
 	r.addExtraHeaders(b, performTruncate)
