@@ -65,27 +65,22 @@ func evaluateAccessRules(rules []string, identity *CallerIdentity) (string, bool
 // Returns nil if authorized, or an AuthError if no access rule matches
 // the caller's identity.
 func (h *MtlsAccessRulesAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) error {
-	// Only enforce access rules if enforcement is active
+	// Only enforce access rules if we have caller identity (mTLS domain)
+	if reqInfo.CallerIdentity == nil {
+		return nil // Not an mTLS domain or no identity extracted
+	}
+
+	// Enforce access rules on mTLS domains
 	if reqInfo.RoutePool == nil {
 		return nil
 	}
 
-	accessScope := reqInfo.RoutePool.AccessScope()
-	if accessScope == "" {
-		return nil // No enforcement active
-	}
-
-	// Access rules require caller identity
-	if reqInfo.CallerIdentity == nil {
-		return nil // Identity check should have failed earlier in pre-auth
-	}
-
 	poolHost := reqInfo.RoutePool.Host()
 
-	// Get access rules from the pool
-	accessRules := reqInfo.RoutePool.AccessRules()
+	// Get access rules from the selected endpoint (per-endpoint rules)
+	accessRules := endpoint.AccessRules
 	if len(accessRules) == 0 {
-		// Default deny: enforcement is active but no rules configured
+		// Default deny: mTLS domain but no rules configured
 		h.logger.Info("mtls-access-rules-denied",
 			slog.String("route", poolHost),
 			slog.String("reason", "no-access-rules"),

@@ -77,27 +77,27 @@ var _ = Describe("Identity-Aware Routing", func() {
 				testState.StartGorouterOrFail()
 			})
 
-			It("requires a client certificate", func() {
-				// Register route on mTLS domain
-				testState.register(backendApp, mtlsDomain)
+		It("requires a client certificate", func() {
+			// Register route on mTLS domain
+			testState.register(backendApp, mtlsDomain)
 
-				// Attempt request without client certificate
-				req := testState.newGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
-				_, err := testState.client.Do(req)
-				Expect(err).To(HaveOccurred())
-				Expect(err.Error()).To(ContainSubstring("tls"))
-			})
+			// Attempt request without client certificate
+			req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
+			_, err := client.Do(req)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("tls"))
+		})
 
 			It("accepts valid client certificate from the configured CA", func() {
 				// Create instance identity certificate (need to use the same CA!)
 				appInstanceCert = &test_util.CertChain{}
 				// Recreate with SAME CA as configured in GoRouter
-				*appInstanceCert = test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
-					CommonName: "app-instance",
-					AppGUID:    "app-guid-123",
-					SpaceGUID:  "space-guid-456",
-					OrgGUID:    "org-guid-789",
-				})
+			*appInstanceCert = test_util.CreateInstanceIdentityCertWithCA(test_util.InstanceIdentityCertNames{
+				CommonName: "app-instance",
+				AppGUID:    "app-guid-123",
+				SpaceGUID:  "space-guid-456",
+				OrgGUID:    "org-guid-789",
+			}, mtlsDomainCA)
 
 				// Register route on mTLS domain with allowed sources
 				testState.registerWithAccessRules(
@@ -115,13 +115,13 @@ var _ = Describe("Identity-Aware Routing", func() {
 						appInstanceCert.TLSCert(),
 					},
 				}
-				testState.client.Transport.(*http.Transport).TLSClientConfig = clientTLSConfig
+			testState.client.Transport.(*http.Transport).TLSClientConfig = clientTLSConfig
 
-				// Make request
-				req := testState.newGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
-				resp, err := testState.client.Do(req)
-				Expect(err).NotTo(HaveOccurred())
-				Expect(resp.StatusCode).To(Equal(http.StatusOK))
+			// Make request
+			req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
+			resp, err := client.Do(req)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(resp.StatusCode).To(Equal(http.StatusOK))
 
 				body, _ := io.ReadAll(resp.Body)
 				resp.Body.Close()
@@ -132,11 +132,11 @@ var _ = Describe("Identity-Aware Routing", func() {
 			})
 
 			It("rejects client certificate from unknown CA", func() {
-				// Create certificate from different CA (not the configured mtlsDomainCA)
-				unknownCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
-					CommonName: "app-instance",
-					AppGUID:    "app-guid-123",
-				})
+			// Create certificate from different CA (not the configured mtlsDomainCA)
+			unknownCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+				CommonName: "app-instance",
+				AppGUID:    "app-guid-123",
+			})
 
 				// Register route
 				testState.register(backendApp, mtlsDomain)
@@ -151,8 +151,8 @@ var _ = Describe("Identity-Aware Routing", func() {
 				testState.client.Transport.(*http.Transport).TLSClientConfig = clientTLSConfig
 
 				// Make request - should fail TLS handshake
-				req := testState.newGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
-				_, err := testState.client.Do(req)
+				req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
+				_, err := client.Do(req)
 				Expect(err).To(HaveOccurred())
 				Expect(err.Error()).To(ContainSubstring("tls"))
 			})
@@ -249,13 +249,13 @@ var _ = Describe("Identity-Aware Routing", func() {
 					},
 				)
 
-				// Create caller certificate
-				callerCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
-					CommonName: "caller-app-instance",
-					AppGUID:    callerAppGUID,
-					SpaceGUID:  "caller-space-guid",
-					OrgGUID:    "caller-org-guid",
-				})
+			// Create caller certificate
+			callerCert := test_util.CreateInstanceIdentityCertWithCA(test_util.InstanceIdentityCertNames{
+				CommonName: "caller-app-instance",
+				AppGUID:    callerAppGUID,
+				SpaceGUID:  "caller-space-guid",
+				OrgGUID:    "caller-org-guid",
+			}, mtlsDomainCA)
 
 				// Configure client
 				testState.client.Transport.(*http.Transport).TLSClientConfig.Certificates = []tls.Certificate{
@@ -263,8 +263,8 @@ var _ = Describe("Identity-Aware Routing", func() {
 				}
 
 				// Make request
-				req := testState.newGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
-				resp, err := testState.client.Do(req)
+				req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
+				resp, err := client.Do(req)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(resp.StatusCode).To(Equal(http.StatusOK))
 
@@ -284,12 +284,12 @@ var _ = Describe("Identity-Aware Routing", func() {
 				)
 
 				// Create caller certificate with different app GUID
-				callerCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+				callerCert := test_util.CreateInstanceIdentityCertWithCA(test_util.InstanceIdentityCertNames{
 					CommonName: "caller-app-instance",
 					AppGUID:    "unauthorized-app-guid",
 					SpaceGUID:  "caller-space-guid",
 					OrgGUID:    "caller-org-guid",
-				})
+				}, mtlsDomainCA)
 
 				// Configure client
 				testState.client.Transport.(*http.Transport).TLSClientConfig.Certificates = []tls.Certificate{
@@ -297,8 +297,8 @@ var _ = Describe("Identity-Aware Routing", func() {
 				}
 
 				// Make request
-				req := testState.newGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
-				resp, err := testState.client.Do(req)
+				req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
+				resp, err := client.Do(req)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(resp.StatusCode).To(Equal(http.StatusForbidden))
 			})
@@ -318,12 +318,12 @@ var _ = Describe("Identity-Aware Routing", func() {
 				)
 
 				// Create caller certificate
-				callerCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+				callerCert := test_util.CreateInstanceIdentityCertWithCA(test_util.InstanceIdentityCertNames{
 					CommonName: "caller-app-instance",
 					AppGUID:    "caller-app-guid",
 					SpaceGUID:  callerSpaceGUID,
 					OrgGUID:    "caller-org-guid",
-				})
+				}, mtlsDomainCA)
 
 				// Configure client
 				testState.client.Transport.(*http.Transport).TLSClientConfig.Certificates = []tls.Certificate{
@@ -331,8 +331,8 @@ var _ = Describe("Identity-Aware Routing", func() {
 				}
 
 				// Make request
-				req := testState.newGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
-				resp, err := testState.client.Do(req)
+				req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
+				resp, err := client.Do(req)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(resp.StatusCode).To(Equal(http.StatusOK))
 
@@ -352,12 +352,12 @@ var _ = Describe("Identity-Aware Routing", func() {
 				)
 
 				// Create caller certificate with different space GUID
-				callerCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+				callerCert := test_util.CreateInstanceIdentityCertWithCA(test_util.InstanceIdentityCertNames{
 					CommonName: "caller-app-instance",
 					AppGUID:    "caller-app-guid",
 					SpaceGUID:  "unauthorized-space-guid",
 					OrgGUID:    "caller-org-guid",
-				})
+				}, mtlsDomainCA)
 
 				// Configure client
 				testState.client.Transport.(*http.Transport).TLSClientConfig.Certificates = []tls.Certificate{
@@ -365,8 +365,8 @@ var _ = Describe("Identity-Aware Routing", func() {
 				}
 
 				// Make request
-				req := testState.newGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
-				resp, err := testState.client.Do(req)
+				req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
+				resp, err := client.Do(req)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(resp.StatusCode).To(Equal(http.StatusForbidden))
 			})
@@ -386,12 +386,12 @@ var _ = Describe("Identity-Aware Routing", func() {
 				)
 
 				// Create caller certificate
-				callerCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+				callerCert := test_util.CreateInstanceIdentityCertWithCA(test_util.InstanceIdentityCertNames{
 					CommonName: "caller-app-instance",
 					AppGUID:    "caller-app-guid",
 					SpaceGUID:  "caller-space-guid",
 					OrgGUID:    callerOrgGUID,
-				})
+				}, mtlsDomainCA)
 
 				// Configure client
 				testState.client.Transport.(*http.Transport).TLSClientConfig.Certificates = []tls.Certificate{
@@ -399,8 +399,8 @@ var _ = Describe("Identity-Aware Routing", func() {
 				}
 
 				// Make request
-				req := testState.newGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
-				resp, err := testState.client.Do(req)
+				req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
+				resp, err := client.Do(req)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(resp.StatusCode).To(Equal(http.StatusOK))
 			})
@@ -416,12 +416,12 @@ var _ = Describe("Identity-Aware Routing", func() {
 				)
 
 				// Create caller certificate with different org GUID
-				callerCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+				callerCert := test_util.CreateInstanceIdentityCertWithCA(test_util.InstanceIdentityCertNames{
 					CommonName: "caller-app-instance",
 					AppGUID:    "caller-app-guid",
 					SpaceGUID:  "caller-space-guid",
 					OrgGUID:    "unauthorized-org-guid",
-				})
+				}, mtlsDomainCA)
 
 				// Configure client
 				testState.client.Transport.(*http.Transport).TLSClientConfig.Certificates = []tls.Certificate{
@@ -429,8 +429,8 @@ var _ = Describe("Identity-Aware Routing", func() {
 				}
 
 				// Make request
-				req := testState.newGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
-				resp, err := testState.client.Do(req)
+				req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
+				resp, err := client.Do(req)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(resp.StatusCode).To(Equal(http.StatusForbidden))
 			})
@@ -450,12 +450,12 @@ var _ = Describe("Identity-Aware Routing", func() {
 				)
 
 				// Create caller that matches space level but not app level
-				callerCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+				callerCert := test_util.CreateInstanceIdentityCertWithCA(test_util.InstanceIdentityCertNames{
 					CommonName: "caller-app-instance",
 					AppGUID:    "different-app-guid",
 					SpaceGUID:  "dev-space-guid", // Matches allowed space
 					OrgGUID:    "different-org-guid",
-				})
+				}, mtlsDomainCA)
 
 				// Configure client
 				testState.client.Transport.(*http.Transport).TLSClientConfig.Certificates = []tls.Certificate{
@@ -463,8 +463,8 @@ var _ = Describe("Identity-Aware Routing", func() {
 				}
 
 				// Make request - should succeed because space matches
-				req := testState.newGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
-				resp, err := testState.client.Do(req)
+				req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
+				resp, err := client.Do(req)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(resp.StatusCode).To(Equal(http.StatusOK))
 			})
@@ -482,12 +482,12 @@ var _ = Describe("Identity-Aware Routing", func() {
 				)
 
 				// Create caller that matches none
-				callerCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+				callerCert := test_util.CreateInstanceIdentityCertWithCA(test_util.InstanceIdentityCertNames{
 					CommonName: "caller-app-instance",
 					AppGUID:    "different-app-guid",
 					SpaceGUID:  "different-space-guid",
 					OrgGUID:    "different-org-guid",
-				})
+				}, mtlsDomainCA)
 
 				// Configure client
 				testState.client.Transport.(*http.Transport).TLSClientConfig.Certificates = []tls.Certificate{
@@ -495,8 +495,8 @@ var _ = Describe("Identity-Aware Routing", func() {
 				}
 
 				// Make request - should fail
-				req := testState.newGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
-				resp, err := testState.client.Do(req)
+				req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
+				resp, err := client.Do(req)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(resp.StatusCode).To(Equal(http.StatusForbidden))
 			})
@@ -514,12 +514,12 @@ var _ = Describe("Identity-Aware Routing", func() {
 				)
 
 				// Create arbitrary caller certificate
-				callerCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+				callerCert := test_util.CreateInstanceIdentityCertWithCA(test_util.InstanceIdentityCertNames{
 					CommonName: "any-app-instance",
 					AppGUID:    "random-app-guid-999",
 					SpaceGUID:  "random-space-guid",
 					OrgGUID:    "random-org-guid",
-				})
+				}, mtlsDomainCA)
 
 				// Configure client
 				testState.client.Transport.(*http.Transport).TLSClientConfig.Certificates = []tls.Certificate{
@@ -527,8 +527,8 @@ var _ = Describe("Identity-Aware Routing", func() {
 				}
 
 				// Make request - should succeed
-				req := testState.newGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
-				resp, err := testState.client.Do(req)
+				req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
+				resp, err := client.Do(req)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(resp.StatusCode).To(Equal(http.StatusOK))
 			})
@@ -540,10 +540,10 @@ var _ = Describe("Identity-Aware Routing", func() {
 				testState.register(backendApp, mtlsDomain)
 
 				// Create caller certificate
-				callerCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+				callerCert := test_util.CreateInstanceIdentityCertWithCA(test_util.InstanceIdentityCertNames{
 					CommonName: "caller-app-instance",
 					AppGUID:    "caller-app-guid",
-				})
+				}, mtlsDomainCA)
 
 				// Configure client
 				testState.client.Transport.(*http.Transport).TLSClientConfig.Certificates = []tls.Certificate{
@@ -551,8 +551,8 @@ var _ = Describe("Identity-Aware Routing", func() {
 				}
 
 				// Make request - should fail (default deny)
-				req := testState.newGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
-				resp, err := testState.client.Do(req)
+				req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
+				resp, err := client.Do(req)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(resp.StatusCode).To(Equal(http.StatusForbidden))
 			})
@@ -571,10 +571,10 @@ var _ = Describe("Identity-Aware Routing", func() {
 				)
 
 				// Create caller certificate
-				callerCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+				callerCert := test_util.CreateInstanceIdentityCertWithCA(test_util.InstanceIdentityCertNames{
 					CommonName: "caller-app-instance",
 					AppGUID:    "caller-app-guid",
-				})
+				}, mtlsDomainCA)
 
 				// Configure client
 				testState.client.Transport.(*http.Transport).TLSClientConfig.Certificates = []tls.Certificate{
@@ -582,8 +582,8 @@ var _ = Describe("Identity-Aware Routing", func() {
 				}
 
 				// Make request - should fail
-				req := testState.newGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
-				resp, err := testState.client.Do(req)
+				req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
+				resp, err := client.Do(req)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(resp.StatusCode).To(Equal(http.StatusForbidden))
 			})
@@ -601,12 +601,12 @@ var _ = Describe("Identity-Aware Routing", func() {
 				)
 
 				// Create caller certificate
-				callerCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+				callerCert := test_util.CreateInstanceIdentityCertWithCA(test_util.InstanceIdentityCertNames{
 					CommonName: "caller-app-instance",
 					AppGUID:    "caller-app-guid",
 					SpaceGUID:  "caller-space-guid",
 					OrgGUID:    "caller-org-guid",
-				})
+				}, mtlsDomainCA)
 
 				// Configure client
 				testState.client.Transport.(*http.Transport).TLSClientConfig.Certificates = []tls.Certificate{
@@ -614,8 +614,8 @@ var _ = Describe("Identity-Aware Routing", func() {
 				}
 
 				// Make request
-				req := testState.newGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
-				resp, err := testState.client.Do(req)
+				req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
+				resp, err := client.Do(req)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(resp.StatusCode).To(Equal(http.StatusOK))
 				resp.Body.Close()
@@ -697,12 +697,12 @@ var _ = Describe("Identity-Aware Routing", func() {
 					)
 
 					// Create caller from space-alpha
-					callerCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+					callerCert := test_util.CreateInstanceIdentityCertWithCA(test_util.InstanceIdentityCertNames{
 						CommonName: "caller-app-instance",
 						AppGUID:    "caller-app-guid",
 						SpaceGUID:  "space-alpha",
 						OrgGUID:    "org-123",
-					})
+					}, mtlsDomainCA)
 
 					testState.client.Transport.(*http.Transport).TLSClientConfig.Certificates = []tls.Certificate{
 						callerCert.TLSCert(),
@@ -714,8 +714,8 @@ var _ = Describe("Identity-Aware Routing", func() {
 					attempts := 10
 
 					for i := 0; i < attempts; i++ {
-						req := testState.newGetRequest(fmt.Sprintf("https://%s", sharedDomain))
-						resp, err := testState.client.Do(req)
+						req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", sharedDomain))
+						resp, err := client.Do(req)
 						Expect(err).NotTo(HaveOccurred())
 
 						if resp.StatusCode == http.StatusOK {
@@ -768,12 +768,12 @@ var _ = Describe("Identity-Aware Routing", func() {
 					)
 
 					// Create caller from org-alpha
-					callerCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+					callerCert := test_util.CreateInstanceIdentityCertWithCA(test_util.InstanceIdentityCertNames{
 						CommonName: "caller-app-instance",
 						AppGUID:    "caller-app-guid",
 						SpaceGUID:  "space-gamma", // Different space, but same org
 						OrgGUID:    "org-alpha",
-					})
+					}, mtlsDomainCA)
 
 					testState.client.Transport.(*http.Transport).TLSClientConfig.Certificates = []tls.Certificate{
 						callerCert.TLSCert(),
@@ -781,8 +781,8 @@ var _ = Describe("Identity-Aware Routing", func() {
 
 					// Make multiple requests - ALL should succeed (same org)
 					for i := 0; i < 10; i++ {
-						req := testState.newGetRequest(fmt.Sprintf("https://%s", sharedDomain))
-						resp, err := testState.client.Do(req)
+						req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", sharedDomain))
+						resp, err := client.Do(req)
 						Expect(err).NotTo(HaveOccurred())
 						Expect(resp.StatusCode).To(Equal(http.StatusOK))
 						resp.Body.Close()
@@ -818,12 +818,12 @@ var _ = Describe("Identity-Aware Routing", func() {
 					)
 
 					// Create caller from org-gamma (different from both backends)
-					callerCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+					callerCert := test_util.CreateInstanceIdentityCertWithCA(test_util.InstanceIdentityCertNames{
 						CommonName: "caller-app-instance",
 						AppGUID:    "caller-app-guid",
 						SpaceGUID:  "space-123",
 						OrgGUID:    "org-gamma",
-					})
+					}, mtlsDomainCA)
 
 					testState.client.Transport.(*http.Transport).TLSClientConfig.Certificates = []tls.Certificate{
 						callerCert.TLSCert(),
@@ -831,8 +831,8 @@ var _ = Describe("Identity-Aware Routing", func() {
 
 					// Make multiple requests - ALL should fail (different org)
 					for i := 0; i < 10; i++ {
-						req := testState.newGetRequest(fmt.Sprintf("https://%s", sharedDomain))
-						resp, err := testState.client.Do(req)
+						req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", sharedDomain))
+						resp, err := client.Do(req)
 						Expect(err).NotTo(HaveOccurred())
 						Expect(resp.StatusCode).To(Equal(http.StatusForbidden))
 						resp.Body.Close()
@@ -865,12 +865,12 @@ var _ = Describe("Identity-Aware Routing", func() {
 					)
 
 					// Create caller with allowed-app-1
-					callerCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+					callerCert := test_util.CreateInstanceIdentityCertWithCA(test_util.InstanceIdentityCertNames{
 						CommonName: "caller-app-instance",
 						AppGUID:    "allowed-app-1",
 						SpaceGUID:  "space-123",
 						OrgGUID:    "org-123",
-					})
+					}, mtlsDomainCA)
 
 					testState.client.Transport.(*http.Transport).TLSClientConfig.Certificates = []tls.Certificate{
 						callerCert.TLSCert(),
@@ -882,8 +882,8 @@ var _ = Describe("Identity-Aware Routing", func() {
 					attempts := 10
 
 					for i := 0; i < attempts; i++ {
-						req := testState.newGetRequest(fmt.Sprintf("https://%s", sharedDomain))
-						resp, err := testState.client.Do(req)
+						req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", sharedDomain))
+						resp, err := client.Do(req)
 						Expect(err).NotTo(HaveOccurred())
 
 						if resp.StatusCode == http.StatusOK {

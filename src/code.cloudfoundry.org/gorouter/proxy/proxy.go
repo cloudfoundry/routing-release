@@ -144,6 +144,19 @@ func NewProxy(
 		FlushInterval:  50 * time.Millisecond,
 		BufferPool:     p.bufferPool,
 		ModifyResponse: p.modifyResponse,
+		ErrorHandler: func(rw http.ResponseWriter, req *http.Request, err error) {
+			// Check if this is an authorization error
+			if authErr, ok := err.(*handlers.AuthError); ok {
+				// Return the HTTP status from the AuthError (typically 403)
+				rw.WriteHeader(authErr.HTTPStatus)
+				rw.Write([]byte(authErr.Error()))
+				return
+			}
+			
+			// For all other errors, use default behavior (502 Bad Gateway)
+			rw.WriteHeader(http.StatusBadGateway)
+			rw.Write([]byte(err.Error()))
+		},
 	}
 
 	routeServiceHandler := handlers.NewRouteService(routeServiceConfig, registry, logger, errorWriter)

@@ -808,3 +808,60 @@ func CreateInstanceIdentityCert(certNames InstanceIdentityCertNames) CertChain {
 		CAPrivKey:    rootPrivateKey,
 	}
 }
+
+// CreateInstanceIdentityCertWithCA creates a certificate chain with instance identity
+// information signed by the provided CA (instead of generating a new CA)
+func CreateInstanceIdentityCertWithCA(certNames InstanceIdentityCertNames, ca *CertChain) CertChain {
+	serialNumberLimit := new(big.Int).Lsh(big.NewInt(1), 128)
+	serialNumber, err := rand.Int(rand.Reader, serialNumberLimit)
+	Expect(err).ToNot(HaveOccurred())
+
+	// Build OrganizationalUnit slice with instance identity info
+	organizationalUnits := []string{fmt.Sprintf("app:%s", certNames.AppGUID)}
+	if certNames.SpaceGUID != "" {
+		organizationalUnits = append(organizationalUnits, fmt.Sprintf("space:%s", certNames.SpaceGUID))
+	}
+	if certNames.OrgGUID != "" {
+		organizationalUnits = append(organizationalUnits, fmt.Sprintf("organization:%s", certNames.OrgGUID))
+	}
+
+	subject := pkix.Name{
+		Organization:       []string{"Cloud Foundry"},
+		OrganizationalUnit: organizationalUnits,
+		CommonName:         certNames.CommonName,
+	}
+
+	certTemplate := x509.Certificate{
+		SerialNumber:          serialNumber,
+		Subject:               subject,
+		SignatureAlgorithm:    x509.SHA256WithRSA,
+		NotBefore:             time.Now(),
+		NotAfter:              time.Now().Add(time.Hour),
+		BasicConstraintsValid: true,
+	}
+
+	if certNames.SANs.IP != "" {
+		certTemplate.IPAddresses = []net.IP{net.ParseIP(certNames.SANs.IP)}
+	}
+	if certNames.SANs.DNS != "" {
+		certTemplate.DNSNames = []string{certNames.SANs.DNS}
+	}
+
+	ownKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	Expect(err).NotTo(HaveOccurred())
+
+	// Sign with the provided CA
+	certDER, err := x509.CreateCertificate(rand.Reader, &certTemplate, ca.CACert, &ownKey.PublicKey, ca.CAPrivKey)
+	Expect(err).NotTo(HaveOccurred())
+
+	ownKeyPEM, ownCertPEM := CreateKeyPairFromDER(certDER, ownKey)
+
+	return CertChain{
+		CertPEM:      ownCertPEM,
+		PrivKeyPEM:   ownKeyPEM,
+		CACertPEM:    ca.CACertPEM,
+		CAPrivKeyPEM: ca.CAPrivKeyPEM,
+		CACert:       ca.CACert,
+		CAPrivKey:    ca.CAPrivKey,
+	}
+}
