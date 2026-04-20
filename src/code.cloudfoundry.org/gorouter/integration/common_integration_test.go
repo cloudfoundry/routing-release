@@ -468,7 +468,7 @@ func (s *testState) StartGorouterOrFail() {
 
 func (s *testState) StopAndCleanup() {
 	// Stop router before NATS to prevent subscriber's ClosedCB from
-	// firing log.Fatal → os.Exit(1), which kills the test proc.
+	// firing log.Fatal → os.Exit(1), which kills the test proc
 	if s.gorouterSession != nil && s.gorouterSession.ExitCode() == -1 {
 		Eventually(s.gorouterSession.Terminate(), 5).Should(Exit(0))
 	}
