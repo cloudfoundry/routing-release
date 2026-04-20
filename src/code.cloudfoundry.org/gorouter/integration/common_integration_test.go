@@ -297,6 +297,12 @@ func (s *testState) StartGorouterOrFail() {
 }
 
 func (s *testState) StopAndCleanup() {
+	// Stop router before NATS to prevent subscriber's ClosedCB from
+	// firing log.Fatal → os.Exit(1), which kills the test proc
+	if s.gorouterSession != nil && s.gorouterSession.ExitCode() == -1 {
+		Eventually(s.gorouterSession.Terminate(), 5).Should(Exit(0))
+	}
+
 	if s.natsRunner != nil {
 		s.natsRunner.Stop()
 	}
@@ -307,10 +313,6 @@ func (s *testState) StopAndCleanup() {
 	}
 
 	os.RemoveAll(s.tmpdir)
-
-	if s.gorouterSession != nil && s.gorouterSession.ExitCode() == -1 {
-		Eventually(s.gorouterSession.Terminate(), 5).Should(Exit(0))
-	}
 
 	if s.fakeMetron != nil {
 		s.StopMetron()
