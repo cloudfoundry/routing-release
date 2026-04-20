@@ -152,7 +152,7 @@ func NewProxy(
 				rw.Write([]byte(authErr.Error()))
 				return
 			}
-			
+
 			// For all other errors, use default behavior (502 Bad Gateway)
 			rw.WriteHeader(http.StatusBadGateway)
 			rw.Write([]byte(err.Error()))

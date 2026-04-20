@@ -200,21 +200,21 @@ func (s *testState) newGetRequest(url string) *http.Request {
 func (s *testState) newMtlsGetRequest(url string) (*http.Request, *http.Client) {
 	req, err := http.NewRequest("GET", url, nil)
 	Expect(err).NotTo(HaveOccurred())
-	
+
 	// Parse the original hostname for SNI
 	originalHost := req.URL.Hostname()
 	port := s.cfg.SSLPort
-	
+
 	// Get the base transport to access current TLS config (including any client certs set by tests)
 	baseTransport := s.client.Transport.(*http.Transport)
-	
+
 	// Create custom transport with dialer that connects to 127.0.0.1 but uses original hostname for SNI
 	transport := &http.Transport{
 		DialTLSContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
 			// Read certificates at dial time (not at closure creation time) so we get
 			// any certificates that tests set after calling newMtlsGetRequest()
 			currentCerts := baseTransport.TLSClientConfig.Certificates
-			
+
 			// Create TLS config for this connection
 			tlsConfig := &tls.Config{
 				ServerName:         originalHost, // SNI uses original hostname
@@ -222,33 +222,33 @@ func (s *testState) newMtlsGetRequest(url string) (*http.Request, *http.Client) 
 				Certificates:       currentCerts, // Use current certificates from baseTransport
 				InsecureSkipVerify: true,         // Skip cert verification since we connect to 127.0.0.1
 			}
-			
+
 			// Create a plain dialer for the TCP connection
 			netDialer := &net.Dialer{}
 			rawConn, err := netDialer.DialContext(ctx, network, fmt.Sprintf("127.0.0.1:%d", port))
 			if err != nil {
 				return nil, err
 			}
-			
+
 			// Wrap with TLS
 			tlsConn := tls.Client(rawConn, tlsConfig)
-			
+
 			// Perform handshake
 			if err := tlsConn.HandshakeContext(ctx); err != nil {
 				rawConn.Close()
 				return nil, err
 			}
-			
+
 			return tlsConn, nil
 		},
 	}
-	
+
 	// Create a new client with the custom transport
 	client := &http.Client{
 		Transport: transport,
 		Timeout:   s.client.Timeout,
 	}
-	
+
 	return req, client
 }
 

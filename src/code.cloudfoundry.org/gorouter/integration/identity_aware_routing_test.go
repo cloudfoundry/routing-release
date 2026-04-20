@@ -77,27 +77,27 @@ var _ = Describe("Identity-Aware Routing", func() {
 				testState.StartGorouterOrFail()
 			})
 
-		It("requires a client certificate", func() {
-			// Register route on mTLS domain
-			testState.register(backendApp, mtlsDomain)
+			It("requires a client certificate", func() {
+				// Register route on mTLS domain
+				testState.register(backendApp, mtlsDomain)
 
-			// Attempt request without client certificate
-			req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
-			_, err := client.Do(req)
-			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(ContainSubstring("tls"))
-		})
+				// Attempt request without client certificate
+				req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
+				_, err := client.Do(req)
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("tls"))
+			})
 
 			It("accepts valid client certificate from the configured CA", func() {
 				// Create instance identity certificate (need to use the same CA!)
 				appInstanceCert = &test_util.CertChain{}
 				// Recreate with SAME CA as configured in GoRouter
-			*appInstanceCert = test_util.CreateInstanceIdentityCertWithCA(test_util.InstanceIdentityCertNames{
-				CommonName: "app-instance",
-				AppGUID:    "app-guid-123",
-				SpaceGUID:  "space-guid-456",
-				OrgGUID:    "org-guid-789",
-			}, mtlsDomainCA)
+				*appInstanceCert = test_util.CreateInstanceIdentityCertWithCA(test_util.InstanceIdentityCertNames{
+					CommonName: "app-instance",
+					AppGUID:    "app-guid-123",
+					SpaceGUID:  "space-guid-456",
+					OrgGUID:    "org-guid-789",
+				}, mtlsDomainCA)
 
 				// Register route on mTLS domain with allowed sources
 				testState.registerWithAccessRules(
@@ -115,13 +115,13 @@ var _ = Describe("Identity-Aware Routing", func() {
 						appInstanceCert.TLSCert(),
 					},
 				}
-			testState.client.Transport.(*http.Transport).TLSClientConfig = clientTLSConfig
+				testState.client.Transport.(*http.Transport).TLSClientConfig = clientTLSConfig
 
-			// Make request
-			req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
-			resp, err := client.Do(req)
-			Expect(err).NotTo(HaveOccurred())
-			Expect(resp.StatusCode).To(Equal(http.StatusOK))
+				// Make request
+				req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
+				resp, err := client.Do(req)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(resp.StatusCode).To(Equal(http.StatusOK))
 
 				body, _ := io.ReadAll(resp.Body)
 				resp.Body.Close()
@@ -132,11 +132,11 @@ var _ = Describe("Identity-Aware Routing", func() {
 			})
 
 			It("rejects client certificate from unknown CA", func() {
-			// Create certificate from different CA (not the configured mtlsDomainCA)
-			unknownCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
-				CommonName: "app-instance",
-				AppGUID:    "app-guid-123",
-			})
+				// Create certificate from different CA (not the configured mtlsDomainCA)
+				unknownCert := test_util.CreateInstanceIdentityCert(test_util.InstanceIdentityCertNames{
+					CommonName: "app-instance",
+					AppGUID:    "app-guid-123",
+				})
 
 				// Register route
 				testState.register(backendApp, mtlsDomain)
@@ -249,13 +249,13 @@ var _ = Describe("Identity-Aware Routing", func() {
 					},
 				)
 
-			// Create caller certificate
-			callerCert := test_util.CreateInstanceIdentityCertWithCA(test_util.InstanceIdentityCertNames{
-				CommonName: "caller-app-instance",
-				AppGUID:    callerAppGUID,
-				SpaceGUID:  "caller-space-guid",
-				OrgGUID:    "caller-org-guid",
-			}, mtlsDomainCA)
+				// Create caller certificate
+				callerCert := test_util.CreateInstanceIdentityCertWithCA(test_util.InstanceIdentityCertNames{
+					CommonName: "caller-app-instance",
+					AppGUID:    callerAppGUID,
+					SpaceGUID:  "caller-space-guid",
+					OrgGUID:    "caller-org-guid",
+				}, mtlsDomainCA)
 
 				// Configure client
 				testState.client.Transport.(*http.Transport).TLSClientConfig.Certificates = []tls.Certificate{
