@@ -167,8 +167,9 @@ var _ = Describe("Component", func() {
 		var natsRunner *test_util.NATSRunner
 
 		BeforeEach(func() {
-			natsPort := test_util.NextAvailPort()
+			natsPort := test_util.ReservePort()
 			natsRunner = test_util.NewNATSRunner(int(natsPort))
+			test_util.ReleasePort(natsPort)
 			natsRunner.Start()
 			mbusClient = natsRunner.MessageBus
 			mbusClient.Opts.SkipSubjectValidation = true

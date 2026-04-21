@@ -88,7 +88,9 @@ var _ = Describe("Reporter Handler", func() {
 	})
 
 	It("emits routing response metrics", func() {
+		before := time.Now()
 		handler.ServeHTTP(resp, req)
+		after := time.Now()
 
 		Expect(fakeReporter.CaptureBadGatewayCallCount()).To(Equal(0))
 
@@ -102,7 +104,11 @@ var _ = Describe("Reporter Handler", func() {
 		Expect(capturedEndpoint.PrivateInstanceId).To(Equal("id"))
 		Expect(capturedEndpoint.PrivateInstanceIndex).To(Equal("1"))
 		Expect(capturedRespCode).To(Equal(http.StatusTeapot))
-		Expect(startTime).To(BeTemporally("~", time.Now(), 100*time.Millisecond))
+		// ReceivedAt is set to timeNow-1ms where timeNow is captured inside
+		// the handler (between before and after), so the exact bracket is:
+		//   before-1ms <= startTime <= after-1ms
+		Expect(startTime).To(BeTemporally(">=", before.Add(-1*time.Millisecond)))
+		Expect(startTime).To(BeTemporally("<=", after.Add(-1*time.Millisecond)))
 		Expect(latency).To(BeNumerically(">", 0))
 		Expect(latency).To(BeNumerically("<", 10*time.Millisecond))
 

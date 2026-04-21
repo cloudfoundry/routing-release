@@ -65,7 +65,7 @@ var _ = Describe("GDPR", func() {
 			testState.EnableAccessLog()
 			testState.cfg.Status.Pass = "pass"
 			testState.cfg.Status.User = "user"
-			testState.cfg.Status.Routes.Port = 6705
+			testState.cfg.Status.Routes.Port = test_util.ReservePort()
 			testState.cfg.Logging.DisableLogForwardedFor = true
 			testState.StartGorouterOrFail()
 
@@ -136,7 +136,7 @@ var _ = Describe("GDPR", func() {
 			testState.EnableAccessLog()
 			testState.cfg.Status.Pass = "pass"
 			testState.cfg.Status.User = "user"
-			testState.cfg.Status.Routes.Port = 6706
+			testState.cfg.Status.Routes.Port = test_util.ReservePort()
 			testState.cfg.Logging.DisableLogSourceIP = true
 			testState.StartGorouterOrFail()
 

@@ -38,9 +38,9 @@ var _ = Describe("Subscriber", func() {
 	)
 
 	BeforeEach(func() {
-		natsPort = test_util.NextAvailPort()
-
+		natsPort = test_util.ReservePort()
 		natsRunner = test_util.NewNATSRunner(int(natsPort))
+		test_util.ReleasePort(natsPort)
 		natsRunner.Start()
 		natsClient = natsRunner.MessageBus
 

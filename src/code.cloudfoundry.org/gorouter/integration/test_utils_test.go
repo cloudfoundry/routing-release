@@ -46,7 +46,7 @@ func configDrainSetup(cfg *config.Config, pruneInterval, pruneThreshold time.Dur
 	// as part of pausing
 	cfg.PruneStaleDropletsInterval = pruneInterval
 	cfg.DropletStaleThreshold = pruneThreshold
-	cfg.StartResponseDelayInterval = 1 * time.Second
+	cfg.StartResponseDelayInterval = 0
 	cfg.EndpointTimeout = 5 * time.Second
 	cfg.EndpointDialTimeout = 500 * time.Millisecond
 	cfg.DrainTimeout = 200 * time.Millisecond
@@ -60,6 +60,7 @@ func writeConfig(cfg *config.Config, cfgFile string) {
 }
 
 func startGorouterSession(cfgFile string) *Session {
+	test_util.ReleaseAllPorts()
 	gorouterCmd := exec.Command(gorouterPath, "-c", cfgFile)
 	session, err := Start(gorouterCmd, GinkgoWriter, GinkgoWriter)
 	Expect(err).ToNot(HaveOccurred())

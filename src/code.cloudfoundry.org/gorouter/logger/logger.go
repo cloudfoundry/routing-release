@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"fmt"
 	"io"
 	"log/slog"
 	"os"
@@ -235,6 +236,8 @@ via os.Exit(1) after writing the log message.
 */
 func Fatal(logger *slog.Logger, message string, slogAttrs ...any) {
 	logger.Error(message, slogAttrs...)
+	// Write to stderr so the message survives os.Exit (stderr is unbuffered).
+	fmt.Fprintf(os.Stderr, "FATAL: %s %v\n", message, slogAttrs)
 	os.Exit(1)
 }
 

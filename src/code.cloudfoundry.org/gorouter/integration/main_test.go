@@ -65,29 +65,33 @@ var _ = Describe("Router Integration", func() {
 		Expect(err).ToNot(HaveOccurred())
 		cfgFile = filepath.Join(tmpdir, "config.yml")
 
-		statusPort = test_util.NextAvailPort()
-		statusTLSPort = test_util.NextAvailPort()
-		statusRoutesPort = test_util.NextAvailPort()
-		proxyPort = test_util.NextAvailPort()
-		natsPort = test_util.NextAvailPort()
-		sslPort = test_util.NextAvailPort()
-		routeServiceServerPort = test_util.NextAvailPort()
+		statusPort = test_util.ReservePort()
+		statusTLSPort = test_util.ReservePort()
+		statusRoutesPort = test_util.ReservePort()
+		proxyPort = test_util.ReservePort()
+		natsPort = test_util.ReservePort()
+		sslPort = test_util.ReservePort()
+		routeServiceServerPort = test_util.ReservePort()
 
 		natsRunner = test_util.NewNATSRunner(int(natsPort))
+		test_util.ReleasePort(natsPort)
 		natsRunner.Start()
 		oauthServerURL = oauthServer.Addr()
 	})
 
 	AfterEach(func() {
+		test_util.ReleaseAllPorts()
+		// Stop router before NATS to prevent subscriber's ClosedCB from
+		// firing log.Fatal → os.Exit(1), which kills the test proc.
+		if gorouterSession != nil && gorouterSession.ExitCode() == -1 {
+			stopGorouter(gorouterSession)
+		}
+
 		if natsRunner != nil {
 			natsRunner.Stop()
 		}
 
 		os.RemoveAll(tmpdir)
-
-		if gorouterSession != nil && gorouterSession.ExitCode() == -1 {
-			stopGorouter(gorouterSession)
-		}
 	})
 
 	Context("when config is invalid", func() {
@@ -609,6 +613,7 @@ var _ = Describe("Router Integration", func() {
 			tempCfg.Logging.MetronAddress = ""
 			writeConfig(tempCfg, cfgFile)
 
+			test_util.ReleaseAllPorts()
 			gorouterCmd := exec.Command(gorouterPath, "-c", cfgFile)
 			gorouterSession, _ = Start(gorouterCmd, GinkgoWriter, GinkgoWriter)
 			Eventually(gorouterSession, 5*time.Second).Should(Exit(1))
@@ -635,7 +640,7 @@ var _ = Describe("Router Integration", func() {
 
 		BeforeEach(func() {
 			testState = NewTestState()
-			testState.cfg.DebugAddr = fmt.Sprintf("127.0.0.1:%d", test_util.NextAvailPort())
+			testState.cfg.DebugAddr = fmt.Sprintf("127.0.0.1:%d", test_util.ReservePort())
 			testState.StartGorouterOrFail()
 			gorouterSession = testState.gorouterSession
 
@@ -1047,7 +1052,7 @@ var _ = Describe("Router Integration", func() {
 	Describe("prometheus metrics", func() {
 		It("starts a prometheus https server", func() {
 			c := createConfig(statusPort, statusTLSPort, statusRoutesPort, proxyPort, routeServiceServerPort, cfgFile, defaultPruneInterval, defaultPruneThreshold, 0, false, 0, natsPort)
-			metricsPort := test_util.NextAvailPort()
+			metricsPort := test_util.ReservePort()
 			serverCAPath, serverCertPath, serverKeyPath, clientCert := tls_helpers.GenerateCaAndMutualTlsCerts()
 
 			c.Prometheus.Enabled = true
@@ -1421,6 +1426,7 @@ var _ = Describe("Router Integration", func() {
 				It("does not exit", func() {
 					writeConfig(cfg, cfgFile)
 
+					test_util.ReleaseAllPorts()
 					gorouterCmd := exec.Command(gorouterPath, "-c", cfgFile)
 					session, err := Start(gorouterCmd, GinkgoWriter, GinkgoWriter)
 					Expect(err).ToNot(HaveOccurred())
@@ -1436,6 +1442,7 @@ var _ = Describe("Router Integration", func() {
 				It("gorouter exits with non-zero code", func() {
 					writeConfig(cfg, cfgFile)
 
+					test_util.ReleaseAllPorts()
 					gorouterCmd := exec.Command(gorouterPath, "-c", cfgFile)
 					session, err := Start(gorouterCmd, GinkgoWriter, GinkgoWriter)
 					Expect(err).ToNot(HaveOccurred())
@@ -1453,6 +1460,7 @@ var _ = Describe("Router Integration", func() {
 					routingApiServer.Close()
 					writeConfig(cfg, cfgFile)
 
+					test_util.ReleaseAllPorts()
 					gorouterCmd := exec.Command(gorouterPath, "-c", cfgFile)
 					session, err := Start(gorouterCmd, GinkgoWriter, GinkgoWriter)
 					Expect(err).ToNot(HaveOccurred())
@@ -1468,6 +1476,7 @@ var _ = Describe("Router Integration", func() {
 				cfg.OAuth.Port = 0
 				writeConfig(cfg, cfgFile)
 
+				test_util.ReleaseAllPorts()
 				gorouterCmd := exec.Command(gorouterPath, "-c", cfgFile)
 				session, err := Start(gorouterCmd, GinkgoWriter, GinkgoWriter)
 				Expect(err).ToNot(HaveOccurred())

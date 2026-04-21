@@ -36,27 +36,31 @@ var _ = Describe("NATS Integration", func() {
 		Expect(err).ToNot(HaveOccurred())
 		cfgFile = filepath.Join(tmpdir, "config.yml")
 
-		statusPort = test_util.NextAvailPort()
-		statusTLSPort = test_util.NextAvailPort()
-		statusRoutesPort = test_util.NextAvailPort()
-		proxyPort = test_util.NextAvailPort()
-		natsPort = test_util.NextAvailPort()
-		routeServiceServerPort = test_util.NextAvailPort()
+		statusPort = test_util.ReservePort()
+		statusTLSPort = test_util.ReservePort()
+		statusRoutesPort = test_util.ReservePort()
+		proxyPort = test_util.ReservePort()
+		natsPort = test_util.ReservePort()
+		routeServiceServerPort = test_util.ReservePort()
 
 		natsRunner = test_util.NewNATSRunner(int(natsPort))
+		test_util.ReleasePort(natsPort)
 		natsRunner.Start()
 	})
 
 	AfterEach(func() {
+		test_util.ReleaseAllPorts()
+		// Stop router before NATS to prevent subscriber's ClosedCB from
+		// firing log.Fatal → os.Exit(1), which kills the test proc.
+		if gorouterSession != nil && gorouterSession.ExitCode() == -1 {
+			stopGorouter(gorouterSession)
+		}
+
 		if natsRunner != nil {
 			natsRunner.Stop()
 		}
 
 		os.RemoveAll(tmpdir)
-
-		if gorouterSession != nil && gorouterSession.ExitCode() == -1 {
-			stopGorouter(gorouterSession)
-		}
 	})
 
 	It("has Nats connectivity", func() {
@@ -162,7 +166,7 @@ var _ = Describe("NATS Integration", func() {
 		)
 
 		BeforeEach(func() {
-			natsPort2 = test_util.NextAvailPort()
+			natsPort2 = test_util.ReservePort()
 			natsRunner2 = test_util.NewNATSRunner(int(natsPort2))
 
 			pruneInterval = 2 * time.Second
@@ -222,7 +226,7 @@ var _ = Describe("NATS Integration", func() {
 		Context("when suspend_pruning_if_nats_unavailable enabled", func() {
 
 			BeforeEach(func() {
-				natsPort2 = test_util.NextAvailPort()
+				natsPort2 = test_util.ReservePort()
 				natsRunner2 = test_util.NewNATSRunner(int(natsPort2))
 
 				pruneInterval = 200 * time.Millisecond

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"code.cloudfoundry.org/gorouter/test_util"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
@@ -31,6 +32,7 @@ var _ = Describe("RouteServicesServer", func() {
 		var err error
 		cfg, err = config.DefaultConfig()
 		Expect(err).NotTo(HaveOccurred())
+		cfg.RouteServicesServerPort = test_util.NextAvailPort()
 
 		req, err = http.NewRequest("GET", "/foo", nil)
 		Expect(err).NotTo(HaveOccurred())

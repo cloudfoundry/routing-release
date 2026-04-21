@@ -59,16 +59,17 @@ var _ = Describe("RequestInfoHandler", func() {
 	})
 
 	It("sets RequestInfo with StartTime on the context", func() {
+		before := time.Now()
 		handler.ServeHTTP(resp, req, nextHandler)
 		var contextReq *http.Request
 		Eventually(reqChan).Should(Receive(&contextReq))
-
-		expectedStartTime := time.Now()
+		after := time.Now()
 
 		ri, err := handlers.ContextRequestInfo(contextReq)
 		Expect(err).ToNot(HaveOccurred())
 		Expect(ri).ToNot(BeNil())
-		Expect(ri.ReceivedAt).To(BeTemporally("~", expectedStartTime, 10*time.Millisecond))
+		Expect(ri.ReceivedAt).To(BeTemporally(">=", before))
+		Expect(ri.ReceivedAt).To(BeTemporally("<=", after))
 
 	})
 })

@@ -151,8 +151,9 @@ var _ = Describe("Router", func() {
 
 	BeforeEach(func() {
 		logger = test_util.NewTestLogger("test")
-		natsPort = test_util.NextAvailPort()
+		natsPort = test_util.ReservePort()
 		natsRunner = test_util.NewNATSRunner(int(natsPort))
+		test_util.ReleasePort(natsPort)
 		natsRunner.Start()
 
 		proxyPort := test_util.NextAvailPort()
@@ -161,11 +162,12 @@ var _ = Describe("Router", func() {
 		statusRoutesPort := test_util.NextAvailPort()
 
 		sslPort := test_util.NextAvailPort()
+		routeServiceServerPort := test_util.NextAvailPort()
 
 		defaultCert := test_util.CreateCert("default")
 		cert2 := test_util.CreateCert("default")
 
-		config = test_util.SpecConfig(statusPort, statusTlsPort, statusRoutesPort, proxyPort, natsPort)
+		config = test_util.SpecConfig(statusPort, statusTlsPort, statusRoutesPort, proxyPort, routeServiceServerPort, natsPort)
 		config.EnableSSL = true
 		config.SSLPort = sslPort
 		config.SSLCertificates = []tls.Certificate{defaultCert, cert2}
@@ -202,12 +204,12 @@ var _ = Describe("Router", func() {
 	})
 
 	AfterEach(func() {
-		if natsRunner != nil {
-			natsRunner.Stop()
-		}
 		if subscriber != nil {
 			subscriber.Signal(os.Interrupt)
 			<-subscriber.Wait()
+		}
+		if natsRunner != nil {
+			natsRunner.Stop()
 		}
 	})
 

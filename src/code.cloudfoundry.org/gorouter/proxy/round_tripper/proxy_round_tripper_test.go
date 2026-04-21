@@ -3028,13 +3028,14 @@ var _ = Describe("ProxyRoundTripper", func() {
 						}
 					})
 					It("sets a http/1 timeout on the request context", func() {
+						before := time.Now()
 						proxyRoundTripper.RoundTrip(req)
 						var request *http.Request
 						Eventually(reqCh).Should(Receive(&request))
 
 						deadLine, deadlineSet := request.Context().Deadline()
 						Expect(deadlineSet).To(BeTrue())
-						Expect(deadLine).To(BeTemporally("~", time.Now().Add(20*time.Millisecond), 11*time.Millisecond))
+						Expect(deadLine).To(BeTemporally("~", before.Add(20*time.Millisecond), 20*time.Millisecond))
 						Eventually(func() string {
 							err := request.Context().Err()
 							if err != nil {
@@ -3053,13 +3054,14 @@ var _ = Describe("ProxyRoundTripper", func() {
 						}
 					})
 					It("sets a http/2 timeout on the request context", func() {
+						before := time.Now()
 						proxyRoundTripper.RoundTrip(req)
 						var request *http.Request
 						Eventually(reqCh).Should(Receive(&request))
 
 						deadLine, deadlineSet := request.Context().Deadline()
 						Expect(deadlineSet).To(BeTrue())
-						Expect(deadLine).To(BeTemporally("~", time.Now().Add(15*time.Millisecond), 6*time.Millisecond))
+						Expect(deadLine).To(BeTemporally("~", before.Add(15*time.Millisecond), 15*time.Millisecond))
 						Eventually(func() string {
 							err := request.Context().Err()
 							if err != nil {

@@ -63,7 +63,9 @@ func (s *testState) SetOnlyTrustClientCACertsTrue() {
 
 func NewTestState() *testState {
 	// TODO: don't hide so much behind these test_util methods
-	cfg, clientTLSConfig := test_util.SpecSSLConfig(test_util.NextAvailPort(), test_util.NextAvailPort(), test_util.NextAvailPort(), test_util.NextAvailPort(), test_util.NextAvailPort(), test_util.NextAvailPort(), test_util.NextAvailPort())
+	// Use ReservePort to keep listeners open until the gorouter process
+	// starts, preventing other processes from grabbing these ports.
+	cfg, clientTLSConfig := test_util.SpecSSLConfig(test_util.ReservePort(), test_util.ReservePort(), test_util.ReservePort(), test_util.ReservePort(), test_util.ReservePort(), test_util.ReservePort(), test_util.ReservePort())
 	cfg.SkipSSLValidation = false
 	cfg.RouteServicesHairpinning = false
 	cfg.CipherString = "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384"
@@ -71,7 +73,7 @@ func NewTestState() *testState {
 	// TODO: why these magic numbers?
 	cfg.PruneStaleDropletsInterval = 2 * time.Second
 	cfg.DropletStaleThreshold = 10 * time.Second
-	cfg.StartResponseDelayInterval = 1 * time.Second
+	cfg.StartResponseDelayInterval = 0
 	cfg.EndpointTimeout = 15 * time.Second
 	cfg.EndpointDialTimeout = 500 * time.Millisecond
 	cfg.DrainTimeout = 200 * time.Millisecond
@@ -258,6 +260,10 @@ func (s *testState) registerAndWait(rm mbus.RegistryMessage) {
 func (s *testState) StartGorouter() *Session {
 	Expect(s.cfg).NotTo(BeNil(), "set up test cfg before calling this function")
 
+	// Release NATS port first so the NATS server can bind it, while keeping
+	// the other ports reserved until the gorouter starts.
+	test_util.ReleasePort(s.cfg.Nats.Hosts[0].Port)
+
 	s.natsRunner = test_util.NewNATSRunner(int(s.cfg.Nats.Hosts[0].Port))
 	s.natsRunner.Start()
 
@@ -270,6 +276,10 @@ func (s *testState) StartGorouter() *Session {
 	cfgBytes, err := yaml.Marshal(s.cfg)
 	Expect(err).ToNot(HaveOccurred())
 	Expect(os.WriteFile(cfgFile, cfgBytes, 0644)).To(Succeed())
+
+	// Release remaining reserved ports just before the gorouter process
+	// starts, minimizing the TOCTOU window between release and bind.
+	test_util.ReleaseAllPorts()
 
 	cmd := exec.Command(gorouterPath, "-c", cfgFile)
 	s.gorouterSession, err = Start(cmd, GinkgoWriter, GinkgoWriter)
@@ -297,6 +307,12 @@ func (s *testState) StartGorouterOrFail() {
 }
 
 func (s *testState) StopAndCleanup() {
+	// Stop router before NATS to prevent subscriber's ClosedCB from
+	// firing log.Fatal → os.Exit(1), which kills the test proc.
+	if s.gorouterSession != nil && s.gorouterSession.ExitCode() == -1 {
+		Eventually(s.gorouterSession.Terminate(), 5).Should(Exit(0))
+	}
+
 	if s.natsRunner != nil {
 		s.natsRunner.Stop()
 	}
@@ -307,10 +323,6 @@ func (s *testState) StopAndCleanup() {
 	}
 
 	os.RemoveAll(s.tmpdir)
-
-	if s.gorouterSession != nil && s.gorouterSession.ExitCode() == -1 {
-		Eventually(s.gorouterSession.Terminate(), 5).Should(Exit(0))
-	}
 
 	if s.fakeMetron != nil {
 		s.StopMetron()

@@ -68,8 +68,11 @@ func (a *TestApp) Endpoint() string {
 }
 
 func (a *TestApp) TlsListen(tlsConfig *tls.Config) chan error {
+	ln, err := tls.Listen("tcp", fmt.Sprintf(":%d", a.port), tlsConfig)
+	if err != nil {
+		panic("TestApp.TlsListen: " + err.Error())
+	}
 	a.server = &http.Server{
-		Addr:              fmt.Sprintf(":%d", a.port),
 		Handler:           a.mux,
 		TLSConfig:         tlsConfig,
 		ReadHeaderTimeout: 5 * time.Second,
@@ -77,7 +80,7 @@ func (a *TestApp) TlsListen(tlsConfig *tls.Config) chan error {
 	errChan := make(chan error, 1)
 
 	go func() {
-		err := a.server.ListenAndServeTLS("", "")
+		err := a.server.Serve(ln)
 		errChan <- err
 	}()
 	return errChan
@@ -89,12 +92,15 @@ func (a *TestApp) RegisterAndListen() {
 }
 
 func (a *TestApp) Listen() {
+	ln, err := net.Listen("tcp", fmt.Sprintf(":%d", a.port))
+	if err != nil {
+		panic("TestApp.Listen: " + err.Error())
+	}
 	server := &http.Server{
-		Addr:              fmt.Sprintf(":%d", a.port),
 		Handler:           a.mux,
 		ReadHeaderTimeout: 5 * time.Second,
 	}
-	go server.ListenAndServe()
+	go server.Serve(ln)
 }
 
 func (a *TestApp) RegisterRepeatedly(duration time.Duration) {

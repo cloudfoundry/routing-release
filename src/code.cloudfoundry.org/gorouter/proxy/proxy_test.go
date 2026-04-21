@@ -3,8 +3,6 @@ package proxy_test
 import (
 	"bufio"
 	"bytes"
-	"code.cloudfoundry.org/gorouter/proxy"
-	"code.cloudfoundry.org/gorouter/routeservice"
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
@@ -21,6 +19,9 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"code.cloudfoundry.org/gorouter/proxy"
+	"code.cloudfoundry.org/gorouter/routeservice"
 
 	"github.com/cloudfoundry/dropsonde/factories"
 	"github.com/cloudfoundry/sonde-go/events"
@@ -2021,8 +2022,11 @@ var _ = Describe("Proxy", func() {
 
 					Expect(body).To(Equal("ABCD"))
 
-					expectRsp := test_util.NewResponse(100)
-					conn.WriteResponse(expectRsp)
+					conn.WriteResponse(&http.Response{
+						StatusCode: http.StatusContinue,
+						ProtoMajor: 1,
+						ProtoMinor: 1,
+					})
 
 					rsp := test_util.NewResponse(200)
 					rsp.Body = io.NopCloser(strings.NewReader("valid-but-unimportant-response-data"))
@@ -2076,8 +2080,11 @@ var _ = Describe("Proxy", func() {
 
 					Expect(body).To(Equal("ABCD"))
 
-					expectRsp := test_util.NewResponse(100)
-					conn.WriteResponse(expectRsp)
+					conn.WriteResponse(&http.Response{
+						StatusCode: http.StatusContinue,
+						ProtoMajor: 1,
+						ProtoMinor: 1,
+					})
 
 					rsp := test_util.NewResponse(201)
 					rsp.Body = io.NopCloser(strings.NewReader("valid-but-unimportant-response-data"))
@@ -2888,9 +2895,11 @@ var _ = Describe("Proxy", func() {
 			conn := dialProxy(proxyServer)
 
 			req := test_util.NewRequest("GET", "reporter-test", "/", nil)
+			before := time.Now()
 			conn.WriteRequest(req)
 
 			resp, _ := conn.ReadResponse()
+			after := time.Now()
 			Expect(resp.StatusCode).To(Equal(http.StatusOK))
 
 			Expect(fakeReporter.CaptureBadGatewayCallCount()).To(Equal(0))
@@ -2906,7 +2915,8 @@ var _ = Describe("Proxy", func() {
 			Expect(capturedEndpoint.PrivateInstanceId).To(Equal(""))
 			Expect(capturedEndpoint.PrivateInstanceIndex).To(Equal("2"))
 			Expect(capturedRespCode).To(Equal(http.StatusOK))
-			Expect(startTime).To(BeTemporally("~", time.Now(), 100*time.Millisecond))
+			Expect(startTime).To(BeTemporally(">=", before))
+			Expect(startTime).To(BeTemporally("<=", after))
 			Expect(latency).To(BeNumerically(">", 0))
 
 			Expect(fakeReporter.CaptureRoutingRequestCallCount()).To(Equal(1))
