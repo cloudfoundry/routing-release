@@ -348,8 +348,8 @@ func (s *testState) registerWithAccessRules(backend *httptest.Server, routeURI s
 		StaleThresholdInSeconds: 10,
 		PrivateInstanceID:       fmt.Sprintf("%x", rand.Int31()),
 		Options: mbus.RegistryMessageOpts{
-			AccessScope: "any", // Default to any scope
-			AccessRules: accessRulesStr,
+			RoutePolicyScope:   "any", // Default to any scope
+			RoutePolicySources: accessRulesStr,
 		},
 	}
 	s.registerAndWait(rm)
@@ -400,8 +400,8 @@ func (s *testState) registerWithScopeAndAccessRules(backend *httptest.Server, ro
 		PrivateInstanceID:       fmt.Sprintf("%x", rand.Int31()),
 		Tags:                    tags,
 		Options: mbus.RegistryMessageOpts{
-			AccessScope: scope,
-			AccessRules: accessRulesStr,
+			RoutePolicyScope:   scope,
+			RoutePolicySources: accessRulesStr,
 		},
 	}
 	s.registerAndWait(rm)
