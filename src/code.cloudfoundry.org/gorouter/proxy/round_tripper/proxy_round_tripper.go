@@ -199,7 +199,7 @@ func (rt *roundTripper) RoundTrip(originalRequest *http.Request) (*http.Response
 			// ── Post-selection authorization ──────────────────────────────────────
 			// Run post-selection authorization pipeline after endpoint selection but
 			// before making the backend request. This enforces RFC-compliant strict
-			// post-selection scope and access rules checking.
+			// post-selection scope and route policies checking.
 			if rt.postSelectionPipeline != nil {
 				if authErr := rt.postSelectionPipeline.Run(endpoint, reqInfo); authErr != nil {
 					// Authorization failed - handle as AuthError

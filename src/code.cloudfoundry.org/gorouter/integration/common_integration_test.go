@@ -311,7 +311,7 @@ func (s *testState) registerWithInternalRouteService(appBackend, routeServiceSer
 func (s *testState) registerWithAccessRules(backend *httptest.Server, routeURI string, accessRules map[string]interface{}) {
 	_, backendPort := hostnameAndPort(backend.Listener.Addr().String())
 
-	// Build access rules from map (using RFC-compliant format)
+	// Build route policy sources from map (using RFC-compliant format)
 	var accessRulesList []string
 	if apps, ok := accessRules["apps"].([]string); ok {
 		for _, app := range apps {
@@ -332,7 +332,7 @@ func (s *testState) registerWithAccessRules(backend *httptest.Server, routeURI s
 		accessRulesList = append(accessRulesList, "cf:any")
 	}
 
-	// Join access rules into comma-separated string
+	// Join route policy sources into comma-separated string
 	accessRulesStr := ""
 	if len(accessRulesList) > 0 {
 		accessRulesStr = accessRulesList[0]
@@ -362,7 +362,7 @@ func (s *testState) registerWithAccessRules(backend *httptest.Server, routeURI s
 func (s *testState) registerWithScopeAndAccessRules(backend *httptest.Server, routeURI string, scope string, accessRules map[string]interface{}, tags map[string]string) {
 	_, backendPort := hostnameAndPort(backend.Listener.Addr().String())
 
-	// Build access rules from map
+	// Build route policy sources from map
 	var accessRulesList []string
 	if apps, ok := accessRules["apps"].([]string); ok {
 		for _, app := range apps {
@@ -383,7 +383,7 @@ func (s *testState) registerWithScopeAndAccessRules(backend *httptest.Server, ro
 		accessRulesList = append(accessRulesList, "cf:any")
 	}
 
-	// Join access rules into comma-separated string
+	// Join route policy sources into comma-separated string
 	accessRulesStr := ""
 	if len(accessRulesList) > 0 {
 		accessRulesStr = accessRulesList[0]

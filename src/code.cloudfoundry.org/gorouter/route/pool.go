@@ -63,12 +63,12 @@ type Stats struct {
 	NumberConnections *Counter
 }
 
-// AccessScopeAny, AccessScopeOrg, AccessScopeSpace are the valid values for AccessScope.
-// They correspond to the access_rules_scope field in Cloud Controller.
+// RoutePolicyScopeAny, RoutePolicyScopeOrg, RoutePolicyScopeSpace are the valid values for RoutePolicyScope.
+// They correspond to the route_policies_scope field in Cloud Controller.
 const (
-	AccessScopeAny   = "any"
-	AccessScopeOrg   = "org"
-	AccessScopeSpace = "space"
+	RoutePolicyScopeAny   = "any"
+	RoutePolicyScopeOrg   = "org"
+	RoutePolicyScopeSpace = "space"
 )
 
 func NewStats() *Stats {
@@ -126,12 +126,12 @@ type Endpoint struct {
 	LoadBalancingAlgorithm string
 	HashHeaderName         string
 	HashBalanceFactor      float64
-	// AccessScope is the operator-level scope boundary: "any", "org", or "space".
+	// RoutePolicyScope is the operator-level scope boundary: "any", "org", or "space".
 	// Non-empty means access control is enforced for this endpoint's route.
-	AccessScope string
-	// AccessRules is the list of parsed selectors (e.g. "cf:app:<guid>", "cf:space:<guid>",
-	// "cf:org:<guid>", "cf:any"). Empty with a non-empty AccessScope means default-deny.
-	AccessRules []string
+	RoutePolicyScope string
+	// RoutePolicies is the list of parsed sources (e.g. "cf:app:<guid>", "cf:space:<guid>",
+	// "cf:org:<guid>", "cf:any"). Empty with a non-empty RoutePolicyScope means default-deny.
+	RoutePolicies []string
 }
 
 func (e *Endpoint) RoundTripper() ProxyRoundTripper {
@@ -178,8 +178,8 @@ func (e *Endpoint) Equal(e2 *Endpoint) bool {
 		e.HashHeaderName == e2.HashHeaderName &&
 		e.HashBalanceFactor == e2.HashBalanceFactor &&
 		maps.Equal(e.Tags, e2.Tags) &&
-		e.AccessScope == e2.AccessScope &&
-		slices.Equal(e.AccessRules, e2.AccessRules)
+		e.RoutePolicyScope == e2.RoutePolicyScope &&
+		slices.Equal(e.RoutePolicies, e2.RoutePolicies)
 
 }
 
@@ -247,12 +247,12 @@ type EndpointOpts struct {
 	LoadBalancingAlgorithm  string
 	HashHeaderName          string
 	HashBalanceFactor       float64
-	// AccessScope is the operator-level scope: "any", "org", or "space".
+	// RoutePolicyScope is the operator-level scope: "any", "org", or "space".
 	// Non-empty means enforcement is active for this route.
-	AccessScope string
-	// AccessRules are the parsed selectors for this route.
-	// Empty + non-empty AccessScope means default-deny.
-	AccessRules []string
+	RoutePolicyScope string
+	// RoutePolicies are the parsed sources for this route.
+	// Empty + non-empty RoutePolicyScope means default-deny.
+	RoutePolicies []string
 }
 
 func NewEndpoint(opts *EndpointOpts) *Endpoint {
@@ -273,8 +273,8 @@ func NewEndpoint(opts *EndpointOpts) *Endpoint {
 		IsolationSegment:       opts.IsolationSegment,
 		UpdatedAt:              opts.UpdatedAt,
 		LoadBalancingAlgorithm: opts.LoadBalancingAlgorithm,
-		AccessScope:            opts.AccessScope,
-		AccessRules:            opts.AccessRules,
+		RoutePolicyScope:       opts.RoutePolicyScope,
+		RoutePolicies:          opts.RoutePolicies,
 	}
 
 	if opts.LoadBalancingAlgorithm == config.LOAD_BALANCE_HB && opts.HashHeaderName != "" { // BalanceFactor is optional
@@ -603,11 +603,11 @@ func (p *EndpointPool) IsEmpty() bool {
 	return l == 0
 }
 
-// AccessScope returns the access scope from the first endpoint in the pool.
-// All endpoints in a pool share the same access scope since they represent
+// RoutePolicyScope returns the route policy scope from the first endpoint in the pool.
+// All endpoints in a pool share the same route policy scope since they represent
 // instances of the same application route registered with the same options.
 // Returns empty string if the pool is empty or enforcement is not active.
-func (p *EndpointPool) AccessScope() string {
+func (p *EndpointPool) RoutePolicyScope() string {
 	p.Lock()
 	defer p.Unlock()
 
@@ -615,13 +615,13 @@ func (p *EndpointPool) AccessScope() string {
 		return ""
 	}
 
-	return p.endpoints[0].endpoint.AccessScope
+	return p.endpoints[0].endpoint.RoutePolicyScope
 }
 
-// AccessRules returns the access rules from the first endpoint in the pool.
-// All endpoints in a pool share the same access rules.
+// RoutePolicies returns the route policies from the first endpoint in the pool.
+// All endpoints in a pool share the same route policies.
 // Returns nil if the pool is empty.
-func (p *EndpointPool) AccessRules() []string {
+func (p *EndpointPool) RoutePolicies() []string {
 	p.Lock()
 	defer p.Unlock()
 
@@ -629,7 +629,7 @@ func (p *EndpointPool) AccessRules() []string {
 		return nil
 	}
 
-	return p.endpoints[0].endpoint.AccessRules
+	return p.endpoints[0].endpoint.RoutePolicies
 }
 
 // ApplicationId returns the ApplicationId from the first endpoint in the pool.

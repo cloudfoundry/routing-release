@@ -117,11 +117,11 @@ func NewProxy(
 
 	// Create post-selection authorization pipeline
 	// This runs after endpoint selection in the round tripper to enforce
-	// RFC-compliant strict scope and access rules checking.
+	// RFC-compliant strict scope and route policies checking.
 	postSelectionPipeline := handlers.NewPostSelectionPipeline(
 		logger,
 		handlers.NewMtlsScopeAuth(cfg, logger),
-		handlers.NewMtlsAccessRulesAuth(logger),
+		handlers.NewMtlsRoutePoliciesAuth(logger),
 	)
 
 	prt := round_tripper.NewProxyRoundTripper(

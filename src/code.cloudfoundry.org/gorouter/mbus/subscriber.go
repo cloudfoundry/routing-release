@@ -44,14 +44,14 @@ type RegistryMessageOpts struct {
 	LoadBalancingAlgorithm string  `json:"loadbalancing"`
 	HashHeaderName         string  `json:"hash_header"`
 	HashBalance            float64 `json:"hash_balance"`
-	// RFC access control options (from Cloud Controller via Diego sync)
-	AccessScope string `json:"access_scope,omitempty"`
-	AccessRules string `json:"access_rules,omitempty"`
+	// RFC route policy options (from Cloud Controller via Diego sync)
+	RoutePolicyScope   string `json:"route_policy_scope,omitempty"`
+	RoutePolicySources string `json:"route_policy_sources,omitempty"`
 }
 
-// parseCommaSeparatedSelectors splits a comma-separated string into a slice of selectors.
+// parseCommaSeparatedSources splits a comma-separated string into a slice of sources.
 // Returns nil if the input is empty.
-func parseCommaSeparatedSelectors(s string) []string {
+func parseCommaSeparatedSources(s string) []string {
 	if s == "" {
 		return nil
 	}
@@ -108,8 +108,8 @@ func (rm *RegistryMessage) MakeEndpoint(http2Enabled bool, globalRoutingAlgo str
 		LoadBalancingAlgorithm:  lbAlgo,
 		HashHeaderName:          rm.Options.HashHeaderName,
 		HashBalanceFactor:       rm.Options.HashBalance,
-		AccessScope:             rm.Options.AccessScope,
-		AccessRules:             parseCommaSeparatedSelectors(rm.Options.AccessRules),
+		RoutePolicyScope:        rm.Options.RoutePolicyScope,
+		RoutePolicies:           parseCommaSeparatedSources(rm.Options.RoutePolicySources),
 	}), nil
 }
 

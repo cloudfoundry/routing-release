@@ -51,13 +51,13 @@ var _ = Describe("MtlsScopeAuth", func() {
 			})
 		})
 
-		Context("when AccessScope is empty", func() {
+		Context("when RoutePolicyScope is empty", func() {
 			It("returns nil (no enforcement active)", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					AccessScope: "", // No enforcement
+					AppId:            "backend-app",
+					Host:             "192.168.1.1",
+					Port:             8080,
+					RoutePolicyScope: "", // No enforcement
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool
@@ -73,7 +73,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 					AppId:       "backend-app",
 					Host:        "192.168.1.1",
 					Port:        8080,
-					AccessScope: route.AccessScopeOrg,
+					RoutePolicyScope: route.RoutePolicyScopeOrg,
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool
@@ -92,7 +92,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 					AppId:       "backend-app",
 					Host:        "192.168.1.1",
 					Port:        8080,
-					AccessScope: route.AccessScopeAny,
+					RoutePolicyScope: route.RoutePolicyScopeAny,
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool
@@ -114,7 +114,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 					Host:        "192.168.1.1",
 					Port:        8080,
 					Tags:        map[string]string{"organization_id": "org-123"},
-					AccessScope: route.AccessScopeOrg,
+					RoutePolicyScope: route.RoutePolicyScopeOrg,
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool
@@ -133,7 +133,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 					Host:        "192.168.1.1",
 					Port:        8080,
 					Tags:        map[string]string{"organization_id": "org-123"},
-					AccessScope: route.AccessScopeOrg,
+					RoutePolicyScope: route.RoutePolicyScopeOrg,
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool
@@ -158,7 +158,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 					Host:        "192.168.1.1",
 					Port:        8080,
 					Tags:        map[string]string{}, // No org tag
-					AccessScope: route.AccessScopeOrg,
+					RoutePolicyScope: route.RoutePolicyScopeOrg,
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool
@@ -182,7 +182,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 					Host:        "192.168.1.1",
 					Port:        8080,
 					Tags:        map[string]string{"organization_id": "org-123"},
-					AccessScope: route.AccessScopeOrg,
+					RoutePolicyScope: route.RoutePolicyScopeOrg,
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool
@@ -209,7 +209,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 					Host:        "192.168.1.1",
 					Port:        8080,
 					Tags:        map[string]string{"space_id": "space-abc"},
-					AccessScope: route.AccessScopeSpace,
+					RoutePolicyScope: route.RoutePolicyScopeSpace,
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool
@@ -228,7 +228,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 					Host:        "192.168.1.1",
 					Port:        8080,
 					Tags:        map[string]string{"space_id": "space-abc"},
-					AccessScope: route.AccessScopeSpace,
+					RoutePolicyScope: route.RoutePolicyScopeSpace,
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool
@@ -253,7 +253,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 					Host:        "192.168.1.1",
 					Port:        8080,
 					Tags:        map[string]string{}, // No space tag
-					AccessScope: route.AccessScopeSpace,
+					RoutePolicyScope: route.RoutePolicyScopeSpace,
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool
@@ -276,7 +276,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 					Host:        "192.168.1.1",
 					Port:        8080,
 					Tags:        map[string]string{"space_id": "space-abc"},
-					AccessScope: route.AccessScopeSpace,
+					RoutePolicyScope: route.RoutePolicyScopeSpace,
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool
@@ -304,7 +304,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 					Host:        "192.168.1.1",
 					Port:        8080,
 					Tags:        map[string]string{"space_id": "space-abc"},
-					AccessScope: route.AccessScopeSpace,
+					RoutePolicyScope: route.RoutePolicyScopeSpace,
 				})
 
 				// Pool contains endpoints from multiple spaces (shared route)
@@ -319,7 +319,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 					Host:        "192.168.1.2",
 					Port:        8080,
 					Tags:        map[string]string{"space_id": "space-xyz"},
-					AccessScope: route.AccessScopeSpace,
+					RoutePolicyScope: route.RoutePolicyScopeSpace,
 				})
 				pool.Put(endpoint2)
 
@@ -341,7 +341,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 					Host:        "192.168.1.2",
 					Port:        8080,
 					Tags:        map[string]string{"space_id": "space-xyz"},
-					AccessScope: route.AccessScopeSpace,
+					RoutePolicyScope: route.RoutePolicyScopeSpace,
 				})
 
 				// Pool contains endpoints from multiple spaces (shared route)
@@ -355,7 +355,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 					Host:        "192.168.1.1",
 					Port:        8080,
 					Tags:        map[string]string{"space_id": "space-abc"},
-					AccessScope: route.AccessScopeSpace,
+					RoutePolicyScope: route.RoutePolicyScopeSpace,
 				})
 				pool.Put(endpoint1)
 				pool.Put(endpoint)

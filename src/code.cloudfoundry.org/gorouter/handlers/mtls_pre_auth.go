@@ -16,7 +16,7 @@ import (
 //   - Route pool lookup (404 Not Found)
 //   - Identity extraction requirement check (403 Forbidden)
 //
-// Scope and access rules checking have been moved to post-selection handlers.
+// Scope and route policies checking have been moved to post-selection handlers.
 type mtlsPreAuth struct {
 	config *config.Config
 	logger *slog.Logger
@@ -107,12 +107,13 @@ func (h *mtlsPreAuth) ServeHTTP(w http.ResponseWriter, r *http.Request, next htt
 	var _ *route.EndpointPool = pool // Explicit type reference to satisfy compiler
 	applicationId := pool.ApplicationId()
 
-	// ── Layer 2: Access scope — is enforcement active? ─────────────────────────
-	// Cloud Controller sets access_scope in route options when the domain was
-	// created with --enforce-access-rules. An empty scope means "no enforcement":
-	// the route is on an mTLS domain but authorization is handled by the backend.
-	accessScope := pool.AccessScope()
-	if accessScope == "" {
+	// ── Layer 2: Route policy scope — is enforcement active? ───────────────────
+	// Cloud Controller sets route_policy_scope in route options when the domain
+	// was created with --enforce-route-policies. An empty scope means "no
+	// enforcement": the route is on an mTLS domain but authorization is handled
+	// by the backend.
+	routePolicyScope := pool.RoutePolicyScope()
+	if routePolicyScope == "" {
 		// No enforcement — forward without authorization checks.
 		next(w, r)
 		return
@@ -134,7 +135,7 @@ func (h *mtlsPreAuth) ServeHTTP(w http.ResponseWriter, r *http.Request, next htt
 		return
 	}
 
-	// Pre-auth checks passed — continue to proxy (scope and access rules will be
+	// Pre-auth checks passed — continue to proxy (scope and route policies will be
 	// checked post-selection in the round tripper).
 	next(w, r)
 }

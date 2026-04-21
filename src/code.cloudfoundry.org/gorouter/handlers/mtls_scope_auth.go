@@ -34,13 +34,13 @@ func NewMtlsScopeAuth(cfg *config.Config, logger *slog.Logger) *MtlsScopeAuth {
 // Returns nil if authorized, or an AuthError if the caller's org/space
 // does not match the selected endpoint's org/space tags.
 func (h *MtlsScopeAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) error {
-	// Get access scope from pool
+	// Get route policy scope from pool
 	if reqInfo.RoutePool == nil {
 		return nil // Should not happen, but be defensive
 	}
 
-	accessScope := reqInfo.RoutePool.AccessScope()
-	if accessScope == "" {
+	routePolicyScope := reqInfo.RoutePool.RoutePolicyScope()
+	if routePolicyScope == "" {
 		return nil // No scope enforcement configured
 	}
 
@@ -53,8 +53,8 @@ func (h *MtlsScopeAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) er
 	poolHost := reqInfo.RoutePool.Host()
 
 	// Perform post-selection scope check against the SELECTED endpoint's tags
-	switch accessScope {
-	case route.AccessScopeOrg:
+	switch routePolicyScope {
+	case route.RoutePolicyScopeOrg:
 		endpointOrg := endpoint.Tags["organization_id"]
 		if endpointOrg != identity.OrgGUID {
 			h.logger.Info("mtls-scope-auth-denied",
@@ -71,7 +71,7 @@ func (h *MtlsScopeAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) er
 			)
 		}
 
-	case route.AccessScopeSpace:
+	case route.RoutePolicyScopeSpace:
 		endpointSpace := endpoint.Tags["space_id"]
 		if endpointSpace != identity.SpaceGUID {
 			h.logger.Info("mtls-scope-auth-denied",
@@ -88,7 +88,7 @@ func (h *MtlsScopeAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) er
 			)
 		}
 
-	case route.AccessScopeAny:
+	case route.RoutePolicyScopeAny:
 		// Any authenticated caller passes scope check
 		return nil
 
@@ -96,18 +96,18 @@ func (h *MtlsScopeAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) er
 		// Unknown scope - deny to be safe
 		h.logger.Warn("mtls-scope-auth-denied",
 			slog.String("route", poolHost),
-			slog.String("unknown-scope", accessScope))
+			slog.String("unknown-scope", routePolicyScope))
 
 		return NewAuthError(
 			"domain:scope=unknown:post-selection",
-			fmt.Sprintf("unknown access scope %q", accessScope),
+			fmt.Sprintf("unknown route policy scope %q", routePolicyScope),
 		)
 	}
 
 	// Scope check passed
 	h.logger.Debug("mtls-scope-auth-granted",
 		slog.String("route", poolHost),
-		slog.String("scope", accessScope),
+		slog.String("scope", routePolicyScope),
 		slog.String("endpoint", endpoint.CanonicalAddr()))
 
 	return nil

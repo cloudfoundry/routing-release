@@ -535,7 +535,7 @@ var _ = Describe("Identity-Aware Routing", func() {
 		})
 
 		Describe("default-deny behavior", func() {
-			It("denies requests when no access rules are configured", func() {
+			It("denies requests when no route policies are configured", func() {
 				// Register route WITHOUT allowed sources
 				testState.register(backendApp, mtlsDomain)
 
@@ -557,7 +557,7 @@ var _ = Describe("Identity-Aware Routing", func() {
 				Expect(resp.StatusCode).To(Equal(http.StatusForbidden))
 			})
 
-			It("denies requests when access rules are empty", func() {
+			It("denies requests when route policies are empty", func() {
 				// Register route with empty allowed sources
 				testState.registerWithAccessRules(
 					backendApp,
@@ -840,7 +840,7 @@ var _ = Describe("Identity-Aware Routing", func() {
 				})
 			})
 
-			Context("when shared route has app-specific access rules", func() {
+			Context("when shared route has app-specific route policies", func() {
 				It("allows only the specified app and denies others (per-endpoint rules)", func() {
 					// Backend 1 allows only "allowed-app-1"
 					testState.registerWithScopeAndAccessRules(

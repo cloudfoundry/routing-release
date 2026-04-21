@@ -11,17 +11,17 @@ import (
 	"code.cloudfoundry.org/gorouter/test_util"
 )
 
-var _ = Describe("MtlsAccessRulesAuth", func() {
+var _ = Describe("MtlsRoutePoliciesAuth", func() {
 	var (
-		handler  *handlers.MtlsAccessRulesAuth
+		handler  *handlers.MtlsRoutePoliciesAuth
 		endpoint *route.Endpoint
 		reqInfo  *handlers.RequestInfo
 		pool     *route.EndpointPool
 	)
 
 	BeforeEach(func() {
-		logger := test_util.NewTestLogger("mtls-access-rules-auth")
-		handler = handlers.NewMtlsAccessRulesAuth(logger.Logger)
+		logger := test_util.NewTestLogger("mtls-route-policies-auth")
+		handler = handlers.NewMtlsRoutePoliciesAuth(logger.Logger)
 		reqInfo = &handlers.RequestInfo{}
 	})
 
@@ -48,13 +48,13 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 			})
 		})
 
-		Context("when AccessScope is empty", func() {
+		Context("when RoutePolicyScope is empty", func() {
 			It("returns nil (no enforcement active)", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					AccessScope: "", // No enforcement
+					AppId:            "backend-app",
+					Host:             "192.168.1.1",
+					Port:             8080,
+					RoutePolicyScope: "", // No enforcement
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool
@@ -67,11 +67,11 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 		Context("when CallerIdentity is nil", func() {
 			It("returns nil (identity check should have failed earlier)", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					AccessScope: route.AccessScopeOrg,
-					AccessRules: []string{"cf:any"},
+					AppId:              "backend-app",
+					Host:               "192.168.1.1",
+					Port:               8080,
+					RoutePolicyScope:   route.RoutePolicyScopeOrg,
+					RoutePolicies: []string{"cf:any"},
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool
@@ -82,14 +82,14 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 			})
 		})
 
-		Context("when no access rules are configured", func() {
+		Context("when no route policies are configured", func() {
 			It("denies with AuthError (default deny)", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					AccessScope: route.AccessScopeOrg,
-					AccessRules: []string{}, // No rules = default deny
+					AppId:              "backend-app",
+					Host:               "192.168.1.1",
+					Port:               8080,
+					RoutePolicyScope:   route.RoutePolicyScopeOrg,
+					RoutePolicies: []string{}, // No sources = default deny
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool
@@ -102,22 +102,22 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 
 				authErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
-				Expect(authErr.Rule).To(Equal("route:no_access_rules"))
-				Expect(authErr.Reason).To(Equal("route has no access rules configured"))
+				Expect(authErr.Rule).To(Equal("route:no_route_policies"))
+				Expect(authErr.Reason).To(Equal("route has no route policies configured"))
 				Expect(authErr.HTTPStatus).To(Equal(http.StatusForbidden))
 			})
 		})
 
-		// ── Access rule: cf:any ───────────────────────────────────────
+		// ── Route policy: cf:any ───────────────────────────────────────
 
-		Context("with access rule cf:any", func() {
+		Context("with route policy cf:any", func() {
 			It("allows any authenticated caller", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					AccessScope: route.AccessScopeAny,
-					AccessRules: []string{"cf:any"},
+					AppId:              "backend-app",
+					Host:               "192.168.1.1",
+					Port:               8080,
+					RoutePolicyScope:   route.RoutePolicyScopeAny,
+					RoutePolicies: []string{"cf:any"},
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool
@@ -131,16 +131,16 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 			})
 		})
 
-		// ── Access rule: cf:app:<guid> ────────────────────────────────
+		// ── Route policy: cf:app:<guid> ────────────────────────────────
 
-		Context("with access rule cf:app:<guid>", func() {
+		Context("with route policy cf:app:<guid>", func() {
 			It("allows caller with matching app GUID", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					AccessScope: route.AccessScopeAny,
-					AccessRules: []string{"cf:app:allowed-app-123"},
+					AppId:              "backend-app",
+					Host:               "192.168.1.1",
+					Port:               8080,
+					RoutePolicyScope:   route.RoutePolicyScopeAny,
+					RoutePolicies: []string{"cf:app:allowed-app-123"},
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool
@@ -155,11 +155,11 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 
 			It("denies caller with different app GUID", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					AccessScope: route.AccessScopeAny,
-					AccessRules: []string{"cf:app:allowed-app-123"},
+					AppId:              "backend-app",
+					Host:               "192.168.1.1",
+					Port:               8080,
+					RoutePolicyScope:   route.RoutePolicyScopeAny,
+					RoutePolicies: []string{"cf:app:allowed-app-123"},
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool
@@ -172,21 +172,21 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 
 				authErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
-				Expect(authErr.Rule).To(Equal("route:access_rules"))
-				Expect(authErr.Reason).To(ContainSubstring("caller app other-app-456 not in access_rules"))
+				Expect(authErr.Rule).To(Equal("route:route_policies"))
+				Expect(authErr.Reason).To(ContainSubstring("caller app other-app-456 not in route_policies"))
 			})
 		})
 
-		// ── Access rule: cf:space:<guid> ──────────────────────────────
+		// ── Route policy: cf:space:<guid> ──────────────────────────────
 
-		Context("with access rule cf:space:<guid>", func() {
+		Context("with route policy cf:space:<guid>", func() {
 			It("allows caller from matching space", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					AccessScope: route.AccessScopeAny,
-					AccessRules: []string{"cf:space:allowed-space-abc"},
+					AppId:              "backend-app",
+					Host:               "192.168.1.1",
+					Port:               8080,
+					RoutePolicyScope:   route.RoutePolicyScopeAny,
+					RoutePolicies: []string{"cf:space:allowed-space-abc"},
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool
@@ -202,11 +202,11 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 
 			It("denies caller from different space", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					AccessScope: route.AccessScopeAny,
-					AccessRules: []string{"cf:space:allowed-space-abc"},
+					AppId:              "backend-app",
+					Host:               "192.168.1.1",
+					Port:               8080,
+					RoutePolicyScope:   route.RoutePolicyScopeAny,
+					RoutePolicies: []string{"cf:space:allowed-space-abc"},
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool
@@ -220,20 +220,20 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 
 				authErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
-				Expect(authErr.Rule).To(Equal("route:access_rules"))
+				Expect(authErr.Rule).To(Equal("route:route_policies"))
 			})
 		})
 
-		// ── Access rule: cf:org:<guid> ────────────────────────────────
+		// ── Route policy: cf:org:<guid> ────────────────────────────────
 
-		Context("with access rule cf:org:<guid>", func() {
+		Context("with route policy cf:org:<guid>", func() {
 			It("allows caller from matching org", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					AccessScope: route.AccessScopeAny,
-					AccessRules: []string{"cf:org:allowed-org-123"},
+					AppId:              "backend-app",
+					Host:               "192.168.1.1",
+					Port:               8080,
+					RoutePolicyScope:   route.RoutePolicyScopeAny,
+					RoutePolicies: []string{"cf:org:allowed-org-123"},
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool
@@ -249,11 +249,11 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 
 			It("denies caller from different org", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					AccessScope: route.AccessScopeAny,
-					AccessRules: []string{"cf:org:allowed-org-123"},
+					AppId:              "backend-app",
+					Host:               "192.168.1.1",
+					Port:               8080,
+					RoutePolicyScope:   route.RoutePolicyScopeAny,
+					RoutePolicies: []string{"cf:org:allowed-org-123"},
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool
@@ -267,20 +267,20 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 
 				authErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
-				Expect(authErr.Rule).To(Equal("route:access_rules"))
+				Expect(authErr.Rule).To(Equal("route:route_policies"))
 			})
 		})
 
-		// ── Multiple access rules ─────────────────────────────────────
+		// ── Multiple route policies ─────────────────────────────────────
 
-		Context("with multiple access rules", func() {
+		Context("with multiple route policies", func() {
 			It("allows caller matching first rule", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					AccessScope: route.AccessScopeAny,
-					AccessRules: []string{
+					AppId:            "backend-app",
+					Host:             "192.168.1.1",
+					Port:             8080,
+					RoutePolicyScope: route.RoutePolicyScopeAny,
+					RoutePolicies: []string{
 						"cf:app:app-1",
 						"cf:app:app-2",
 						"cf:space:space-abc",
@@ -299,11 +299,11 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 
 			It("allows caller matching second rule", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					AccessScope: route.AccessScopeAny,
-					AccessRules: []string{
+					AppId:            "backend-app",
+					Host:             "192.168.1.1",
+					Port:             8080,
+					RoutePolicyScope: route.RoutePolicyScopeAny,
+					RoutePolicies: []string{
 						"cf:app:app-1",
 						"cf:app:app-2",
 						"cf:space:space-abc",
@@ -322,11 +322,11 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 
 			It("allows caller matching third rule", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					AccessScope: route.AccessScopeAny,
-					AccessRules: []string{
+					AppId:            "backend-app",
+					Host:             "192.168.1.1",
+					Port:             8080,
+					RoutePolicyScope: route.RoutePolicyScopeAny,
+					RoutePolicies: []string{
 						"cf:app:app-1",
 						"cf:app:app-2",
 						"cf:space:space-abc",
@@ -346,11 +346,11 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 
 			It("denies caller matching no rules", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					AccessScope: route.AccessScopeAny,
-					AccessRules: []string{
+					AppId:            "backend-app",
+					Host:             "192.168.1.1",
+					Port:             8080,
+					RoutePolicyScope: route.RoutePolicyScopeAny,
+					RoutePolicies: []string{
 						"cf:app:app-1",
 						"cf:app:app-2",
 						"cf:space:space-abc",
@@ -368,20 +368,20 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 
 				authErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
-				Expect(authErr.Rule).To(Equal("route:access_rules"))
+				Expect(authErr.Rule).To(Equal("route:route_policies"))
 			})
 		})
 
 		// ── Edge cases ────────────────────────────────────────────────
 
 		Context("edge cases", func() {
-			It("handles whitespace in access rules", func() {
+			It("handles whitespace in route policies", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					AccessScope: route.AccessScopeAny,
-					AccessRules: []string{"  cf:any  "}, // Whitespace
+					AppId:              "backend-app",
+					Host:               "192.168.1.1",
+					Port:               8080,
+					RoutePolicyScope:   route.RoutePolicyScopeAny,
+					RoutePolicies: []string{"  cf:any  "}, // Whitespace
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool
@@ -396,11 +396,11 @@ var _ = Describe("MtlsAccessRulesAuth", func() {
 
 			It("skips malformed rules and evaluates valid ones", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					AccessScope: route.AccessScopeAny,
-					AccessRules: []string{
+					AppId:            "backend-app",
+					Host:             "192.168.1.1",
+					Port:             8080,
+					RoutePolicyScope: route.RoutePolicyScopeAny,
+					RoutePolicies: []string{
 						"invalid-rule",
 						"cf:app:allowed-app",
 					},

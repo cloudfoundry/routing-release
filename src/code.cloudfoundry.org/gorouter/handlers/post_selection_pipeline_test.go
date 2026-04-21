@@ -207,7 +207,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 		})
 
 		Context("real-world scenario", func() {
-			It("runs scope check then access rules check", func() {
+			It("runs scope check then route policies check", func() {
 				logger := test_util.NewTestLogger("pipeline")
 				// Simulate scope check (passes)
 				handler1.CheckStub = func(ep *route.Endpoint, ri *handlers.RequestInfo) error {
@@ -215,9 +215,9 @@ var _ = Describe("PostSelectionPipeline", func() {
 					return nil
 				}
 
-				// Simulate access rules check (passes and sets AuthResult.Rule)
+				// Simulate route policies check (passes and sets AuthResult.Rule)
 				handler2.CheckStub = func(ep *route.Endpoint, ri *handlers.RequestInfo) error {
-					// Access rules matched
+					// Route policies matched
 					if ri.AuthResult == nil {
 						ri.AuthResult = &handlers.AuthResult{}
 					}
@@ -232,7 +232,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 				Expect(reqInfo.AuthResult.Rule).To(Equal("route:cf:app:allowed-app"))
 			})
 
-			It("returns error from scope check before running access rules", func() {
+			It("returns error from scope check before running route policies", func() {
 				logger := test_util.NewTestLogger("pipeline")
 				scopeErr := handlers.NewAuthError(
 					"domain:scope=org:post-selection",
@@ -242,9 +242,9 @@ var _ = Describe("PostSelectionPipeline", func() {
 				// Simulate scope check (fails)
 				handler1.CheckReturns(scopeErr)
 
-				// Simulate access rules check (should not be called)
+				// Simulate route policies check (should not be called)
 				handler2.CheckStub = func(ep *route.Endpoint, ri *handlers.RequestInfo) error {
-					Fail("access rules handler should not be called")
+					Fail("route policies handler should not be called")
 					return nil
 				}
 
@@ -256,17 +256,17 @@ var _ = Describe("PostSelectionPipeline", func() {
 				Expect(handler2.CheckCallCount()).To(Equal(0))
 			})
 
-			It("returns error from access rules check when scope passes", func() {
+			It("returns error from route policies check when scope passes", func() {
 				logger := test_util.NewTestLogger("pipeline")
 				accessErr := handlers.NewAuthError(
-					"route:access_rules",
-					"caller not in access rules",
+					"route:route_policies",
+					"caller not in route policies",
 				)
 
 				// Simulate scope check (passes)
 				handler1.CheckReturns(nil)
 
-				// Simulate access rules check (fails)
+				// Simulate route policies check (fails)
 				handler2.CheckReturns(accessErr)
 
 				pipeline = handlers.NewPostSelectionPipeline(logger.Logger, handler1, handler2)

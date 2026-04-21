@@ -61,7 +61,7 @@ var _ = Describe("RegistryMessage", func() {
 		})
 	})
 
-	Describe("MakeEndpoint with access_scope and access_rules", func() {
+	Describe("MakeEndpoint with route_policy_scope and route_policy_sources", func() {
 		var message *RegistryMessage
 		var payload []byte
 
@@ -71,7 +71,7 @@ var _ = Describe("RegistryMessage", func() {
 			Expect(err).NotTo(HaveOccurred())
 		})
 
-		Describe("With access_scope=any and no access_rules", func() {
+		Describe("With route_policy_scope=any and no route_policy_sources", func() {
 			BeforeEach(func() {
 				payload = []byte(`{
 					"app":"app1",
@@ -81,20 +81,20 @@ var _ = Describe("RegistryMessage", func() {
 					"tags":{},
 					"private_instance_id":"private_instance_id",
 					"options": {
-						"access_scope": "any"
+						"route_policy_scope": "any"
 					}
 				}`)
 			})
 
-			It("parses access_scope correctly with empty rules", func() {
+			It("parses route_policy_scope correctly with empty sources", func() {
 				endpoint, err := message.MakeEndpoint(false, "round-robin")
 				Expect(err).NotTo(HaveOccurred())
-				Expect(endpoint.AccessScope).To(Equal("any"))
-				Expect(endpoint.AccessRules).To(BeEmpty())
+				Expect(endpoint.RoutePolicyScope).To(Equal("any"))
+				Expect(endpoint.RoutePolicies).To(BeEmpty())
 			})
 		})
 
-		Describe("With access_scope=org and access_rules listing apps and spaces", func() {
+		Describe("With route_policy_scope=org and route_policy_sources listing apps and spaces", func() {
 			BeforeEach(func() {
 				payload = []byte(`{
 					"app":"app1",
@@ -104,17 +104,17 @@ var _ = Describe("RegistryMessage", func() {
 					"tags":{},
 					"private_instance_id":"private_instance_id",
 					"options": {
-						"access_scope": "org",
-						"access_rules": "cf:app:app-guid-1,cf:space:space-guid-1,cf:org:org-guid-1"
+						"route_policy_scope": "org",
+						"route_policy_sources": "cf:app:app-guid-1,cf:space:space-guid-1,cf:org:org-guid-1"
 					}
 				}`)
 			})
 
-			It("parses access_scope and access_rules correctly", func() {
+			It("parses route_policy_scope and route_policy_sources correctly", func() {
 				endpoint, err := message.MakeEndpoint(false, "round-robin")
 				Expect(err).NotTo(HaveOccurred())
-				Expect(endpoint.AccessScope).To(Equal("org"))
-				Expect(endpoint.AccessRules).To(ConsistOf(
+				Expect(endpoint.RoutePolicyScope).To(Equal("org"))
+				Expect(endpoint.RoutePolicies).To(ConsistOf(
 					"cf:app:app-guid-1",
 					"cf:space:space-guid-1",
 					"cf:org:org-guid-1",
@@ -122,7 +122,7 @@ var _ = Describe("RegistryMessage", func() {
 			})
 		})
 
-		Describe("With access_scope=space and cf:any rule", func() {
+		Describe("With route_policy_scope=space and cf:any rule", func() {
 			BeforeEach(func() {
 				payload = []byte(`{
 					"app":"app1",
@@ -132,8 +132,8 @@ var _ = Describe("RegistryMessage", func() {
 					"tags":{},
 					"private_instance_id":"private_instance_id",
 					"options": {
-						"access_scope": "space",
-						"access_rules": "cf:any"
+						"route_policy_scope": "space",
+						"route_policy_sources": "cf:any"
 					}
 				}`)
 			})
@@ -141,12 +141,12 @@ var _ = Describe("RegistryMessage", func() {
 			It("parses cf:any rule correctly", func() {
 				endpoint, err := message.MakeEndpoint(false, "round-robin")
 				Expect(err).NotTo(HaveOccurred())
-				Expect(endpoint.AccessScope).To(Equal("space"))
-				Expect(endpoint.AccessRules).To(ConsistOf("cf:any"))
+				Expect(endpoint.RoutePolicyScope).To(Equal("space"))
+				Expect(endpoint.RoutePolicies).To(ConsistOf("cf:any"))
 			})
 		})
 
-		Describe("With no access_scope or access_rules", func() {
+		Describe("With no route_policy_scope or route_policy_sources", func() {
 			BeforeEach(func() {
 				payload = []byte(`{
 					"app":"app1",
@@ -158,11 +158,11 @@ var _ = Describe("RegistryMessage", func() {
 				}`)
 			})
 
-			It("leaves AccessScope empty and AccessRules nil", func() {
+			It("leaves RoutePolicyScope empty and RoutePolicies nil", func() {
 				endpoint, err := message.MakeEndpoint(false, "round-robin")
 				Expect(err).NotTo(HaveOccurred())
-				Expect(endpoint.AccessScope).To(BeEmpty())
-				Expect(endpoint.AccessRules).To(BeEmpty())
+				Expect(endpoint.RoutePolicyScope).To(BeEmpty())
+				Expect(endpoint.RoutePolicies).To(BeEmpty())
 			})
 		})
 	})
