@@ -70,9 +70,9 @@ var _ = Describe("MtlsScopeAuth", func() {
 		Context("when CallerIdentity is nil", func() {
 			It("returns nil (identity check should have failed in pre-auth)", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
+					AppId:            "backend-app",
+					Host:             "192.168.1.1",
+					Port:             8080,
 					RoutePolicyScope: route.RoutePolicyScopeOrg,
 				})
 				pool = createPool(endpoint)
@@ -89,9 +89,9 @@ var _ = Describe("MtlsScopeAuth", func() {
 		Context("with scope=any", func() {
 			It("allows any authenticated caller", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
+					AppId:            "backend-app",
+					Host:             "192.168.1.1",
+					Port:             8080,
 					RoutePolicyScope: route.RoutePolicyScopeAny,
 				})
 				pool = createPool(endpoint)
@@ -110,10 +110,10 @@ var _ = Describe("MtlsScopeAuth", func() {
 		Context("with scope=org", func() {
 			It("allows caller from same org", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					Tags:        map[string]string{"organization_id": "org-123"},
+					AppId:            "backend-app",
+					Host:             "192.168.1.1",
+					Port:             8080,
+					Tags:             map[string]string{"organization_id": "org-123"},
 					RoutePolicyScope: route.RoutePolicyScopeOrg,
 				})
 				pool = createPool(endpoint)
@@ -129,10 +129,10 @@ var _ = Describe("MtlsScopeAuth", func() {
 
 			It("denies caller from different org with AuthError", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					Tags:        map[string]string{"organization_id": "org-123"},
+					AppId:            "backend-app",
+					Host:             "192.168.1.1",
+					Port:             8080,
+					Tags:             map[string]string{"organization_id": "org-123"},
 					RoutePolicyScope: route.RoutePolicyScopeOrg,
 				})
 				pool = createPool(endpoint)
@@ -154,10 +154,10 @@ var _ = Describe("MtlsScopeAuth", func() {
 
 			It("denies caller when endpoint has no organization_id tag", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					Tags:        map[string]string{}, // No org tag
+					AppId:            "backend-app",
+					Host:             "192.168.1.1",
+					Port:             8080,
+					Tags:             map[string]string{}, // No org tag
 					RoutePolicyScope: route.RoutePolicyScopeOrg,
 				})
 				pool = createPool(endpoint)
@@ -178,10 +178,10 @@ var _ = Describe("MtlsScopeAuth", func() {
 
 			It("denies caller when caller has no org", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					Tags:        map[string]string{"organization_id": "org-123"},
+					AppId:            "backend-app",
+					Host:             "192.168.1.1",
+					Port:             8080,
+					Tags:             map[string]string{"organization_id": "org-123"},
 					RoutePolicyScope: route.RoutePolicyScopeOrg,
 				})
 				pool = createPool(endpoint)
@@ -205,10 +205,10 @@ var _ = Describe("MtlsScopeAuth", func() {
 		Context("with scope=space", func() {
 			It("allows caller from same space", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					Tags:        map[string]string{"space_id": "space-abc"},
+					AppId:            "backend-app",
+					Host:             "192.168.1.1",
+					Port:             8080,
+					Tags:             map[string]string{"space_id": "space-abc"},
 					RoutePolicyScope: route.RoutePolicyScopeSpace,
 				})
 				pool = createPool(endpoint)
@@ -224,10 +224,10 @@ var _ = Describe("MtlsScopeAuth", func() {
 
 			It("denies caller from different space with AuthError", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					Tags:        map[string]string{"space_id": "space-abc"},
+					AppId:            "backend-app",
+					Host:             "192.168.1.1",
+					Port:             8080,
+					Tags:             map[string]string{"space_id": "space-abc"},
 					RoutePolicyScope: route.RoutePolicyScopeSpace,
 				})
 				pool = createPool(endpoint)
@@ -249,10 +249,10 @@ var _ = Describe("MtlsScopeAuth", func() {
 
 			It("denies caller when endpoint has no space_id tag", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					Tags:        map[string]string{}, // No space tag
+					AppId:            "backend-app",
+					Host:             "192.168.1.1",
+					Port:             8080,
+					Tags:             map[string]string{}, // No space tag
 					RoutePolicyScope: route.RoutePolicyScopeSpace,
 				})
 				pool = createPool(endpoint)
@@ -272,10 +272,10 @@ var _ = Describe("MtlsScopeAuth", func() {
 
 			It("denies caller when caller has no space", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					Tags:        map[string]string{"space_id": "space-abc"},
+					AppId:            "backend-app",
+					Host:             "192.168.1.1",
+					Port:             8080,
+					Tags:             map[string]string{"space_id": "space-abc"},
 					RoutePolicyScope: route.RoutePolicyScopeSpace,
 				})
 				pool = createPool(endpoint)
@@ -300,10 +300,10 @@ var _ = Describe("MtlsScopeAuth", func() {
 			It("allows request when selected endpoint matches caller's space", func() {
 				// Endpoint from space-abc
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app-1",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					Tags:        map[string]string{"space_id": "space-abc"},
+					AppId:            "backend-app-1",
+					Host:             "192.168.1.1",
+					Port:             8080,
+					Tags:             map[string]string{"space_id": "space-abc"},
 					RoutePolicyScope: route.RoutePolicyScopeSpace,
 				})
 
@@ -315,10 +315,10 @@ var _ = Describe("MtlsScopeAuth", func() {
 
 				// Another endpoint from space-xyz
 				endpoint2 := route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app-2",
-					Host:        "192.168.1.2",
-					Port:        8080,
-					Tags:        map[string]string{"space_id": "space-xyz"},
+					AppId:            "backend-app-2",
+					Host:             "192.168.1.2",
+					Port:             8080,
+					Tags:             map[string]string{"space_id": "space-xyz"},
 					RoutePolicyScope: route.RoutePolicyScopeSpace,
 				})
 				pool.Put(endpoint2)
@@ -337,10 +337,10 @@ var _ = Describe("MtlsScopeAuth", func() {
 			It("denies request when selected endpoint is from different space (intermittent 403)", func() {
 				// Endpoint from space-xyz (will be selected)
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app-2",
-					Host:        "192.168.1.2",
-					Port:        8080,
-					Tags:        map[string]string{"space_id": "space-xyz"},
+					AppId:            "backend-app-2",
+					Host:             "192.168.1.2",
+					Port:             8080,
+					Tags:             map[string]string{"space_id": "space-xyz"},
 					RoutePolicyScope: route.RoutePolicyScopeSpace,
 				})
 
@@ -351,10 +351,10 @@ var _ = Describe("MtlsScopeAuth", func() {
 
 				// Endpoint from space-abc
 				endpoint1 := route.NewEndpoint(&route.EndpointOpts{
-					AppId:       "backend-app-1",
-					Host:        "192.168.1.1",
-					Port:        8080,
-					Tags:        map[string]string{"space_id": "space-abc"},
+					AppId:            "backend-app-1",
+					Host:             "192.168.1.1",
+					Port:             8080,
+					Tags:             map[string]string{"space_id": "space-abc"},
 					RoutePolicyScope: route.RoutePolicyScopeSpace,
 				})
 				pool.Put(endpoint1)
