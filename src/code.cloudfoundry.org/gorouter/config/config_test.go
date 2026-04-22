@@ -2043,6 +2043,109 @@ drain_timeout: 60s
 		})
 
 	})
+
+	Describe("GetMtlsDomainConfig", func() {
+		var certChain test_util.CertChain
+
+		BeforeEach(func() {
+			certChain = test_util.CreateSignedCertWithRootCA(test_util.CertNames{SANs: test_util.SubjectAltNames{DNS: "test.com"}})
+			cfgForSnippet.Domains = []MtlsDomainConfig{
+				{
+					Domain:     "*.apps.identity",
+					XFCCFormat: "envoy",
+					CACerts:    string(certChain.CACertPEM),
+				},
+				{
+					Domain:     "exact.example.com",
+					XFCCFormat: "raw",
+					CACerts:    string(certChain.CACertPEM),
+				},
+			}
+			err := config.Initialize(createYMLSnippet(cfgForSnippet))
+			Expect(err).ToNot(HaveOccurred())
+			err = config.Process()
+			Expect(err).ToNot(HaveOccurred())
+		})
+
+		Context("when host includes explicit port", func() {
+			It("strips port and matches wildcard domain", func() {
+				cfg := config.GetMtlsDomainConfig("xfcc-tester.apps.identity:443")
+				Expect(cfg).ToNot(BeNil())
+				Expect(cfg.Domain).To(Equal("*.apps.identity"))
+				Expect(cfg.XFCCFormat).To(Equal("envoy"))
+			})
+
+			It("strips port and matches exact domain", func() {
+				cfg := config.GetMtlsDomainConfig("exact.example.com:8443")
+				Expect(cfg).ToNot(BeNil())
+				Expect(cfg.Domain).To(Equal("exact.example.com"))
+				Expect(cfg.XFCCFormat).To(Equal("raw"))
+			})
+		})
+
+		Context("when host does not include port", func() {
+			It("matches wildcard domain without port", func() {
+				cfg := config.GetMtlsDomainConfig("xfcc-tester.apps.identity")
+				Expect(cfg).ToNot(BeNil())
+				Expect(cfg.Domain).To(Equal("*.apps.identity"))
+				Expect(cfg.XFCCFormat).To(Equal("envoy"))
+			})
+
+			It("matches exact domain without port", func() {
+				cfg := config.GetMtlsDomainConfig("exact.example.com")
+				Expect(cfg).ToNot(BeNil())
+				Expect(cfg.Domain).To(Equal("exact.example.com"))
+				Expect(cfg.XFCCFormat).To(Equal("raw"))
+			})
+		})
+
+		Context("when host is not an mTLS domain", func() {
+			It("returns nil for non-matching host with port", func() {
+				cfg := config.GetMtlsDomainConfig("other.example.com:443")
+				Expect(cfg).To(BeNil())
+			})
+
+			It("returns nil for non-matching host without port", func() {
+				cfg := config.GetMtlsDomainConfig("other.example.com")
+				Expect(cfg).To(BeNil())
+			})
+		})
+	})
+
+	Describe("IsMtlsDomain", func() {
+		var certChain test_util.CertChain
+
+		BeforeEach(func() {
+			certChain = test_util.CreateSignedCertWithRootCA(test_util.CertNames{SANs: test_util.SubjectAltNames{DNS: "test.com"}})
+			cfgForSnippet.Domains = []MtlsDomainConfig{
+				{
+					Domain:     "*.apps.identity",
+					XFCCFormat: "envoy",
+					CACerts:    string(certChain.CACertPEM),
+				},
+			}
+			err := config.Initialize(createYMLSnippet(cfgForSnippet))
+			Expect(err).ToNot(HaveOccurred())
+			err = config.Process()
+			Expect(err).ToNot(HaveOccurred())
+		})
+
+		It("returns true for mTLS domain with port", func() {
+			Expect(config.IsMtlsDomain("xfcc-tester.apps.identity:443")).To(BeTrue())
+		})
+
+		It("returns true for mTLS domain without port", func() {
+			Expect(config.IsMtlsDomain("xfcc-tester.apps.identity")).To(BeTrue())
+		})
+
+		It("returns false for non-mTLS domain with port", func() {
+			Expect(config.IsMtlsDomain("other.example.com:443")).To(BeFalse())
+		})
+
+		It("returns false for non-mTLS domain without port", func() {
+			Expect(config.IsMtlsDomain("other.example.com")).To(BeFalse())
+		})
+	})
 })
 
 func baseConfigFixture() *Config {

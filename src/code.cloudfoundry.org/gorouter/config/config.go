@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"net"
 	"net/url"
 	"os"
 	"runtime"
@@ -1015,6 +1016,12 @@ func (c *Config) RoutingApiEnabled() bool {
 // It checks for exact matches first, then wildcard matches (e.g., *.apps.mtls.internal).
 // Returns nil if the host is not an mTLS domain.
 func (c *Config) GetMtlsDomainConfig(host string) *MtlsDomainConfig {
+	// Strip port if present (e.g., "app.example.com:443" → "app.example.com")
+	// This ensures consistent matching regardless of whether clients include explicit ports
+	if h, _, err := net.SplitHostPort(host); err == nil {
+		host = h
+	}
+
 	// Check exact match first
 	if cfg, ok := c.mtlsDomainMap[host]; ok {
 		return cfg
