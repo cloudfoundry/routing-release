@@ -60,13 +60,13 @@ var _ = Describe("Subscriber", func() {
 	})
 
 	AfterEach(func() {
-		if natsRunner != nil {
-			natsRunner.Stop()
-		}
 		if process != nil {
 			process.Signal(os.Interrupt)
 		}
 		process = nil
+		if natsRunner != nil {
+			natsRunner.Stop()
+		}
 	})
 
 	It("exits when signaled", func() {

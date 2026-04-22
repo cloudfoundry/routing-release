@@ -86,7 +86,8 @@ var _ = Describe("Router", func() {
 		statusTLSPort = test_util.NextAvailPort()
 		statusRoutesPort = test_util.NextAvailPort()
 		natsPort = test_util.ReservePort()
-		config = test_util.SpecConfig(statusPort, statusTLSPort, statusRoutesPort, proxyPort, natsPort)
+		routeServiceServerPort := test_util.NextAvailPort()
+		config = test_util.SpecConfig(statusPort, statusTLSPort, statusRoutesPort, proxyPort, routeServiceServerPort, natsPort)
 		backendIdleTimeout = config.EndpointTimeout
 		requestTimeout = config.EndpointTimeout
 		config.EnableSSL = true
@@ -164,8 +165,9 @@ var _ = Describe("Router", func() {
 				statusPort = test_util.NextAvailPort()
 				statusTLSPort = test_util.NextAvailPort()
 				statusRoutesPort = test_util.NextAvailPort()
+				routeServiceServerPort := test_util.NextAvailPort()
 
-				c := test_util.SpecConfig(statusPort, statusTLSPort, statusRoutesPort, proxyPort, natsPort)
+				c := test_util.SpecConfig(statusPort, statusTLSPort, statusRoutesPort, proxyPort, routeServiceServerPort, natsPort)
 				c.StartResponseDelayInterval = 1 * time.Second
 
 				rtr, err := initializeRouter(c, c.EndpointTimeout, c.EndpointTimeout, registry, varz, mbusClient, logger.Logger, rss)
@@ -186,8 +188,9 @@ var _ = Describe("Router", func() {
 				statusPort = test_util.NextAvailPort()
 				statusTLSPort = test_util.NextAvailPort()
 				statusRoutesPort = test_util.NextAvailPort()
+				routeServiceServerPort := test_util.NextAvailPort()
 
-				c := test_util.SpecConfig(statusPort, statusTLSPort, statusRoutesPort, proxyPort, natsPort)
+				c := test_util.SpecConfig(statusPort, statusTLSPort, statusRoutesPort, proxyPort, routeServiceServerPort, natsPort)
 				c.StartResponseDelayInterval = 1 * time.Second
 
 				rss := &sharedfakes.RouteServicesServer{}
@@ -220,7 +223,8 @@ var _ = Describe("Router", func() {
 			statusPort = test_util.NextAvailPort()
 			statusTLSPort = test_util.NextAvailPort()
 			statusRoutesPort = test_util.NextAvailPort()
-			c = test_util.SpecConfig(statusPort, statusTLSPort, statusRoutesPort, proxyPort, natsPort)
+			routeServiceServerPort := test_util.NextAvailPort()
+			c = test_util.SpecConfig(statusPort, statusTLSPort, statusRoutesPort, proxyPort, routeServiceServerPort, natsPort)
 			c.StartResponseDelayInterval = 1 * time.Second
 		})
 

@@ -210,6 +210,7 @@ var _ = Describe("NATS Integration", func() {
 			time.Sleep(heartbeatInterval * 2)
 
 			natsRunner.Stop()
+			test_util.ReleasePort(natsPort2)
 			natsRunner2.Start()
 
 			// Give router time to make a bad decision (i.e. prune routes)
