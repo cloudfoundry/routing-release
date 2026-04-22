@@ -70,6 +70,11 @@ When inside a docker container:
 > [!IMPORTANT]
 > If you are about to submit a PR, please make sure to run `DB=mysql ./scripts/test-in-docker.bash` (for MySQL) or `DB=postgres ./scripts/test-in-docker.bash` (for Postgres) to ensure everything is tested in a clean environment. If you are developing, you can create a docker container first. In this case, the script `build-binaries.bash` must be executed before testing your specific component.
 
+Running Unit and Integration Tests in CI
+---------------
+
+A member of the CF Network Approver group can trigger the Unit and Integration test workflow on a PR by adding the `ready-to-run` label. Note that the workflow only triggers on the labeling event — if you push new commits while the label is already set, you must remove and re-add it to re-run the tests.
+
 Running Routing Acceptance Tests (RATS)
 ---------------
 
