@@ -65,14 +65,19 @@ func evaluateRoutePolicies(policies []string, identity *CallerIdentity) (string,
 // Returns nil if authorized, or an AuthError if no route policy matches
 // the caller's identity.
 func (h *MtlsRoutePoliciesAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) error {
-	// Only enforce route policies if we have caller identity (mTLS domain)
-	if reqInfo.CallerIdentity == nil {
-		return nil // Not an mTLS domain or no identity extracted
+	// Get route policy scope from pool
+	if reqInfo.RoutePool == nil {
+		return nil // Should not happen, but be defensive
 	}
 
-	// Enforce route policies on mTLS domains
-	if reqInfo.RoutePool == nil {
-		return nil
+	routePolicyScope := reqInfo.RoutePool.RoutePolicyScope()
+	if routePolicyScope == "" {
+		return nil // No route policy enforcement configured
+	}
+
+	// Route policy enforcement requires caller identity
+	if reqInfo.CallerIdentity == nil {
+		return nil // Identity check should have failed earlier in pre-auth
 	}
 
 	poolHost := reqInfo.RoutePool.Host()
@@ -80,7 +85,7 @@ func (h *MtlsRoutePoliciesAuth) Check(endpoint *route.Endpoint, reqInfo *Request
 	// Get route policies from the selected endpoint (per-endpoint policies)
 	routePolicies := endpoint.RoutePolicies
 	if len(routePolicies) == 0 {
-		// Default deny: mTLS domain but no policies configured
+		// Default deny: mTLS domain with enforcement enabled but no policies configured
 		h.logger.Info("mtls-route-policies-denied",
 			slog.String("route", poolHost),
 			slog.String("reason", "no-route-policies"),
