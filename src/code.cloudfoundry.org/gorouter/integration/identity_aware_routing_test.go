@@ -535,8 +535,10 @@ var _ = Describe("Identity-Aware Routing", func() {
 		})
 
 		Describe("default-deny behavior", func() {
-			It("denies requests when no route policies are configured", func() {
-				// Register route WITHOUT allowed sources
+			It("allows requests when route policy enforcement is not enabled", func() {
+				// Register route without route policy scope (enforcement disabled)
+				// Cloud Controller only sets RoutePolicyScope when the domain is configured
+				// with --enforce-route-policies flag
 				testState.register(backendApp, mtlsDomain)
 
 				// Create caller certificate
@@ -550,11 +552,11 @@ var _ = Describe("Identity-Aware Routing", func() {
 					callerCert.TLSCert(),
 				}
 
-				// Make request - should fail (default deny)
+				// Make request - should succeed (no enforcement, backend handles auth)
 				req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
 				resp, err := client.Do(req)
 				Expect(err).NotTo(HaveOccurred())
-				Expect(resp.StatusCode).To(Equal(http.StatusForbidden))
+				Expect(resp.StatusCode).To(Equal(http.StatusOK))
 			})
 
 			It("denies requests when route policies are empty", func() {
