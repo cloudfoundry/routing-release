@@ -63,28 +63,28 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 				Expect(err).To(BeNil())
 			})
 
-		It("skips enforcement when caller has identity", func() {
-			endpoint = route.NewEndpoint(&route.EndpointOpts{
-				AppId:            "backend-app",
-				Host:             "192.168.1.1",
-				Port:             8080,
-				RoutePolicyScope: "", // No enforcement configured
-				RoutePolicies:    []string{"cf:any"},
-			})
-			pool = createPool(endpoint)
-			reqInfo.RoutePool = pool
-			reqInfo.CallerIdentity = &handlers.CallerIdentity{
-				AppGUID:   "caller-app",
-				SpaceGUID: "caller-space",
-				OrgGUID:   "caller-org",
-			}
+			It("skips enforcement when caller has identity", func() {
+				endpoint = route.NewEndpoint(&route.EndpointOpts{
+					AppId:            "backend-app",
+					Host:             "192.168.1.1",
+					Port:             8080,
+					RoutePolicyScope: "", // No enforcement configured
+					RoutePolicies:    []string{"cf:any"},
+				})
+				pool = createPool(endpoint)
+				reqInfo.RoutePool = pool
+				reqInfo.CallerIdentity = &handlers.CallerIdentity{
+					AppGUID:   "caller-app",
+					SpaceGUID: "caller-space",
+					OrgGUID:   "caller-org",
+				}
 
-			// Even though caller has identity and route has policies,
-			// enforcement is skipped because RoutePolicyScope is empty
-			// (domain not configured for route policy enforcement)
-			err := handler.Check(endpoint, reqInfo)
-			Expect(err).To(BeNil())
-		})
+				// Even though caller has identity and route has policies,
+				// enforcement is skipped because RoutePolicyScope is empty
+				// (domain not configured for route policy enforcement)
+				err := handler.Check(endpoint, reqInfo)
+				Expect(err).To(BeNil())
+			})
 		})
 
 		Context("when CallerIdentity is nil", func() {
