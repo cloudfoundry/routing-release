@@ -227,7 +227,7 @@ Nearly all of the important logic is implemented as part of a
 1. [records the request and response in the `access.log` file](https://github.com/cloudfoundry/gorouter/blob/master/handlers/access_log.go)
 1. [reports response code and latency for metrics](https://github.com/cloudfoundry/gorouter/blob/master/handlers/reporter.go)
 1. [responds to healthcheck requests](https://github.com/cloudfoundry/gorouter/blob/master/handlers/proxy_healthcheck.go)
-1. [handles Zipkin headers](https://github.com/cloudfoundry/gorouter/blob/master/handlers/zipkin.go)
+1. [handles Zipkin headers](https://github.com/cloudfoundry/routing-release/blob/develop/src/code.cloudfoundry.org/gorouter/handlers/zipkin.go)
 1. [checks HTTP protocol version](https://github.com/cloudfoundry/gorouter/blob/master/handlers/protocolcheck.go)
 1. [**looks up backends for requested route**](https://github.com/cloudfoundry/gorouter/blob/master/handlers/lookup.go)
 1. [determines whether the request should go to a route service](https://github.com/cloudfoundry/gorouter/blob/master/handlers/routeservice.go)
