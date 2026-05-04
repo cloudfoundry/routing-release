@@ -6,6 +6,7 @@ import (
 	"crypto/x509"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net"
 	"net/http/httptest"
 
@@ -55,7 +56,7 @@ var _ = Describe("HandleError", func() {
 			},
 		}
 		responseRecorder = httptest.NewRecorder()
-		responseWriter = utils.NewProxyResponseWriter(responseRecorder)
+		responseWriter = utils.NewProxyResponseWriter(responseRecorder, slog.Default())
 	})
 
 	It("sets a header to describe the endpoint_failure", func() {
@@ -88,7 +89,7 @@ var _ = Describe("HandleError", func() {
 		})
 
 		It("calls the handleError callback if it exists", func() {
-			firstResponseWriter := utils.NewProxyResponseWriter(httptest.NewRecorder())
+			firstResponseWriter := utils.NewProxyResponseWriter(httptest.NewRecorder(), slog.Default())
 			errorHandler.HandleError(firstResponseWriter, errors.New("i'm a teapot"))
 			Expect(errorHandled).To(BeFalse())
 

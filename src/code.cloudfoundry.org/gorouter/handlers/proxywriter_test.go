@@ -78,7 +78,7 @@ var _ = Describe("ProxyWriter", func() {
 		var rw http.ResponseWriter
 		Eventually(respChan).Should(Receive(&rw))
 		Expect(rw).ToNot(BeNil())
-		Expect(rw).To(BeAssignableToTypeOf(utils.NewProxyResponseWriter(resp)))
+		Expect(rw).To(BeAssignableToTypeOf(utils.NewProxyResponseWriter(resp, logger.Logger)))
 		Expect(nextCalled).To(BeTrue(), "Expected the next handler to be called.")
 	})
 

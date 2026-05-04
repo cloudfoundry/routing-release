@@ -84,7 +84,7 @@ var _ = Describe("Proxy Unit tests", func() {
 			r.Register(route.Uri("some-app"), &route.Endpoint{Stats: route.NewStats()})
 
 			responseRecorder = &ResponseRecorderWithFullDuplex{httptest.NewRecorder(), nil, 0}
-			resp = utils.NewProxyResponseWriter(responseRecorder)
+			resp = utils.NewProxyResponseWriter(responseRecorder, logger.Logger)
 		})
 
 		Context("when backend fails to respond", func() {

@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/http"
 
+	"code.cloudfoundry.org/gorouter/test_util"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -66,13 +67,15 @@ func (f *fakeHeaderRewriter) RewriteHeader(h http.Header) {
 
 var _ = Describe("ProxyWriter", func() {
 	var (
-		fake  *fakeResponseWriter
-		proxy *proxyResponseWriter
+		fake   *fakeResponseWriter
+		proxy  *proxyResponseWriter
+		logger *test_util.TestLogger
 	)
 
 	BeforeEach(func() {
+		logger = test_util.NewTestLogger("test")
 		fake = newFakeResponseWriter()
-		proxy = NewProxyResponseWriter(fake)
+		proxy = NewProxyResponseWriter(fake, logger.Logger)
 	})
 
 	It("delegates the call to Header", func() {
@@ -89,7 +92,7 @@ var _ = Describe("ProxyWriter", func() {
 		fake := &fakeHijackerResponseWriter{
 			fakeResponseWriter: *newFakeResponseWriter(),
 		}
-		proxy = NewProxyResponseWriter(fake)
+		proxy = NewProxyResponseWriter(fake, logger.Logger)
 		proxy.Hijack()
 		Expect(fake.hijackCalled).To(BeTrue())
 	})
@@ -199,4 +202,40 @@ var _ = Describe("ProxyWriter", func() {
 			Expect(responseWriter).To(Equal(fake))
 		})
 	})
+
+	Describe("WriteError", func() {
+		It("returns nil when no write error has occurred", func() {
+			proxy.Write([]byte("foo"))
+			Expect(proxy.WriteError()).To(BeNil())
+		})
+
+		It("returns the first write error that occurred", func() {
+			fakeWithError := &fakeResponseWriterWithError{
+				fakeResponseWriter: *newFakeResponseWriter(),
+				writeError:         errors.New("connection reset by peer"),
+			}
+			proxyWithError := NewProxyResponseWriter(fakeWithError, logger.Logger)
+
+			proxyWithError.Write([]byte("data1"))
+			Expect(proxyWithError.WriteError()).To(MatchError("connection reset by peer"))
+
+			// Subsequent writes should preserve the first error
+			fakeWithError.writeError = errors.New("second error")
+			proxyWithError.Write([]byte("data2"))
+			Expect(proxyWithError.WriteError()).To(MatchError("connection reset by peer"))
+		})
+	})
 })
+
+type fakeResponseWriterWithError struct {
+	fakeResponseWriter
+	writeError error
+}
+
+func (f *fakeResponseWriterWithError) Write(b []byte) (int, error) {
+	f.writeCalled = true
+	if f.writeError != nil {
+		return len(b) / 2, f.writeError
+	}
+	return len(b), nil
+}

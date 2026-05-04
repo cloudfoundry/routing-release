@@ -29,7 +29,8 @@ func (p *proxyWriterHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request, 
 		log.Panic(p.logger, "request-info-err", log.ErrAttr(err))
 		return
 	}
-	proxyWriter := utils.NewProxyResponseWriter(rw)
+	logger := p.logger.With("vcap_request_id", r.Header.Get(VcapRequestIdHeader))
+	proxyWriter := utils.NewProxyResponseWriter(rw, logger)
 	reqInfo.ProxyResponseWriter = proxyWriter
 	next(proxyWriter, r)
 }

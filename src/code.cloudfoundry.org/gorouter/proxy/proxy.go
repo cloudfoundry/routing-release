@@ -150,10 +150,10 @@ func NewProxy(
 	n := negroni.New()
 	n.Use(handlers.NewPanicCheck(p.health, logger))
 	n.Use(handlers.NewRequestInfo())
-	n.Use(handlers.NewProxyWriter(logger))
 	n.Use(zipkinHandler)
 	n.Use(w3cHandler)
 	n.Use(handlers.NewVcapRequestIdHeader(logger))
+	n.Use(handlers.NewProxyWriter(logger))
 	if cfg.SendHttpStartStopServerEvent {
 		n.Use(handlers.NewHTTPStartStop(dropsonde.DefaultEmitter, logger))
 	}

@@ -117,7 +117,7 @@ var _ = Describe("ProxyRoundTripper", func() {
 			})
 			numEndpoints = 1
 			resp = httptest.NewRecorder()
-			proxyWriter := utils.NewProxyResponseWriter(resp)
+			proxyWriter := utils.NewProxyResponseWriter(resp, logger.Logger)
 			reqBody = new(testBody)
 			req = test_util.NewRequest("GET", "myapp.com", "/", reqBody)
 			req.URL.Scheme = "http"

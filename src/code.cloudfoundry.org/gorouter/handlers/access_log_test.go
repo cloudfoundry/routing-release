@@ -2,6 +2,7 @@ package handlers_test
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -70,7 +71,7 @@ var _ = Describe("AccessLog", func() {
 	})
 
 	testProxyWriterHandler := func(rw http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
-		proxyWriter := utils.NewProxyResponseWriter(rw)
+		proxyWriter := utils.NewProxyResponseWriter(rw, logger.Logger)
 		next(proxyWriter, req)
 	}
 
@@ -196,4 +197,36 @@ var _ = Describe("AccessLog", func() {
 		})
 	})
 
+	Context("when the client disconnects during response streaming", func() {
+		BeforeEach(func() {
+			resp = &failingResponseWriter{ResponseRecorder: httptest.NewRecorder()}
+			handler = negroni.New()
+			handler.Use(handlers.NewRequestInfo())
+			handler.Use(handlers.NewProxyWriter(logger.Logger))
+			handler.Use(handlers.NewAccessLog(accessLogger, extraHeadersToLog, nil, logger.Logger))
+			handler.UseFunc(func(rw http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
+				rw.WriteHeader(http.StatusOK)
+				rw.Write([]byte("partial streaming data"))
+				nextCalled = true
+				reqChan <- req
+				panic(http.ErrAbortHandler)
+			})
+		})
+
+		It("writes the access log and sets RouterError to ConnectionCloseDuringStreamingErrMsg", func() {
+			Expect(func() { handler.ServeHTTP(resp, req) }).To(Panic())
+			Expect(accessLogger.LogCallCount()).To(Equal(1))
+			alr := accessLogger.LogArgsForCall(0)
+			Expect(alr.RouterError).To(Equal(utils.ConnectionCloseDuringStreamingErrMsg))
+		})
+	})
+
 })
+
+type failingResponseWriter struct {
+	*httptest.ResponseRecorder
+}
+
+func (f *failingResponseWriter) Write(_ []byte) (int, error) {
+	return 0, errors.New("connection reset by peer")
+}

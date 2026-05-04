@@ -51,7 +51,11 @@ func (a *accessLog) ServeHTTP(rw http.ResponseWriter, r *http.Request, next http
 	requestBodyCounter := &countingReadCloser{delegate: r.Body}
 	r.Body = requestBodyCounter
 
-	next(rw, r)
+	var panicVal any
+	func() {
+		defer func() { panicVal = recover() }()
+		next(rw, r)
+	}()
 
 	reqInfo, err := ContextRequestInfo(r)
 	if err != nil {
@@ -65,6 +69,11 @@ func (a *accessLog) ServeHTTP(rw http.ResponseWriter, r *http.Request, next http
 	alr.BodyBytesSent = proxyWriter.Size()
 	alr.StatusCode = proxyWriter.Status()
 	alr.RouterError = proxyWriter.Header().Get(router_http.CfRouterError)
+
+	if alr.RouterError == "" && proxyWriter.WriteError() != nil {
+		alr.RouterError = utils.ConnectionCloseDuringStreamingErrMsg
+	}
+
 	alr.FailedAttempts = reqInfo.FailedAttempts
 	alr.RoundTripSuccessful = reqInfo.RoundTripSuccessful
 
@@ -84,6 +93,10 @@ func (a *accessLog) ServeHTTP(rw http.ResponseWriter, r *http.Request, next http
 	alr.LocalAddress = reqInfo.LocalAddress
 
 	a.accessLogger.Log(*alr)
+
+	if panicVal != nil {
+		panic(panicVal)
+	}
 }
 
 type countingReadCloser struct {
