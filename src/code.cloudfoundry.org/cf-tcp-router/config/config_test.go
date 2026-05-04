@@ -340,6 +340,12 @@ var _ = Describe("Config", Serial, func() {
 				Expect(err.Error()).To(Equal("frontend_tls[0]: empty name"))
 			})
 
+			It("should fail if name contains characters outside ^[a-zA-Z0-9_-]+$", func() {
+				_, err := config.New("fixtures/invalid_frontend_name_chars.yml", false)
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(Equal(`frontend_tls[0]: name "bad name!" contains invalid characters; only alphanumeric characters, hyphens, and underscores are allowed`))
+			})
+
 			It("should fail if cert is invalid", func() {
 				_, err := config.New("fixtures/invalid_frontend_certs.yml", false)
 				Expect(err).To(HaveOccurred())

@@ -10,12 +10,15 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
 	"gopkg.in/yaml.v3"
 )
+
+var validFrontendName = regexp.MustCompile(`^[a-zA-Z0-9_-]+$`)
 
 type RoutingAPIConfig struct {
 	URI          string `yaml:"uri"`
@@ -142,6 +145,9 @@ func (c *Config) initConfigFromFile(path string, enableCertCreation bool) error 
 		name := strings.TrimSpace(cert.Name)
 		if name == "" {
 			return fmt.Errorf("frontend_tls[%d]: empty name", i)
+		}
+		if !validFrontendName.MatchString(name) {
+			return fmt.Errorf("frontend_tls[%d]: name %q contains invalid characters; only alphanumeric characters, hyphens, and underscores are allowed", i, name)
 		}
 
 		certChain := strings.TrimSpace(cert.CertChain)
