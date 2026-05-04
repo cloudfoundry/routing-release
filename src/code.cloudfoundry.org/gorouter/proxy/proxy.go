@@ -148,14 +148,19 @@ func NewProxy(
 			// Check if this is an authorization error
 			if authErr, ok := err.(*handlers.AuthError); ok {
 				// Return the HTTP status from the AuthError (typically 403)
+				// Use ClientMessage() to avoid leaking internal rule names or caller identities
 				rw.WriteHeader(authErr.HTTPStatus)
-				rw.Write([]byte(authErr.Error()))
+				if _, writeErr := rw.Write([]byte(authErr.ClientMessage())); writeErr != nil {
+					logger.Error("failed to write auth error response", log.ErrAttr(writeErr))
+				}
 				return
 			}
 
 			// For all other errors, use default behavior (502 Bad Gateway)
 			rw.WriteHeader(http.StatusBadGateway)
-			rw.Write([]byte(err.Error()))
+			if _, writeErr := rw.Write([]byte(err.Error())); writeErr != nil {
+				logger.Error("failed to write error response", log.ErrAttr(writeErr))
+			}
 		},
 	}
 

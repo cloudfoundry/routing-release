@@ -31,8 +31,10 @@ func NewMtlsPreAuth(cfg *config.Config, logger *slog.Logger) *mtlsPreAuth {
 }
 
 // domainMatches checks if a hostname matches a domain pattern (supports wildcard domains).
+// Wildcard patterns (*.domain) only match a single DNS label, not multiple levels.
 // Examples:
 //   - domainMatches("mtls-backend.apps.identity", "*.apps.identity") => true
+//   - domainMatches("deep.sub.apps.identity", "*.apps.identity") => false (multi-level)
 //   - domainMatches("mtls-backend.apps.identity", "mtls-backend.apps.identity") => true
 //   - domainMatches("foo.bar.com", "*.apps.identity") => false
 func domainMatches(hostname, domainPattern string) bool {
@@ -40,10 +42,16 @@ func domainMatches(hostname, domainPattern string) bool {
 	if hostname == domainPattern {
 		return true
 	}
-	// Wildcard match
+	// Wildcard match - must match single label only
 	if strings.HasPrefix(domainPattern, "*.") {
-		suffix := domainPattern[1:] // Remove the '*'
-		return strings.HasSuffix(hostname, suffix)
+		suffix := domainPattern[1:] // Remove the '*', suffix = ".apps.identity"
+		if !strings.HasSuffix(hostname, suffix) {
+			return false
+		}
+		// Extract the prefix before the suffix
+		prefix := strings.TrimSuffix(hostname, suffix)
+		// Ensure the prefix contains exactly one label (no dots)
+		return !strings.Contains(prefix, ".")
 	}
 	return false
 }
@@ -70,21 +78,36 @@ func (h *mtlsPreAuth) ServeHTTP(w http.ResponseWriter, r *http.Request, next htt
 	}
 
 	hostDomain := hostWithoutPort(r.Host)
+	connState := GetTLSConnectionState(r)
+	reqInfo.TlsSNI = connState.SNI
 
-	// ── Layer 0: Non-mTLS domain — no checks required ─────────────────────────
-	if !h.config.IsMtlsDomain(hostDomain) {
+	isMtlsDomain := h.config.IsMtlsDomain(hostDomain)
+
+	// ── Layer 0: Non-mTLS domain handling ──────────────────────────────────────
+	if !isMtlsDomain {
+		// If the Host is NOT an mTLS domain but the client presented a certificate,
+		// verify that the Host matches the mTLS domain from the TLS handshake.
+		// This prevents an attack where:
+		// 1. Client connects with SNI for an mTLS domain (gets client cert validated)
+		// 2. Client sends Host header for a non-mTLS domain (bypasses checks)
+		if connState.ClientCertRequired && !domainMatches(hostDomain, connState.MtlsDomain) {
+			h.logger.Warn("mtls-enforcement-mismatch",
+				slog.String("host", r.Host),
+				slog.String("tls_sni", connState.SNI),
+				slog.String("tls_mtls_domain", connState.MtlsDomain))
+			w.WriteHeader(http.StatusMisdirectedRequest) // 421
+			return
+		}
+		// Not an mTLS domain and no security issue, pass through
 		next(w, r)
 		return
 	}
 
-	// ── Layer 0b: SNI / Host mismatch check (421) ──────────────────────────────
+	// ── Layer 0b: mTLS domain - verify certificate was required ────────────────
 	// For mTLS domains we verify that the TLS handshake actually enforced client
 	// certificate validation for *this* domain. Without this check an attacker
 	// could connect with SNI for a non-mTLS domain and then send a Host header
 	// pointing at an mTLS domain — bypassing certificate validation entirely.
-	connState := GetTLSConnectionState(r)
-	reqInfo.TlsSNI = connState.SNI
-
 	if !connState.ClientCertRequired || !domainMatches(hostDomain, connState.MtlsDomain) {
 		h.logger.Warn("mtls-enforcement-mismatch",
 			slog.String("host", r.Host),
@@ -104,7 +127,6 @@ func (h *mtlsPreAuth) ServeHTTP(w http.ResponseWriter, r *http.Request, next htt
 	}
 
 	pool := reqInfo.RoutePool
-	var _ *route.EndpointPool = pool // Explicit type reference to satisfy compiler
 	applicationId := pool.ApplicationId()
 
 	// ── Layer 2: Route policy scope — is enforcement active? ───────────────────

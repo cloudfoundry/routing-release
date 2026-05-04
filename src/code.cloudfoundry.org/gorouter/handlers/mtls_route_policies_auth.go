@@ -77,7 +77,17 @@ func (h *MtlsRoutePoliciesAuth) Check(endpoint *route.Endpoint, reqInfo *Request
 
 	// Route policy enforcement requires caller identity
 	if reqInfo.CallerIdentity == nil {
-		return nil // Identity check should have failed earlier in pre-auth
+		// Defense in depth: identity should have been checked in pre-auth,
+		// but explicitly deny here to avoid silent authorization bypass
+		h.logger.Warn("mtls-route-policies-denied",
+			slog.String("route", reqInfo.RoutePool.Host()),
+			slog.String("reason", "no-caller-identity"),
+			slog.String("endpoint", endpoint.CanonicalAddr()))
+
+		return NewAuthError(
+			"route:no_caller_identity",
+			"no caller identity present",
+		)
 	}
 
 	poolHost := reqInfo.RoutePool.Host()
@@ -118,6 +128,7 @@ func (h *MtlsRoutePoliciesAuth) Check(endpoint *route.Endpoint, reqInfo *Request
 	if reqInfo.AuthResult == nil {
 		reqInfo.AuthResult = &AuthResult{}
 	}
+	reqInfo.AuthResult.Outcome = "allowed"
 	reqInfo.AuthResult.Rule = "route:" + matchedPolicy
 
 	h.logger.Debug("mtls-route-policies-granted",

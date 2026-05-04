@@ -202,7 +202,7 @@ func (rt *roundTripper) RoundTrip(originalRequest *http.Request) (*http.Response
 			// post-selection scope and route policies checking.
 			if rt.postSelectionPipeline != nil {
 				if authErr := rt.postSelectionPipeline.Run(endpoint, reqInfo); authErr != nil {
-					// Authorization failed - handle as AuthError
+					// Authorization failed - populate AuthResult for access logs
 					if authError, ok := authErr.(*handlers.AuthError); ok {
 						reqInfo.AuthResult = &handlers.AuthResult{
 							Outcome:      "denied",
@@ -219,7 +219,13 @@ func (rt *roundTripper) RoundTrip(originalRequest *http.Request) (*http.Response
 						return nil, authErr
 					}
 
-					// Unknown error type
+					// Unknown error type - still populate AuthResult for logging
+					reqInfo.AuthResult = &handlers.AuthResult{
+						Outcome:      "denied",
+						Rule:         "unknown_error",
+						DeniedReason: authErr.Error(),
+					}
+
 					logger.Error("post-selection-auth-error",
 						log.ErrAttr(authErr),
 						slog.String("endpoint", endpoint.CanonicalAddr()))

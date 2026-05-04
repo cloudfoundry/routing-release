@@ -88,7 +88,7 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 		})
 
 		Context("when CallerIdentity is nil", func() {
-			It("returns nil (identity check should have failed earlier)", func() {
+			It("returns AuthError (defense in depth)", func() {
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
 					AppId:            "backend-app",
 					Host:             "192.168.1.1",
@@ -101,7 +101,13 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 				reqInfo.CallerIdentity = nil
 
 				err := handler.Check(endpoint, reqInfo)
-				Expect(err).To(BeNil())
+				Expect(err).NotTo(BeNil())
+
+				authErr, ok := err.(*handlers.AuthError)
+				Expect(ok).To(BeTrue())
+				Expect(authErr.Rule).To(Equal("route:no_caller_identity"))
+				Expect(authErr.Reason).To(Equal("no caller identity present"))
+				Expect(authErr.HTTPStatus).To(Equal(http.StatusForbidden))
 			})
 		})
 

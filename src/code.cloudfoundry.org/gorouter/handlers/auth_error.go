@@ -21,6 +21,20 @@ func (e *AuthError) Error() string {
 	return fmt.Sprintf("authorization denied: %s (rule: %s)", e.Reason, e.Rule)
 }
 
+// ClientMessage returns a generic error message safe for client responses.
+// This prevents leaking internal rule names, app GUIDs, or authorization logic.
+func (e *AuthError) ClientMessage() string {
+	// Return a generic message based on the HTTP status
+	switch e.HTTPStatus {
+	case http.StatusForbidden:
+		return "Forbidden"
+	case http.StatusMisdirectedRequest:
+		return "Misdirected Request"
+	default:
+		return http.StatusText(e.HTTPStatus)
+	}
+}
+
 // NewAuthError creates a new authorization error with 403 Forbidden status
 func NewAuthError(rule, reason string) *AuthError {
 	return &AuthError{

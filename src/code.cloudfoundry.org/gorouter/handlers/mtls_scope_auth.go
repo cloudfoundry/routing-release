@@ -46,7 +46,17 @@ func (h *MtlsScopeAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) er
 
 	// Scope enforcement requires caller identity
 	if reqInfo.CallerIdentity == nil {
-		return nil // Identity check should have failed earlier in pre-auth
+		// Defense in depth: identity should have been checked in pre-auth,
+		// but explicitly deny here to avoid silent authorization bypass
+		h.logger.Warn("mtls-scope-auth-denied",
+			slog.String("route", reqInfo.RoutePool.Host()),
+			slog.String("reason", "no-caller-identity"),
+			slog.String("endpoint", endpoint.CanonicalAddr()))
+
+		return NewAuthError(
+			"domain:no_caller_identity",
+			"no caller identity present",
+		)
 	}
 
 	identity := reqInfo.CallerIdentity
@@ -104,7 +114,13 @@ func (h *MtlsScopeAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) er
 		)
 	}
 
-	// Scope check passed
+	// Scope check passed - populate AuthResult for access logs
+	if reqInfo.AuthResult == nil {
+		reqInfo.AuthResult = &AuthResult{}
+	}
+	reqInfo.AuthResult.Outcome = "allowed"
+	reqInfo.AuthResult.Rule = fmt.Sprintf("domain:scope=%s", routePolicyScope)
+
 	h.logger.Debug("mtls-scope-auth-granted",
 		slog.String("route", poolHost),
 		slog.String("scope", routePolicyScope),
