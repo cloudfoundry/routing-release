@@ -43,7 +43,7 @@ func evaluateRoutePolicies(policies []string, identity *CallerIdentity) (string,
 			return policy, true
 		case strings.HasPrefix(policy, "cf:app:"):
 			guid := strings.TrimPrefix(policy, "cf:app:")
-			if guid == identity.AppGUID {
+			if guid != "" && guid == identity.AppGUID {
 				return policy, true
 			}
 		case strings.HasPrefix(policy, "cf:space:"):

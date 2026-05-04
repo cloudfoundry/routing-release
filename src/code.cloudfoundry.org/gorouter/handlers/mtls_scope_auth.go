@@ -100,7 +100,7 @@ func (h *MtlsScopeAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) er
 
 	case route.RoutePolicyScopeAny:
 		// Any authenticated caller passes scope check
-		return nil
+		// Fall through to populate AuthResult
 
 	default:
 		// Unknown scope - deny to be safe

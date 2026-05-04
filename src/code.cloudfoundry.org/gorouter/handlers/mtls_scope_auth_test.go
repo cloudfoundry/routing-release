@@ -108,6 +108,9 @@ var _ = Describe("MtlsScopeAuth", func() {
 
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).To(BeNil())
+				Expect(reqInfo.AuthResult).NotTo(BeNil())
+				Expect(reqInfo.AuthResult.Outcome).To(Equal("allowed"))
+				Expect(reqInfo.AuthResult.Rule).To(Equal("domain:scope=any"))
 			})
 		})
 
@@ -297,6 +300,33 @@ var _ = Describe("MtlsScopeAuth", func() {
 				authErr, ok := err.(*handlers.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(authErr.Rule).To(Equal("domain:scope=space:post-selection"))
+			})
+		})
+
+		// ── Scope: unknown ───────────────────────────────────────────
+
+		Context("with unknown scope", func() {
+			It("denies request with AuthError", func() {
+				endpoint = route.NewEndpoint(&route.EndpointOpts{
+					AppId:            "backend-app",
+					Host:             "192.168.1.1",
+					Port:             8080,
+					RoutePolicyScope: "unknown-scope-value",
+				})
+				pool = createPool(endpoint)
+				reqInfo.RoutePool = pool
+				reqInfo.CallerIdentity = &handlers.CallerIdentity{
+					AppGUID: "caller-app",
+				}
+
+				err := handler.Check(endpoint, reqInfo)
+				Expect(err).NotTo(BeNil())
+
+				authErr, ok := err.(*handlers.AuthError)
+				Expect(ok).To(BeTrue())
+				Expect(authErr.Rule).To(Equal("domain:scope=unknown:post-selection"))
+				Expect(authErr.Reason).To(ContainSubstring("unknown route policy scope"))
+				Expect(authErr.HTTPStatus).To(Equal(http.StatusForbidden))
 			})
 		})
 
