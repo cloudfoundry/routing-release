@@ -1027,11 +1027,18 @@ func (c *Config) GetMtlsDomainConfig(host string) *MtlsDomainConfig {
 		return cfg
 	}
 	// Check wildcard match (e.g., *.apps.mtls.internal)
+	// Wildcard patterns only match a single DNS label, not multiple levels
+	// e.g., "app.domain.com" matches "*.domain.com" but "deep.sub.domain.com" does not
 	parts := strings.SplitN(host, ".", 2)
 	if len(parts) == 2 {
-		wildcardDomain := "*." + parts[1]
-		if cfg, ok := c.mtlsDomainMap[wildcardDomain]; ok {
-			return cfg
+		prefix := parts[0]
+		suffix := parts[1]
+		// Ensure the prefix contains exactly one label (no dots)
+		if !strings.Contains(prefix, ".") {
+			wildcardDomain := "*." + suffix
+			if cfg, ok := c.mtlsDomainMap[wildcardDomain]; ok {
+				return cfg
+			}
 		}
 	}
 	return nil

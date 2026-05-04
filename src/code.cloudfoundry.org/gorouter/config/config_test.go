@@ -2109,6 +2109,11 @@ drain_timeout: 60s
 				cfg := config.GetMtlsDomainConfig("other.example.com")
 				Expect(cfg).To(BeNil())
 			})
+
+			It("returns nil for multi-level subdomain (wildcard should only match single label)", func() {
+				cfg := config.GetMtlsDomainConfig("deep.sub.apps.identity")
+				Expect(cfg).To(BeNil())
+			})
 		})
 	})
 

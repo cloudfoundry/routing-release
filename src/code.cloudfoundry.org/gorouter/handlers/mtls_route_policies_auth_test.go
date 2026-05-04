@@ -35,7 +35,7 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 
 	Describe("Check", func() {
 		Context("when RoutePool is nil", func() {
-			It("returns nil (no enforcement)", func() {
+			It("denies with AuthError (defense in depth)", func() {
 				reqInfo.RoutePool = nil
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
 					AppId: "backend-app",
@@ -44,7 +44,12 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 				})
 
 				err := handler.Check(endpoint, reqInfo)
-				Expect(err).To(BeNil())
+				Expect(err).NotTo(BeNil())
+
+				authErr, ok := err.(*handlers.AuthError)
+				Expect(ok).To(BeTrue())
+				Expect(authErr.Rule).To(Equal("internal_error"))
+				Expect(authErr.Reason).To(Equal("route pool missing during authorization"))
 			})
 		})
 
@@ -119,6 +124,30 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 					Port:             8080,
 					RoutePolicyScope: route.RoutePolicyScopeOrg,
 					RoutePolicies:    []string{}, // No sources = default deny
+				})
+				pool = createPool(endpoint)
+				reqInfo.RoutePool = pool
+				reqInfo.CallerIdentity = &handlers.CallerIdentity{
+					AppGUID: "caller-app",
+				}
+
+				err := handler.Check(endpoint, reqInfo)
+				Expect(err).NotTo(BeNil())
+
+				authErr, ok := err.(*handlers.AuthError)
+				Expect(ok).To(BeTrue())
+				Expect(authErr.Rule).To(Equal("route:no_route_policies"))
+				Expect(authErr.Reason).To(Equal("route has no route policies configured"))
+				Expect(authErr.HTTPStatus).To(Equal(http.StatusForbidden))
+			})
+
+			It("denies with AuthError when RoutePolicies is nil", func() {
+				endpoint = route.NewEndpoint(&route.EndpointOpts{
+					AppId:            "backend-app",
+					Host:             "192.168.1.1",
+					Port:             8080,
+					RoutePolicyScope: route.RoutePolicyScopeOrg,
+					RoutePolicies:    nil, // Nil = default deny
 				})
 				pool = createPool(endpoint)
 				reqInfo.RoutePool = pool

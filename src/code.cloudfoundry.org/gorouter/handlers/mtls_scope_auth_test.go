@@ -38,7 +38,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 
 	Describe("Check", func() {
 		Context("when RoutePool is nil", func() {
-			It("returns nil (no enforcement)", func() {
+			It("denies with AuthError (defense in depth)", func() {
 				reqInfo.RoutePool = nil
 				endpoint = route.NewEndpoint(&route.EndpointOpts{
 					AppId: "backend-app",
@@ -47,7 +47,12 @@ var _ = Describe("MtlsScopeAuth", func() {
 				})
 
 				err := handler.Check(endpoint, reqInfo)
-				Expect(err).To(BeNil())
+				Expect(err).NotTo(BeNil())
+
+				authErr, ok := err.(*handlers.AuthError)
+				Expect(ok).To(BeTrue())
+				Expect(authErr.Rule).To(Equal("internal_error"))
+				Expect(authErr.Reason).To(Equal("route pool missing during authorization"))
 			})
 		})
 

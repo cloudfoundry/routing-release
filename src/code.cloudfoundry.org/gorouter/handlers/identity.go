@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/pem"
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -76,6 +77,9 @@ func extractIdentityFromXFCC(xfcc string) (*CallerIdentity, error) {
 		if subjectEnd == -1 {
 			return nil, errors.New("malformed Subject field in XFCC header")
 		}
+		if subjectEnd == 0 {
+			return nil, errors.New("empty Subject field in XFCC header")
+		}
 		subjectDN := xfcc[subjectStart : subjectStart+subjectEnd]
 		return extractIdentityFromSubjectDN(subjectDN)
 	}
@@ -130,7 +134,7 @@ func extractIdentityFromSubjectDN(subjectDN string) (*CallerIdentity, error) {
 		// Some formats use "/" as separator
 		rdns = strings.Split(subjectDN, "/")
 	} else {
-		return nil, errors.New("unrecognized DN format")
+		return nil, fmt.Errorf("unrecognized DN format: %q", subjectDN)
 	}
 
 	for _, rdn := range rdns {
