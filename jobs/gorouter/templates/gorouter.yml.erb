@@ -544,6 +544,9 @@ if_p('router.domains') do |domains|
       unless valid_formats.include?(format)
         raise "Invalid xfcc_format '#{format}' for domain '#{domain_config['name']}'. Must be one of: #{valid_formats.join(', ')}"
       end
+      if processed_entry['forwarded_client_cert'] == 'always_forward'
+        raise "xfcc_format has no effect for domain '#{domain_config['name']}' when forwarded_client_cert is 'always_forward'. Remove xfcc_format or change forwarded_client_cert to 'sanitize_set'."
+      end
       processed_entry['xfcc_format'] = format
     end
 

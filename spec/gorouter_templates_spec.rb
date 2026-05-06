@@ -228,7 +228,7 @@ describe 'gorouter' do
             'cert_chain' => ROUTE_SERVICES_CLIENT_TEST_CERT,
             'private_key' => ROUTE_SERVICES_CLIENT_TEST_KEY,
             'strict_signature_validation' => false,
-            'enable_websockets' => true,
+            'enable_websockets' => true
           },
           'frontend_idle_timeout' => 5,
           'ip_local_port_range' => '1024 65535',
@@ -629,9 +629,9 @@ describe 'gorouter' do
             it 'should configure the property' do
               expect(parsed_yaml['tls_pem'].length).to eq(2)
               expect(parsed_yaml['tls_pem'][0]).to eq('cert_chain' => TEST_CERT,
-                'private_key' => 'test-key')
+                                                      'private_key' => 'test-key')
               expect(parsed_yaml['tls_pem'][1]).to eq('cert_chain' => TEST_CERT2,
-                'private_key' => 'test-key2')
+                                                      'private_key' => 'test-key2')
             end
           end
 
@@ -654,7 +654,7 @@ describe 'gorouter' do
             it 'should configure the property' do
               expect(parsed_yaml['tls_pem'].length).to eq(2)
               expect(parsed_yaml['tls_pem'][0]).to eq('cert_chain' => ECDSA_TEST_CERT,
-                'private_key' => ECDSA_TEST_KEY)
+                                                      'private_key' => ECDSA_TEST_KEY)
             end
           end
 
@@ -913,11 +913,11 @@ describe 'gorouter' do
         context 'when egress_blocklist is not set' do
           it 'parses to the default blocklist' do
             expect(parsed_yaml['route_services']['egress_blocklist']).to eq([
-              '10.0.0.0/8',
-              '169.254.0.0/16',
-              '172.16.0.0/12',
-              '192.168.0.0/16'
-            ])
+                                                                              '10.0.0.0/8',
+                                                                              '169.254.0.0/16',
+                                                                              '172.16.0.0/12',
+                                                                              '192.168.0.0/16'
+                                                                            ])
           end
         end
         context 'when egress_blocklist is set' do
@@ -1461,10 +1461,9 @@ describe 'gorouter' do
       end
 
       context 'logging' do
-
         context 'when enable_detailed_attempts_logging is not provided' do
           it 'it does not set the correspoding extra access log values' do
-            expect(parsed_yaml['logging']['extra_access_log_fields']).not_to include(['backend_time', 'dial_time', 'dns_time', 'failed_attempts', 'failed_attempts_time', 'tls_time'])
+            expect(parsed_yaml['logging']['extra_access_log_fields']).not_to include(%w[backend_time dial_time dns_time failed_attempts failed_attempts_time tls_time])
           end
         end
 
@@ -1473,7 +1472,7 @@ describe 'gorouter' do
             deployment_manifest_fragment['router']['enable_log_attempts_details'] = true
           end
           it 'it properly sets the value' do
-            expect(parsed_yaml['logging']['extra_access_log_fields']).to eq(['failed_attempts', 'failed_attempts_time', 'dns_time', 'dial_time', 'tls_time', 'backend_time'])
+            expect(parsed_yaml['logging']['extra_access_log_fields']).to eq(%w[failed_attempts failed_attempts_time dns_time dial_time tls_time backend_time])
           end
         end
 
@@ -1500,7 +1499,7 @@ describe 'gorouter' do
 
           context 'to ["local_address", "foobar"]' do
             before do
-              deployment_manifest_fragment['router']['logging'] = { 'extra_access_log_fields' => ['local_address', 'foobar'] }
+              deployment_manifest_fragment['router']['logging'] = { 'extra_access_log_fields' => %w[local_address foobar] }
             end
 
             it 'still raises an error' do
@@ -1516,7 +1515,7 @@ describe 'gorouter' do
           end
 
           it 'puts the extra_access_log_fields to the end to preserve order' do
-            expect(parsed_yaml['logging']['extra_access_log_fields']).to eq(['failed_attempts', 'failed_attempts_time', 'dns_time', 'dial_time', 'tls_time', 'backend_time', 'local_address'])
+            expect(parsed_yaml['logging']['extra_access_log_fields']).to eq(%w[failed_attempts failed_attempts_time dns_time dial_time tls_time backend_time local_address])
           end
         end
 
@@ -1747,6 +1746,79 @@ describe 'gorouter' do
         end
       end
     end
+
+    describe 'router.domains' do
+      context 'when always_forward is combined with xfcc_format' do
+        before do
+          deployment_manifest_fragment['router']['domains'] = [
+            {
+              'name' => '*.apps.mtls.internal',
+              'ca_certs' => TEST_CERT,
+              'forwarded_client_cert' => 'always_forward',
+              'xfcc_format' => 'envoy'
+            }
+          ]
+        end
+
+        it 'raises an error because xfcc_format has no effect with always_forward' do
+          expect { parsed_yaml }.to raise_error(/xfcc_format has no effect.*always_forward/)
+        end
+      end
+
+      context 'when always_forward is set without xfcc_format' do
+        before do
+          deployment_manifest_fragment['router']['domains'] = [
+            {
+              'name' => '*.apps.mtls.internal',
+              'ca_certs' => TEST_CERT,
+              'forwarded_client_cert' => 'always_forward'
+            }
+          ]
+        end
+
+        it 'renders successfully' do
+          expect { parsed_yaml }.not_to raise_error
+        end
+      end
+
+      context 'when sanitize_set is combined with xfcc_format envoy' do
+        before do
+          deployment_manifest_fragment['router']['domains'] = [
+            {
+              'name' => '*.apps.mtls.internal',
+              'ca_certs' => TEST_CERT,
+              'forwarded_client_cert' => 'sanitize_set',
+              'xfcc_format' => 'envoy'
+            }
+          ]
+        end
+
+        it 'renders successfully' do
+          expect { parsed_yaml }.not_to raise_error
+        end
+
+        it 'sets xfcc_format in the output' do
+          domains = parsed_yaml['domains']
+          expect(domains.first['xfcc_format']).to eq('envoy')
+        end
+      end
+
+      context 'when xfcc_format is set without forwarded_client_cert' do
+        before do
+          deployment_manifest_fragment['router']['domains'] = [
+            {
+              'name' => '*.apps.mtls.internal',
+              'ca_certs' => TEST_CERT,
+              'xfcc_format' => 'envoy'
+            }
+          ]
+        end
+
+        it 'renders successfully' do
+          expect { parsed_yaml }.not_to raise_error
+        end
+      end
+    end
   end
 
   describe 'healthchecker.yml' do
@@ -1815,7 +1887,7 @@ describe 'gorouter' do
       before do
         deployment_manifest_fragment['router'] = {
           'prometheus' => {
-            'port' => 9090,
+            'port' => 9090
           }
         }
       end
@@ -1840,7 +1912,7 @@ describe 'gorouter' do
                 'server_name' => 'example.org',
                 'cert' => TEST_CERT,
                 'key' => TEST_KEY,
-                'ca_cert' => TEST_CERT2,
+                'ca_cert' => TEST_CERT2
               }
             }
           end
@@ -1858,7 +1930,7 @@ describe 'gorouter' do
           before do
             deployment_manifest_fragment['router'] = {
               'prometheus' => {
-                'port' => 9090,
+                'port' => 9090
               }
             }
           end
