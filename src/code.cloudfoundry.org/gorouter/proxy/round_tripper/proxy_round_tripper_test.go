@@ -24,6 +24,7 @@ import (
 	"code.cloudfoundry.org/gorouter/config"
 	sharedfakes "code.cloudfoundry.org/gorouter/fakes"
 	"code.cloudfoundry.org/gorouter/handlers"
+	handlersfakes "code.cloudfoundry.org/gorouter/handlers/fakes"
 	"code.cloudfoundry.org/gorouter/metrics/fakes"
 	"code.cloudfoundry.org/gorouter/proxy/fails"
 	errorClassifierFakes "code.cloudfoundry.org/gorouter/proxy/fails/fakes"
@@ -3073,6 +3074,96 @@ var _ = Describe("ProxyRoundTripper", func() {
 					})
 				})
 			})
+			Context("post-selection authorization pipeline", func() {
+				var fakeHandler *handlersfakes.FakePostSelectionHandler
+
+				BeforeEach(func() {
+					fakeHandler = &handlersfakes.FakePostSelectionHandler{}
+				})
+
+				JustBeforeEach(func() {
+					pipeline := handlers.NewPostSelectionPipeline(logger.Logger, fakeHandler)
+					proxyRoundTripper = round_tripper.NewProxyRoundTripper(
+						roundTripperFactory,
+						retriableClassifier,
+						logger.Logger,
+						combinedReporter,
+						errorHandler,
+						routeServicesTransport,
+						cfg,
+						pipeline,
+					)
+				})
+
+				Context("when the pipeline returns an AuthError", func() {
+					var authErr *handlers.AuthError
+
+					BeforeEach(func() {
+						authErr = handlers.NewAuthError("test:scope:rule", "caller app not in allowed scope")
+						fakeHandler.CheckReturns(authErr)
+					})
+
+					It("returns the AuthError from RoundTrip", func() {
+						_, err := proxyRoundTripper.RoundTrip(req)
+						Expect(err).To(Equal(authErr))
+					})
+
+					It("populates AuthResult on reqInfo with denied outcome", func() {
+						_, _ = proxyRoundTripper.RoundTrip(req)
+						Expect(reqInfo.AuthResult).ToNot(BeNil())
+						Expect(reqInfo.AuthResult.Outcome).To(Equal("denied"))
+						Expect(reqInfo.AuthResult.Rule).To(Equal("test:scope:rule"))
+						Expect(reqInfo.AuthResult.DeniedReason).To(Equal("caller app not in allowed scope"))
+					})
+
+					It("does NOT call the internal error handler so the ReverseProxy ErrorHandler can write 403", func() {
+						_, _ = proxyRoundTripper.RoundTrip(req)
+						Expect(errorHandler.HandleErrorCallCount()).To(Equal(0))
+					})
+				})
+
+				Context("when the pipeline returns an unknown (non-AuthError) error", func() {
+					var unknownErr error
+
+					BeforeEach(func() {
+						unknownErr = errors.New("unexpected pipeline failure")
+						fakeHandler.CheckReturns(unknownErr)
+					})
+
+					It("returns the error from RoundTrip", func() {
+						_, err := proxyRoundTripper.RoundTrip(req)
+						Expect(err).To(Equal(unknownErr))
+					})
+
+					It("populates AuthResult with unknown_error rule", func() {
+						_, _ = proxyRoundTripper.RoundTrip(req)
+						Expect(reqInfo.AuthResult).ToNot(BeNil())
+						Expect(reqInfo.AuthResult.Outcome).To(Equal("denied"))
+						Expect(reqInfo.AuthResult.Rule).To(Equal("unknown_error"))
+						Expect(reqInfo.AuthResult.DeniedReason).To(Equal("unexpected pipeline failure"))
+					})
+
+					It("does NOT call the internal error handler for non-AuthError pipeline failures", func() {
+						_, _ = proxyRoundTripper.RoundTrip(req)
+						Expect(errorHandler.HandleErrorCallCount()).To(Equal(0))
+					})
+				})
+
+				Context("when the pipeline passes (returns nil)", func() {
+					BeforeEach(func() {
+						transport.RoundTripReturns(&http.Response{StatusCode: http.StatusOK}, nil)
+						fakeHandler.CheckReturns(nil)
+					})
+
+					It("proceeds to the backend and returns the response", func() {
+						res, err := proxyRoundTripper.RoundTrip(req)
+						Expect(err).ToNot(HaveOccurred())
+						Expect(res.StatusCode).To(Equal(http.StatusOK))
+						Expect(transport.RoundTripCallCount()).To(Equal(1))
+					})
+				})
+			})
+
 			Context("CancelRequest", func() {
 				It("can cancel requests", func() {
 					reqInfo.RouteEndpoint = endpoint

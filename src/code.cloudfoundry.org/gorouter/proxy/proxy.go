@@ -145,22 +145,7 @@ func NewProxy(
 		BufferPool:     p.bufferPool,
 		ModifyResponse: p.modifyResponse,
 		ErrorHandler: func(rw http.ResponseWriter, req *http.Request, err error) {
-			// Check if this is an authorization error
-			if authErr, ok := err.(*handlers.AuthError); ok {
-				// Return the HTTP status from the AuthError (typically 403)
-				// Use ClientMessage() to avoid leaking internal rule names or caller identities
-				rw.WriteHeader(authErr.HTTPStatus)
-				if _, writeErr := rw.Write([]byte(authErr.ClientMessage())); writeErr != nil {
-					logger.Error("failed to write auth error response", log.ErrAttr(writeErr))
-				}
-				return
-			}
-
-			// For all other errors, use default behavior (502 Bad Gateway)
-			rw.WriteHeader(http.StatusBadGateway)
-			if _, writeErr := rw.Write([]byte(err.Error())); writeErr != nil {
-				logger.Error("failed to write error response", log.ErrAttr(writeErr))
-			}
+			handleReverseProxyError(logger, rw, err)
 		},
 	}
 
@@ -316,6 +301,26 @@ func escapePathAndPreserveSlashes(unescaped string) string {
 	escapedPath = strings.TrimSuffix(escapedPath, "/")
 
 	return escapedPath
+}
+
+// handleReverseProxyError writes an appropriate HTTP error response for errors
+// returned by the backend round tripper. AuthErrors produce the HTTP status
+// code embedded in the error (typically 403 Forbidden). All other errors
+// produce a generic 502 Bad Gateway without leaking internal error details.
+func handleReverseProxyError(logger *slog.Logger, rw http.ResponseWriter, err error) {
+	if authErr, ok := err.(*handlers.AuthError); ok {
+		// Use ClientMessage() to avoid leaking internal rule names or caller identities.
+		rw.WriteHeader(authErr.HTTPStatus)
+		if _, writeErr := rw.Write([]byte(authErr.ClientMessage())); writeErr != nil {
+			logger.Error("failed to write auth error response", log.ErrAttr(writeErr))
+		}
+		return
+	}
+	// Use a generic message to avoid leaking internal error details to the client.
+	rw.WriteHeader(http.StatusBadGateway)
+	if _, writeErr := rw.Write([]byte(http.StatusText(http.StatusBadGateway))); writeErr != nil {
+		logger.Error("failed to write error response", log.ErrAttr(writeErr))
+	}
 }
 
 // RouteServiceDialControl checks if the address is allowed based on the block list.

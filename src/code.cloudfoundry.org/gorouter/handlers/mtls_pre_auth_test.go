@@ -103,6 +103,19 @@ var _ = Describe("MtlsPreAuth", func() {
 				Expect(nextCalled).To(BeTrue())
 				Expect(resp.Code).To(Equal(http.StatusOK))
 			})
+
+			It("returns 421 when ClientCertRequired is true but MtlsDomain does not match the non-mTLS host", func() {
+				// Security: client connected via SNI for an mTLS domain (certificate was validated)
+				// but sent a Host header for a non-mTLS domain. This must be rejected to prevent
+				// an attack where SNI-based cert validation is reused to bypass Host-level checks.
+				req.Host = "regular.example.com"
+				setTLSConnState("backend.apps.identity", "*.apps.identity", true)
+
+				handler.ServeHTTP(resp, req, nextHandler())
+
+				Expect(nextCalled).To(BeFalse())
+				Expect(resp.Code).To(Equal(http.StatusMisdirectedRequest)) // 421
+			})
 		})
 
 		Context("Layer 0b: SNI/Host mismatch check", func() {

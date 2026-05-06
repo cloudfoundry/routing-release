@@ -377,7 +377,13 @@ func (rt *roundTripper) RoundTrip(originalRequest *http.Request) (*http.Response
 	}
 
 	if err != nil {
-		rt.errorHandler.HandleError(reqInfo.ProxyResponseWriter, err)
+		// For AuthErrors, skip the internal error handler so the ReverseProxy's
+		// ErrorHandler can write the correct HTTP status (e.g. 403 Forbidden).
+		// Running the internal handler first would write a 502 and call Done(),
+		// committing the response before the ReverseProxy's ErrorHandler runs.
+		if _, isAuthErr := err.(*handlers.AuthError); !isAuthErr {
+			rt.errorHandler.HandleError(reqInfo.ProxyResponseWriter, err)
+		}
 		if handlers.IsWebSocketUpgrade(request) {
 			rt.combinedReporter.CaptureWebSocketFailure()
 		}
