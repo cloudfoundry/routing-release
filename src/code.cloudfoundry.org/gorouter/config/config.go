@@ -954,6 +954,10 @@ func (c *Config) processMtlsDomains() error {
 			return fmt.Errorf("domains[%d].xfcc_format must be one of %v",
 				i, AllowedXFCCFormats)
 		}
+		if domain.XFCCFormat != XFCC_FORMAT_RAW && domain.ForwardedClientCert == ALWAYS_FORWARD {
+			return fmt.Errorf("domains[%d].xfcc_format has no effect when forwarded_client_cert is 'always_forward'; remove xfcc_format or change forwarded_client_cert to 'sanitize_set'",
+				i)
+		}
 
 		// Build CA pool for this domain
 		if domain.CACerts != "" {
@@ -1027,18 +1031,16 @@ func (c *Config) GetMtlsDomainConfig(host string) *MtlsDomainConfig {
 		return cfg
 	}
 	// Check wildcard match (e.g., *.apps.mtls.internal)
-	// Wildcard patterns only match a single DNS label, not multiple levels
-	// e.g., "app.domain.com" matches "*.domain.com" but "deep.sub.domain.com" does not
+	// Wildcard patterns only match a single DNS label, not multiple levels.
+	// e.g., "app.domain.com" matches "*.domain.com" but "deep.sub.domain.com" does not.
+	// Note: SplitN(host, ".", 2) guarantees parts[0] never contains a dot, so
+	// multi-level subdomain protection is inherent — only the first label is stripped.
 	parts := strings.SplitN(host, ".", 2)
 	if len(parts) == 2 {
-		prefix := parts[0]
 		suffix := parts[1]
-		// Ensure the prefix contains exactly one label (no dots)
-		if !strings.Contains(prefix, ".") {
-			wildcardDomain := "*." + suffix
-			if cfg, ok := c.mtlsDomainMap[wildcardDomain]; ok {
-				return cfg
-			}
+		wildcardDomain := "*." + suffix
+		if cfg, ok := c.mtlsDomainMap[wildcardDomain]; ok {
+			return cfg
 		}
 	}
 	return nil

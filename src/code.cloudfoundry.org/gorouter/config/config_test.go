@@ -2151,6 +2151,59 @@ drain_timeout: 60s
 			Expect(config.IsMtlsDomain("other.example.com")).To(BeFalse())
 		})
 	})
+
+	Describe("processMtlsDomains validation", func() {
+		var certChain test_util.CertChain
+
+		BeforeEach(func() {
+			certChain = test_util.CreateSignedCertWithRootCA(test_util.CertNames{SANs: test_util.SubjectAltNames{DNS: "test.com"}})
+		})
+
+		It("returns an error when xfcc_format is set with always_forward", func() {
+			cfgForSnippet.Domains = []MtlsDomainConfig{
+				{
+					Domain:              "*.apps.identity",
+					XFCCFormat:          "envoy",
+					ForwardedClientCert: "always_forward",
+					CACerts:             string(certChain.CACertPEM),
+				},
+			}
+			err := config.Initialize(createYMLSnippet(cfgForSnippet))
+			Expect(err).ToNot(HaveOccurred())
+			err = config.Process()
+			Expect(err).To(MatchError(ContainSubstring("xfcc_format has no effect when forwarded_client_cert is 'always_forward'")))
+		})
+
+		It("allows xfcc_format with sanitize_set", func() {
+			cfgForSnippet.Domains = []MtlsDomainConfig{
+				{
+					Domain:              "*.apps.identity",
+					XFCCFormat:          "envoy",
+					ForwardedClientCert: "sanitize_set",
+					CACerts:             string(certChain.CACertPEM),
+				},
+			}
+			err := config.Initialize(createYMLSnippet(cfgForSnippet))
+			Expect(err).ToNot(HaveOccurred())
+			err = config.Process()
+			Expect(err).ToNot(HaveOccurred())
+		})
+
+		It("allows raw xfcc_format with always_forward", func() {
+			cfgForSnippet.Domains = []MtlsDomainConfig{
+				{
+					Domain:              "*.apps.identity",
+					XFCCFormat:          "raw",
+					ForwardedClientCert: "always_forward",
+					CACerts:             string(certChain.CACertPEM),
+				},
+			}
+			err := config.Initialize(createYMLSnippet(cfgForSnippet))
+			Expect(err).ToNot(HaveOccurred())
+			err = config.Process()
+			Expect(err).ToNot(HaveOccurred())
+		})
+	})
 })
 
 func baseConfigFixture() *Config {
