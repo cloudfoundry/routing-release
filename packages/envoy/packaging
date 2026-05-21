@@ -2,15 +2,17 @@ set -ex
 
 mkdir -p "${BOSH_INSTALL_TARGET}/bin"
 
-# Detect whether the blob is a tar archive or a plain gzipped binary.
-# Envoy releases vary: some are tar.gz archives, others are gzip-compressed binaries.
-if tar tzf envoy/envoy-*.tar.gz > /dev/null 2>&1; then
-  tar xzf envoy/envoy-*.tar.gz
+BLOB=$(ls envoy/envoy-*.tar.gz)
+
+if tar tzf "$BLOB" > /dev/null 2>&1; then
+  tar xzf "$BLOB"
   ENVOY_BIN=$(find . -maxdepth 3 \( -name 'envoy' -o -name 'envoy-static' \) -type f | head -1)
   cp "$ENVOY_BIN" "${BOSH_INSTALL_TARGET}/bin/envoy"
+elif gzip -t "$BLOB" > /dev/null 2>&1; then
+  gunzip -c "$BLOB" > "${BOSH_INSTALL_TARGET}/bin/envoy"
 else
-  # Plain gzipped binary — decompress directly to destination
-  gunzip -c envoy/envoy-*.tar.gz > "${BOSH_INSTALL_TARGET}/bin/envoy"
+  # Plain uncompressed binary — copy directly (official Envoy GitHub releases)
+  cp "$BLOB" "${BOSH_INSTALL_TARGET}/bin/envoy"
 fi
 
 chmod 755 "${BOSH_INSTALL_TARGET}/bin/envoy"
