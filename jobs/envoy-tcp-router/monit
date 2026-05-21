@@ -1,0 +1,11 @@
+check process envoy-tcp-router-control-plane
+  with pidfile /var/vcap/sys/run/bpm/envoy-tcp-router/envoy-tcp-router-control-plane.pid
+  start program "/var/vcap/jobs/bpm/bin/bpm start envoy-tcp-router -p envoy-tcp-router-control-plane"
+  stop program "/var/vcap/jobs/bpm/bin/bpm stop envoy-tcp-router -p envoy-tcp-router-control-plane"
+  group vcap
+
+check process envoy
+  with pidfile /var/vcap/sys/run/bpm/envoy-tcp-router/envoy.pid
+  start program "/var/vcap/jobs/bpm/bin/bpm start envoy-tcp-router -p envoy"
+  stop program "/var/vcap/jobs/bpm/bin/bpm stop envoy-tcp-router -p envoy"
+  group vcap
