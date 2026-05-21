@@ -8,10 +8,9 @@ processes:
       - -routing-api-url=<%= "#{p("routing_api.uri")}:#{p("routing_api.port")}" %>
       - -filter-path=/var/vcap/packages/envoy-tcp-router/bin/filter.so
       - -refresh-interval=<%= p("envoy_tcp_router.refresh_interval") %>
-    env:
-      ROUTING_API_CLIENT_CERT_FILE: /var/vcap/jobs/envoy-tcp-router/config/certs/routing-api/client.crt
-      ROUTING_API_CLIENT_KEY_FILE: /var/vcap/jobs/envoy-tcp-router/config/keys/routing-api/client.key
-      ROUTING_API_CA_CERT_FILE: /var/vcap/jobs/envoy-tcp-router/config/certs/routing-api/ca_cert.crt
+      - -routing-api-ca-cert=/var/vcap/jobs/envoy-tcp-router/config/certs/routing-api/ca_cert.crt
+      - -routing-api-client-cert=/var/vcap/jobs/envoy-tcp-router/config/certs/routing-api/client.crt
+      - -routing-api-client-key=/var/vcap/jobs/envoy-tcp-router/config/keys/routing-api/client.key
     additional_volumes:
       - path: /var/vcap/sys/log/envoy-tcp-router
         writable: true

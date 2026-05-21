@@ -15,8 +15,9 @@ files:
   - code.cloudfoundry.org/envoy-tcp-router/controlplane/*.go # gosub
   - code.cloudfoundry.org/envoy-tcp-router/filter/*.go # gosub
 
-  # routing-api (already a submodule in routing-release)
+  # routing-api and its dependencies (already submodules/vendored in routing-release)
   - code.cloudfoundry.org/vendor/code.cloudfoundry.org/cfhttp/v2/*.go # gosub
+  - code.cloudfoundry.org/vendor/code.cloudfoundry.org/tlsconfig/*.go # gosub
   - code.cloudfoundry.org/routing-api/*.go # gosub
   - code.cloudfoundry.org/routing-api/models/*.go # gosub
   - code.cloudfoundry.org/routing-api/trace/*.go # gosub

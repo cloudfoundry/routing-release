@@ -12,15 +12,19 @@ import (
 
 	"code.cloudfoundry.org/envoy-tcp-router/controlplane"
 	routing_api "code.cloudfoundry.org/routing-api"
+	"code.cloudfoundry.org/tlsconfig"
 	"github.com/envoyproxy/go-control-plane/pkg/resource/v3"
 )
 
 func main() {
 	xdsPort := flag.Int("xds-port", 18000, "xDS server port")
-	routingAPIURL := flag.String("routing-api-url", "https://routing-api.service.cf.internal:8080", "Routing API URL")
+	routingAPIURL := flag.String("routing-api-url", "https://routing-api.service.cf.internal:3001", "Routing API URL")
 	nodeID := flag.String("node-id", "envoy-tcp-router", "Node ID for xDS")
 	filterPath := flag.String("filter-path", "/var/vcap/packages/envoy-tcp-router/filter.so", "Path to the Go filter shared library")
 	refreshInterval := flag.Duration("refresh-interval", 30*time.Second, "Interval to refresh routes from Routing API")
+	caFile := flag.String("routing-api-ca-cert", "", "CA cert file for Routing API mTLS")
+	clientCertFile := flag.String("routing-api-client-cert", "", "Client cert file for Routing API mTLS")
+	clientKeyFile := flag.String("routing-api-client-key", "", "Client key file for Routing API mTLS")
 	flag.Parse()
 
 	cp := controlplane.NewControlPlane(*nodeID)
@@ -35,9 +39,18 @@ func main() {
 		}
 	}()
 
-	// Initialize Routing API client
-	// Note: In a real BOSH deployment, we'd need TLS config and auth token
-	client := routing_api.NewClient(*routingAPIURL, true)
+	// Build mTLS config for Routing API
+	tlsCfg, err := tlsconfig.Build(
+		tlsconfig.WithInternalServiceDefaults(),
+		tlsconfig.WithIdentityFromFile(*clientCertFile, *clientKeyFile),
+	).Client(
+		tlsconfig.WithAuthorityFromFile(*caFile),
+	)
+	if err != nil {
+		log.Fatalf("Failed to build TLS config for Routing API: %v", err)
+	}
+
+	client := routing_api.NewClientWithTLSConfig(*routingAPIURL, tlsCfg)
 
 	// Periodically refresh routes
 	ticker := time.NewTicker(*refreshInterval)
