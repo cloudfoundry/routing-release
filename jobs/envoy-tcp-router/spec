@@ -60,6 +60,8 @@ properties:
   uaa.ca_cert:
     description: "CA certificate for communication with UAA (PEM)"
     default: ""
+  uaa.client_secret:
+    description: "OAuth client secret for the 'tcp_router' UAA client, used to obtain tokens for the Routing API"
 
   skip_ssl_validation:
     description: "Skip TLS certificate verification when talking to UAA or the Routing API"

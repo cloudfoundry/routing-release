@@ -10,8 +10,11 @@ import (
 	"syscall"
 	"time"
 
+	"code.cloudfoundry.org/clock"
 	"code.cloudfoundry.org/envoy-tcp-router/controlplane"
+	"code.cloudfoundry.org/lager/v3"
 	routing_api "code.cloudfoundry.org/routing-api"
+	"code.cloudfoundry.org/routing-api/uaaclient"
 	"code.cloudfoundry.org/tlsconfig"
 	"github.com/envoyproxy/go-control-plane/pkg/resource/v3"
 )
@@ -25,7 +28,28 @@ func main() {
 	caFile := flag.String("routing-api-ca-cert", "", "CA cert file for Routing API mTLS")
 	clientCertFile := flag.String("routing-api-client-cert", "", "Client cert file for Routing API mTLS")
 	clientKeyFile := flag.String("routing-api-client-key", "", "Client key file for Routing API mTLS")
+	uaaClientSecret := flag.String("uaa-client-secret", "", "UAA client secret")
+	uaaURL := flag.String("uaa-url", "uaa.service.cf.internal", "UAA hostname")
+	uaaPort := flag.Uint("uaa-port", 8443, "UAA TLS port")
+	uaaCACert := flag.String("uaa-ca-cert", "", "CA cert file for UAA TLS")
+	authDisabled := flag.Bool("routing-api-auth-disabled", false, "Disable UAA auth (dev mode)")
 	flag.Parse()
+
+	lgr := lager.NewLogger("envoy-tcp-router")
+	lgr.RegisterSink(lager.NewWriterSink(os.Stdout, lager.INFO))
+
+	uaaCfg := uaaclient.Config{
+		Port:          uint16(*uaaPort),
+		ClientName:    "tcp_router",
+		ClientSecret:  *uaaClientSecret,
+		CACerts:       *uaaCACert,
+		TokenEndpoint: *uaaURL,
+	}
+	clk := clock.NewClock()
+	uaaTokenFetcher, err := uaaclient.NewTokenFetcher(*authDisabled, uaaCfg, clk, 3, 5*time.Second, 30, lgr)
+	if err != nil {
+		log.Fatalf("Failed to create UAA token fetcher: %v", err)
+	}
 
 	cp := controlplane.NewControlPlane(*nodeID)
 
@@ -56,12 +80,26 @@ func main() {
 	ticker := time.NewTicker(*refreshInterval)
 	defer ticker.Stop()
 
+	canUseCachedToken := true
+
 	updateRoutes := func() {
+		token, err := uaaTokenFetcher.FetchToken(ctx, !canUseCachedToken)
+		if err != nil {
+			fmt.Printf("[Main] Error fetching UAA token: %v\n", err)
+			canUseCachedToken = false
+			return
+		}
+		client.SetToken(token.AccessToken)
+
 		routes, err := client.TcpRouteMappings()
 		if err != nil {
 			fmt.Printf("[Main] Error fetching routes: %v\n", err)
+			if err.Error() == "unauthorized" {
+				canUseCachedToken = false
+			}
 			return
 		}
+		canUseCachedToken = true
 
 		fmt.Printf("[Main] Fetched %d TCP routes\n", len(routes))
 

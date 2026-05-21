@@ -11,6 +11,11 @@ processes:
       - -routing-api-ca-cert=/var/vcap/jobs/envoy-tcp-router/config/certs/routing-api/ca_cert.crt
       - -routing-api-client-cert=/var/vcap/jobs/envoy-tcp-router/config/certs/routing-api/client.crt
       - -routing-api-client-key=/var/vcap/jobs/envoy-tcp-router/config/keys/routing-api/client.key
+      - -uaa-client-secret=<%= p("uaa.client_secret") %>
+      - -uaa-url=<%= p("uaa.token_endpoint") %>
+      - -uaa-port=<%= p("uaa.tls_port") %>
+      - -uaa-ca-cert=/var/vcap/jobs/envoy-tcp-router/config/certs/uaa/ca.crt
+      - -routing-api-auth-disabled=<%= p("routing_api.auth_disabled") %>
     additional_volumes:
       - path: /var/vcap/sys/log/envoy-tcp-router
         writable: true
