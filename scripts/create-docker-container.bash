@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# @AI-Generated
+# Generated in whole or in part by Cursor with a mix of different LLM models (Auto select mode)
+# Description:
+# 2026-05-21: Add mysql-8.4 support (TNZ-99882)
 
 set -eu
 set -o pipefail
@@ -19,6 +23,9 @@ TAG=${TAG:-latest}
 CONTAINER_NAME="$REPO_NAME-$DB-docker-container"
 if [[ "${DB}" == "mysql" ]] || [[ "${DB}" == "mysql-8.0" ]]; then
   IMAGE="docker.io/cloudfoundry/tas-runtime-mysql-8.0:${TAG}"
+  DB="mysql"
+elif [[ "${DB}" == "mysql-8.4" ]]; then
+  IMAGE="docker.io/cloudfoundry/tas-runtime-mysql-8.4:${TAG}"
   DB="mysql"
 elif [[ "${DB}" == "mysql-5.7" ]]; then
   IMAGE="docker.io/cloudfoundry/tas-runtime-mysql-5.7:${TAG}"
