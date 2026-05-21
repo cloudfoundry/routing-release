@@ -17,7 +17,26 @@ import (
 	"strings"
 
 	"github.com/envoyproxy/envoy/contrib/golang/common/go/api"
+	"github.com/envoyproxy/envoy/contrib/golang/filters/network/source/go/pkg/network"
 )
+
+func init() {
+	network.RegisterNetworkFilterConfigFactory("tcp-router-filter", &tcpRouterConfigFactory{})
+}
+
+// tcpRouterConfigFactory implements network.ConfigFactory.
+type tcpRouterConfigFactory struct{}
+
+func (f *tcpRouterConfigFactory) CreateFactoryFromConfig(config interface{}) network.FilterFactory {
+	return &tcpRouterFilterFactory{}
+}
+
+// tcpRouterFilterFactory implements network.FilterFactory.
+type tcpRouterFilterFactory struct{}
+
+func (f *tcpRouterFilterFactory) CreateFilter(cb api.ConnectionCallback) api.DownstreamFilter {
+	return &tcpRouterFilter{}
+}
 
 // CallerIdentity holds the CF identity extracted from a Diego client certificate
 // following the Subject DN OU convention defined in CF RFC 0055.

@@ -27,6 +27,10 @@ files:
   - code.cloudfoundry.org/routing-api/uaaclient/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry-community/go-uaa/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/cloudfoundry-community/go-uaa/passwordcredentials/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/openzipkin/zipkin-go/idgenerator/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/openzipkin/zipkin-go/model/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/pkg/errors/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/golang-jwt/jwt/v4/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/oauth2/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/oauth2/internal/*.go # gosub
   - code.cloudfoundry.org/vendor/golang.org/x/oauth2/clientcredentials/*.go # gosub
@@ -39,6 +43,10 @@ files:
   - code.cloudfoundry.org/vendor/github.com/cncf/xds/go/xds/type/matcher/v3/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/cncf/xds/go/xds/type/v3/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/envoyproxy/envoy/contrib/golang/common/go/api/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/envoyproxy/envoy/contrib/golang/common/go/api/*.h # gosub
+  - code.cloudfoundry.org/vendor/github.com/envoyproxy/envoy/contrib/golang/common/go/utils/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/envoyproxy/envoy/contrib/golang/filters/network/source/go/pkg/network/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/envoyproxy/go-control-plane/contrib/envoy/extensions/filters/network/golang/v3alpha/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/envoyproxy/go-control-plane/envoy/annotations/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/envoyproxy/go-control-plane/envoy/config/accesslog/v3/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/envoyproxy/go-control-plane/envoy/config/cluster/v3/*.go # gosub

@@ -13,6 +13,7 @@ import (
 	"github.com/envoyproxy/go-control-plane/pkg/cache/types"
 	"github.com/envoyproxy/go-control-plane/pkg/cache/v3"
 	"github.com/envoyproxy/go-control-plane/pkg/resource/v3"
+	golang_network "github.com/envoyproxy/go-control-plane/contrib/envoy/extensions/filters/network/golang/v3alpha"
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/durationpb"
 
@@ -77,10 +78,19 @@ func Translate(routes []models.TcpRouteMapping, filterLibraryPath string) (*cach
 				},
 			})
 
-			// TODO: Add Go Filter here once the proto is available in go-control-plane
-			// The Go filter should be placed before the tcp_proxy filter.
+			golangFilterConfig, _ := anypb.New(&golang_network.Config{
+				LibraryId:   "tcp-router-filter",
+				LibraryPath: filterLibraryPath,
+				PluginName:  "tcp-router-filter",
+			})
 
 			filters := []*listener.Filter{
+				{
+					Name: "envoy.filters.network.golang",
+					ConfigType: &listener.Filter_TypedConfig{
+						TypedConfig: golangFilterConfig,
+					},
+				},
 				{
 					Name: "envoy.filters.network.tcp_proxy",
 					ConfigType: &listener.Filter_TypedConfig{
