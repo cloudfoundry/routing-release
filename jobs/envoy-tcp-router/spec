@@ -1,0 +1,74 @@
+---
+name: envoy-tcp-router
+
+templates:
+  bpm.yml.erb: config/bpm.yml
+  envoy_config.yaml.erb: config/envoy_config.yaml
+  pre-start.erb: bin/pre-start
+  routing_api_client_certificate.crt.erb: config/certs/routing-api/client.crt
+  routing_api_client_private.key.erb: config/keys/routing-api/client.key
+  routing_api_ca_certificate.crt.erb: config/certs/routing-api/ca_cert.crt
+  uaa_ca.crt.erb: config/certs/uaa/ca.crt
+
+packages:
+  - envoy
+  - envoy-tcp-router
+  - routing_utils
+
+consumes:
+  - name: routing_api
+    type: routing_api
+    optional: true
+
+properties:
+  envoy_tcp_router.xds_port:
+    description: "Port on which the xDS control plane gRPC server listens. Envoy connects to this port."
+    default: 18000
+
+  envoy_tcp_router.refresh_interval:
+    description: "Interval at which the control plane polls the CF Routing API for TCP route updates (e.g. 30s, 1m)."
+    default: 30s
+
+  envoy_tcp_router.node_id:
+    description: "Envoy node ID used to match xDS snapshots."
+    default: envoy-tcp-router
+
+  # Routing API connection — mirrors the tcp_router job properties
+  routing_api.uri:
+    description: "URL where the Routing API can be reached internally"
+    default: https://routing-api.service.cf.internal
+  routing_api.port:
+    description: "Port of the Routing API"
+    default: 3000
+  routing_api.auth_disabled:
+    description: "Disables UAA authentication when talking to the Routing API"
+    default: false
+  routing_api.client_cert:
+    description: "Routing API mTLS client certificate (PEM)"
+  routing_api.client_private_key:
+    description: "Routing API mTLS client private key (PEM)"
+  routing_api.ca_cert:
+    description: "CA certificate used to validate the Routing API server certificate (PEM)"
+
+  # UAA — used to obtain OAuth tokens for the Routing API
+  uaa.token_endpoint:
+    description: "UAA token endpoint hostname. TCP Router always connects to UAA over TLS."
+    default: uaa.service.cf.internal
+  uaa.tls_port:
+    description: "TLS port on which UAA listens"
+    default: 8443
+  uaa.ca_cert:
+    description: "CA certificate for communication with UAA (PEM)"
+    default: ""
+
+  skip_ssl_validation:
+    description: "Skip TLS certificate verification when talking to UAA or the Routing API"
+    default: false
+
+  dns_health_check_host:
+    description: "Hostname to ping to confirm DNS is working before starting"
+    default: uaa.service.cf.internal
+
+  metron.port:
+    description: "Port used to emit Dropsonde metrics to the Metron agent"
+    default: 3457

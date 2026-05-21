@@ -1,0 +1,25 @@
+set -ex
+
+# Mirrors the packaging pattern of packages/tcp_router and packages/routing-api:
+#   1. Move all gosub-collected source files into a staging src/ tree.
+#   2. Source the golang toolchain environment.
+#   3. Build the control plane binary and the L4 Go filter shared library.
+
+mkdir -p "${BOSH_INSTALL_TARGET}/src"
+mv * "${BOSH_INSTALL_TARGET}/src"
+mv "${BOSH_INSTALL_TARGET}/src" .
+
+source /var/vcap/packages/golang-*-linux/bosh/compile.env
+
+mkdir -p "${BOSH_INSTALL_TARGET}/bin"
+
+pushd src/code.cloudfoundry.org
+  # Control plane binary (reads routes from CF Routing API, drives Envoy via xDS)
+  go build -o "${BOSH_INSTALL_TARGET}/bin/envoy-tcp-router" \
+    code.cloudfoundry.org/envoy-tcp-router
+
+  # L4 Go network filter shared library (loaded by Envoy at runtime)
+  go build -buildmode=c-shared \
+    -o "${BOSH_INSTALL_TARGET}/bin/filter.so" \
+    code.cloudfoundry.org/envoy-tcp-router/filter
+popd

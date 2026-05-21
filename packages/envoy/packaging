@@ -1,0 +1,11 @@
+set -ex
+
+# Extract the Envoy static binary tarball and place it under
+# ${BOSH_INSTALL_TARGET}/bin/envoy (mirrors the haproxy package pattern).
+tar xzf envoy/envoy-*.tar.gz
+
+mkdir -p "${BOSH_INSTALL_TARGET}/bin"
+
+# The tarball is expected to contain a single binary named 'envoy'.
+cp envoy "${BOSH_INSTALL_TARGET}/bin/envoy"
+chmod 755 "${BOSH_INSTALL_TARGET}/bin/envoy"

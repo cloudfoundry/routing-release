@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -eu
+
+# Wait for DNS to resolve before starting so the control plane can reach the
+# Routing API and UAA. Mirrors the same health-check pattern in the tcp_router job.
+DNS_HOST="<%= p("dns_health_check_host") %>"
+
+MAX_RETRIES=60
+RETRY_INTERVAL=5
+
+for i in $(seq 1 $MAX_RETRIES); do
+  if nslookup "$DNS_HOST" > /dev/null 2>&1; then
+    echo "DNS resolved $DNS_HOST — proceeding."
+    exit 0
+  fi
+  echo "Waiting for DNS ($DNS_HOST) — attempt $i/$MAX_RETRIES …"
+  sleep $RETRY_INTERVAL
+done
+
+echo "ERROR: DNS health check for $DNS_HOST failed after $((MAX_RETRIES * RETRY_INTERVAL))s." >&2
+exit 1

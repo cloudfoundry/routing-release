@@ -1,0 +1,9 @@
+---
+name: envoy
+
+# The Envoy static binary is shipped as a pre-compiled tarball added to the
+# BOSH blobstore (same pattern as the haproxy package).
+# Add the blob with:
+#   bosh add-blob <path-to>/envoy-<version>-linux-x86_64.tar.gz envoy/envoy-<version>.tar.gz
+files:
+  - envoy/envoy-*.tar.gz

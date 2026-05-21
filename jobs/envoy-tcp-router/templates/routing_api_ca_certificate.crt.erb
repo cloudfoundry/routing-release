@@ -1,0 +1,14 @@
+<%=
+  def server_ca_cert
+    if_p('routing_api.ca_cert') do |prop|
+      return prop
+    end.else do
+      if_link('routing_api') do |link|
+        return link.p('routing_api.mtls_ca')
+      end
+    end
+    raise RuntimeError, 'Routing API CA certificate not found in properties nor in routing_api Link. Specify it via the routing_api.ca_cert property.'
+  end
+
+  server_ca_cert
+-%>

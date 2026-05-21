@@ -2,3 +2,8 @@
 	path = src/code.cloudfoundry.org/routing-api
 	url = https://github.com/cloudfoundry/routing-api
 	branch = main
+
+[submodule "src/code.cloudfoundry.org/envoy-tcp-router"]
+	path = src/code.cloudfoundry.org/envoy-tcp-router
+	url = https://github.gwd.broadcom.net/TNZ/envoy-tcp-router
+	branch = main

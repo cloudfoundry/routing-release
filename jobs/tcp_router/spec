@@ -1,4 +1,12 @@
 ---
+# DEPRECATION NOTICE
+# The tcp_router job (HAProxy-based) is superseded by the envoy-tcp-router job.
+# Operators migrating to the Envoy-based router should:
+#   1. Add the envoy-tcp-router job to the deployment manifest.
+#   2. Set tcp_router.disable: true on this job to prevent HAProxy from starting.
+#   3. Add the Envoy binary blob (packages/envoy) to the BOSH blobstore.
+# The tcp_router job and its packages (haproxy, tcp_router) will be removed in a
+# future major release of routing-release once the envoy-tcp-router has stabilized.
 name: tcp_router
 
 templates:
