@@ -6,7 +6,6 @@ processes:
       - -xds-port=<%= p("envoy_tcp_router.xds_port") %>
       - -node-id=<%= p("envoy_tcp_router.node_id") %>
       - -routing-api-url=<%= "#{p("routing_api.uri")}:#{p("routing_api.port")}" %>
-      - -filter-path=/var/vcap/packages/envoy-tcp-router/bin/filter.so
       - -refresh-interval=<%= p("envoy_tcp_router.refresh_interval") %>
       - -routing-api-ca-cert=/var/vcap/jobs/envoy-tcp-router/config/certs/routing-api/ca_cert.crt
       - -routing-api-client-cert=/var/vcap/jobs/envoy-tcp-router/config/certs/routing-api/client.crt
@@ -24,6 +23,8 @@ processes:
 
   - name: envoy
     executable: /var/vcap/packages/envoy/bin/envoy
+    env:
+      GODEBUG: cgocheck=0
     args:
       - -c
       - /var/vcap/jobs/envoy-tcp-router/config/envoy_config.yaml

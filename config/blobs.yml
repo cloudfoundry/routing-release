@@ -1,6 +1,6 @@
 envoy/envoy-1.38.0.tar.gz:
-  size: 101688536
-  sha: sha256:cca312a7c3f91852f2849995c895130c59842e21ba787dc90bafa4026d6c5ecc
+  size: 161113696
+  sha: sha256:982d836cc458060cab317a68e8e024ee575a7d8fb477c2605acd3f5560968e0e
 haproxy/haproxy-2.8.24.tar.gz:
   size: 4446871
   object_id: a2f4d9c4-6b1d-488a-6f66-9a84c55a6ded
