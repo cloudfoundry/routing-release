@@ -3,12 +3,12 @@ package handlers
 import (
 	"crypto/x509"
 	"encoding/base64"
-	"encoding/pem"
 	"errors"
 	"fmt"
 	"net/http"
 	"strings"
 
+	"code.cloudfoundry.org/gorouter/config"
 	"github.com/urfave/negroni/v3"
 )
 
@@ -23,28 +23,49 @@ type CallerIdentity struct {
 	OrgGUID   string
 }
 
-// identityHandler extracts the caller identity from the X-Forwarded-Client-Cert header
-// on mTLS domains. The identity is stored in the RequestInfo context for use by
-// authorization handlers.
-type identityHandler struct{}
-
-// NewIdentity creates a new identity extraction handler
-func NewIdentity() negroni.Handler {
-	return &identityHandler{}
+// cfIdentityHandler extracts the caller identity from the X-Forwarded-Client-Cert header
+// on mTLS domains. It parses CF app instance identity certificates (which encode
+// app/space/org GUIDs in the Subject OU field). The identity is stored in the
+// RequestInfo context for use by authorization handlers.
+//
+// Security: This handler only extracts identity when:
+// 1. TLS was used for the connection
+// 2. The request is for a configured mTLS domain
+// This prevents spoofing of identity values via crafted XFCC headers on non-mTLS routes.
+type cfIdentityHandler struct {
+	config *config.Config
 }
 
-func (h *identityHandler) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	reqInfo, err := ContextRequestInfo(r)
-	if err != nil {
-		// If RequestInfo is not available, continue without setting identity
+// NewCfIdentity creates a new CF app identity extraction handler
+func NewCfIdentity(cfg *config.Config) negroni.Handler {
+	return &cfIdentityHandler{config: cfg}
+}
+
+func (h *cfIdentityHandler) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+	// Only extract identity when TLS was used
+	if r.TLS == nil {
 		next(w, r)
 		return
 	}
 
-	// Extract identity from X-Forwarded-Client-Cert header
+	// Only extract identity on mTLS domains
+	hostDomain := hostWithoutPort(r.Host)
+	domainConfig := h.config.GetMtlsDomainConfig(hostDomain)
+	if domainConfig == nil {
+		next(w, r)
+		return
+	}
+
+	reqInfo, err := ContextRequestInfo(r)
+	if err != nil {
+		next(w, r)
+		return
+	}
+
+	// Extract identity from X-Forwarded-Client-Cert header using the configured format
 	xfccHeader := r.Header.Get("X-Forwarded-Client-Cert")
 	if xfccHeader != "" {
-		identity, err := extractIdentityFromXFCC(xfccHeader)
+		identity, err := extractIdentityFromXFCC(xfccHeader, domainConfig.XFCCFormat)
 		if err == nil {
 			reqInfo.CallerIdentity = identity
 		}
@@ -59,59 +80,52 @@ func (h *identityHandler) ServeHTTP(w http.ResponseWriter, r *http.Request, next
 // the application, space, and organization GUIDs from the client certificate's
 // OU (Organizational Unit) field.
 //
-// Supported XFCC formats:
-// 1. Envoy compact format: Hash=<sha256>;Subject="<DN>" - parse OUs from Subject string
-// 2. Envoy format with cert: Cert="<PEM-encoded-cert>"
-// 3. GoRouter format: raw base64 (no PEM markers) - produced by clientcert.go sanitize()
+// The format parameter determines how the XFCC header is parsed:
+//   - "envoy": Parses Hash=<sha256>;Subject="<DN>" format, extracting OUs from the Subject DN
+//   - "raw": Decodes raw base64 certificate (produced by clientcert.go sanitize())
 //
 // Expected OU formats:
 // - "app:<app-guid>"
 // - "space:<space-guid>"
 // - "organization:<org-guid>"
-func extractIdentityFromXFCC(xfcc string) (*CallerIdentity, error) {
-	// Try Envoy compact format first: Subject="<DN>"
-	// This is the most efficient format since we don't need to decode a certificate
-	if subjectStart := strings.Index(xfcc, "Subject=\""); subjectStart != -1 {
-		subjectStart += len("Subject=\"")
-		subjectEnd := strings.Index(xfcc[subjectStart:], "\"")
-		if subjectEnd == -1 {
-			return nil, errors.New("malformed Subject field in XFCC header")
-		}
-		if subjectEnd == 0 {
-			return nil, errors.New("empty Subject field in XFCC header")
-		}
-		subjectDN := xfcc[subjectStart : subjectStart+subjectEnd]
-		return extractIdentityFromSubjectDN(subjectDN)
+func extractIdentityFromXFCC(xfcc string, format string) (*CallerIdentity, error) {
+	switch format {
+	case config.XFCC_FORMAT_ENVOY:
+		return extractIdentityFromEnvoyXFCC(xfcc)
+	default:
+		// "raw" format: base64-encoded DER certificate
+		return extractIdentityFromRawXFCC(xfcc)
+	}
+}
+
+// extractIdentityFromEnvoyXFCC parses the envoy compact format:
+// Hash=<sha256>;Subject="<DN>"
+func extractIdentityFromEnvoyXFCC(xfcc string) (*CallerIdentity, error) {
+	// Parse Subject="<DN>" field
+	subjectStart := strings.Index(xfcc, "Subject=\"")
+	if subjectStart == -1 {
+		return nil, errors.New("envoy format XFCC missing Subject field")
+	}
+	subjectStart += len("Subject=\"")
+	subjectEnd := strings.Index(xfcc[subjectStart:], "\"")
+	if subjectEnd == -1 {
+		return nil, errors.New("malformed Subject field in XFCC header")
+	}
+	if subjectEnd == 0 {
+		return nil, errors.New("empty Subject field in XFCC header")
+	}
+	subjectDN := xfcc[subjectStart : subjectStart+subjectEnd]
+	return extractIdentityFromSubjectDN(subjectDN)
+}
+
+// extractIdentityFromRawXFCC parses raw base64 format (no PEM markers)
+// produced by clientcert.go sanitize()
+func extractIdentityFromRawXFCC(xfcc string) (*CallerIdentity, error) {
+	certDER, err := base64.StdEncoding.DecodeString(strings.TrimSpace(xfcc))
+	if err != nil {
+		return nil, errors.New("failed to decode base64 certificate: " + err.Error())
 	}
 
-	// Try Envoy format with cert: Cert="<PEM>"
-	var certDER []byte
-	var err error
-
-	if certStart := strings.Index(xfcc, "Cert=\""); certStart != -1 {
-		certStart += len("Cert=\"")
-		certEnd := strings.Index(xfcc[certStart:], "\"")
-		if certEnd == -1 {
-			return nil, errors.New("malformed Cert field in XFCC header")
-		}
-		pemData := xfcc[certStart : certStart+certEnd]
-
-		// Decode PEM block
-		block, _ := pem.Decode([]byte(pemData))
-		if block == nil {
-			return nil, errors.New("failed to decode PEM certificate")
-		}
-		certDER = block.Bytes
-	} else {
-		// GoRouter format: raw base64 without PEM markers
-		// The clientcert.go sanitize() function strips PEM markers and newlines
-		certDER, err = base64.StdEncoding.DecodeString(strings.TrimSpace(xfcc))
-		if err != nil {
-			return nil, errors.New("failed to decode base64 certificate: " + err.Error())
-		}
-	}
-
-	// Parse X.509 certificate
 	cert, err := x509.ParseCertificate(certDER)
 	if err != nil {
 		return nil, err

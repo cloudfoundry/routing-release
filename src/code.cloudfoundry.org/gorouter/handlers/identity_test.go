@@ -3,10 +3,10 @@ package handlers_test
 import (
 	"crypto/rand"
 	"crypto/rsa"
+	"crypto/tls"
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/base64"
-	"encoding/pem"
 	"math/big"
 	"net/http"
 	"net/http/httptest"
@@ -16,13 +16,15 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/urfave/negroni/v3"
 
+	"code.cloudfoundry.org/gorouter/config"
 	"code.cloudfoundry.org/gorouter/handlers"
 	"code.cloudfoundry.org/gorouter/test_util"
 )
 
-var _ = Describe("Identity", func() {
+var _ = Describe("CfIdentity", func() {
 	var (
 		handler     negroni.Handler
+		cfg         *config.Config
 		nextCalled  bool
 		nextHandler http.HandlerFunc
 		recorder    *httptest.ResponseRecorder
@@ -31,7 +33,24 @@ var _ = Describe("Identity", func() {
 	)
 
 	BeforeEach(func() {
-		handler = handlers.NewIdentity()
+		cfg, _ = config.DefaultConfig()
+		certChain := test_util.CreateSignedCertWithRootCA(test_util.CertNames{SANs: test_util.SubjectAltNames{DNS: "test.com"}})
+		cfg.Domains = []config.MtlsDomainConfig{
+			{
+				Domain:     "*.apps.identity",
+				XFCCFormat: "raw",
+				CACerts:    string(certChain.CACertPEM),
+			},
+			{
+				Domain:     "envoy.apps.identity",
+				XFCCFormat: "envoy",
+				CACerts:    string(certChain.CACertPEM),
+			},
+		}
+		err := cfg.Process()
+		Expect(err).ToNot(HaveOccurred())
+
+		handler = handlers.NewCfIdentity(cfg)
 		nextCalled = false
 		recorder = httptest.NewRecorder()
 
@@ -40,7 +59,35 @@ var _ = Describe("Identity", func() {
 			request = r
 		})
 
-		request = test_util.NewRequest("GET", "backend.apps.mtls.internal", "/", nil)
+		request = test_util.NewRequest("GET", "backend.apps.identity", "/", nil)
+		request.TLS = &tls.ConnectionState{}
+	})
+
+	Context("when TLS is not used", func() {
+		BeforeEach(func() {
+			request.TLS = nil
+			cert := generateTestCert("app:should-not-extract")
+			request.Header.Set("X-Forwarded-Client-Cert", buildGoRouterXFCCHeader(cert))
+		})
+
+		It("skips identity extraction and calls next", func() {
+			handler.ServeHTTP(recorder, request, nextHandler)
+			Expect(nextCalled).To(BeTrue())
+		})
+	})
+
+	Context("when host is not an mTLS domain", func() {
+		BeforeEach(func() {
+			request = test_util.NewRequest("GET", "regular.example.com", "/", nil)
+			request.TLS = &tls.ConnectionState{}
+			cert := generateTestCert("app:should-not-extract")
+			request.Header.Set("X-Forwarded-Client-Cert", buildGoRouterXFCCHeader(cert))
+		})
+
+		It("skips identity extraction and calls next", func() {
+			handler.ServeHTTP(recorder, request, nextHandler)
+			Expect(nextCalled).To(BeTrue())
+		})
 	})
 
 	Context("when RequestInfo is not in context", func() {
@@ -54,7 +101,6 @@ var _ = Describe("Identity", func() {
 
 	Context("when RequestInfo is in context", func() {
 		var runHandler = func() {
-			// Add RequestInfo to context
 			reqInfoHandler := handlers.NewRequestInfo()
 			n := negroni.New()
 			n.Use(reqInfoHandler)
@@ -62,7 +108,6 @@ var _ = Describe("Identity", func() {
 			n.UseHandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				nextCalled = true
 				request = r
-				// Capture RequestInfo for assertions
 				var err error
 				requestInfo, err = handlers.ContextRequestInfo(r)
 				Expect(err).NotTo(HaveOccurred())
@@ -79,13 +124,11 @@ var _ = Describe("Identity", func() {
 			})
 		})
 
-		Context("when X-Forwarded-Client-Cert header is present", func() {
+		Context("with raw format (*.apps.identity domain)", func() {
 			Context("with valid cert containing app GUID in OU", func() {
 				BeforeEach(func() {
 					cert := generateTestCert("app:test-app-guid-123")
-					certPEM := encodeCertToPEM(cert)
-					xfccHeader := buildXFCCHeader(certPEM)
-					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+					request.Header.Set("X-Forwarded-Client-Cert", buildGoRouterXFCCHeader(cert))
 				})
 
 				It("extracts caller identity with app GUID", func() {
@@ -96,268 +139,197 @@ var _ = Describe("Identity", func() {
 				})
 			})
 
-			Context("with valid cert in GoRouter format (raw base64)", func() {
-				BeforeEach(func() {
-					cert := generateTestCert("app:gorouter-format-app-guid")
-					xfccHeader := buildGoRouterXFCCHeader(cert)
-					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-				})
-
-				It("extracts caller identity with app GUID", func() {
-					runHandler()
-					Expect(nextCalled).To(BeTrue())
-					Expect(requestInfo.CallerIdentity).NotTo(BeNil())
-					Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("gorouter-format-app-guid"))
-				})
-			})
-
-			Context("with cert containing multiple OUs including app GUID", func() {
+			Context("with cert containing multiple OUs", func() {
 				BeforeEach(func() {
 					cert := generateTestCertWithMultipleOUs([]string{
-						"organization-unit-1",
 						"app:another-app-guid",
-						"organization-unit-2",
+						"space:test-space",
+						"organization:test-org",
 					})
-					certPEM := encodeCertToPEM(cert)
-					xfccHeader := buildXFCCHeader(certPEM)
-					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+					request.Header.Set("X-Forwarded-Client-Cert", buildGoRouterXFCCHeader(cert))
 				})
 
-				It("extracts the app GUID from the correct OU", func() {
+				It("extracts all GUIDs", func() {
 					runHandler()
 					Expect(nextCalled).To(BeTrue())
 					Expect(requestInfo.CallerIdentity).NotTo(BeNil())
 					Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("another-app-guid"))
+					Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal("test-space"))
+					Expect(requestInfo.CallerIdentity.OrgGUID).To(Equal("test-org"))
 				})
 			})
 
-			Context("with malformed XFCC header", func() {
-				Context("missing Cert field", func() {
-					BeforeEach(func() {
-						request.Header.Set("X-Forwarded-Client-Cert", "Hash=123;Subject=\"CN=test\"")
-					})
-
-					It("does not set caller identity", func() {
-						runHandler()
-						Expect(nextCalled).To(BeTrue())
-						Expect(requestInfo.CallerIdentity).To(BeNil())
-					})
+			Context("with invalid base64 data", func() {
+				BeforeEach(func() {
+					request.Header.Set("X-Forwarded-Client-Cert", "not-valid-base64!!!")
 				})
 
-				Context("missing closing quote in Cert field", func() {
-					BeforeEach(func() {
-						request.Header.Set("X-Forwarded-Client-Cert", "Cert=\"-----BEGIN CERTIFICATE-----\nMIIB")
-					})
+				It("does not set caller identity", func() {
+					runHandler()
+					Expect(nextCalled).To(BeTrue())
+					Expect(requestInfo.CallerIdentity).To(BeNil())
+				})
+			})
 
-					It("does not set caller identity", func() {
-						runHandler()
-						Expect(nextCalled).To(BeTrue())
-						Expect(requestInfo.CallerIdentity).To(BeNil())
-					})
+			Context("with valid base64 but invalid certificate data", func() {
+				BeforeEach(func() {
+					request.Header.Set("X-Forwarded-Client-Cert", base64.StdEncoding.EncodeToString([]byte("not a cert")))
 				})
 
-				Context("invalid PEM data", func() {
-					BeforeEach(func() {
-						request.Header.Set("X-Forwarded-Client-Cert", "Cert=\"not-a-valid-pem-cert\"")
-					})
-
-					It("does not set caller identity", func() {
-						runHandler()
-						Expect(nextCalled).To(BeTrue())
-						Expect(requestInfo.CallerIdentity).To(BeNil())
-					})
-				})
-
-				Context("invalid certificate data", func() {
-					BeforeEach(func() {
-						invalidPEM := "-----BEGIN CERTIFICATE-----\nSW52YWxpZCBjZXJ0aWZpY2F0ZSBkYXRh\n-----END CERTIFICATE-----"
-						request.Header.Set("X-Forwarded-Client-Cert", buildXFCCHeader(invalidPEM))
-					})
-
-					It("does not set caller identity", func() {
-						runHandler()
-						Expect(nextCalled).To(BeTrue())
-						Expect(requestInfo.CallerIdentity).To(BeNil())
-					})
+				It("does not set caller identity", func() {
+					runHandler()
+					Expect(nextCalled).To(BeTrue())
+					Expect(requestInfo.CallerIdentity).To(BeNil())
 				})
 			})
 
 			Context("with cert missing app GUID in OU", func() {
-				Context("no OU fields", func() {
-					BeforeEach(func() {
-						cert := generateTestCertWithMultipleOUs([]string{})
-						certPEM := encodeCertToPEM(cert)
-						xfccHeader := buildXFCCHeader(certPEM)
-						request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-					})
-
-					It("does not set caller identity", func() {
-						runHandler()
-						Expect(nextCalled).To(BeTrue())
-						Expect(requestInfo.CallerIdentity).To(BeNil())
-					})
+				BeforeEach(func() {
+					cert := generateTestCertWithMultipleOUs([]string{"space:some-space"})
+					request.Header.Set("X-Forwarded-Client-Cert", buildGoRouterXFCCHeader(cert))
 				})
 
-				Context("OU fields without app: prefix", func() {
-					BeforeEach(func() {
-						cert := generateTestCertWithMultipleOUs([]string{
-							"organization-unit-1",
-							"organization-unit-2",
-						})
-						certPEM := encodeCertToPEM(cert)
-						xfccHeader := buildXFCCHeader(certPEM)
-						request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-					})
+				It("does not set caller identity", func() {
+					runHandler()
+					Expect(nextCalled).To(BeTrue())
+					Expect(requestInfo.CallerIdentity).To(BeNil())
+				})
+			})
 
-					It("does not set caller identity", func() {
-						runHandler()
-						Expect(nextCalled).To(BeTrue())
-						Expect(requestInfo.CallerIdentity).To(BeNil())
-					})
+			Context("with cert having empty app GUID", func() {
+				BeforeEach(func() {
+					cert := generateTestCert("app:")
+					request.Header.Set("X-Forwarded-Client-Cert", buildGoRouterXFCCHeader(cert))
 				})
 
-				Context("OU with app: prefix but empty GUID", func() {
-					BeforeEach(func() {
-						cert := generateTestCert("app:")
-						certPEM := encodeCertToPEM(cert)
-						xfccHeader := buildXFCCHeader(certPEM)
-						request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-					})
-
-					It("does not set caller identity", func() {
-						runHandler()
-						Expect(nextCalled).To(BeTrue())
-						Expect(requestInfo.CallerIdentity).To(BeNil())
-					})
+				It("does not set caller identity", func() {
+					runHandler()
+					Expect(nextCalled).To(BeTrue())
+					Expect(requestInfo.CallerIdentity).To(BeNil())
 				})
 			})
 		})
-	})
-})
 
-func generateTestCertWithOrgAndSpace() *x509.Certificate {
-	return generateTestCertWithMultipleOUs([]string{
-		"app:test-app-guid",
-		"space:test-space-guid",
-		"organization:test-org-guid",
-	})
-}
+		Context("with envoy format (envoy.apps.identity domain)", func() {
+			BeforeEach(func() {
+				request = test_util.NewRequest("GET", "envoy.apps.identity", "/", nil)
+				request.TLS = &tls.ConnectionState{}
+			})
 
-func buildTestCertWithIdentity(appGUID, spaceGUID, orgGUID string) *x509.Certificate {
-	ous := []string{}
-	if appGUID != "" {
-		ous = append(ous, "app:"+appGUID)
-	}
-	if spaceGUID != "" {
-		ous = append(ous, "space:"+spaceGUID)
-	}
-	if orgGUID != "" {
-		ous = append(ous, "organization:"+orgGUID)
-	}
-	return generateTestCertWithMultipleOUs(ous)
-}
+			Context("with comma-separated DN format", func() {
+				BeforeEach(func() {
+					xfccHeader := `Hash=abc123;Subject="CN=instance-id,OU=app:envoy-app-guid,OU=space:envoy-space-guid,OU=organization:envoy-org-guid"`
+					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+				})
 
-var _ = Describe("Identity with Space and Org extraction", func() {
-	var (
-		handler     negroni.Handler
-		nextCalled  bool
-		recorder    *httptest.ResponseRecorder
-		request     *http.Request
-		requestInfo *handlers.RequestInfo
-	)
+				It("extracts all GUIDs from Subject DN", func() {
+					runHandler()
+					Expect(nextCalled).To(BeTrue())
+					Expect(requestInfo.CallerIdentity).NotTo(BeNil())
+					Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("envoy-app-guid"))
+					Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal("envoy-space-guid"))
+					Expect(requestInfo.CallerIdentity.OrgGUID).To(Equal("envoy-org-guid"))
+				})
+			})
 
-	BeforeEach(func() {
-		handler = handlers.NewIdentity()
-		nextCalled = false
-		recorder = httptest.NewRecorder()
+			Context("with slash-separated DN format", func() {
+				BeforeEach(func() {
+					xfccHeader := `Hash=abc123;Subject="/CN=instance-id/OU=app:slash-app-guid/OU=space:slash-space-guid/OU=organization:slash-org-guid"`
+					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+				})
 
-		request = test_util.NewRequest("GET", "backend.apps.mtls.internal", "/", nil)
-	})
+				It("extracts all GUIDs from Subject DN", func() {
+					runHandler()
+					Expect(nextCalled).To(BeTrue())
+					Expect(requestInfo.CallerIdentity).NotTo(BeNil())
+					Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("slash-app-guid"))
+					Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal("slash-space-guid"))
+					Expect(requestInfo.CallerIdentity.OrgGUID).To(Equal("slash-org-guid"))
+				})
+			})
 
-	var runHandler = func() {
-		// Add RequestInfo to context
-		reqInfoHandler := handlers.NewRequestInfo()
-		n := negroni.New()
-		n.Use(reqInfoHandler)
-		n.Use(handler)
-		n.UseHandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			nextCalled = true
-			request = r
-			// Capture RequestInfo for assertions
-			var err error
-			requestInfo, err = handlers.ContextRequestInfo(r)
-			Expect(err).NotTo(HaveOccurred())
-		})
+			Context("with only app GUID in Subject", func() {
+				BeforeEach(func() {
+					xfccHeader := `Hash=def456;Subject="CN=instance,OU=app:only-app-guid"`
+					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+				})
 
-		n.ServeHTTP(recorder, request)
-	}
+				It("extracts app GUID", func() {
+					runHandler()
+					Expect(nextCalled).To(BeTrue())
+					Expect(requestInfo.CallerIdentity).NotTo(BeNil())
+					Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("only-app-guid"))
+					Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal(""))
+					Expect(requestInfo.CallerIdentity.OrgGUID).To(Equal(""))
+				})
+			})
 
-	Context("when cert contains app, space, and org GUIDs", func() {
-		BeforeEach(func() {
-			cert := generateTestCertWithOrgAndSpace()
-			certPEM := encodeCertToPEM(cert)
-			xfccHeader := buildXFCCHeader(certPEM)
-			request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-		})
+			Context("with Subject but no app GUID", func() {
+				BeforeEach(func() {
+					xfccHeader := `Hash=ghi789;Subject="CN=instance,OU=space:some-space,OU=organization:some-org"`
+					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+				})
 
-		It("extracts all three GUIDs", func() {
-			runHandler()
-			Expect(nextCalled).To(BeTrue())
-			Expect(requestInfo.CallerIdentity).NotTo(BeNil())
-			Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("test-app-guid"))
-			Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal("test-space-guid"))
-			Expect(requestInfo.CallerIdentity.OrgGUID).To(Equal("test-org-guid"))
-		})
-	})
+				It("does not set caller identity (app GUID required)", func() {
+					runHandler()
+					Expect(nextCalled).To(BeTrue())
+					Expect(requestInfo.CallerIdentity).To(BeNil())
+				})
+			})
 
-	Context("when cert contains only app and space GUIDs", func() {
-		BeforeEach(func() {
-			cert := buildTestCertWithIdentity("my-app", "my-space", "")
-			certPEM := encodeCertToPEM(cert)
-			xfccHeader := buildXFCCHeader(certPEM)
-			request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-		})
+			Context("with missing Subject field", func() {
+				BeforeEach(func() {
+					xfccHeader := `Hash=jkl012;Cert="some-pem-data"`
+					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+				})
 
-		It("extracts app and space GUIDs", func() {
-			runHandler()
-			Expect(nextCalled).To(BeTrue())
-			Expect(requestInfo.CallerIdentity).NotTo(BeNil())
-			Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("my-app"))
-			Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal("my-space"))
-			Expect(requestInfo.CallerIdentity.OrgGUID).To(Equal(""))
-		})
-	})
+				It("does not set caller identity", func() {
+					runHandler()
+					Expect(nextCalled).To(BeTrue())
+					Expect(requestInfo.CallerIdentity).To(BeNil())
+				})
+			})
 
-	Context("when cert contains only app GUID", func() {
-		BeforeEach(func() {
-			cert := buildTestCertWithIdentity("my-app", "", "")
-			certPEM := encodeCertToPEM(cert)
-			xfccHeader := buildXFCCHeader(certPEM)
-			request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-		})
+			Context("with malformed Subject field (missing closing quote)", func() {
+				BeforeEach(func() {
+					xfccHeader := `Hash=jkl012;Subject="CN=instance,OU=app:test-app`
+					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+				})
 
-		It("extracts only app GUID", func() {
-			runHandler()
-			Expect(nextCalled).To(BeTrue())
-			Expect(requestInfo.CallerIdentity).NotTo(BeNil())
-			Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("my-app"))
-			Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal(""))
-			Expect(requestInfo.CallerIdentity.OrgGUID).To(Equal(""))
-		})
-	})
+				It("does not set caller identity", func() {
+					runHandler()
+					Expect(nextCalled).To(BeTrue())
+					Expect(requestInfo.CallerIdentity).To(BeNil())
+				})
+			})
 
-	Context("when cert contains space and org but no app GUID", func() {
-		BeforeEach(func() {
-			cert := buildTestCertWithIdentity("", "my-space", "my-org")
-			certPEM := encodeCertToPEM(cert)
-			xfccHeader := buildXFCCHeader(certPEM)
-			request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-		})
+			Context("with empty Subject", func() {
+				BeforeEach(func() {
+					xfccHeader := `Hash=mno345;Subject=""`
+					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+				})
 
-		It("does not set caller identity (app GUID required)", func() {
-			runHandler()
-			Expect(nextCalled).To(BeTrue())
-			Expect(requestInfo.CallerIdentity).To(BeNil())
+				It("does not set caller identity", func() {
+					runHandler()
+					Expect(nextCalled).To(BeTrue())
+					Expect(requestInfo.CallerIdentity).To(BeNil())
+				})
+			})
+
+			Context("with Subject containing extra whitespace", func() {
+				BeforeEach(func() {
+					xfccHeader := `Hash=pqr678;Subject="CN=instance, OU=app:whitespace-app-guid, OU=space:whitespace-space-guid"`
+					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+				})
+
+				It("trims whitespace and extracts GUIDs", func() {
+					runHandler()
+					Expect(nextCalled).To(BeTrue())
+					Expect(requestInfo.CallerIdentity).NotTo(BeNil())
+					Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("whitespace-app-guid"))
+					Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal("whitespace-space-guid"))
+				})
+			})
 		})
 	})
 })
@@ -394,164 +366,8 @@ func generateTestCertWithMultipleOUs(ous []string) *x509.Certificate {
 	return cert
 }
 
-func encodeCertToPEM(cert *x509.Certificate) string {
-	certPEM := pem.EncodeToMemory(&pem.Block{
-		Type:  "CERTIFICATE",
-		Bytes: cert.Raw,
-	})
-	return string(certPEM)
-}
-
-func buildXFCCHeader(certPEM string) string {
-	// XFCC header format: Cert="<PEM-with-newlines>"
-	return "Cert=\"" + certPEM + "\""
-}
-
 // buildGoRouterXFCCHeader produces the format that GoRouter's clientcert.go uses:
 // raw base64 without PEM markers (produced by sanitize() function)
 func buildGoRouterXFCCHeader(cert *x509.Certificate) string {
 	return base64.StdEncoding.EncodeToString(cert.Raw)
 }
-
-var _ = Describe("Identity with Envoy Subject DN format", func() {
-	var (
-		handler     negroni.Handler
-		nextCalled  bool
-		recorder    *httptest.ResponseRecorder
-		request     *http.Request
-		requestInfo *handlers.RequestInfo
-	)
-
-	BeforeEach(func() {
-		handler = handlers.NewIdentity()
-		nextCalled = false
-		recorder = httptest.NewRecorder()
-
-		request = test_util.NewRequest("GET", "backend.apps.mtls.internal", "/", nil)
-	})
-
-	var runHandler = func() {
-		// Add RequestInfo to context
-		reqInfoHandler := handlers.NewRequestInfo()
-		n := negroni.New()
-		n.Use(reqInfoHandler)
-		n.Use(handler)
-		n.UseHandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			nextCalled = true
-			request = r
-			// Capture RequestInfo for assertions
-			var err error
-			requestInfo, err = handlers.ContextRequestInfo(r)
-			Expect(err).NotTo(HaveOccurred())
-		})
-
-		n.ServeHTTP(recorder, request)
-	}
-
-	Context("when XFCC header is in Envoy compact format with Subject DN", func() {
-		Context("with comma-separated DN format", func() {
-			BeforeEach(func() {
-				// Envoy format: Hash=<sha256>;Subject="<DN>"
-				xfccHeader := `Hash=abc123;Subject="CN=instance-id,OU=app:envoy-app-guid,OU=space:envoy-space-guid,OU=organization:envoy-org-guid"`
-				request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-			})
-
-			It("extracts all GUIDs from Subject DN", func() {
-				runHandler()
-				Expect(nextCalled).To(BeTrue())
-				Expect(requestInfo.CallerIdentity).NotTo(BeNil())
-				Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("envoy-app-guid"))
-				Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal("envoy-space-guid"))
-				Expect(requestInfo.CallerIdentity.OrgGUID).To(Equal("envoy-org-guid"))
-			})
-		})
-
-		Context("with slash-separated DN format", func() {
-			BeforeEach(func() {
-				// Some systems use slash-separated format
-				xfccHeader := `Hash=abc123;Subject="/CN=instance-id/OU=app:slash-app-guid/OU=space:slash-space-guid/OU=organization:slash-org-guid"`
-				request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-			})
-
-			It("extracts all GUIDs from Subject DN", func() {
-				runHandler()
-				Expect(nextCalled).To(BeTrue())
-				Expect(requestInfo.CallerIdentity).NotTo(BeNil())
-				Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("slash-app-guid"))
-				Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal("slash-space-guid"))
-				Expect(requestInfo.CallerIdentity.OrgGUID).To(Equal("slash-org-guid"))
-			})
-		})
-
-		Context("with only app GUID in Subject", func() {
-			BeforeEach(func() {
-				xfccHeader := `Hash=def456;Subject="CN=instance,OU=app:only-app-guid"`
-				request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-			})
-
-			It("extracts app GUID", func() {
-				runHandler()
-				Expect(nextCalled).To(BeTrue())
-				Expect(requestInfo.CallerIdentity).NotTo(BeNil())
-				Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("only-app-guid"))
-				Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal(""))
-				Expect(requestInfo.CallerIdentity.OrgGUID).To(Equal(""))
-			})
-		})
-
-		Context("with Subject but no app GUID", func() {
-			BeforeEach(func() {
-				xfccHeader := `Hash=ghi789;Subject="CN=instance,OU=space:some-space,OU=organization:some-org"`
-				request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-			})
-
-			It("does not set caller identity (app GUID required)", func() {
-				runHandler()
-				Expect(nextCalled).To(BeTrue())
-				Expect(requestInfo.CallerIdentity).To(BeNil())
-			})
-		})
-
-		Context("with malformed Subject field", func() {
-			BeforeEach(func() {
-				// Missing closing quote
-				xfccHeader := `Hash=jkl012;Subject="CN=instance,OU=app:test-app`
-				request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-			})
-
-			It("does not set caller identity", func() {
-				runHandler()
-				Expect(nextCalled).To(BeTrue())
-				Expect(requestInfo.CallerIdentity).To(BeNil())
-			})
-		})
-
-		Context("with empty Subject", func() {
-			BeforeEach(func() {
-				xfccHeader := `Hash=mno345;Subject=""`
-				request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-			})
-
-			It("does not set caller identity", func() {
-				runHandler()
-				Expect(nextCalled).To(BeTrue())
-				Expect(requestInfo.CallerIdentity).To(BeNil())
-			})
-		})
-
-		Context("with Subject containing extra whitespace", func() {
-			BeforeEach(func() {
-				xfccHeader := `Hash=pqr678;Subject="CN=instance, OU=app:whitespace-app-guid, OU=space:whitespace-space-guid"`
-				request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-			})
-
-			It("trims whitespace and extracts GUIDs", func() {
-				runHandler()
-				Expect(nextCalled).To(BeTrue())
-				Expect(requestInfo.CallerIdentity).NotTo(BeNil())
-				Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("whitespace-app-guid"))
-				Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal("whitespace-space-guid"))
-			})
-		})
-	})
-})

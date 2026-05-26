@@ -181,6 +181,7 @@ func NewProxy(
 	n.Use(handlers.NewProtocolCheck(logger, errorWriter, cfg.EnableHTTP2))
 	n.Use(handlers.NewLookup(registry, reporter, logger, errorWriter, cfg.EmptyPoolResponseCode503))
 	n.Use(handlers.NewMaxRequestSize(cfg, logger))
+	n.Use(handlers.NewMtlsPreAuth(cfg, logger))
 	n.Use(handlers.NewClientCert(
 		SkipSanitize(routeServiceHandler.(*handlers.RouteService)),
 		ForceDeleteXFCCHeader(routeServiceHandler.(*handlers.RouteService), cfg.ForwardedClientCert, logger),
@@ -189,8 +190,7 @@ func NewProxy(
 		logger,
 		errorWriter,
 	))
-	n.Use(handlers.NewIdentity())
-	n.Use(handlers.NewMtlsPreAuth(cfg, logger))
+	n.Use(handlers.NewCfIdentity(cfg))
 	n.Use(handlers.NewHopByHop(cfg, logger))
 	n.Use(&handlers.XForwardedProto{
 		SkipSanitization:         SkipSanitizeXFP(routeServiceHandler.(*handlers.RouteService)),
