@@ -71,7 +71,7 @@ func (h *MtlsScopeAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) er
 	case route.RoutePolicyScopeOrg:
 		endpointOrg := endpoint.Tags["organization_id"]
 		if endpointOrg != identity.OrgGUID {
-			h.logger.Info("mtls-scope-auth-denied",
+			h.logger.Debug("mtls-scope-auth-denied",
 				slog.String("route", poolHost),
 				slog.String("scope", "org"),
 				slog.String("caller-org", identity.OrgGUID),
@@ -88,7 +88,7 @@ func (h *MtlsScopeAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) er
 	case route.RoutePolicyScopeSpace:
 		endpointSpace := endpoint.Tags["space_id"]
 		if endpointSpace != identity.SpaceGUID {
-			h.logger.Info("mtls-scope-auth-denied",
+			h.logger.Debug("mtls-scope-auth-denied",
 				slog.String("route", poolHost),
 				slog.String("scope", "space"),
 				slog.String("caller-space", identity.SpaceGUID),

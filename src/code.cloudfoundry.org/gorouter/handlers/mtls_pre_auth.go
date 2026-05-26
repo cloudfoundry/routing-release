@@ -119,7 +119,7 @@ func (h *mtlsPreAuth) ServeHTTP(w http.ResponseWriter, r *http.Request, next htt
 
 	// ── Layer 1: Route lookup ──────────────────────────────────────────────────
 	if reqInfo.RoutePool == nil || reqInfo.RoutePool.IsEmpty() {
-		h.logger.Info("mtls-pre-auth-denied",
+		h.logger.Debug("mtls-pre-auth-denied",
 			slog.String("host", r.Host),
 			slog.String("reason", "no-route-pool"))
 		w.WriteHeader(http.StatusNotFound)
@@ -143,7 +143,7 @@ func (h *mtlsPreAuth) ServeHTTP(w http.ResponseWriter, r *http.Request, next htt
 
 	// Enforcement is active — we need caller identity for all checks below.
 	if reqInfo.CallerIdentity == nil {
-		h.logger.Info("mtls-pre-auth-denied",
+		h.logger.Debug("mtls-pre-auth-denied",
 			slog.String("host", r.Host),
 			slog.String("endpoint-app", applicationId),
 			slog.String("reason", "identity-extraction-failed"))

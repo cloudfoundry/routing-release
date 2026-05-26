@@ -100,7 +100,7 @@ func (h *MtlsRoutePoliciesAuth) Check(endpoint *route.Endpoint, reqInfo *Request
 	routePolicies := endpoint.RoutePolicies
 	if len(routePolicies) == 0 {
 		// Default deny: mTLS domain with enforcement enabled but no policies configured
-		h.logger.Info("mtls-route-policies-denied",
+		h.logger.Debug("mtls-route-policies-denied",
 			slog.String("route", poolHost),
 			slog.String("reason", "no-route-policies"),
 			slog.String("endpoint", endpoint.CanonicalAddr()))
@@ -116,7 +116,7 @@ func (h *MtlsRoutePoliciesAuth) Check(endpoint *route.Endpoint, reqInfo *Request
 	matchedPolicy, allowed := evaluateRoutePolicies(routePolicies, identity)
 
 	if !allowed {
-		h.logger.Info("mtls-route-policies-denied",
+		h.logger.Debug("mtls-route-policies-denied",
 			slog.String("route", poolHost),
 			slog.String("caller-app", identity.AppGUID),
 			slog.String("reason", "route-policies-deny"),
