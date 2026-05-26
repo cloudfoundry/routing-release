@@ -94,14 +94,9 @@ func (a *accessLog) ServeHTTP(rw http.ResponseWriter, r *http.Request, next http
 
 	// Identity-aware routing authorization fields
 	if reqInfo.CallerIdentity != nil {
-		alr.CallerApp = reqInfo.CallerIdentity.AppGUID
-		alr.CallerSpace = reqInfo.CallerIdentity.SpaceGUID
-		alr.CallerOrg = reqInfo.CallerIdentity.OrgGUID
-	}
-	if reqInfo.AuthResult != nil {
-		alr.AuthOutcome = reqInfo.AuthResult.Outcome
-		alr.AuthRule = reqInfo.AuthResult.Rule
-		alr.AuthDeniedReason = reqInfo.AuthResult.DeniedReason
+		alr.CallerCFApp = reqInfo.CallerIdentity.AppGUID
+		alr.CallerCFSpace = reqInfo.CallerIdentity.SpaceGUID
+		alr.CallerCFOrg = reqInfo.CallerIdentity.OrgGUID
 	}
 	alr.TlsSNI = reqInfo.TlsSNI
 

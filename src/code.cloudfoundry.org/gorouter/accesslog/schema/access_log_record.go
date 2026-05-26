@@ -129,16 +129,10 @@ type AccessLogRecord struct {
 	LocalAddress string
 
 	// Identity-aware routing authorization fields.
-	// AuthOutcome is "allowed" or "denied"; empty if no authorization was performed.
-	AuthOutcome string
-	// AuthRule identifies the rule that matched or caused denial.
-	AuthRule string
-	// AuthDeniedReason is a human-readable denial explanation (empty on allow).
-	AuthDeniedReason string
-	// CallerApp/Space/Org are the CF identity fields from the client certificate.
-	CallerApp   string
-	CallerSpace string
-	CallerOrg   string
+	// CallerCFApp/Space/Org are the CF identity fields from the client certificate.
+	CallerCFApp   string
+	CallerCFSpace string
+	CallerCFOrg   string
 	// TlsSNI is the SNI used during TLS (logged on 421 rejections).
 	TlsSNI string
 }
@@ -330,42 +324,19 @@ func (r *AccessLogRecord) makeRecord(performTruncate bool) []byte {
 	b.WriteString(`x_cf_routererror:`)
 	b.WriteDashOrStringValue(r.RouterError)
 
-	// mTLS identity and authorization fields (only emitted when present)
-	if r.TlsSNI != "" {
-		// #nosec G104
-		b.WriteString(` tls_sni:`)
-		b.WriteDashOrStringValue(r.TlsSNI)
-	}
-	if r.CallerApp != "" {
-		// #nosec G104
-		b.WriteString(` caller_app:`)
-		b.WriteDashOrStringValue(r.CallerApp)
-	}
-	if r.CallerSpace != "" {
-		// #nosec G104
-		b.WriteString(` caller_space:`)
-		b.WriteDashOrStringValue(r.CallerSpace)
-	}
-	if r.CallerOrg != "" {
-		// #nosec G104
-		b.WriteString(` caller_org:`)
-		b.WriteDashOrStringValue(r.CallerOrg)
-	}
-	if r.AuthOutcome != "" {
-		// #nosec G104
-		b.WriteString(` auth:`)
-		b.WriteDashOrStringValue(r.AuthOutcome)
-	}
-	if r.AuthRule != "" {
-		// #nosec G104
-		b.WriteString(` auth_rule:`)
-		b.WriteDashOrStringValue(r.AuthRule)
-	}
-	if r.AuthDeniedReason != "" {
-		// #nosec G104
-		b.WriteString(` auth_denied_reason:`)
-		b.WriteDashOrStringValue(r.AuthDeniedReason)
-	}
+	b.AppendSpaces(false)
+	// #nosec G104
+	b.WriteString(` tls_sni:`)
+	b.WriteDashOrStringValue(r.TlsSNI)
+	// #nosec G104
+	b.WriteString(` caller_cf_app:`)
+	b.WriteDashOrStringValue(r.CallerCFApp)
+	// #nosec G104
+	b.WriteString(` caller_cf_space:`)
+	b.WriteDashOrStringValue(r.CallerCFSpace)
+	// #nosec G104
+	b.WriteString(` caller_cf_org:`)
+	b.WriteDashOrStringValue(r.CallerCFOrg)
 
 	r.addExtraHeaders(b, performTruncate)
 
