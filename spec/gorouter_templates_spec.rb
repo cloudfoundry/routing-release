@@ -1748,6 +1748,131 @@ describe 'gorouter' do
     end
 
     describe 'router.domains' do
+      context 'when domains is not an array' do
+        before do
+          deployment_manifest_fragment['router']['domains'] = 'not-an-array'
+        end
+
+        it 'raises an error' do
+          expect { parsed_yaml }.to raise_error(/router\.domains must be provided as an array/)
+        end
+      end
+
+      context 'when a domain entry is not a hash' do
+        before do
+          deployment_manifest_fragment['router']['domains'] = ['not-a-hash']
+        end
+
+        it 'raises an error' do
+          expect { parsed_yaml }.to raise_error(/Each entry in router\.domains must be a hash/)
+        end
+      end
+
+      context 'when a domain entry is missing the name key' do
+        before do
+          deployment_manifest_fragment['router']['domains'] = [
+            { 'ca_certs' => TEST_CERT }
+          ]
+        end
+
+        it 'raises an error' do
+          expect { parsed_yaml }.to raise_error(/Each entry in router\.domains must have a "name" key/)
+        end
+      end
+
+      context 'when a domain entry has an empty name' do
+        before do
+          deployment_manifest_fragment['router']['domains'] = [
+            { 'name' => '  ', 'ca_certs' => TEST_CERT }
+          ]
+        end
+
+        it 'raises an error' do
+          expect { parsed_yaml }.to raise_error(/Each entry in router\.domains must have a "name" key/)
+        end
+      end
+
+      context 'when a domain entry is missing the ca_certs key' do
+        before do
+          deployment_manifest_fragment['router']['domains'] = [
+            { 'name' => '*.apps.mtls.internal' }
+          ]
+        end
+
+        it 'raises an error' do
+          expect { parsed_yaml }.to raise_error(/Each entry in router\.domains must have a "ca_certs" key/)
+        end
+      end
+
+      context 'when a domain entry has empty ca_certs' do
+        before do
+          deployment_manifest_fragment['router']['domains'] = [
+            { 'name' => '*.apps.mtls.internal', 'ca_certs' => '  ' }
+          ]
+        end
+
+        it 'raises an error' do
+          expect { parsed_yaml }.to raise_error(/Each entry in router\.domains must have a "ca_certs" key/)
+        end
+      end
+
+      context 'when forwarded_client_cert has an invalid mode' do
+        before do
+          deployment_manifest_fragment['router']['domains'] = [
+            {
+              'name' => '*.apps.mtls.internal',
+              'ca_certs' => TEST_CERT,
+              'forwarded_client_cert' => 'invalid_mode'
+            }
+          ]
+        end
+
+        it 'raises an error' do
+          expect { parsed_yaml }.to raise_error(/Invalid forwarded_client_cert mode 'invalid_mode'/)
+        end
+      end
+
+      context 'when xfcc_format has an invalid value' do
+        before do
+          deployment_manifest_fragment['router']['domains'] = [
+            {
+              'name' => '*.apps.mtls.internal',
+              'ca_certs' => TEST_CERT,
+              'xfcc_format' => 'invalid_format'
+            }
+          ]
+        end
+
+        it 'raises an error' do
+          expect { parsed_yaml }.to raise_error(/Invalid xfcc_format 'invalid_format'/)
+        end
+      end
+
+      context 'when a valid domain is fully configured' do
+        before do
+          deployment_manifest_fragment['router']['domains'] = [
+            {
+              'name' => '*.apps.mtls.internal',
+              'ca_certs' => TEST_CERT,
+              'forwarded_client_cert' => 'sanitize_set',
+              'xfcc_format' => 'envoy'
+            }
+          ]
+        end
+
+        it 'renders successfully' do
+          expect { parsed_yaml }.not_to raise_error
+        end
+
+        it 'outputs the domain configuration' do
+          domains = parsed_yaml['domains']
+          expect(domains.length).to eq(1)
+          expect(domains.first['domain']).to eq('*.apps.mtls.internal')
+          expect(domains.first['forwarded_client_cert']).to eq('sanitize_set')
+          expect(domains.first['xfcc_format']).to eq('envoy')
+        end
+      end
+
       context 'when always_forward is combined with xfcc_format' do
         before do
           deployment_manifest_fragment['router']['domains'] = [
