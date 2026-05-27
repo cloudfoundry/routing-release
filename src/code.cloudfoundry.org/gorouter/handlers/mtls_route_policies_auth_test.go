@@ -430,6 +430,62 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 			})
 		})
 
+		// ── Per-endpoint policies (shared routes with different backends) ──
+
+		Context("when endpoints on same route have different route policies", func() {
+			It("uses selected endpoint's policies, not pool-level policies", func() {
+				// First endpoint allows only app-1
+				endpoint1 := route.NewEndpoint(&route.EndpointOpts{
+					AppId:            "backend-app-1",
+					Host:             "192.168.1.1",
+					Port:             8080,
+					RoutePolicyScope: route.RoutePolicyScopeAny,
+					RoutePolicies:    []string{"cf:app:allowed-app-1"},
+				})
+
+				// Second endpoint allows only app-2
+				endpoint2 := route.NewEndpoint(&route.EndpointOpts{
+					AppId:            "backend-app-2",
+					Host:             "192.168.1.2",
+					Port:             8080,
+					RoutePolicyScope: route.RoutePolicyScopeAny,
+					RoutePolicies:    []string{"cf:app:allowed-app-2"},
+				})
+
+				// Create pool with both endpoints (pool-level policies will be from last endpoint)
+				pool = route.NewPool(&route.PoolOpts{
+					Host: "shared.apps.mtls.internal",
+				})
+				pool.Put(endpoint1)
+				pool.Put(endpoint2)
+
+				// Pool-level policies are from endpoint2 (last registered)
+				Expect(pool.RoutePolicies()).To(Equal([]string{"cf:app:allowed-app-2"}))
+
+				// Caller is allowed-app-1
+				reqInfo.RoutePool = pool
+				reqInfo.CallerIdentity = &handlers.CallerIdentity{
+					AppGUID: "allowed-app-1",
+				}
+
+				// When request is routed to endpoint1, it should succeed
+				// (uses endpoint1's policies, not pool-level policies)
+				err := handler.Check(endpoint1, reqInfo)
+				Expect(err).To(BeNil(), "should allow when endpoint's policy matches caller")
+				Expect(reqInfo.AuthResult.Rule).To(Equal("route:cf:app:allowed-app-1"))
+
+				// When request is routed to endpoint2, it should fail
+				// (endpoint2 only allows app-2, caller is app-1)
+				reqInfo.AuthResult = nil // Reset for next check
+				err = handler.Check(endpoint2, reqInfo)
+				Expect(err).NotTo(BeNil(), "should deny when endpoint's policy doesn't match caller")
+
+				authErr, ok := err.(*handlers.AuthError)
+				Expect(ok).To(BeTrue())
+				Expect(authErr.Rule).To(Equal("route:route_policies"))
+			})
+		})
+
 		// ── Edge cases ────────────────────────────────────────────────
 
 		Context("edge cases", func() {

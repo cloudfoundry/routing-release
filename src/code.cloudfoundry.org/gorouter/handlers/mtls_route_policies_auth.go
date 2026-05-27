@@ -89,8 +89,8 @@ func (h *MtlsRoutePoliciesAuth) Check(endpoint *route.Endpoint, reqInfo *Request
 		)
 	}
 
-	// Get route policies from the pool (route-level, not per-endpoint)
-	routePolicies := reqInfo.RoutePool.RoutePolicies()
+	// Get route policies from the selected endpoint (per-endpoint authorization)
+	routePolicies := endpoint.RoutePolicies
 	if len(routePolicies) == 0 {
 		// Default deny: mTLS domain with enforcement enabled but no policies configured
 		return NewAuthError(
