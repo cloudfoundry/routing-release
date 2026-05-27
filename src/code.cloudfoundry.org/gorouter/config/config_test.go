@@ -2115,6 +2115,26 @@ drain_timeout: 60s
 				Expect(cfg).To(BeNil())
 			})
 		})
+
+		Context("case-insensitive matching per RFC 1035", func() {
+			It("matches wildcard domain with uppercase host", func() {
+				cfg := config.GetMtlsDomainConfig("XFCC-TESTER.APPS.IDENTITY")
+				Expect(cfg).ToNot(BeNil())
+				Expect(cfg.Domain).To(Equal("*.apps.identity"))
+			})
+
+			It("matches exact domain with mixed case host", func() {
+				cfg := config.GetMtlsDomainConfig("Exact.Example.Com")
+				Expect(cfg).ToNot(BeNil())
+				Expect(cfg.Domain).To(Equal("exact.example.com"))
+			})
+
+			It("matches with uppercase host and port", func() {
+				cfg := config.GetMtlsDomainConfig("EXACT.EXAMPLE.COM:443")
+				Expect(cfg).ToNot(BeNil())
+				Expect(cfg.Domain).To(Equal("exact.example.com"))
+			})
+		})
 	})
 
 	Describe("IsMtlsDomain", func() {
@@ -2149,6 +2169,18 @@ drain_timeout: 60s
 
 		It("returns false for non-mTLS domain without port", func() {
 			Expect(config.IsMtlsDomain("other.example.com")).To(BeFalse())
+		})
+
+		It("matches case-insensitively per RFC 1035", func() {
+			// DNS hostnames are case-insensitive
+			Expect(config.IsMtlsDomain("XFCC-TESTER.APPS.IDENTITY")).To(BeTrue())
+			Expect(config.IsMtlsDomain("Xfcc-Tester.Apps.Identity")).To(BeTrue())
+			Expect(config.IsMtlsDomain("xfcc-tester.APPS.identity")).To(BeTrue())
+		})
+
+		It("matches case-insensitively with port", func() {
+			Expect(config.IsMtlsDomain("XFCC-TESTER.APPS.IDENTITY:443")).To(BeTrue())
+			Expect(config.IsMtlsDomain("Xfcc-Tester.Apps.Identity:8443")).To(BeTrue())
 		})
 	})
 

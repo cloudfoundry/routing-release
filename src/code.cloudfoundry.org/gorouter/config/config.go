@@ -975,7 +975,8 @@ func (c *Config) processMtlsDomains() error {
 			return fmt.Errorf("domains[%d].domain is required", i)
 		}
 
-		c.mtlsDomainMap[domain.Domain] = domain
+		// Store with lowercase key for case-insensitive matching (RFC 1035)
+		c.mtlsDomainMap[strings.ToLower(domain.Domain)] = domain
 	}
 
 	return nil
@@ -1018,6 +1019,7 @@ func (c *Config) RoutingApiEnabled() bool {
 
 // GetMtlsDomainConfig returns the mTLS domain configuration for a given host.
 // It checks for exact matches first, then wildcard matches (e.g., *.apps.mtls.internal).
+// Matching is case-insensitive per RFC 1035 (DNS hostnames).
 // Returns nil if the host is not an mTLS domain.
 func (c *Config) GetMtlsDomainConfig(host string) *MtlsDomainConfig {
 	// Strip port if present (e.g., "app.example.com:443" → "app.example.com")
@@ -1025,6 +1027,9 @@ func (c *Config) GetMtlsDomainConfig(host string) *MtlsDomainConfig {
 	if h, _, err := net.SplitHostPort(host); err == nil {
 		host = h
 	}
+
+	// Normalize to lowercase for case-insensitive matching (RFC 1035)
+	host = strings.ToLower(host)
 
 	// Check exact match first
 	if cfg, ok := c.mtlsDomainMap[host]; ok {
