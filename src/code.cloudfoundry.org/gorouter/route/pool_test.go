@@ -1132,4 +1132,111 @@ var _ = Describe("EndpointPool", func() {
 			})
 		})
 	})
+
+	Describe("RoutePolicyScope and RoutePolicies", func() {
+		var pool *route.EndpointPool
+
+		BeforeEach(func() {
+			pool = route.NewPool(&route.PoolOpts{
+				Host: "backend.apps.internal",
+			})
+		})
+
+		It("returns empty scope and nil policies for a fresh pool", func() {
+			Expect(pool.RoutePolicyScope()).To(Equal(""))
+			Expect(pool.RoutePolicies()).To(BeNil())
+		})
+
+		It("returns the scope from the most recently Put endpoint", func() {
+			endpoint := route.NewEndpoint(&route.EndpointOpts{
+				Host:             "10.0.0.1",
+				Port:             8080,
+				RoutePolicyScope: route.RoutePolicyScopeOrg,
+			})
+			pool.Put(endpoint)
+
+			Expect(pool.RoutePolicyScope()).To(Equal(route.RoutePolicyScopeOrg))
+		})
+
+		It("returns the policies from the most recently Put endpoint", func() {
+			endpoint := route.NewEndpoint(&route.EndpointOpts{
+				Host:             "10.0.0.1",
+				Port:             8080,
+				RoutePolicyScope: route.RoutePolicyScopeOrg,
+				RoutePolicies:    []string{"cf:org:org-guid-1", "cf:app:app-guid-1"},
+			})
+			pool.Put(endpoint)
+
+			Expect(pool.RoutePolicies()).To(Equal([]string{"cf:org:org-guid-1", "cf:app:app-guid-1"}))
+		})
+
+		It("updates scope and policies when a new endpoint is Put", func() {
+			endpoint1 := route.NewEndpoint(&route.EndpointOpts{
+				Host:             "10.0.0.1",
+				Port:             8080,
+				RoutePolicyScope: route.RoutePolicyScopeOrg,
+				RoutePolicies:    []string{"cf:org:org-guid-1"},
+			})
+			pool.Put(endpoint1)
+
+			endpoint2 := route.NewEndpoint(&route.EndpointOpts{
+				Host:             "10.0.0.2",
+				Port:             8080,
+				RoutePolicyScope: route.RoutePolicyScopeSpace,
+				RoutePolicies:    []string{"cf:space:space-guid-1", "cf:app:app-guid-2"},
+			})
+			pool.Put(endpoint2)
+
+			Expect(pool.RoutePolicyScope()).To(Equal(route.RoutePolicyScopeSpace))
+			Expect(pool.RoutePolicies()).To(Equal([]string{"cf:space:space-guid-1", "cf:app:app-guid-2"}))
+		})
+
+		It("retains scope and policies after all endpoints are removed", func() {
+			endpoint := route.NewEndpoint(&route.EndpointOpts{
+				Host:             "10.0.0.1",
+				Port:             8080,
+				RoutePolicyScope: route.RoutePolicyScopeOrg,
+				RoutePolicies:    []string{"cf:org:org-guid-1"},
+			})
+			pool.Put(endpoint)
+			pool.Remove(endpoint)
+
+			Expect(pool.RoutePolicyScope()).To(Equal(route.RoutePolicyScopeOrg))
+			Expect(pool.RoutePolicies()).To(Equal([]string{"cf:org:org-guid-1"}))
+		})
+
+		It("updates scope and policies when an existing endpoint is re-Put with new values", func() {
+			endpoint := route.NewEndpoint(&route.EndpointOpts{
+				Host:             "10.0.0.1",
+				Port:             8080,
+				RoutePolicyScope: route.RoutePolicyScopeOrg,
+				RoutePolicies:    []string{"cf:org:org-guid-1"},
+			})
+			pool.Put(endpoint)
+
+			updatedEndpoint := route.NewEndpoint(&route.EndpointOpts{
+				Host:             "10.0.0.1",
+				Port:             8080,
+				RoutePolicyScope: route.RoutePolicyScopeSpace,
+				RoutePolicies:    []string{"cf:space:space-guid-1"},
+			})
+			pool.Put(updatedEndpoint)
+
+			Expect(pool.RoutePolicyScope()).To(Equal(route.RoutePolicyScopeSpace))
+			Expect(pool.RoutePolicies()).To(Equal([]string{"cf:space:space-guid-1"}))
+		})
+
+		It("handles empty policies with non-empty scope (default-deny)", func() {
+			endpoint := route.NewEndpoint(&route.EndpointOpts{
+				Host:             "10.0.0.1",
+				Port:             8080,
+				RoutePolicyScope: route.RoutePolicyScopeOrg,
+				RoutePolicies:    []string{},
+			})
+			pool.Put(endpoint)
+
+			Expect(pool.RoutePolicyScope()).To(Equal(route.RoutePolicyScopeOrg))
+			Expect(pool.RoutePolicies()).To(Equal([]string{}))
+		})
+	})
 })
