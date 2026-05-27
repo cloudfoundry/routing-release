@@ -219,6 +219,20 @@ var _ = Describe("AccessLog", func() {
 			alr := accessLogger.LogArgsForCall(0)
 			Expect(alr.RouterError).To(Equal(utils.ConnectionCloseDuringStreamingErrMsg))
 		})
+
+		Context("when RouterError is already set on the response header", func() {
+			BeforeEach(func() {
+				resp.Header().Add("X-Cf-RouterError", "endpoint-failed")
+			})
+
+			It("writes the access log and keeps RouterError from response header", func() {
+				Expect(func() { handler.ServeHTTP(resp, req) }).To(Panic())
+				Expect(accessLogger.LogCallCount()).To(Equal(1))
+				alr := accessLogger.LogArgsForCall(0)
+				Expect(alr.RouterError).NotTo(Equal(utils.ConnectionCloseDuringStreamingErrMsg))
+				Expect(alr.RouterError).To(Equal("endpoint-failed"))
+			})
+		})
 	})
 
 })
