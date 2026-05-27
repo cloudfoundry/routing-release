@@ -210,11 +210,6 @@ func (rt *roundTripper) RoundTrip(originalRequest *http.Request) (*http.Response
 							DeniedReason: authError.Reason,
 						}
 
-					logger.Debug("post-selection-auth-denied",
-						slog.String("rule", authError.Rule),
-						slog.String("reason", authError.Reason),
-						slog.String("endpoint", endpoint.CanonicalAddr()))
-
 						// Return authorization error - will be converted to 403 by error handler
 						return nil, authErr
 					}
@@ -226,9 +221,6 @@ func (rt *roundTripper) RoundTrip(originalRequest *http.Request) (*http.Response
 						DeniedReason: authErr.Error(),
 					}
 
-					logger.Error("post-selection-auth-error",
-						log.ErrAttr(authErr),
-						slog.String("endpoint", endpoint.CanonicalAddr()))
 					return nil, authErr
 				}
 			}

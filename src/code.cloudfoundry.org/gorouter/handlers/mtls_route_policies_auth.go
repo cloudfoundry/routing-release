@@ -83,28 +83,16 @@ func (h *MtlsRoutePoliciesAuth) Check(endpoint *route.Endpoint, reqInfo *Request
 	if reqInfo.CallerIdentity == nil {
 		// Defense in depth: identity should have been checked in pre-auth,
 		// but explicitly deny here to avoid silent authorization bypass
-		h.logger.Warn("mtls-route-policies-denied",
-			slog.String("route", reqInfo.RoutePool.Host()),
-			slog.String("reason", "no-caller-identity"),
-			slog.String("endpoint", endpoint.CanonicalAddr()))
-
 		return NewAuthError(
 			"route:no_caller_identity",
 			"no caller identity present",
 		)
 	}
 
-	poolHost := reqInfo.RoutePool.Host()
-
-	// Get route policies from the selected endpoint (per-endpoint policies)
-	routePolicies := endpoint.RoutePolicies
+	// Get route policies from the pool (route-level, not per-endpoint)
+	routePolicies := reqInfo.RoutePool.RoutePolicies()
 	if len(routePolicies) == 0 {
 		// Default deny: mTLS domain with enforcement enabled but no policies configured
-		h.logger.Debug("mtls-route-policies-denied",
-			slog.String("route", poolHost),
-			slog.String("reason", "no-route-policies"),
-			slog.String("endpoint", endpoint.CanonicalAddr()))
-
 		return NewAuthError(
 			"route:no_route_policies",
 			"route has no route policies configured",
@@ -116,12 +104,6 @@ func (h *MtlsRoutePoliciesAuth) Check(endpoint *route.Endpoint, reqInfo *Request
 	matchedPolicy, allowed := evaluateRoutePolicies(routePolicies, identity)
 
 	if !allowed {
-		h.logger.Debug("mtls-route-policies-denied",
-			slog.String("route", poolHost),
-			slog.String("caller-app", identity.AppGUID),
-			slog.String("reason", "route-policies-deny"),
-			slog.String("endpoint", endpoint.CanonicalAddr()))
-
 		return NewAuthError(
 			"route:route_policies",
 			fmt.Sprintf("caller app %s not in route_policies", identity.AppGUID),
@@ -134,12 +116,6 @@ func (h *MtlsRoutePoliciesAuth) Check(endpoint *route.Endpoint, reqInfo *Request
 	}
 	reqInfo.AuthResult.Outcome = "allowed"
 	reqInfo.AuthResult.Rule = "route:" + matchedPolicy
-
-	h.logger.Debug("mtls-route-policies-granted",
-		slog.String("route", poolHost),
-		slog.String("caller-app", identity.AppGUID),
-		slog.String("matched-policy", matchedPolicy),
-		slog.String("endpoint", endpoint.CanonicalAddr()))
 
 	return nil
 }

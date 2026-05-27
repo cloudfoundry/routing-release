@@ -98,6 +98,9 @@ func (a *accessLog) ServeHTTP(rw http.ResponseWriter, r *http.Request, next http
 		alr.CallerCFSpace = reqInfo.CallerIdentity.SpaceGUID
 		alr.CallerCFOrg = reqInfo.CallerIdentity.OrgGUID
 	}
+	if reqInfo.AuthResult != nil {
+		alr.RoutePolicy = reqInfo.AuthResult.Rule
+	}
 	alr.TlsSNI = reqInfo.TlsSNI
 
 	a.accessLogger.Log(*alr)

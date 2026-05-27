@@ -52,11 +52,6 @@ func (h *MtlsScopeAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) er
 	if reqInfo.CallerIdentity == nil {
 		// Defense in depth: identity should have been checked in pre-auth,
 		// but explicitly deny here to avoid silent authorization bypass
-		h.logger.Warn("mtls-scope-auth-denied",
-			slog.String("route", reqInfo.RoutePool.Host()),
-			slog.String("reason", "no-caller-identity"),
-			slog.String("endpoint", endpoint.CanonicalAddr()))
-
 		return NewAuthError(
 			"domain:no_caller_identity",
 			"no caller identity present",
@@ -64,20 +59,12 @@ func (h *MtlsScopeAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) er
 	}
 
 	identity := reqInfo.CallerIdentity
-	poolHost := reqInfo.RoutePool.Host()
 
 	// Perform post-selection scope check against the SELECTED endpoint's tags
 	switch routePolicyScope {
 	case route.RoutePolicyScopeOrg:
 		endpointOrg := endpoint.Tags["organization_id"]
 		if endpointOrg != identity.OrgGUID {
-			h.logger.Debug("mtls-scope-auth-denied",
-				slog.String("route", poolHost),
-				slog.String("scope", "org"),
-				slog.String("caller-org", identity.OrgGUID),
-				slog.String("endpoint-org", endpointOrg),
-				slog.String("endpoint", endpoint.CanonicalAddr()))
-
 			return NewAuthError(
 				"domain:scope=org:post-selection",
 				fmt.Sprintf("caller org %s does not match selected backend org %s",
@@ -88,13 +75,6 @@ func (h *MtlsScopeAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) er
 	case route.RoutePolicyScopeSpace:
 		endpointSpace := endpoint.Tags["space_id"]
 		if endpointSpace != identity.SpaceGUID {
-			h.logger.Debug("mtls-scope-auth-denied",
-				slog.String("route", poolHost),
-				slog.String("scope", "space"),
-				slog.String("caller-space", identity.SpaceGUID),
-				slog.String("endpoint-space", endpointSpace),
-				slog.String("endpoint", endpoint.CanonicalAddr()))
-
 			return NewAuthError(
 				"domain:scope=space:post-selection",
 				fmt.Sprintf("caller space %s does not match selected backend space %s",
@@ -108,10 +88,6 @@ func (h *MtlsScopeAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) er
 
 	default:
 		// Unknown scope - deny to be safe
-		h.logger.Warn("mtls-scope-auth-denied",
-			slog.String("route", poolHost),
-			slog.String("unknown-scope", routePolicyScope))
-
 		return NewAuthError(
 			"domain:scope=unknown:post-selection",
 			fmt.Sprintf("unknown route policy scope %q", routePolicyScope),
@@ -124,11 +100,6 @@ func (h *MtlsScopeAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) er
 	}
 	reqInfo.AuthResult.Outcome = "allowed"
 	reqInfo.AuthResult.Rule = fmt.Sprintf("domain:scope=%s", routePolicyScope)
-
-	h.logger.Debug("mtls-scope-auth-granted",
-		slog.String("route", poolHost),
-		slog.String("scope", routePolicyScope),
-		slog.String("endpoint", endpoint.CanonicalAddr()))
 
 	return nil
 }

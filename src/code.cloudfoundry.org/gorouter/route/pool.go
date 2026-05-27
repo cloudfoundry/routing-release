@@ -226,6 +226,13 @@ type EndpointPool struct {
 	LoadBalancingAlgorithm string
 	HashRoutingProperties  *HashRoutingProperties
 	HashLookupTable        MaglevLookup
+
+	// routePolicyScope is the operator-level scope boundary: "any", "org", or "space".
+	// Stored at pool level because all endpoints on the same route share the same policies.
+	routePolicyScope string
+	// routePolicies is the list of parsed sources (e.g. "cf:app:<guid>", "cf:space:<guid>",
+	// "cf:org:<guid>", "cf:any"). Empty with a non-empty routePolicyScope means default-deny.
+	routePolicies []string
 }
 
 type EndpointOpts struct {
@@ -393,6 +400,8 @@ func (p *EndpointPool) Put(endpoint *Endpoint) PoolPutResult {
 
 		p.RouteSvcUrl = e.endpoint.RouteServiceUrl
 		p.setPoolLoadBalancingAlgorithm(e.endpoint)
+		p.routePolicyScope = endpoint.RoutePolicyScope
+		p.routePolicies = endpoint.RoutePolicies
 		e.updated = time.Now()
 		if p.LoadBalancingAlgorithm == config.LOAD_BALANCE_HB {
 			p.HashLookupTable.Add(e.endpoint.PrivateInstanceId)
@@ -416,6 +425,8 @@ func (p *EndpointPool) Put(endpoint *Endpoint) PoolPutResult {
 
 		p.RouteSvcUrl = e.endpoint.RouteServiceUrl
 		p.setPoolLoadBalancingAlgorithm(e.endpoint)
+		p.routePolicyScope = endpoint.RoutePolicyScope
+		p.routePolicies = endpoint.RoutePolicies
 		if p.LoadBalancingAlgorithm == config.LOAD_BALANCE_HB {
 			p.HashLookupTable.Add(e.endpoint.PrivateInstanceId)
 		}
@@ -603,33 +614,25 @@ func (p *EndpointPool) IsEmpty() bool {
 	return l == 0
 }
 
-// RoutePolicyScope returns the route policy scope from the first endpoint in the pool.
+// RoutePolicyScope returns the route policy scope for this pool.
 // All endpoints in a pool share the same route policy scope since they represent
 // instances of the same application route registered with the same options.
-// Returns empty string if the pool is empty or enforcement is not active.
+// Returns empty string if enforcement is not active.
 func (p *EndpointPool) RoutePolicyScope() string {
 	p.Lock()
 	defer p.Unlock()
 
-	if len(p.endpoints) == 0 {
-		return ""
-	}
-
-	return p.endpoints[0].endpoint.RoutePolicyScope
+	return p.routePolicyScope
 }
 
-// RoutePolicies returns the route policies from the first endpoint in the pool.
+// RoutePolicies returns the route policies for this pool.
 // All endpoints in a pool share the same route policies.
-// Returns nil if the pool is empty.
+// Returns nil if no policies are configured.
 func (p *EndpointPool) RoutePolicies() []string {
 	p.Lock()
 	defer p.Unlock()
 
-	if len(p.endpoints) == 0 {
-		return nil
-	}
-
-	return p.endpoints[0].endpoint.RoutePolicies
+	return p.routePolicies
 }
 
 // ApplicationId returns the ApplicationId from the first endpoint in the pool.

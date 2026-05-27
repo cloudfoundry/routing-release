@@ -3,57 +3,33 @@ package handlers
 import (
 	"log/slog"
 	"net/http"
-	"strings"
 
 	"code.cloudfoundry.org/gorouter/config"
-	logger "code.cloudfoundry.org/gorouter/logger"
 	"code.cloudfoundry.org/gorouter/route"
 )
 
-// mtlsPreAuth performs pre-selection mTLS authorization checks that can be
-// validated before endpoint selection (load balancing). This includes:
-//   - SNI/Host validation (421 Misdirected Request)
-//   - Route pool lookup (404 Not Found)
-//   - Identity extraction requirement check (403 Forbidden)
+// mtlsPreAuth performs pre-selection mTLS authorization checks that require
+// caller identity to be available. It MUST run AFTER CfIdentity in the handler
+// chain (which extracts CallerIdentity from the XFCC header).
 //
-// Scope and route policies checking have been moved to post-selection handlers.
+// Checks performed:
+//   - Route pool existence (404 Not Found)
+//   - Route policy scope enforcement (403 Forbidden if identity missing)
+//
+// SNI/Host validation (421) is handled by MtlsSniCheck which runs earlier.
+// Scope and route policies checking are performed post-selection.
 type mtlsPreAuth struct {
 	config *config.Config
 	logger *slog.Logger
 }
 
 // NewMtlsPreAuth creates a new pre-selection mTLS authorization handler.
+// This handler MUST be placed after CfIdentity in the handler chain.
 func NewMtlsPreAuth(cfg *config.Config, logger *slog.Logger) *mtlsPreAuth {
 	return &mtlsPreAuth{
 		config: cfg,
 		logger: logger,
 	}
-}
-
-// domainMatches checks if a hostname matches a domain pattern (supports wildcard domains).
-// Wildcard patterns (*.domain) only match a single DNS label, not multiple levels.
-// Examples:
-//   - domainMatches("mtls-backend.apps.identity", "*.apps.identity") => true
-//   - domainMatches("deep.sub.apps.identity", "*.apps.identity") => false (multi-level)
-//   - domainMatches("mtls-backend.apps.identity", "mtls-backend.apps.identity") => true
-//   - domainMatches("foo.bar.com", "*.apps.identity") => false
-func domainMatches(hostname, domainPattern string) bool {
-	// Exact match
-	if hostname == domainPattern {
-		return true
-	}
-	// Wildcard match - must match single label only
-	if strings.HasPrefix(domainPattern, "*.") {
-		suffix := domainPattern[1:] // Remove the '*', suffix = ".apps.identity"
-		if !strings.HasSuffix(hostname, suffix) {
-			return false
-		}
-		// Extract the prefix before the suffix
-		prefix := strings.TrimSuffix(hostname, suffix)
-		// Ensure the prefix contains exactly one label (no dots)
-		return !strings.Contains(prefix, ".")
-	}
-	return false
 }
 
 // setRouteEndpointForAccessLog sets the RouteEndpoint on reqInfo so that access
@@ -72,62 +48,25 @@ func setRouteEndpointForAccessLog(reqInfo *RequestInfo, pool *route.EndpointPool
 func (h *mtlsPreAuth) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	reqInfo, err := ContextRequestInfo(r)
 	if err != nil {
-		h.logger.Error("mtls-pre-auth-failed", logger.ErrAttr(err), slog.String("reason", "request-info-missing"))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	hostDomain := hostWithoutPort(r.Host)
-	connState := GetTLSConnectionState(r)
-	reqInfo.TlsSNI = connState.SNI
 
-	isMtlsDomain := h.config.IsMtlsDomain(hostDomain)
-
-	// ── Layer 0: Non-mTLS domain handling ──────────────────────────────────────
-	if !isMtlsDomain {
-		// If the Host is NOT an mTLS domain but the client presented a certificate,
-		// verify that the Host matches the mTLS domain from the TLS handshake.
-		// This prevents an attack where:
-		// 1. Client connects with SNI for an mTLS domain (gets client cert validated)
-		// 2. Client sends Host header for a non-mTLS domain (bypasses checks)
-		if connState.ClientCertRequired && !domainMatches(hostDomain, connState.MtlsDomain) {
-			h.logger.Warn("mtls-enforcement-mismatch",
-				slog.String("host", r.Host),
-				slog.String("tls_sni", connState.SNI),
-				slog.String("tls_mtls_domain", connState.MtlsDomain))
-			w.WriteHeader(http.StatusMisdirectedRequest) // 421
-			return
-		}
-		// Not an mTLS domain and no security issue, pass through
+	// Only apply to mTLS domains
+	if !h.config.IsMtlsDomain(hostDomain) {
 		next(w, r)
-		return
-	}
-
-	// ── Layer 0b: mTLS domain - verify certificate was required ────────────────
-	// For mTLS domains we verify that the TLS handshake actually enforced client
-	// certificate validation for *this* domain. Without this check an attacker
-	// could connect with SNI for a non-mTLS domain and then send a Host header
-	// pointing at an mTLS domain — bypassing certificate validation entirely.
-	if !connState.ClientCertRequired || !domainMatches(hostDomain, connState.MtlsDomain) {
-		h.logger.Warn("mtls-enforcement-mismatch",
-			slog.String("host", r.Host),
-			slog.String("tls_sni", connState.SNI),
-			slog.String("tls_mtls_domain", connState.MtlsDomain))
-		w.WriteHeader(http.StatusMisdirectedRequest) // 421
 		return
 	}
 
 	// ── Layer 1: Route lookup ──────────────────────────────────────────────────
 	if reqInfo.RoutePool == nil || reqInfo.RoutePool.IsEmpty() {
-		h.logger.Debug("mtls-pre-auth-denied",
-			slog.String("host", r.Host),
-			slog.String("reason", "no-route-pool"))
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
 	pool := reqInfo.RoutePool
-	applicationId := pool.ApplicationId()
 
 	// ── Layer 2: Route policy scope — is enforcement active? ───────────────────
 	// Cloud Controller sets route_policy_scope in route options when the domain
@@ -143,10 +82,6 @@ func (h *mtlsPreAuth) ServeHTTP(w http.ResponseWriter, r *http.Request, next htt
 
 	// Enforcement is active — we need caller identity for all checks below.
 	if reqInfo.CallerIdentity == nil {
-		h.logger.Debug("mtls-pre-auth-denied",
-			slog.String("host", r.Host),
-			slog.String("endpoint-app", applicationId),
-			slog.String("reason", "identity-extraction-failed"))
 		setRouteEndpointForAccessLog(reqInfo, pool, h.logger)
 		reqInfo.AuthResult = &AuthResult{
 			Outcome:      "denied",

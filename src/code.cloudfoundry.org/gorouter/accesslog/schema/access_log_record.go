@@ -133,6 +133,9 @@ type AccessLogRecord struct {
 	CallerCFApp   string
 	CallerCFSpace string
 	CallerCFOrg   string
+	// RoutePolicy identifies the route policy rule that matched or caused denial.
+	// Empty ("-") when no route policies are configured or enforcement is disabled.
+	RoutePolicy string
 	// TlsSNI is the SNI used during TLS (logged on 421 rejections).
 	TlsSNI string
 }
@@ -337,6 +340,9 @@ func (r *AccessLogRecord) makeRecord(performTruncate bool) []byte {
 	// #nosec G104
 	b.WriteString(` caller_cf_org:`)
 	b.WriteDashOrStringValue(r.CallerCFOrg)
+	// #nosec G104
+	b.WriteString(` route_policy:`)
+	b.WriteDashOrStringValue(r.RoutePolicy)
 
 	r.addExtraHeaders(b, performTruncate)
 
