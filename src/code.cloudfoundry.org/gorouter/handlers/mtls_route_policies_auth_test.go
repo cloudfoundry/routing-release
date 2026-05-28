@@ -527,51 +527,51 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 					Port:             8080,
 					RoutePolicyScope: route.RoutePolicyScopeAny,
 					RoutePolicies: []string{
-					"invalid-rule",
-					"cf:app:allowed-app",
-				},
+						"invalid-rule",
+						"cf:app:allowed-app",
+					},
+				})
+				pool = createPool(endpoint)
+				reqInfo.RoutePool = pool
+				reqInfo.CallerIdentity = &handlers.CallerIdentity{
+					AppGUID: "allowed-app",
+				}
+
+				err := handler.Check(endpoint, reqInfo)
+				Expect(err).To(BeNil())
+				Expect(reqInfo.AuthResult.Rule).To(Equal("route:cf:app:allowed-app"))
 			})
-			pool = createPool(endpoint)
-			reqInfo.RoutePool = pool
-			reqInfo.CallerIdentity = &handlers.CallerIdentity{
-				AppGUID: "allowed-app",
-			}
-
-			err := handler.Check(endpoint, reqInfo)
-			Expect(err).To(BeNil())
-			Expect(reqInfo.AuthResult.Rule).To(Equal("route:cf:app:allowed-app"))
-		})
-	})
-})
-
-Describe("NewMtlsRoutePoliciesAuth", func() {
-	Context("when no mTLS domains are configured", func() {
-		It("returns NoopPostSelectionHandler", func() {
-			logger := test_util.NewTestLogger("test")
-			emptyCfg, _ := config.DefaultConfig()
-			Expect(emptyCfg.Domains).To(BeEmpty())
-
-			handler := handlers.NewMtlsRoutePoliciesAuth(emptyCfg, logger.Logger)
-			Expect(handler).To(BeIdenticalTo(handlers.NoopPostSelectionHandler))
 		})
 	})
 
-	Context("when mTLS domains are configured", func() {
-		It("returns a real handler", func() {
-			logger := test_util.NewTestLogger("test")
-			cfg, _ := config.DefaultConfig()
-			certChain := test_util.CreateSignedCertWithRootCA(test_util.CertNames{SANs: test_util.SubjectAltNames{DNS: "test.com"}})
-			cfg.Domains = []config.MtlsDomainConfig{
-				{
-					Domain:  "*.apps.mtls.internal",
-					CACerts: string(certChain.CACertPEM),
-				},
-			}
-			cfg.Process()
+	Describe("NewMtlsRoutePoliciesAuth", func() {
+		Context("when no mTLS domains are configured", func() {
+			It("returns NoopPostSelectionHandler", func() {
+				logger := test_util.NewTestLogger("test")
+				emptyCfg, _ := config.DefaultConfig()
+				Expect(emptyCfg.Domains).To(BeEmpty())
 
-			handler := handlers.NewMtlsRoutePoliciesAuth(cfg, logger.Logger)
-			Expect(handler).NotTo(BeIdenticalTo(handlers.NoopPostSelectionHandler))
+				handler := handlers.NewMtlsRoutePoliciesAuth(emptyCfg, logger.Logger)
+				Expect(handler).To(BeIdenticalTo(handlers.NoopPostSelectionHandler))
+			})
+		})
+
+		Context("when mTLS domains are configured", func() {
+			It("returns a real handler", func() {
+				logger := test_util.NewTestLogger("test")
+				cfg, _ := config.DefaultConfig()
+				certChain := test_util.CreateSignedCertWithRootCA(test_util.CertNames{SANs: test_util.SubjectAltNames{DNS: "test.com"}})
+				cfg.Domains = []config.MtlsDomainConfig{
+					{
+						Domain:  "*.apps.mtls.internal",
+						CACerts: string(certChain.CACertPEM),
+					},
+				}
+				cfg.Process()
+
+				handler := handlers.NewMtlsRoutePoliciesAuth(cfg, logger.Logger)
+				Expect(handler).NotTo(BeIdenticalTo(handlers.NoopPostSelectionHandler))
+			})
 		})
 	})
-})
 })
