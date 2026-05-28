@@ -975,8 +975,11 @@ func (c *Config) processMtlsDomains() error {
 			return fmt.Errorf("domains[%d].domain is required", i)
 		}
 
-		// Store with lowercase key for case-insensitive matching (RFC 1035)
-		c.mtlsDomainMap[strings.ToLower(domain.Domain)] = domain
+		// Normalize domain to lowercase for case-insensitive matching (RFC 1035)
+		// Both the map key AND the stored Domain field are lowercased so that
+		// downstream code (e.g., domainMatches) can do case-insensitive comparisons.
+		domain.Domain = strings.ToLower(domain.Domain)
+		c.mtlsDomainMap[domain.Domain] = domain
 	}
 
 	return nil

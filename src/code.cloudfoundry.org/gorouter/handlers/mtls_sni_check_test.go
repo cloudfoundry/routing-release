@@ -308,4 +308,30 @@ var _ = Describe("domainMatches", func() {
 			testDomainMatch("backend.apps.identity:443", "backend.apps.identity", "*.apps.identity", true, true)
 		})
 	})
+
+	Describe("case-insensitive matching (Thread 15: hostname not lowercased in domainMatches)", func() {
+		// Per RFC 1035, DNS hostnames are case-insensitive, so:
+		// - "BACKEND.apps.identity" should match "*.apps.identity"
+		// - "backend.APPS.IDENTITY" should match "*.apps.identity"
+
+		It("matches when hostname has uppercase subdomain", func() {
+			testDomainMatch("BACKEND.apps.identity", "BACKEND.apps.identity", "*.apps.identity", true, true)
+		})
+
+		It("matches when hostname has uppercase suffix", func() {
+			testDomainMatch("backend.APPS.IDENTITY", "backend.APPS.IDENTITY", "*.apps.identity", true, true)
+		})
+
+		It("matches when hostname is fully uppercase", func() {
+			testDomainMatch("BACKEND.APPS.IDENTITY", "BACKEND.APPS.IDENTITY", "*.apps.identity", true, true)
+		})
+
+		It("matches exact domain with different casing", func() {
+			testDomainMatch("EXACT.DOMAIN.COM", "EXACT.DOMAIN.COM", "exact.domain.com", true, true)
+		})
+
+		It("matches when MtlsDomain pattern has mixed case (from config)", func() {
+			testDomainMatch("backend.apps.identity", "backend.apps.identity", "*.Apps.Identity", true, true)
+		})
+	})
 })

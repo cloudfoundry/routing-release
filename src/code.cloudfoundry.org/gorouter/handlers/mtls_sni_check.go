@@ -80,7 +80,12 @@ func (h *mtlsSniCheck) ServeHTTP(w http.ResponseWriter, r *http.Request, next ht
 
 // domainMatches checks if a hostname matches a domain pattern (supports wildcard domains).
 // Wildcard patterns (*.domain) only match a single DNS label, not multiple levels.
+// Matching is case-insensitive per RFC 1035 (DNS hostnames).
 func domainMatches(hostname, domainPattern string) bool {
+	// Normalize to lowercase for case-insensitive matching (RFC 1035)
+	hostname = strings.ToLower(hostname)
+	domainPattern = strings.ToLower(domainPattern)
+
 	if hostname == domainPattern {
 		return true
 	}

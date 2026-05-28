@@ -2135,6 +2135,51 @@ drain_timeout: 60s
 				Expect(cfg.Domain).To(Equal("exact.example.com"))
 			})
 		})
+
+		Context("when domain is configured with mixed case (Thread 16: domain.Domain not lowercased)", func() {
+			BeforeEach(func() {
+				// Configure domains with MIXED CASE to expose the bug where
+				// domain.Domain retains original casing instead of being normalized
+				cfgForSnippet.Domains = []MtlsDomainConfig{
+					{
+						Domain:     "*.Apps.Identity", // Mixed case - should be normalized
+						XFCCFormat: "envoy",
+						CACerts:    string(certChain.CACertPEM),
+					},
+					{
+						Domain:     "Exact.EXAMPLE.Com", // Mixed case - should be normalized
+						XFCCFormat: "raw",
+						CACerts:    string(certChain.CACertPEM),
+					},
+				}
+				err := config.Initialize(createYMLSnippet(cfgForSnippet))
+				Expect(err).ToNot(HaveOccurred())
+				err = config.Process()
+				Expect(err).ToNot(HaveOccurred())
+			})
+
+			It("normalizes cfg.Domain to lowercase for wildcard domain", func() {
+				cfg := config.GetMtlsDomainConfig("backend.apps.identity")
+				Expect(cfg).ToNot(BeNil())
+				Expect(cfg.Domain).To(Equal("*.apps.identity"))
+			})
+
+			It("normalizes cfg.Domain to lowercase for exact domain", func() {
+				cfg := config.GetMtlsDomainConfig("exact.example.com")
+				Expect(cfg).ToNot(BeNil())
+				Expect(cfg.Domain).To(Equal("exact.example.com"))
+			})
+
+			It("matches lowercase host against mixed-case configured domain", func() {
+				cfg := config.GetMtlsDomainConfig("backend.apps.identity")
+				Expect(cfg).ToNot(BeNil())
+			})
+
+			It("matches uppercase host against mixed-case configured domain", func() {
+				cfg := config.GetMtlsDomainConfig("BACKEND.APPS.IDENTITY")
+				Expect(cfg).ToNot(BeNil())
+			})
+		})
 	})
 
 	Describe("IsMtlsDomain", func() {
