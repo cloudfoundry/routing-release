@@ -49,10 +49,6 @@ func (h *mtlsSniCheck) ServeHTTP(w http.ResponseWriter, r *http.Request, next ht
 		// cert enforcement (for a different mTLS domain), verify consistency.
 		// This prevents SNI-to-Host confusion attacks.
 		if connState.ClientCertRequired && !domainMatches(hostDomain, connState.MtlsDomain) {
-			h.logger.Warn("mtls-enforcement-mismatch",
-				slog.String("host", r.Host),
-				slog.String("tls_sni", connState.SNI),
-				slog.String("tls_mtls_domain", connState.MtlsDomain))
 			w.WriteHeader(http.StatusMisdirectedRequest) // 421
 			return
 		}
@@ -66,10 +62,6 @@ func (h *mtlsSniCheck) ServeHTTP(w http.ResponseWriter, r *http.Request, next ht
 	// could connect with SNI for a non-mTLS domain and then send a Host header
 	// pointing at an mTLS domain — bypassing certificate validation entirely.
 	if !connState.ClientCertRequired || !domainMatches(hostDomain, connState.MtlsDomain) {
-		h.logger.Warn("mtls-enforcement-mismatch",
-			slog.String("host", r.Host),
-			slog.String("tls_sni", connState.SNI),
-			slog.String("tls_mtls_domain", connState.MtlsDomain))
 		w.WriteHeader(http.StatusMisdirectedRequest) // 421
 		return
 	}

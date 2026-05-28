@@ -396,10 +396,6 @@ func (r *Router) getTLSConfigForClient(hello *tls.ClientHelloInfo, baseConfig *t
 	mtlsConfig.ClientAuth = tls.RequireAndVerifyClientCert
 	mtlsConfig.ClientCAs = mtlsDomainConfig.CAPool
 
-	r.logger.Debug("mtls-domain-detected",
-		slog.String("server_name", serverName),
-		slog.String("domain", mtlsDomainConfig.Domain))
-
 	return mtlsConfig, nil
 }
 

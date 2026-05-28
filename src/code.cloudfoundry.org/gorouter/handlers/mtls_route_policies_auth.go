@@ -69,8 +69,6 @@ func (h *MtlsRoutePoliciesAuth) Check(endpoint *route.Endpoint, reqInfo *Request
 	if reqInfo.RoutePool == nil {
 		// This should not happen in normal operation, but if it does,
 		// we must deny the request to avoid authorization bypass
-		h.logger.Error("mtls-route-policies-auth-no-route-pool",
-			slog.String("reason", "route-pool-missing"))
 		return NewAuthError("internal_error", "route pool missing during authorization")
 	}
 

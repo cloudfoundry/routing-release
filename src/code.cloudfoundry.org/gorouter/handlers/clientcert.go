@@ -60,10 +60,6 @@ func (c *clientCert) ServeHTTP(rw http.ResponseWriter, r *http.Request, next htt
 	if mtlsDomainConfig != nil {
 		forwardingMode = mtlsDomainConfig.ForwardedClientCert
 		xfccFormat = mtlsDomainConfig.XFCCFormat
-		c.logger.Debug("using-mtls-domain-xfcc-config",
-			slog.String("host", r.Host),
-			slog.String("mode", forwardingMode),
-			slog.String("xfcc_format", xfccFormat))
 	}
 
 	if !skip {
