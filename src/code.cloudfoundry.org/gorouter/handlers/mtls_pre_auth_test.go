@@ -229,4 +229,26 @@ var _ = Describe("MtlsPreAuth", func() {
 			})
 		})
 	})
+
+	Describe("NewMtlsPreAuth", func() {
+		Context("when no mTLS domains are configured", func() {
+			It("returns NoopHandler", func() {
+				logger := test_util.NewTestLogger("test")
+				emptyCfg, _ := config.DefaultConfig()
+				Expect(emptyCfg.Domains).To(BeEmpty())
+
+				handler := handlers.NewMtlsPreAuth(emptyCfg, logger.Logger)
+				Expect(handler).To(BeIdenticalTo(handlers.NoopHandler))
+			})
+		})
+
+		Context("when mTLS domains are configured", func() {
+			It("returns a real handler", func() {
+				logger := test_util.NewTestLogger("test")
+				// cfg is already configured with domains in BeforeEach
+				handler := handlers.NewMtlsPreAuth(cfg, logger.Logger)
+				Expect(handler).NotTo(BeIdenticalTo(handlers.NoopHandler))
+			})
+		})
+	})
 })

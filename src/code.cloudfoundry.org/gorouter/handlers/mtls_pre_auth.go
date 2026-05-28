@@ -6,6 +6,7 @@ import (
 
 	"code.cloudfoundry.org/gorouter/config"
 	"code.cloudfoundry.org/gorouter/route"
+	"github.com/urfave/negroni/v3"
 )
 
 // mtlsPreAuth performs pre-selection mTLS authorization checks that require
@@ -25,7 +26,11 @@ type mtlsPreAuth struct {
 
 // NewMtlsPreAuth creates a new pre-selection mTLS authorization handler.
 // This handler MUST be placed after CfIdentity in the handler chain.
-func NewMtlsPreAuth(cfg *config.Config, logger *slog.Logger) *mtlsPreAuth {
+// Returns NoopHandler when no mTLS domains are configured.
+func NewMtlsPreAuth(cfg *config.Config, logger *slog.Logger) negroni.Handler {
+	if len(cfg.Domains) == 0 {
+		return NoopHandler
+	}
 	return &mtlsPreAuth{
 		config: cfg,
 		logger: logger,

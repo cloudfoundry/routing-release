@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"strings"
 
+	"code.cloudfoundry.org/gorouter/config"
 	"code.cloudfoundry.org/gorouter/route"
 )
 
@@ -19,7 +20,11 @@ type MtlsRoutePoliciesAuth struct {
 }
 
 // NewMtlsRoutePoliciesAuth creates a new post-selection route policies authorization handler.
-func NewMtlsRoutePoliciesAuth(logger *slog.Logger) *MtlsRoutePoliciesAuth {
+// Returns NoopPostSelectionHandler when no mTLS domains are configured.
+func NewMtlsRoutePoliciesAuth(cfg *config.Config, logger *slog.Logger) PostSelectionHandler {
+	if len(cfg.Domains) == 0 {
+		return NoopPostSelectionHandler
+	}
 	return &MtlsRoutePoliciesAuth{
 		logger: logger,
 	}

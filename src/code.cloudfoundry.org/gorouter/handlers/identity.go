@@ -36,8 +36,12 @@ type cfIdentityHandler struct {
 	config *config.Config
 }
 
-// NewCfIdentity creates a new CF app identity extraction handler
+// NewCfIdentity creates a new CF app identity extraction handler.
+// Returns NoopHandler when no mTLS domains are configured.
 func NewCfIdentity(cfg *config.Config) negroni.Handler {
+	if len(cfg.Domains) == 0 {
+		return NoopHandler
+	}
 	return &cfIdentityHandler{config: cfg}
 }
 

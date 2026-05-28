@@ -121,7 +121,7 @@ func NewProxy(
 	postSelectionPipeline := handlers.NewPostSelectionPipeline(
 		logger,
 		handlers.NewMtlsScopeAuth(cfg, logger),
-		handlers.NewMtlsRoutePoliciesAuth(logger),
+		handlers.NewMtlsRoutePoliciesAuth(cfg, logger),
 	)
 
 	prt := round_tripper.NewProxyRoundTripper(

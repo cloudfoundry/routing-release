@@ -334,4 +334,26 @@ var _ = Describe("domainMatches", func() {
 			testDomainMatch("backend.apps.identity", "backend.apps.identity", "*.Apps.Identity", true, true)
 		})
 	})
+
+	Describe("NewMtlsSniCheck", func() {
+		Context("when no mTLS domains are configured", func() {
+			It("returns NoopHandler", func() {
+				logger := test_util.NewTestLogger("test")
+				emptyCfg, _ := config.DefaultConfig()
+				Expect(emptyCfg.Domains).To(BeEmpty())
+
+				handler := handlers.NewMtlsSniCheck(emptyCfg, logger.Logger)
+				Expect(handler).To(BeIdenticalTo(handlers.NoopHandler))
+			})
+		})
+
+		Context("when mTLS domains are configured", func() {
+			It("returns a real handler", func() {
+				logger := test_util.NewTestLogger("test")
+				// cfg is already configured with domains in BeforeEach
+				handler := handlers.NewMtlsSniCheck(cfg, logger.Logger)
+				Expect(handler).NotTo(BeIdenticalTo(handlers.NoopHandler))
+			})
+		})
+	})
 })

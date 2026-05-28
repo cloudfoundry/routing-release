@@ -14,7 +14,7 @@ import (
 
 var _ = Describe("MtlsScopeAuth", func() {
 	var (
-		handler  *handlers.MtlsScopeAuth
+		handler  handlers.PostSelectionHandler
 		endpoint *route.Endpoint
 		reqInfo  *handlers.RequestInfo
 		pool     *route.EndpointPool
@@ -24,6 +24,15 @@ var _ = Describe("MtlsScopeAuth", func() {
 	BeforeEach(func() {
 		logger := test_util.NewTestLogger("mtls-scope-auth")
 		cfg, _ = config.DefaultConfig()
+		// Configure a domain so the handler is active
+		certChain := test_util.CreateSignedCertWithRootCA(test_util.CertNames{SANs: test_util.SubjectAltNames{DNS: "test.com"}})
+		cfg.Domains = []config.MtlsDomainConfig{
+			{
+				Domain:  "*.apps.mtls.internal",
+				CACerts: string(certChain.CACertPEM),
+			},
+		}
+		cfg.Process()
 		handler = handlers.NewMtlsScopeAuth(cfg, logger.Logger)
 		reqInfo = &handlers.RequestInfo{}
 	})
@@ -415,6 +424,28 @@ var _ = Describe("MtlsScopeAuth", func() {
 				Expect(ok).To(BeTrue())
 				Expect(authErr.Rule).To(Equal("domain:scope=space:post-selection"))
 				Expect(authErr.Reason).To(ContainSubstring("caller space space-abc does not match selected backend space space-xyz"))
+			})
+		})
+	})
+
+	Describe("NewMtlsScopeAuth", func() {
+		Context("when no mTLS domains are configured", func() {
+			It("returns NoopPostSelectionHandler", func() {
+				logger := test_util.NewTestLogger("test")
+				emptyCfg, _ := config.DefaultConfig()
+				Expect(emptyCfg.Domains).To(BeEmpty())
+
+				handler := handlers.NewMtlsScopeAuth(emptyCfg, logger.Logger)
+				Expect(handler).To(BeIdenticalTo(handlers.NoopPostSelectionHandler))
+			})
+		})
+
+		Context("when mTLS domains are configured", func() {
+			It("returns a real handler", func() {
+				logger := test_util.NewTestLogger("test")
+				// cfg is already configured with domains in BeforeEach
+				handler := handlers.NewMtlsScopeAuth(cfg, logger.Logger)
+				Expect(handler).NotTo(BeIdenticalTo(handlers.NoopPostSelectionHandler))
 			})
 		})
 	})

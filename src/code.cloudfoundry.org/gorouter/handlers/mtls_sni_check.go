@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"code.cloudfoundry.org/gorouter/config"
+	"github.com/urfave/negroni/v3"
 )
 
 // mtlsSniCheck validates that the TLS SNI and Host header are consistent with
@@ -23,7 +24,11 @@ type mtlsSniCheck struct {
 }
 
 // NewMtlsSniCheck creates a new SNI/Host mismatch check handler.
-func NewMtlsSniCheck(cfg *config.Config, logger *slog.Logger) *mtlsSniCheck {
+// Returns NoopHandler when no mTLS domains are configured.
+func NewMtlsSniCheck(cfg *config.Config, logger *slog.Logger) negroni.Handler {
+	if len(cfg.Domains) == 0 {
+		return NoopHandler
+	}
 	return &mtlsSniCheck{
 		config: cfg,
 		logger: logger,

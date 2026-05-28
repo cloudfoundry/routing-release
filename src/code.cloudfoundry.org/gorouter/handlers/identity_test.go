@@ -332,6 +332,26 @@ var _ = Describe("CfIdentity", func() {
 			})
 		})
 	})
+
+	Describe("NewCfIdentity", func() {
+		Context("when no mTLS domains are configured", func() {
+			It("returns NoopHandler", func() {
+				emptyCfg, _ := config.DefaultConfig()
+				Expect(emptyCfg.Domains).To(BeEmpty())
+
+				handler := handlers.NewCfIdentity(emptyCfg)
+				Expect(handler).To(BeIdenticalTo(handlers.NoopHandler))
+			})
+		})
+
+		Context("when mTLS domains are configured", func() {
+			It("returns a real handler", func() {
+				// cfg is already configured with domains in BeforeEach
+				handler := handlers.NewCfIdentity(cfg)
+				Expect(handler).NotTo(BeIdenticalTo(handlers.NoopHandler))
+			})
+		})
+	})
 })
 
 // Helper functions for generating test certificates

@@ -23,7 +23,11 @@ type MtlsScopeAuth struct {
 }
 
 // NewMtlsScopeAuth creates a new post-selection scope authorization handler.
-func NewMtlsScopeAuth(cfg *config.Config, logger *slog.Logger) *MtlsScopeAuth {
+// Returns NoopPostSelectionHandler when no mTLS domains are configured.
+func NewMtlsScopeAuth(cfg *config.Config, logger *slog.Logger) PostSelectionHandler {
+	if len(cfg.Domains) == 0 {
+		return NoopPostSelectionHandler
+	}
 	return &MtlsScopeAuth{
 		config: cfg,
 		logger: logger,
