@@ -1082,6 +1082,53 @@ var _ = Describe("EndpointPool", func() {
 		})
 	})
 
+	Context("when endpoints have route policy fields", func() {
+		It("marshals json with route_policy_scope and route_policies", func() {
+			e := route.NewEndpoint(&route.EndpointOpts{
+				Host:                    "1.2.3.4",
+				Port:                    5678,
+				Protocol:                "http2",
+				StaleThresholdInSeconds: -1,
+				RoutePolicyScope:        route.RoutePolicyScopeOrg,
+				RoutePolicies:           []string{"cf:org:org-guid-1", "cf:app:app-guid-1"},
+			})
+			pool.Put(e)
+
+			json, err := pool.MarshalJSON()
+			Expect(err).ToNot(HaveOccurred())
+			Expect(string(json)).To(Equal(`[{"address":"1.2.3.4:5678","availability_zone":"","protocol":"http2","tls":false,"ttl":-1,"tags":null,"route_policy_scope":"org","route_policies":["cf:org:org-guid-1","cf:app:app-guid-1"]}]`))
+		})
+
+		It("marshals json with route_policy_scope only", func() {
+			e := route.NewEndpoint(&route.EndpointOpts{
+				Host:                    "1.2.3.4",
+				Port:                    5678,
+				Protocol:                "http2",
+				StaleThresholdInSeconds: -1,
+				RoutePolicyScope:        route.RoutePolicyScopeSpace,
+			})
+			pool.Put(e)
+
+			json, err := pool.MarshalJSON()
+			Expect(err).ToNot(HaveOccurred())
+			Expect(string(json)).To(Equal(`[{"address":"1.2.3.4:5678","availability_zone":"","protocol":"http2","tls":false,"ttl":-1,"tags":null,"route_policy_scope":"space"}]`))
+		})
+
+		It("omits route policy fields when empty", func() {
+			e := route.NewEndpoint(&route.EndpointOpts{
+				Host:                    "1.2.3.4",
+				Port:                    5678,
+				Protocol:                "http2",
+				StaleThresholdInSeconds: -1,
+			})
+			pool.Put(e)
+
+			json, err := pool.MarshalJSON()
+			Expect(err).ToNot(HaveOccurred())
+			Expect(string(json)).To(Equal(`[{"address":"1.2.3.4:5678","availability_zone":"","protocol":"http2","tls":false,"ttl":-1,"tags":null}]`))
+		})
+	})
+
 	Describe("ProcessId", func() {
 		Context("when there are no tags", func() {
 			It("returns an empty string", func() {
