@@ -531,7 +531,7 @@ if_p('router.domains') do |domains|
 
     if domain_config.key?('forwarded_client_cert') && !domain_config['forwarded_client_cert'].nil?
       valid_modes = ['always_forward', 'forward', 'sanitize_set']
-      mode = domain_config['forwarded_client_cert']
+      mode = domain_config['forwarded_client_cert'].downcase
       unless valid_modes.include?(mode)
         raise "Invalid forwarded_client_cert mode '#{mode}' for domain '#{domain_config['name']}'. Must be one of: #{valid_modes.join(', ')}"
       end
@@ -540,7 +540,7 @@ if_p('router.domains') do |domains|
 
     if domain_config.key?('xfcc_format') && !domain_config['xfcc_format'].nil?
       valid_formats = ['raw', 'envoy']
-      format = domain_config['xfcc_format']
+      format = domain_config['xfcc_format'].downcase
       unless valid_formats.include?(format)
         raise "Invalid xfcc_format '#{format}' for domain '#{domain_config['name']}'. Must be one of: #{valid_formats.join(', ')}"
       end

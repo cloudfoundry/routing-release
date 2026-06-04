@@ -2136,7 +2136,7 @@ drain_timeout: 60s
 			})
 		})
 
-		Context("when domain is configured with mixed case (Thread 16: domain.Domain not lowercased)", func() {
+		Context("when domain name is configured with mixed case", func() {
 			BeforeEach(func() {
 				// Configure domains with MIXED CASE to expose the bug where
 				// domain.Domain retains original casing instead of being normalized
@@ -2234,6 +2234,73 @@ drain_timeout: 60s
 
 		BeforeEach(func() {
 			certChain = test_util.CreateSignedCertWithRootCA(test_util.CertNames{SANs: test_util.SubjectAltNames{DNS: "test.com"}})
+		})
+
+		It("returns an error when forwarded_client_cert is an invalid value", func() {
+			cfgForSnippet.Domains = []MtlsDomainConfig{
+				{
+					Domain:              "*.apps.identity",
+					ForwardedClientCert: "not-a-valid-mode",
+					CACerts:             string(certChain.CACertPEM),
+				},
+			}
+			err := config.Initialize(createYMLSnippet(cfgForSnippet))
+			Expect(err).ToNot(HaveOccurred())
+			err = config.Process()
+			Expect(err).To(MatchError(ContainSubstring("domains[0].forwarded_client_cert must be one of")))
+		})
+
+		It("returns an error when xfcc_format is an invalid value", func() {
+			cfgForSnippet.Domains = []MtlsDomainConfig{
+				{
+					Domain:     "*.apps.identity",
+					XFCCFormat: "not-a-valid-format",
+					CACerts:    string(certChain.CACertPEM),
+				},
+			}
+			err := config.Initialize(createYMLSnippet(cfgForSnippet))
+			Expect(err).ToNot(HaveOccurred())
+			err = config.Process()
+			Expect(err).To(MatchError(ContainSubstring("domains[0].xfcc_format must be one of")))
+		})
+
+		It("returns an error when ca_certs contains invalid certificate data", func() {
+			cfgForSnippet.Domains = []MtlsDomainConfig{
+				{
+					Domain:  "*.apps.identity",
+					CACerts: "not-valid-pem",
+				},
+			}
+			err := config.Initialize(createYMLSnippet(cfgForSnippet))
+			Expect(err).ToNot(HaveOccurred())
+			err = config.Process()
+			Expect(err).To(MatchError(ContainSubstring("domains[0].ca_certs contains invalid certificates")))
+		})
+
+		It("returns an error when ca_certs is empty", func() {
+			cfgForSnippet.Domains = []MtlsDomainConfig{
+				{
+					Domain:  "*.apps.identity",
+					CACerts: "",
+				},
+			}
+			err := config.Initialize(createYMLSnippet(cfgForSnippet))
+			Expect(err).ToNot(HaveOccurred())
+			err = config.Process()
+			Expect(err).To(MatchError(ContainSubstring("domains[0].ca_certs is required")))
+		})
+
+		It("returns an error when domain name is empty", func() {
+			cfgForSnippet.Domains = []MtlsDomainConfig{
+				{
+					Domain:  "",
+					CACerts: string(certChain.CACertPEM),
+				},
+			}
+			err := config.Initialize(createYMLSnippet(cfgForSnippet))
+			Expect(err).ToNot(HaveOccurred())
+			err = config.Process()
+			Expect(err).To(MatchError(ContainSubstring("domains[0].domain is required")))
 		})
 
 		It("returns an error when xfcc_format is set with always_forward", func() {
