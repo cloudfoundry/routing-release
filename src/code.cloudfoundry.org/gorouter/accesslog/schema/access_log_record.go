@@ -301,6 +301,15 @@ func (r *AccessLogRecord) makeRecord(performTruncate bool) []byte {
 		case "backend_time":
 			b.WriteString(`backend_time:`)
 			b.WriteDashOrFloatValue(r.successfulAttemptTime())
+		case "caller_cf_app":
+			b.WriteString(`caller_cf_app:`)
+			b.WriteDashOrStringValue(r.CallerCFApp)
+		case "caller_cf_org":
+			b.WriteString(`caller_cf_org:`)
+			b.WriteDashOrStringValue(r.CallerCFOrg)
+		case "caller_cf_space":
+			b.WriteString(`caller_cf_space:`)
+			b.WriteDashOrStringValue(r.CallerCFSpace)
 		case "dial_time":
 			b.WriteString(`dial_time:`)
 			b.WriteDashOrFloatValue(r.dialTime())
@@ -316,6 +325,12 @@ func (r *AccessLogRecord) makeRecord(performTruncate bool) []byte {
 		case "local_address":
 			b.WriteString(`local_address:`)
 			b.WriteDashOrStringValue(r.LocalAddress)
+		case "route_policy":
+			b.WriteString(`route_policy:`)
+			b.WriteDashOrStringValue(r.RoutePolicy)
+		case "tls_sni":
+			b.WriteString(`tls_sni:`)
+			b.WriteDashOrStringValue(r.TlsSNI)
 		case "tls_time":
 			b.WriteString(`tls_time:`)
 			b.WriteDashOrFloatValue(r.tlsTime())
@@ -326,23 +341,6 @@ func (r *AccessLogRecord) makeRecord(performTruncate bool) []byte {
 	// #nosec  G104 - ignore errors from writing the access log as it will only cause more errors to log this error
 	b.WriteString(`x_cf_routererror:`)
 	b.WriteDashOrStringValue(r.RouterError)
-
-	b.AppendSpaces(false)
-	// #nosec G104
-	b.WriteString(` tls_sni:`)
-	b.WriteDashOrStringValue(r.TlsSNI)
-	// #nosec G104
-	b.WriteString(` caller_cf_app:`)
-	b.WriteDashOrStringValue(r.CallerCFApp)
-	// #nosec G104
-	b.WriteString(` caller_cf_space:`)
-	b.WriteDashOrStringValue(r.CallerCFSpace)
-	// #nosec G104
-	b.WriteString(` caller_cf_org:`)
-	b.WriteDashOrStringValue(r.CallerCFOrg)
-	// #nosec G104
-	b.WriteString(` route_policy:`)
-	b.WriteDashOrStringValue(r.RoutePolicy)
 
 	r.addExtraHeaders(b, performTruncate)
 
