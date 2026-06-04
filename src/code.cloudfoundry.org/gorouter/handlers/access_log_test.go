@@ -235,6 +235,112 @@ var _ = Describe("AccessLog", func() {
 		})
 	})
 
+	Context("when CallerIdentity is set on the request context", func() {
+		BeforeEach(func() {
+			handler = negroni.New()
+			handler.Use(handlers.NewRequestInfo())
+			handler.Use(handlers.NewProxyWriter(logger.Logger))
+			handler.Use(handlers.NewAccessLog(accessLogger, extraHeadersToLog, nil, logger.Logger))
+			handler.Use(negroni.HandlerFunc(func(rw http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
+				reqInfo, err := handlers.ContextRequestInfo(req)
+				if err == nil {
+					reqInfo.CallerIdentity = &handlers.CallerIdentity{
+						AppGUID:   "app-guid-123",
+						SpaceGUID: "space-guid-456",
+						OrgGUID:   "org-guid-789",
+					}
+				}
+				next(rw, req)
+			}))
+			handler.Use(nextHandler)
+		})
+
+		It("populates CallerCFApp, CallerCFSpace, CallerCFOrg on the access log record", func() {
+			handler.ServeHTTP(resp, req)
+			Expect(accessLogger.LogCallCount()).To(Equal(1))
+
+			alr := accessLogger.LogArgsForCall(0)
+			Expect(alr.CallerCFApp).To(Equal("app-guid-123"))
+			Expect(alr.CallerCFSpace).To(Equal("space-guid-456"))
+			Expect(alr.CallerCFOrg).To(Equal("org-guid-789"))
+		})
+	})
+
+	Context("when CallerIdentity is nil on the request context", func() {
+		It("leaves CallerCFApp, CallerCFSpace, CallerCFOrg empty", func() {
+			handler.ServeHTTP(resp, req)
+			Expect(accessLogger.LogCallCount()).To(Equal(1))
+
+			alr := accessLogger.LogArgsForCall(0)
+			Expect(alr.CallerCFApp).To(BeEmpty())
+			Expect(alr.CallerCFSpace).To(BeEmpty())
+			Expect(alr.CallerCFOrg).To(BeEmpty())
+		})
+	})
+
+	Context("when AuthResult is set on the request context", func() {
+		BeforeEach(func() {
+			handler = negroni.New()
+			handler.Use(handlers.NewRequestInfo())
+			handler.Use(handlers.NewProxyWriter(logger.Logger))
+			handler.Use(handlers.NewAccessLog(accessLogger, extraHeadersToLog, nil, logger.Logger))
+			handler.Use(negroni.HandlerFunc(func(rw http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
+				reqInfo, err := handlers.ContextRequestInfo(req)
+				if err == nil {
+					reqInfo.AuthResult = &handlers.AuthResult{
+						Outcome: "allowed",
+						Rule:    "route:cf:app:app-guid-123",
+					}
+				}
+				next(rw, req)
+			}))
+			handler.Use(nextHandler)
+		})
+
+		It("populates RoutePolicy on the access log record", func() {
+			handler.ServeHTTP(resp, req)
+			Expect(accessLogger.LogCallCount()).To(Equal(1))
+
+			alr := accessLogger.LogArgsForCall(0)
+			Expect(alr.RoutePolicy).To(Equal("route:cf:app:app-guid-123"))
+		})
+	})
+
+	Context("when AuthResult is nil on the request context", func() {
+		It("leaves RoutePolicy empty", func() {
+			handler.ServeHTTP(resp, req)
+			Expect(accessLogger.LogCallCount()).To(Equal(1))
+
+			alr := accessLogger.LogArgsForCall(0)
+			Expect(alr.RoutePolicy).To(BeEmpty())
+		})
+	})
+
+	Context("when TlsSNI is set on the request context", func() {
+		BeforeEach(func() {
+			handler = negroni.New()
+			handler.Use(handlers.NewRequestInfo())
+			handler.Use(handlers.NewProxyWriter(logger.Logger))
+			handler.Use(handlers.NewAccessLog(accessLogger, extraHeadersToLog, nil, logger.Logger))
+			handler.Use(negroni.HandlerFunc(func(rw http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
+				reqInfo, err := handlers.ContextRequestInfo(req)
+				if err == nil {
+					reqInfo.TlsSNI = "backend.apps.internal"
+				}
+				next(rw, req)
+			}))
+			handler.Use(nextHandler)
+		})
+
+		It("populates TlsSNI on the access log record", func() {
+			handler.ServeHTTP(resp, req)
+			Expect(accessLogger.LogCallCount()).To(Equal(1))
+
+			alr := accessLogger.LogArgsForCall(0)
+			Expect(alr.TlsSNI).To(Equal("backend.apps.internal"))
+		})
+	})
+
 })
 
 type failingResponseWriter struct {
