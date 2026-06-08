@@ -1,6 +1,6 @@
 module code.cloudfoundry.org
 
-go 1.25.8
+go 1.26.4
 
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
 
@@ -10,7 +10,6 @@ require (
 	code.cloudfoundry.org/debugserver v0.100.0
 	code.cloudfoundry.org/diego-logging-client v0.110.0
 	code.cloudfoundry.org/eventhub v0.75.0
-	code.cloudfoundry.org/go-loggregator/v9 v9.2.1
 	code.cloudfoundry.org/go-metric-registry v0.0.0-20260602223408-eae7443fd7fa
 	code.cloudfoundry.org/lager/v3 v3.72.0
 	code.cloudfoundry.org/localip v0.74.0
@@ -25,7 +24,9 @@ require (
 	github.com/cloudfoundry/sonde-go v0.0.0-20260526083715-66f310f13c26
 	github.com/go-sql-driver/mysql v1.10.0
 	github.com/golang-jwt/jwt/v4 v4.5.2
+	github.com/jinzhu/gorm v1.9.16
 	github.com/kisielk/errcheck v1.20.0
+	github.com/lib/pq v1.12.3
 	github.com/nats-io/nats-server/v2 v2.14.2
 	github.com/nats-io/nats.go v1.52.0
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
@@ -57,6 +58,7 @@ require (
 	code.cloudfoundry.org/bbs v0.0.0-20260601194358-002fe939f0da // indirect
 	code.cloudfoundry.org/durationjson v0.75.0 // indirect
 	code.cloudfoundry.org/go-diodes v0.0.0-20260526122959-0284fcb5ac88 // indirect
+	code.cloudfoundry.org/go-loggregator/v9 v9.2.1 // indirect
 	code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5 // indirect
 	filippo.io/edwards25519 v1.2.0 // indirect
 	github.com/Masterminds/semver/v3 v3.5.0 // indirect
@@ -83,6 +85,7 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/klauspost/compress v1.18.6 // indirect
+	github.com/mattn/go-sqlite3 v1.14.22 // indirect
 	github.com/minio/highwayhash v1.0.4 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/nats-io/jwt/v2 v2.8.2 // indirect
