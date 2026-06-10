@@ -1,4 +1,4 @@
-package handlers_test
+package postselection_test
 
 import (
 	"net/http"
@@ -8,13 +8,14 @@ import (
 
 	"code.cloudfoundry.org/gorouter/config"
 	"code.cloudfoundry.org/gorouter/handlers"
+	"code.cloudfoundry.org/gorouter/handlers/postselection"
 	"code.cloudfoundry.org/gorouter/route"
 	"code.cloudfoundry.org/gorouter/test_util"
 )
 
 var _ = Describe("MtlsScopeAuth", func() {
 	var (
-		handler  handlers.PostSelectionHandler
+		handler  postselection.PostSelectionHandler
 		endpoint *route.Endpoint
 		reqInfo  *handlers.RequestInfo
 		pool     *route.EndpointPool
@@ -33,7 +34,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 			},
 		}
 		cfg.Process()
-		handler = handlers.NewMtlsScopeAuth(cfg, logger.Logger)
+		handler = postselection.NewMtlsScopeAuth(cfg, logger.Logger)
 		reqInfo = &handlers.RequestInfo{}
 	})
 
@@ -58,7 +59,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				authErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*postselection.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(authErr.Rule).To(Equal("internal_error"))
 				Expect(authErr.Reason).To(Equal("route pool missing during authorization"))
@@ -96,7 +97,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				authErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*postselection.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(authErr.Rule).To(Equal("domain:no_caller_identity"))
 				Expect(authErr.Reason).To(Equal("no caller identity present"))
@@ -168,7 +169,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				authErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*postselection.AuthError)
 				Expect(ok).To(BeTrue(), "error should be AuthError")
 				Expect(authErr.Rule).To(Equal("domain:scope=org:post-selection"))
 				Expect(authErr.Reason).To(ContainSubstring("caller org org-456 does not match selected backend org org-123"))
@@ -193,7 +194,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				authErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*postselection.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(authErr.Rule).To(Equal("domain:scope=org:post-selection"))
 				Expect(authErr.Reason).To(ContainSubstring("caller org org-123 does not match selected backend org "))
@@ -217,7 +218,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				authErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*postselection.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(authErr.Rule).To(Equal("domain:scope=org:post-selection"))
 			})
@@ -263,7 +264,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				authErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*postselection.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(authErr.Rule).To(Equal("domain:scope=space:post-selection"))
 				Expect(authErr.Reason).To(ContainSubstring("caller space space-xyz does not match selected backend space space-abc"))
@@ -288,7 +289,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				authErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*postselection.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(authErr.Rule).To(Equal("domain:scope=space:post-selection"))
 			})
@@ -311,7 +312,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				authErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*postselection.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(authErr.Rule).To(Equal("domain:scope=space:post-selection"))
 			})
@@ -336,7 +337,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				authErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*postselection.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(authErr.Rule).To(Equal("domain:scope=unknown:post-selection"))
 				Expect(authErr.Reason).To(ContainSubstring("unknown route policy scope"))
@@ -420,7 +421,7 @@ var _ = Describe("MtlsScopeAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				authErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*postselection.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(authErr.Rule).To(Equal("domain:scope=space:post-selection"))
 				Expect(authErr.Reason).To(ContainSubstring("caller space space-abc does not match selected backend space space-xyz"))
@@ -435,8 +436,8 @@ var _ = Describe("MtlsScopeAuth", func() {
 				emptyCfg, _ := config.DefaultConfig()
 				Expect(emptyCfg.Domains).To(BeEmpty())
 
-				handler := handlers.NewMtlsScopeAuth(emptyCfg, logger.Logger)
-				Expect(handler).To(BeIdenticalTo(handlers.NoopPostSelectionHandler))
+				handler := postselection.NewMtlsScopeAuth(emptyCfg, logger.Logger)
+				Expect(handler).To(BeIdenticalTo(postselection.NoopPostSelectionHandler))
 			})
 		})
 
@@ -444,8 +445,8 @@ var _ = Describe("MtlsScopeAuth", func() {
 			It("returns a real handler", func() {
 				logger := test_util.NewTestLogger("test")
 				// cfg is already configured with domains in BeforeEach
-				handler := handlers.NewMtlsScopeAuth(cfg, logger.Logger)
-				Expect(handler).NotTo(BeIdenticalTo(handlers.NoopPostSelectionHandler))
+				handler := postselection.NewMtlsScopeAuth(cfg, logger.Logger)
+				Expect(handler).NotTo(BeIdenticalTo(postselection.NoopPostSelectionHandler))
 			})
 		})
 	})

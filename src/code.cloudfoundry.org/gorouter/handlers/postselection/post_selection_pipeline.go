@@ -1,8 +1,9 @@
-package handlers
+package postselection
 
 import (
 	"log/slog"
 
+	"code.cloudfoundry.org/gorouter/handlers"
 	"code.cloudfoundry.org/gorouter/route"
 )
 
@@ -17,7 +18,7 @@ import (
 type PostSelectionHandler interface {
 	// Check performs an authorization check against the selected endpoint.
 	// Returns nil if authorized, or an AuthError if denied.
-	Check(endpoint *route.Endpoint, reqInfo *RequestInfo) error
+	Check(endpoint *route.Endpoint, reqInfo *handlers.RequestInfo) error
 }
 
 // PostSelectionPipeline runs a sequence of post-selection authorization handlers.
@@ -39,7 +40,7 @@ func NewPostSelectionPipeline(logger *slog.Logger, handlers ...PostSelectionHand
 
 // Run executes all handlers in sequence. Returns nil if all handlers pass,
 // or the first error encountered.
-func (p *PostSelectionPipeline) Run(endpoint *route.Endpoint, reqInfo *RequestInfo) error {
+func (p *PostSelectionPipeline) Run(endpoint *route.Endpoint, reqInfo *handlers.RequestInfo) error {
 	if p == nil || len(p.handlers) == 0 {
 		return nil // No handlers configured, allow request
 	}

@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"code.cloudfoundry.org/gorouter/handlers"
+	"code.cloudfoundry.org/gorouter/handlers/postselection"
 	"code.cloudfoundry.org/gorouter/route"
 )
 
@@ -109,4 +110,4 @@ func (fake *FakePostSelectionHandler) recordInvocation(key string, args []interf
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ handlers.PostSelectionHandler = new(FakePostSelectionHandler)
+var _ postselection.PostSelectionHandler = new(FakePostSelectionHandler)

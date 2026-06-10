@@ -15,6 +15,7 @@ import (
 	router_http "code.cloudfoundry.org/gorouter/common/http"
 	"code.cloudfoundry.org/gorouter/config"
 	"code.cloudfoundry.org/gorouter/handlers"
+	"code.cloudfoundry.org/gorouter/handlers/postselection"
 	log "code.cloudfoundry.org/gorouter/logger"
 	"code.cloudfoundry.org/gorouter/metrics"
 	"code.cloudfoundry.org/gorouter/proxy/fails"
@@ -76,7 +77,7 @@ func NewProxyRoundTripper(
 	errHandler errorHandler,
 	routeServicesTransport http.RoundTripper,
 	cfg *config.Config,
-	postSelectionPipeline *handlers.PostSelectionPipeline,
+	postSelectionPipeline *postselection.PostSelectionPipeline,
 ) ProxyRoundTripper {
 
 	return &roundTripper{
@@ -99,7 +100,7 @@ type roundTripper struct {
 	errorHandler           errorHandler
 	routeServicesTransport http.RoundTripper
 	config                 *config.Config
-	postSelectionPipeline  *handlers.PostSelectionPipeline
+	postSelectionPipeline  *postselection.PostSelectionPipeline
 }
 
 func (rt *roundTripper) RoundTrip(originalRequest *http.Request) (*http.Response, error) {
@@ -203,7 +204,7 @@ func (rt *roundTripper) RoundTrip(originalRequest *http.Request) (*http.Response
 			if rt.postSelectionPipeline != nil {
 				if authErr := rt.postSelectionPipeline.Run(endpoint, reqInfo); authErr != nil {
 					// Authorization failed - populate AuthResult for access logs
-					if authError, ok := authErr.(*handlers.AuthError); ok {
+					if authError, ok := authErr.(*postselection.AuthError); ok {
 						reqInfo.AuthResult = &handlers.AuthResult{
 							Outcome:      "denied",
 							Rule:         authError.Rule,
@@ -373,7 +374,7 @@ func (rt *roundTripper) RoundTrip(originalRequest *http.Request) (*http.Response
 		// ErrorHandler can write the correct HTTP status (e.g. 403 Forbidden).
 		// Running the internal handler first would write a 502 and call Done(),
 		// committing the response before the ReverseProxy's ErrorHandler runs.
-		if _, isAuthErr := err.(*handlers.AuthError); !isAuthErr {
+		if _, isAuthErr := err.(*postselection.AuthError); !isAuthErr {
 			rt.errorHandler.HandleError(reqInfo.ProxyResponseWriter, err)
 		}
 		if handlers.IsWebSocketUpgrade(request) {

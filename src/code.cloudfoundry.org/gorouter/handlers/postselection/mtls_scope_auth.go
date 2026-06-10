@@ -1,10 +1,11 @@
-package handlers
+package postselection
 
 import (
 	"fmt"
 	"log/slog"
 
 	"code.cloudfoundry.org/gorouter/config"
+	"code.cloudfoundry.org/gorouter/handlers"
 	"code.cloudfoundry.org/gorouter/route"
 )
 
@@ -37,7 +38,7 @@ func NewMtlsScopeAuth(cfg *config.Config, logger *slog.Logger) PostSelectionHand
 // Check performs post-selection scope authorization against the selected endpoint.
 // Returns nil if authorized, or an AuthError if the caller's org/space
 // does not match the selected endpoint's org/space tags.
-func (h *MtlsScopeAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) error {
+func (h *MtlsScopeAuth) Check(endpoint *route.Endpoint, reqInfo *handlers.RequestInfo) error {
 	// Get route policy scope from pool
 	if reqInfo.RoutePool == nil {
 		// This should not happen in normal operation, but if it does,
@@ -98,7 +99,7 @@ func (h *MtlsScopeAuth) Check(endpoint *route.Endpoint, reqInfo *RequestInfo) er
 
 	// Scope check passed - populate AuthResult for access logs
 	if reqInfo.AuthResult == nil {
-		reqInfo.AuthResult = &AuthResult{}
+		reqInfo.AuthResult = &handlers.AuthResult{}
 	}
 	reqInfo.AuthResult.Outcome = "allowed"
 	reqInfo.AuthResult.Rule = fmt.Sprintf("domain:scope=%s", routePolicyScope)

@@ -30,6 +30,7 @@ var _ = Describe("CfIdentity", func() {
 		recorder    *httptest.ResponseRecorder
 		request     *http.Request
 		requestInfo *handlers.RequestInfo
+		runHandler  func()
 	)
 
 	BeforeEach(func() {
@@ -61,46 +62,12 @@ var _ = Describe("CfIdentity", func() {
 
 		request = test_util.NewRequest("GET", "backend.apps.identity", "/", nil)
 		request.TLS = &tls.ConnectionState{}
-	})
 
-	Context("when TLS is not used", func() {
-		BeforeEach(func() {
-			request.TLS = nil
-			cert := generateTestCert("app:should-not-extract")
-			request.Header.Set("X-Forwarded-Client-Cert", buildGoRouterXFCCHeader(cert))
-		})
-
-		It("skips identity extraction and calls next", func() {
-			handler.ServeHTTP(recorder, request, nextHandler)
-			Expect(nextCalled).To(BeTrue())
-		})
-	})
-
-	Context("when host is not an mTLS domain", func() {
-		BeforeEach(func() {
-			request = test_util.NewRequest("GET", "regular.example.com", "/", nil)
-			request.TLS = &tls.ConnectionState{}
-			cert := generateTestCert("app:should-not-extract")
-			request.Header.Set("X-Forwarded-Client-Cert", buildGoRouterXFCCHeader(cert))
-		})
-
-		It("skips identity extraction and calls next", func() {
-			handler.ServeHTTP(recorder, request, nextHandler)
-			Expect(nextCalled).To(BeTrue())
-		})
-	})
-
-	Context("when RequestInfo is not in context", func() {
-		It("calls next handler without setting identity", func() {
-			handler.ServeHTTP(recorder, request, nextHandler)
-
-			Expect(nextCalled).To(BeTrue())
-			Expect(recorder.Code).To(Equal(http.StatusOK))
-		})
-	})
-
-	Context("when RequestInfo is in context", func() {
-		var runHandler = func() {
+		// runHandler wires the handler into a negroni chain behind NewRequestInfo
+		// so that a RequestInfo is present in the context. The terminal handler
+		// captures the resulting RequestInfo so tests can assert whether the
+		// handler set (or deliberately did not set) CallerIdentity.
+		runHandler = func() {
 			reqInfoHandler := handlers.NewRequestInfo()
 			n := negroni.New()
 			n.Use(reqInfoHandler)
@@ -115,7 +82,58 @@ var _ = Describe("CfIdentity", func() {
 
 			n.ServeHTTP(recorder, request)
 		}
+	})
 
+	Context("when TLS is not used", func() {
+		BeforeEach(func() {
+			request.TLS = nil
+			cert := generateTestCert("app:should-not-extract")
+			request.Header.Set("X-Forwarded-Client-Cert", buildGoRouterXFCCHeader(cert))
+		})
+
+		It("calls next without extracting identity, even when a valid XFCC header is present", func() {
+			runHandler()
+			Expect(nextCalled).To(BeTrue())
+			Expect(requestInfo.CallerIdentity).To(BeNil())
+		})
+	})
+
+	Context("when host is not an mTLS domain", func() {
+		BeforeEach(func() {
+			request = test_util.NewRequest("GET", "regular.example.com", "/", nil)
+			request.TLS = &tls.ConnectionState{}
+			cert := generateTestCert("app:should-not-extract")
+			request.Header.Set("X-Forwarded-Client-Cert", buildGoRouterXFCCHeader(cert))
+		})
+
+		It("calls next without extracting identity, even when a valid XFCC header is present", func() {
+			runHandler()
+			Expect(nextCalled).To(BeTrue())
+			Expect(requestInfo.CallerIdentity).To(BeNil())
+		})
+	})
+
+	Context("when RequestInfo is not in context", func() {
+		BeforeEach(func() {
+			cert := generateTestCert("app:should-not-extract")
+			request.Header.Set("X-Forwarded-Client-Cert", buildGoRouterXFCCHeader(cert))
+		})
+
+		It("calls next without extracting identity or creating a RequestInfo", func() {
+			// No NewRequestInfo middleware in front of the handler, so the
+			// context has no RequestInfo. Even with a valid XFCC header on an
+			// mTLS domain, the handler must bail out cleanly without panicking
+			// and without storing any identity.
+			handler.ServeHTTP(recorder, request, nextHandler)
+
+			Expect(nextCalled).To(BeTrue())
+			Expect(recorder.Code).To(Equal(http.StatusOK))
+			_, err := handlers.ContextRequestInfo(request)
+			Expect(err).To(HaveOccurred())
+		})
+	})
+
+	Context("when RequestInfo is in context", func() {
 		Context("when X-Forwarded-Client-Cert header is not present", func() {
 			It("calls next handler without setting identity", func() {
 				runHandler()

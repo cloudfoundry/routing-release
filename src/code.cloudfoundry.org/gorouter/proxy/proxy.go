@@ -24,6 +24,7 @@ import (
 	"code.cloudfoundry.org/gorouter/config"
 	"code.cloudfoundry.org/gorouter/errorwriter"
 	"code.cloudfoundry.org/gorouter/handlers"
+	"code.cloudfoundry.org/gorouter/handlers/postselection"
 	log "code.cloudfoundry.org/gorouter/logger"
 	"code.cloudfoundry.org/gorouter/metrics"
 	"code.cloudfoundry.org/gorouter/proxy/fails"
@@ -118,10 +119,10 @@ func NewProxy(
 	// Create post-selection authorization pipeline
 	// This runs after endpoint selection in the round tripper to enforce
 	// RFC-compliant strict scope and route policies checking.
-	postSelectionPipeline := handlers.NewPostSelectionPipeline(
+	postSelectionPipeline := postselection.NewPostSelectionPipeline(
 		logger,
-		handlers.NewMtlsScopeAuth(cfg, logger),
-		handlers.NewMtlsRoutePoliciesAuth(cfg, logger),
+		postselection.NewMtlsScopeAuth(cfg, logger),
+		postselection.NewMtlsRoutePoliciesAuth(cfg, logger),
 	)
 
 	prt := round_tripper.NewProxyRoundTripper(
@@ -309,7 +310,7 @@ func escapePathAndPreserveSlashes(unescaped string) string {
 // code embedded in the error (typically 403 Forbidden). All other errors
 // produce a generic 502 Bad Gateway without leaking internal error details.
 func handleReverseProxyError(logger *slog.Logger, rw http.ResponseWriter, err error) {
-	if authErr, ok := err.(*handlers.AuthError); ok {
+	if authErr, ok := err.(*postselection.AuthError); ok {
 		// Use ClientMessage() to avoid leaking internal rule names or caller identities.
 		rw.WriteHeader(authErr.HTTPStatus)
 		if _, writeErr := rw.Write([]byte(authErr.ClientMessage())); writeErr != nil {

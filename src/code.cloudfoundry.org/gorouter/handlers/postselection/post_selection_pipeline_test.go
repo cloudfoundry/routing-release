@@ -1,4 +1,4 @@
-package handlers_test
+package postselection_test
 
 import (
 	"errors"
@@ -7,20 +7,21 @@ import (
 	. "github.com/onsi/gomega"
 
 	"code.cloudfoundry.org/gorouter/handlers"
-	"code.cloudfoundry.org/gorouter/handlers/fakes"
+	"code.cloudfoundry.org/gorouter/handlers/postselection"
+	"code.cloudfoundry.org/gorouter/handlers/postselection/fakes"
 	"code.cloudfoundry.org/gorouter/route"
 	"code.cloudfoundry.org/gorouter/test_util"
 )
 
 var _ = Describe("PostSelectionPipeline", func() {
 	var (
-		pipeline   *handlers.PostSelectionPipeline
+		pipeline   *postselection.PostSelectionPipeline
 		handler1   *fakes.FakePostSelectionHandler
 		handler2   *fakes.FakePostSelectionHandler
 		handler3   *fakes.FakePostSelectionHandler
 		endpoint   *route.Endpoint
 		reqInfo    *handlers.RequestInfo
-		authError  *handlers.AuthError
+		authError  *postselection.AuthError
 		genericErr error
 	)
 
@@ -37,7 +38,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 
 		reqInfo = &handlers.RequestInfo{}
 
-		authError = handlers.NewAuthError("test:rule", "test reason")
+		authError = postselection.NewAuthError("test:rule", "test reason")
 		genericErr = errors.New("generic error")
 	})
 
@@ -45,7 +46,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 		Context("with empty pipeline", func() {
 			It("returns nil", func() {
 				logger := test_util.NewTestLogger("pipeline")
-				pipeline = handlers.NewPostSelectionPipeline(logger.Logger)
+				pipeline = postselection.NewPostSelectionPipeline(logger.Logger)
 				err := pipeline.Run(endpoint, reqInfo)
 				Expect(err).To(BeNil())
 			})
@@ -55,7 +56,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 			It("calls the handler and returns nil on success", func() {
 				logger := test_util.NewTestLogger("pipeline")
 				handler1.CheckReturns(nil)
-				pipeline = handlers.NewPostSelectionPipeline(logger.Logger, handler1)
+				pipeline = postselection.NewPostSelectionPipeline(logger.Logger, handler1)
 
 				err := pipeline.Run(endpoint, reqInfo)
 
@@ -69,7 +70,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 			It("returns error when handler fails", func() {
 				logger := test_util.NewTestLogger("pipeline")
 				handler1.CheckReturns(authError)
-				pipeline = handlers.NewPostSelectionPipeline(logger.Logger, handler1)
+				pipeline = postselection.NewPostSelectionPipeline(logger.Logger, handler1)
 
 				err := pipeline.Run(endpoint, reqInfo)
 
@@ -84,7 +85,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 				handler1.CheckReturns(nil)
 				handler2.CheckReturns(nil)
 				handler3.CheckReturns(nil)
-				pipeline = handlers.NewPostSelectionPipeline(logger.Logger, handler1, handler2, handler3)
+				pipeline = postselection.NewPostSelectionPipeline(logger.Logger, handler1, handler2, handler3)
 
 				err := pipeline.Run(endpoint, reqInfo)
 
@@ -111,7 +112,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 				handler1.CheckReturns(nil)
 				handler2.CheckReturns(authError) // Fails here
 				handler3.CheckReturns(nil)
-				pipeline = handlers.NewPostSelectionPipeline(logger.Logger, handler1, handler2, handler3)
+				pipeline = postselection.NewPostSelectionPipeline(logger.Logger, handler1, handler2, handler3)
 
 				err := pipeline.Run(endpoint, reqInfo)
 
@@ -126,7 +127,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 				handler1.CheckReturns(authError) // Fails immediately
 				handler2.CheckReturns(nil)
 				handler3.CheckReturns(nil)
-				pipeline = handlers.NewPostSelectionPipeline(logger.Logger, handler1, handler2, handler3)
+				pipeline = postselection.NewPostSelectionPipeline(logger.Logger, handler1, handler2, handler3)
 
 				err := pipeline.Run(endpoint, reqInfo)
 
@@ -141,7 +142,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 				handler1.CheckReturns(nil)
 				handler2.CheckReturns(nil)
 				handler3.CheckReturns(authError) // Fails at the end
-				pipeline = handlers.NewPostSelectionPipeline(logger.Logger, handler1, handler2, handler3)
+				pipeline = postselection.NewPostSelectionPipeline(logger.Logger, handler1, handler2, handler3)
 
 				err := pipeline.Run(endpoint, reqInfo)
 
@@ -156,12 +157,12 @@ var _ = Describe("PostSelectionPipeline", func() {
 			It("returns AuthError as-is", func() {
 				logger := test_util.NewTestLogger("pipeline")
 				handler1.CheckReturns(authError)
-				pipeline = handlers.NewPostSelectionPipeline(logger.Logger, handler1)
+				pipeline = postselection.NewPostSelectionPipeline(logger.Logger, handler1)
 
 				err := pipeline.Run(endpoint, reqInfo)
 
 				Expect(err).To(Equal(authError))
-				authErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*postselection.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(authErr.Rule).To(Equal("test:rule"))
 				Expect(authErr.Reason).To(Equal("test reason"))
@@ -170,7 +171,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 			It("returns generic errors as-is", func() {
 				logger := test_util.NewTestLogger("pipeline")
 				handler1.CheckReturns(genericErr)
-				pipeline = handlers.NewPostSelectionPipeline(logger.Logger, handler1)
+				pipeline = postselection.NewPostSelectionPipeline(logger.Logger, handler1)
 
 				err := pipeline.Run(endpoint, reqInfo)
 
@@ -198,7 +199,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 					return nil
 				}
 
-				pipeline = handlers.NewPostSelectionPipeline(logger.Logger, handler1, handler2)
+				pipeline = postselection.NewPostSelectionPipeline(logger.Logger, handler1, handler2)
 				err := pipeline.Run(endpoint, reqInfo)
 
 				Expect(err).To(BeNil())
@@ -225,7 +226,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 					return nil
 				}
 
-				pipeline = handlers.NewPostSelectionPipeline(logger.Logger, handler1, handler2)
+				pipeline = postselection.NewPostSelectionPipeline(logger.Logger, handler1, handler2)
 				err := pipeline.Run(endpoint, reqInfo)
 
 				Expect(err).To(BeNil())
@@ -234,7 +235,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 
 			It("returns error from scope check before running route policies", func() {
 				logger := test_util.NewTestLogger("pipeline")
-				scopeErr := handlers.NewAuthError(
+				scopeErr := postselection.NewAuthError(
 					"domain:scope=org:post-selection",
 					"caller org mismatch",
 				)
@@ -248,7 +249,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 					return nil
 				}
 
-				pipeline = handlers.NewPostSelectionPipeline(logger.Logger, handler1, handler2)
+				pipeline = postselection.NewPostSelectionPipeline(logger.Logger, handler1, handler2)
 				err := pipeline.Run(endpoint, reqInfo)
 
 				Expect(err).To(Equal(scopeErr))
@@ -258,7 +259,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 
 			It("returns error from route policies check when scope passes", func() {
 				logger := test_util.NewTestLogger("pipeline")
-				accessErr := handlers.NewAuthError(
+				accessErr := postselection.NewAuthError(
 					"route:route_policies",
 					"caller not in route policies",
 				)
@@ -269,7 +270,7 @@ var _ = Describe("PostSelectionPipeline", func() {
 				// Simulate route policies check (fails)
 				handler2.CheckReturns(accessErr)
 
-				pipeline = handlers.NewPostSelectionPipeline(logger.Logger, handler1, handler2)
+				pipeline = postselection.NewPostSelectionPipeline(logger.Logger, handler1, handler2)
 				err := pipeline.Run(endpoint, reqInfo)
 
 				Expect(err).To(Equal(accessErr))

@@ -24,7 +24,8 @@ import (
 	"code.cloudfoundry.org/gorouter/config"
 	sharedfakes "code.cloudfoundry.org/gorouter/fakes"
 	"code.cloudfoundry.org/gorouter/handlers"
-	handlersfakes "code.cloudfoundry.org/gorouter/handlers/fakes"
+	"code.cloudfoundry.org/gorouter/handlers/postselection"
+	postselectionfakes "code.cloudfoundry.org/gorouter/handlers/postselection/fakes"
 	"code.cloudfoundry.org/gorouter/metrics/fakes"
 	"code.cloudfoundry.org/gorouter/proxy/fails"
 	errorClassifierFakes "code.cloudfoundry.org/gorouter/proxy/fails/fakes"
@@ -3075,14 +3076,14 @@ var _ = Describe("ProxyRoundTripper", func() {
 				})
 			})
 			Context("post-selection authorization pipeline", func() {
-				var fakeHandler *handlersfakes.FakePostSelectionHandler
+				var fakeHandler *postselectionfakes.FakePostSelectionHandler
 
 				BeforeEach(func() {
-					fakeHandler = &handlersfakes.FakePostSelectionHandler{}
+					fakeHandler = &postselectionfakes.FakePostSelectionHandler{}
 				})
 
 				JustBeforeEach(func() {
-					pipeline := handlers.NewPostSelectionPipeline(logger.Logger, fakeHandler)
+					pipeline := postselection.NewPostSelectionPipeline(logger.Logger, fakeHandler)
 					proxyRoundTripper = round_tripper.NewProxyRoundTripper(
 						roundTripperFactory,
 						retriableClassifier,
@@ -3096,10 +3097,10 @@ var _ = Describe("ProxyRoundTripper", func() {
 				})
 
 				Context("when the pipeline returns an AuthError", func() {
-					var authErr *handlers.AuthError
+					var authErr *postselection.AuthError
 
 					BeforeEach(func() {
-						authErr = handlers.NewAuthError("test:scope:rule", "caller app not in allowed scope")
+						authErr = postselection.NewAuthError("test:scope:rule", "caller app not in allowed scope")
 						fakeHandler.CheckReturns(authErr)
 					})
 

@@ -1,28 +1,31 @@
-package handlers_test
+package postselection_test
 
 import (
 	"net/http"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"github.com/onsi/gomega/gbytes"
 
 	"code.cloudfoundry.org/gorouter/config"
 	"code.cloudfoundry.org/gorouter/handlers"
+	"code.cloudfoundry.org/gorouter/handlers/postselection"
 	"code.cloudfoundry.org/gorouter/route"
 	"code.cloudfoundry.org/gorouter/test_util"
 )
 
 var _ = Describe("MtlsRoutePoliciesAuth", func() {
 	var (
-		handler  handlers.PostSelectionHandler
+		handler  postselection.PostSelectionHandler
 		endpoint *route.Endpoint
 		reqInfo  *handlers.RequestInfo
 		pool     *route.EndpointPool
 		cfg      *config.Config
+		logger   *test_util.TestLogger
 	)
 
 	BeforeEach(func() {
-		logger := test_util.NewTestLogger("mtls-route-policies-auth")
+		logger = test_util.NewTestLogger("mtls-route-policies-auth")
 		cfg, _ = config.DefaultConfig()
 		// Configure a domain so the handler is active
 		certChain := test_util.CreateSignedCertWithRootCA(test_util.CertNames{SANs: test_util.SubjectAltNames{DNS: "test.com"}})
@@ -33,7 +36,7 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 			},
 		}
 		cfg.Process()
-		handler = handlers.NewMtlsRoutePoliciesAuth(cfg, logger.Logger)
+		handler = postselection.NewMtlsRoutePoliciesAuth(cfg, logger.Logger)
 		reqInfo = &handlers.RequestInfo{}
 	})
 
@@ -58,7 +61,7 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				authErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*postselection.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(authErr.Rule).To(Equal("internal_error"))
 				Expect(authErr.Reason).To(Equal("route pool missing during authorization"))
@@ -120,7 +123,7 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				authErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*postselection.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(authErr.Rule).To(Equal("route:no_caller_identity"))
 				Expect(authErr.Reason).To(Equal("no caller identity present"))
@@ -146,7 +149,7 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				authErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*postselection.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(authErr.Rule).To(Equal("route:no_route_policies"))
 				Expect(authErr.Reason).To(Equal("route has no route policies configured"))
@@ -170,7 +173,7 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				authErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*postselection.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(authErr.Rule).To(Equal("route:no_route_policies"))
 				Expect(authErr.Reason).To(Equal("route has no route policies configured"))
@@ -240,7 +243,7 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				authErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*postselection.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(authErr.Rule).To(Equal("route:route_policies"))
 				Expect(authErr.Reason).To(ContainSubstring("caller app other-app-456 not in route_policies"))
@@ -288,7 +291,7 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				authErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*postselection.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(authErr.Rule).To(Equal("route:route_policies"))
 			})
@@ -335,7 +338,7 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				authErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*postselection.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(authErr.Rule).To(Equal("route:route_policies"))
 			})
@@ -436,18 +439,26 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).NotTo(BeNil())
 
-				authErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*postselection.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(authErr.Rule).To(Equal("route:route_policies"))
 			})
 		})
 
-		// ── Per-endpoint policies (shared routes with different backends) ──
+		// ── Pool-level policies (route shared across backends) ──
+		//
+		// Route policies are stored on the pool, which holds the most
+		// up-to-date view for the route. Authorization must use the
+		// pool-level policies regardless of which endpoint was selected,
+		// because per-endpoint copies can be stale when a route is shared
+		// across backends with differing policies.
 
-		Context("when endpoints on same route have different route policies", func() {
-			It("uses selected endpoint's policies, not pool-level policies", func() {
+		Context("when endpoints on the same route have different route policies", func() {
+			var endpoint1, endpoint2 *route.Endpoint
+
+			BeforeEach(func() {
 				// First endpoint allows only app-1
-				endpoint1 := route.NewEndpoint(&route.EndpointOpts{
+				endpoint1 = route.NewEndpoint(&route.EndpointOpts{
 					AppId:            "backend-app-1",
 					Host:             "192.168.1.1",
 					Port:             8080,
@@ -456,7 +467,7 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 				})
 
 				// Second endpoint allows only app-2
-				endpoint2 := route.NewEndpoint(&route.EndpointOpts{
+				endpoint2 = route.NewEndpoint(&route.EndpointOpts{
 					AppId:            "backend-app-2",
 					Host:             "192.168.1.2",
 					Port:             8080,
@@ -464,35 +475,50 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 					RoutePolicies:    []string{"cf:app:allowed-app-2"},
 				})
 
-				// Create pool with both endpoints (pool-level policies will be from last endpoint)
 				pool = route.NewPool(&route.PoolOpts{
 					Host: "shared.apps.mtls.internal",
 				})
 				pool.Put(endpoint1)
 				pool.Put(endpoint2)
-
-				// Pool-level policies are from endpoint2 (last registered)
-				Expect(pool.RoutePolicies()).To(Equal([]string{"cf:app:allowed-app-2"}))
-
-				// Caller is allowed-app-1
 				reqInfo.RoutePool = pool
+
+				// Pool-level policies come from the last-registered endpoint.
+				Expect(pool.RoutePolicies()).To(Equal([]string{"cf:app:allowed-app-2"}))
+			})
+
+			It("authorizes using pool-level policies regardless of the selected endpoint", func() {
+				// Caller matches the pool-level policy (app-2).
+				reqInfo.CallerIdentity = &handlers.CallerIdentity{
+					AppGUID: "allowed-app-2",
+				}
+
+				// Even when routed to endpoint1 (whose stale per-endpoint
+				// policy only allows app-1), authorization uses the
+				// pool-level policy and allows the caller.
+				err := handler.Check(endpoint1, reqInfo)
+				Expect(err).To(BeNil(), "should allow when pool-level policy matches caller")
+				Expect(reqInfo.AuthResult.Rule).To(Equal("route:cf:app:allowed-app-2"))
+
+				// Routing to endpoint2 uses the same pool-level policy.
+				reqInfo.AuthResult = nil
+				err = handler.Check(endpoint2, reqInfo)
+				Expect(err).To(BeNil(), "should allow regardless of the selected endpoint")
+				Expect(reqInfo.AuthResult.Rule).To(Equal("route:cf:app:allowed-app-2"))
+			})
+
+			It("does not authorize using stale per-endpoint policies", func() {
+				// Caller matches only endpoint1's stale per-endpoint policy
+				// (app-1), which is no longer the pool-level policy.
 				reqInfo.CallerIdentity = &handlers.CallerIdentity{
 					AppGUID: "allowed-app-1",
 				}
 
-				// When request is routed to endpoint1, it should succeed
-				// (uses endpoint1's policies, not pool-level policies)
+				// Denied: the pool-level policy only allows app-2, even
+				// though the selected endpoint's own policy would allow app-1.
 				err := handler.Check(endpoint1, reqInfo)
-				Expect(err).To(BeNil(), "should allow when endpoint's policy matches caller")
-				Expect(reqInfo.AuthResult.Rule).To(Equal("route:cf:app:allowed-app-1"))
+				Expect(err).NotTo(BeNil(), "should deny when only the stale per-endpoint policy matches")
 
-				// When request is routed to endpoint2, it should fail
-				// (endpoint2 only allows app-2, caller is app-1)
-				reqInfo.AuthResult = nil // Reset for next check
-				err = handler.Check(endpoint2, reqInfo)
-				Expect(err).NotTo(BeNil(), "should deny when endpoint's policy doesn't match caller")
-
-				authErr, ok := err.(*handlers.AuthError)
+				authErr, ok := err.(*postselection.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(authErr.Rule).To(Equal("route:route_policies"))
 			})
@@ -540,6 +566,12 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 				err := handler.Check(endpoint, reqInfo)
 				Expect(err).To(BeNil())
 				Expect(reqInfo.AuthResult.Rule).To(Equal("route:cf:app:allowed-app"))
+
+				// Malformed rules are skipped, but must be logged at warn
+				// level so operators can detect misconfigured route policies
+				// instead of having them silently ignored.
+				Eventually(logger).Should(gbytes.Say("malformed-route-policy"))
+				Eventually(logger).Should(gbytes.Say("invalid-rule"))
 			})
 		})
 	})
@@ -551,8 +583,8 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 				emptyCfg, _ := config.DefaultConfig()
 				Expect(emptyCfg.Domains).To(BeEmpty())
 
-				handler := handlers.NewMtlsRoutePoliciesAuth(emptyCfg, logger.Logger)
-				Expect(handler).To(BeIdenticalTo(handlers.NoopPostSelectionHandler))
+				handler := postselection.NewMtlsRoutePoliciesAuth(emptyCfg, logger.Logger)
+				Expect(handler).To(BeIdenticalTo(postselection.NoopPostSelectionHandler))
 			})
 		})
 
@@ -569,8 +601,8 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 				}
 				cfg.Process()
 
-				handler := handlers.NewMtlsRoutePoliciesAuth(cfg, logger.Logger)
-				Expect(handler).NotTo(BeIdenticalTo(handlers.NoopPostSelectionHandler))
+				handler := postselection.NewMtlsRoutePoliciesAuth(cfg, logger.Logger)
+				Expect(handler).NotTo(BeIdenticalTo(postselection.NoopPostSelectionHandler))
 			})
 		})
 	})

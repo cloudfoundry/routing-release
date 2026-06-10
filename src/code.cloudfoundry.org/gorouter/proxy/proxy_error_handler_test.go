@@ -6,12 +6,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"code.cloudfoundry.org/gorouter/handlers"
+	"code.cloudfoundry.org/gorouter/handlers/postselection"
 )
 
 func TestHandleReverseProxyError_AuthError_Writes403WithGenericMessage(t *testing.T) {
 	rw := httptest.NewRecorder()
-	authErr := handlers.NewAuthError("test:scope:rule", "caller not authorized")
+	authErr := postselection.NewAuthError("test:scope:rule", "caller not authorized")
 	logger := slog.Default()
 
 	handleReverseProxyError(logger, rw, authErr)
@@ -27,7 +27,7 @@ func TestHandleReverseProxyError_AuthError_Writes403WithGenericMessage(t *testin
 
 func TestHandleReverseProxyError_AuthErrorCustomStatus_WritesCorrectStatus(t *testing.T) {
 	rw := httptest.NewRecorder()
-	authErr := handlers.NewAuthErrorWithStatus("test:rule", "misdirected", http.StatusMisdirectedRequest)
+	authErr := postselection.NewAuthErrorWithStatus("test:rule", "misdirected", http.StatusMisdirectedRequest)
 	logger := slog.Default()
 
 	handleReverseProxyError(logger, rw, authErr)
