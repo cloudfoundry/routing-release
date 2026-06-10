@@ -33,6 +33,7 @@ files:
   - code.cloudfoundry.org/gorouter/errorwriter/*.go # gosub
   - code.cloudfoundry.org/gorouter/fakes/*.go # gosub
   - code.cloudfoundry.org/gorouter/handlers/*.go # gosub
+  - code.cloudfoundry.org/gorouter/handlers/postselection/*.go # gosub
   - code.cloudfoundry.org/gorouter/integration/*.go # gosub
   - code.cloudfoundry.org/gorouter/logadapter/*.go # gosub
   - code.cloudfoundry.org/gorouter/logger/*.go # gosub
