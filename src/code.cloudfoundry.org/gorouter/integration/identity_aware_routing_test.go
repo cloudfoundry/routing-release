@@ -85,7 +85,7 @@ var _ = Describe("Identity-Aware Routing", func() {
 				req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
 				_, err := client.Do(req)
 				Expect(err).To(HaveOccurred())
-				Expect(err.Error()).To(ContainSubstring("tls"))
+				Expect(err.Error()).To(ContainSubstring("tls: certificate required"))
 			})
 
 			It("accepts valid client certificate from the configured CA", func() {
@@ -154,7 +154,7 @@ var _ = Describe("Identity-Aware Routing", func() {
 				req, client := testState.newMtlsGetRequest(fmt.Sprintf("https://%s", mtlsDomain))
 				_, err := client.Do(req)
 				Expect(err).To(HaveOccurred())
-				Expect(err.Error()).To(ContainSubstring("tls"))
+				Expect(err.Error()).To(ContainSubstring("tls: unknown certificate authority"))
 			})
 		})
 
