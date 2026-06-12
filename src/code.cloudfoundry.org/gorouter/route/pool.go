@@ -400,6 +400,9 @@ func (p *EndpointPool) Put(endpoint *Endpoint) PoolPutResult {
 
 		p.RouteSvcUrl = e.endpoint.RouteServiceUrl
 		p.setPoolLoadBalancingAlgorithm(e.endpoint)
+		// Route policy fields are pool-level: all backends of a route carry the
+		// same policies (enforced by CAPI at registration time), so last-writer-wins
+		// here is safe and keeps the pool in sync with the latest registration.
 		p.routePolicyScope = endpoint.RoutePolicyScope
 		p.routePolicies = endpoint.RoutePolicies
 		e.updated = time.Now()
@@ -425,6 +428,9 @@ func (p *EndpointPool) Put(endpoint *Endpoint) PoolPutResult {
 
 		p.RouteSvcUrl = e.endpoint.RouteServiceUrl
 		p.setPoolLoadBalancingAlgorithm(e.endpoint)
+		// Route policy fields are pool-level: all backends of a route carry the
+		// same policies (enforced by CAPI at registration time), so last-writer-wins
+		// here is safe and keeps the pool in sync with the latest registration.
 		p.routePolicyScope = endpoint.RoutePolicyScope
 		p.routePolicies = endpoint.RoutePolicies
 		if p.LoadBalancingAlgorithm == config.LOAD_BALANCE_HB {
