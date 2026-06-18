@@ -1,29 +1,29 @@
-# code.cloudfoundry.org/bbs v0.0.0-20260601194358-002fe939f0da
-## explicit
-code.cloudfoundry.org/bbs/db/sqldb/helpers
-code.cloudfoundry.org/bbs/db/sqldb/helpers/monitor
-code.cloudfoundry.org/bbs/guidprovider
-# code.cloudfoundry.org/cfhttp/v2 v2.80.0
+# code.cloudfoundry.org/cfhttp/v2 v2.82.0
 ## explicit; go 1.25.0
 code.cloudfoundry.org/cfhttp/v2
-# code.cloudfoundry.org/clock v1.73.0
+# code.cloudfoundry.org/clock v1.75.0
 ## explicit; go 1.25.0
 code.cloudfoundry.org/clock
 code.cloudfoundry.org/clock/fakeclock
-# code.cloudfoundry.org/debugserver v0.100.0
+# code.cloudfoundry.org/debugserver v0.102.0
 ## explicit; go 1.25.0
 code.cloudfoundry.org/debugserver
-# code.cloudfoundry.org/diego-logging-client v0.110.0
-## explicit; go 1.25.1
+# code.cloudfoundry.org/diego-db-helpers v0.3.0
+## explicit; go 1.26.0
+code.cloudfoundry.org/diego-db-helpers/guidprovider
+code.cloudfoundry.org/diego-db-helpers/sqldb/helpers
+code.cloudfoundry.org/diego-db-helpers/sqldb/helpers/monitor
+# code.cloudfoundry.org/diego-logging-client v0.112.0
+## explicit; go 1.25.8
 code.cloudfoundry.org/diego-logging-client
 code.cloudfoundry.org/diego-logging-client/testhelpers
-# code.cloudfoundry.org/durationjson v0.75.0
+# code.cloudfoundry.org/durationjson v0.77.0
 ## explicit; go 1.25.0
 code.cloudfoundry.org/durationjson
-# code.cloudfoundry.org/eventhub v0.75.0
+# code.cloudfoundry.org/eventhub v0.77.0
 ## explicit; go 1.25.0
 code.cloudfoundry.org/eventhub
-# code.cloudfoundry.org/go-diodes v0.0.0-20260526122959-0284fcb5ac88
+# code.cloudfoundry.org/go-diodes v0.0.0-20260615142411-472d6bcdb3c6
 ## explicit; go 1.25.0
 code.cloudfoundry.org/go-diodes
 # code.cloudfoundry.org/go-loggregator/v9 v9.2.1
@@ -31,23 +31,21 @@ code.cloudfoundry.org/go-diodes
 code.cloudfoundry.org/go-loggregator/v9
 code.cloudfoundry.org/go-loggregator/v9/rpc/loggregator_v2
 code.cloudfoundry.org/go-loggregator/v9/runtimeemitter
-# code.cloudfoundry.org/go-metric-registry v0.0.0-20260602223408-eae7443fd7fa
-## explicit; go 1.25.1
+# code.cloudfoundry.org/go-metric-registry v0.0.0-20260617164716-452ba9c14ce2
+## explicit; go 1.25.8
 code.cloudfoundry.org/go-metric-registry
-# code.cloudfoundry.org/inigo v0.0.0-20210615140442-4bdc4f6e44d5
-## explicit
-# code.cloudfoundry.org/lager/v3 v3.72.0
+# code.cloudfoundry.org/lager/v3 v3.74.0
 ## explicit; go 1.25.0
 code.cloudfoundry.org/lager/v3
 code.cloudfoundry.org/lager/v3/internal/truncate
 code.cloudfoundry.org/lager/v3/lagerctx
 code.cloudfoundry.org/lager/v3/lagerflags
 code.cloudfoundry.org/lager/v3/lagertest
-# code.cloudfoundry.org/localip v0.74.0
+# code.cloudfoundry.org/localip v0.76.0
 ## explicit; go 1.25.0
 code.cloudfoundry.org/localip
-# code.cloudfoundry.org/locket v0.0.0-20260602143356-23bea5865010
-## explicit
+# code.cloudfoundry.org/locket v1.2.0
+## explicit; go 1.26.0
 code.cloudfoundry.org/locket
 code.cloudfoundry.org/locket/cmd/locket
 code.cloudfoundry.org/locket/cmd/locket/certauthority
@@ -61,8 +59,27 @@ code.cloudfoundry.org/locket/lock
 code.cloudfoundry.org/locket/metrics
 code.cloudfoundry.org/locket/metrics/helpers
 code.cloudfoundry.org/locket/models
-# code.cloudfoundry.org/tlsconfig v0.58.0
-## explicit; go 1.25.1
+# code.cloudfoundry.org/routing-api v0.2.0
+## explicit; go 1.26.4
+code.cloudfoundry.org/routing-api
+code.cloudfoundry.org/routing-api/admin
+code.cloudfoundry.org/routing-api/cmd/config-validator
+code.cloudfoundry.org/routing-api/cmd/routing-api
+code.cloudfoundry.org/routing-api/cmd/routing-api/testrunner
+code.cloudfoundry.org/routing-api/config
+code.cloudfoundry.org/routing-api/db
+code.cloudfoundry.org/routing-api/fake_routing_api
+code.cloudfoundry.org/routing-api/handlers
+code.cloudfoundry.org/routing-api/helpers
+code.cloudfoundry.org/routing-api/metrics
+code.cloudfoundry.org/routing-api/migration
+code.cloudfoundry.org/routing-api/models
+code.cloudfoundry.org/routing-api/test_helpers
+code.cloudfoundry.org/routing-api/trace
+code.cloudfoundry.org/routing-api/uaaclient
+code.cloudfoundry.org/routing-api/uaaclient/fakes
+# code.cloudfoundry.org/tlsconfig v0.60.0
+## explicit; go 1.25.8
 code.cloudfoundry.org/tlsconfig
 # filippo.io/edwards25519 v1.2.0
 ## explicit; go 1.24.0
@@ -150,8 +167,6 @@ github.com/go-sql-driver/mysql
 # github.com/go-task/slim-sprig/v3 v3.0.0
 ## explicit; go 1.20
 github.com/go-task/slim-sprig/v3
-# github.com/go-test/deep v1.0.7
-## explicit; go 1.13
 # github.com/gogo/protobuf v1.3.2
 ## explicit; go 1.15
 github.com/gogo/protobuf/proto
@@ -268,7 +283,7 @@ github.com/nats-io/nuid
 # github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 ## explicit
 github.com/nu7hatch/gouuid
-# github.com/onsi/ginkgo/v2 v2.29.0
+# github.com/onsi/ginkgo/v2 v2.31.0
 ## explicit; go 1.25.0
 github.com/onsi/ginkgo/v2
 github.com/onsi/ginkgo/v2/config
@@ -292,7 +307,7 @@ github.com/onsi/ginkgo/v2/internal/reporters
 github.com/onsi/ginkgo/v2/internal/testingtproxy
 github.com/onsi/ginkgo/v2/reporters
 github.com/onsi/ginkgo/v2/types
-# github.com/onsi/gomega v1.41.0
+# github.com/onsi/gomega v1.42.0
 ## explicit; go 1.24.0
 github.com/onsi/gomega
 github.com/onsi/gomega/format
@@ -329,7 +344,7 @@ github.com/prometheus/client_golang/prometheus/promhttp/internal
 # github.com/prometheus/client_model v0.6.2
 ## explicit; go 1.22.0
 github.com/prometheus/client_model/go
-# github.com/prometheus/common v0.68.1
+# github.com/prometheus/common v0.69.0
 ## explicit; go 1.25.0
 github.com/prometheus/common/expfmt
 github.com/prometheus/common/model
@@ -376,7 +391,7 @@ github.com/vmihailenco/msgpack/v5/msgpcode
 github.com/vmihailenco/tagparser/v2
 github.com/vmihailenco/tagparser/v2/internal
 github.com/vmihailenco/tagparser/v2/internal/parser
-# go.step.sm/crypto v0.82.0
+# go.step.sm/crypto v0.83.0
 ## explicit; go 1.25.8
 go.step.sm/crypto/fingerprint
 go.step.sm/crypto/internal/bcrypt_pbkdf
@@ -430,7 +445,7 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 # golang.org/x/mod v0.37.0
 ## explicit; go 1.25.0
 golang.org/x/mod/semver
-# golang.org/x/net v0.55.0
+# golang.org/x/net v0.56.0
 ## explicit; go 1.25.0
 golang.org/x/net/context
 golang.org/x/net/html
@@ -492,7 +507,7 @@ golang.org/x/text/width
 # golang.org/x/time v0.15.0
 ## explicit; go 1.25.0
 golang.org/x/time/rate
-# golang.org/x/tools v0.45.0
+# golang.org/x/tools v0.46.0
 ## explicit; go 1.25.0
 golang.org/x/tools/cover
 golang.org/x/tools/go/analysis
@@ -532,7 +547,7 @@ golang.org/x/tools/internal/stdlib
 golang.org/x/tools/internal/typeparams
 golang.org/x/tools/internal/typesinternal
 golang.org/x/tools/internal/versions
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20260526163538-3dc84a4a5aaa
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20260618152121-87f3d3e198d3
 ## explicit; go 1.25.0
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.81.1

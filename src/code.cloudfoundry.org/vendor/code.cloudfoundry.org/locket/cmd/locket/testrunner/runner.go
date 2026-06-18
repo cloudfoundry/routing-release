@@ -13,7 +13,7 @@ import (
 	"code.cloudfoundry.org/locket/cmd/locket/certauthority"
 	"code.cloudfoundry.org/locket/cmd/locket/config"
 	"code.cloudfoundry.org/tlsconfig"
-	. "github.com/onsi/gomega"
+	"github.com/onsi/gomega"
 	ginkgomon "github.com/tedsuo/ifrit/ginkgomon_v2"
 )
 
@@ -56,14 +56,14 @@ func NewLocketRunner(locketBinPath string, fs ...func(cfg *config.LocketConfig))
 	}
 
 	locketConfig, err := os.CreateTemp("", "locket-config")
-	Expect(err).NotTo(HaveOccurred())
+	gomega.Expect(err).NotTo(gomega.HaveOccurred())
 
 	locketConfigFilePath := locketConfig.Name()
 
 	encoder := json.NewEncoder(locketConfig)
 	err = encoder.Encode(cfg)
-	Expect(err).NotTo(HaveOccurred())
-	Expect(locketConfig.Close()).To(Succeed())
+	gomega.Expect(err).NotTo(gomega.HaveOccurred())
+	gomega.Expect(locketConfig.Close()).To(gomega.Succeed())
 
 	return ginkgomon.New(ginkgomon.Config{
 		Name:              "locket",
@@ -72,7 +72,7 @@ func NewLocketRunner(locketBinPath string, fs ...func(cfg *config.LocketConfig))
 		Command:           exec.Command(locketBinPath, "-config="+locketConfigFilePath),
 		Cleanup: func() {
 			err := os.RemoveAll(locketConfigFilePath)
-			Expect(err).NotTo(HaveOccurred())
+			gomega.Expect(err).NotTo(gomega.HaveOccurred())
 		},
 	})
 }
@@ -82,7 +82,7 @@ func LocketClientTLSConfig() *tls.Config {
 		tlsconfig.WithInternalServiceDefaults(),
 		tlsconfig.WithIdentityFromFile(certFile, keyFile),
 	).Client(tlsconfig.WithAuthorityFromFile(caCertFile))
-	Expect(err).NotTo(HaveOccurred())
+	gomega.Expect(err).NotTo(gomega.HaveOccurred())
 	return tlsConfig
 }
 

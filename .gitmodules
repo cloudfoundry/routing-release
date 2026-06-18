@@ -1,4 +1,0 @@
-[submodule "src/code.cloudfoundry.org/routing-api"]
-	path = src/code.cloudfoundry.org/routing-api
-	url = https://github.com/cloudfoundry/routing-api
-	branch = main

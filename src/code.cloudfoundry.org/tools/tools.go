@@ -4,6 +4,8 @@
 package tools
 
 import (
+	_ "code.cloudfoundry.org/routing-api/cmd/routing-api"
+	_ "code.cloudfoundry.org/routing-api/cmd/config-validator"
 	_ "code.cloudfoundry.org/locket/cmd/locket"
 	_ "github.com/kisielk/errcheck"
 	_ "github.com/nats-io/nats-server/v2"

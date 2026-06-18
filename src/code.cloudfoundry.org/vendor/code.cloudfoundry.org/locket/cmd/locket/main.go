@@ -6,11 +6,11 @@ import (
 	"os"
 	"time"
 
-	"code.cloudfoundry.org/bbs/db/sqldb/helpers"
-	"code.cloudfoundry.org/bbs/db/sqldb/helpers/monitor"
-	"code.cloudfoundry.org/bbs/guidprovider"
 	"code.cloudfoundry.org/clock"
 	"code.cloudfoundry.org/debugserver"
+	"code.cloudfoundry.org/diego-db-helpers/guidprovider"
+	"code.cloudfoundry.org/diego-db-helpers/sqldb/helpers"
+	"code.cloudfoundry.org/diego-db-helpers/sqldb/helpers/monitor"
 	loggingclient "code.cloudfoundry.org/diego-logging-client"
 	"code.cloudfoundry.org/go-loggregator/v9/runtimeemitter"
 	"code.cloudfoundry.org/lager/v3"
@@ -53,7 +53,7 @@ func main() {
 
 	clock := clock.NewClock()
 
-	dbParams := &helpers.BBSDBParam{
+	dbParams := &helpers.ConnectParams{
 		DriverName:                    cfg.DatabaseDriver,
 		DatabaseConnectionString:      cfg.DatabaseConnectionString,
 		ConnectionTimeout:             time.Duration(cfg.DBConnectionTimeout),
