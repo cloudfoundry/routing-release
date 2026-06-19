@@ -1,0 +1,223 @@
+name: unit-integration-tests
+on:
+  pull_request_target:
+    types:
+    - labeled
+env:
+  MAPPING: |
+    build_nats_server=src/code.cloudfoundry.org/vendor/github.com/nats-io/nats-server/v2
+    build_routing_api_cli=src/code.cloudfoundry.org/routing-api-cli
+  FLAGS: |
+    --keep-going
+    --trace
+    -r
+    --fail-on-pending
+    --randomize-all
+    --nodes=7
+    --race
+    --timeout 30m
+    --flake-attempts 2
+  RUN_AS: root
+  VERIFICATIONS: |
+    verify_go repo/$DIR
+    verify_go_version_match_bosh_release repo
+    verify_gofmt repo/$DIR
+    verify_govet repo/$DIR
+    verify_staticcheck repo/$DIR
+  FUNCTIONS: ci/routing-release/helpers/configure-binaries.bash
+jobs:
+  repo-clone:
+    if: github.event.label.name == 'ready-to-run'
+    runs-on: ubuntu-latest
+    steps:
+    - name: routing-release-repo
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ github.event.pull_request.head.repo.full_name }}
+        ref: ${{ github.event.pull_request.head.ref }}
+        submodules: recursive
+        path: repo
+    - name: Check out wg-appruntime code
+      uses: actions/checkout@v4
+      with:
+        repository: cloudfoundry/wg-app-platform-runtime-ci
+        path: ci
+    - name: zip repo artifacts
+      run: |
+        tar -czf repo-artifact.tar.gz repo
+        tar -czf ci-artifact.tar.gz ci
+    - name: upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: repo
+        path: |
+          repo-artifact.tar.gz
+          ci-artifact.tar.gz
+  determine-image-tag:
+    if: github.event.label.name == 'ready-to-run'
+    runs-on: ubuntu-latest
+    outputs:
+      go_version: ${{ steps.get-version.outputs.go_version }}
+    steps:
+    - name: checkout ci repo
+      uses: actions/checkout@v4
+      with:
+        repository: cloudfoundry/wg-app-platform-runtime-ci
+        sparse-checkout: go-version.json
+        sparse-checkout-cone-mode: false
+    - name: get-version
+      id: get-version
+      run: |
+        version=$(jq -r '.releases.routing // .default' go-version.json)
+        echo "go_version=${version}" >> "$GITHUB_OUTPUT"
+  template-tests:
+    runs-on: ubuntu-latest
+    needs: [repo-clone, determine-image-tag]
+    container: cloudfoundry/tas-runtime-build:${{ needs.determine-image-tag.outputs.go_version }}
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: repo
+    - run: |
+        tar -xzvf repo-artifact.tar.gz
+        tar -xzvf ci-artifact.tar.gz
+    - name: template-tests
+      run: |
+        "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-tests-templates/task.bash
+  test-on-mysql-5-7:
+    runs-on: ubuntu-latest
+    needs: [repo-clone, determine-image-tag]
+    container: cloudfoundry/tas-runtime-mysql-5.7:${{ needs.determine-image-tag.outputs.go_version }}
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: repo
+    - run: |
+        tar -xzvf repo-artifact.tar.gz
+        tar -xzvf ci-artifact.tar.gz
+    - name: build binaries
+      run: |
+        export DEFAULT_PARAMS="${GITHUB_WORKSPACE}/ci/routing-release/default-params/build-binaries/linux.yml"
+        "${GITHUB_WORKSPACE}"/ci/shared/tasks/build-binaries/task.bash
+    - name: gorouter-mysql
+      env:
+        DIR: src/code.cloudfoundry.org/gorouter
+        DB: mysql
+      run: |
+        "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2
+    - name: cf-tcp-router-mysql
+      env:
+        DIR: src/code.cloudfoundry.org/cf-tcp-router
+        DB: mysql
+      run: |
+        "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2
+    - name: routing-api-mysql
+      env:
+        DIR: src/code.cloudfoundry.org/routing-api
+        DB: mysql
+      run: |
+        "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2
+  test-repos-withoutdb:
+    runs-on: ubuntu-latest
+    needs: [repo-clone, determine-image-tag]
+    container: cloudfoundry/tas-runtime-build:${{ needs.determine-image-tag.outputs.go_version }}
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: repo
+    - run: |
+        tar -xzvf repo-artifact.tar.gz
+        tar -xzvf ci-artifact.tar.gz
+    - name: build binaries
+      run: |
+        export DEFAULT_PARAMS="${GITHUB_WORKSPACE}/ci/routing-release/default-params/build-binaries/linux.yml"
+        "${GITHUB_WORKSPACE}"/ci/shared/tasks/build-binaries/task.bash
+    - name: multierror
+      env:
+        DIR: src/code.cloudfoundry.org/multierror
+      run: |
+        export DIR=$DIR
+        "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2
+    - name: route-registrar
+      env:
+        DIR: src/code.cloudfoundry.org/route-registrar
+      run: |
+        export DIR=$DIR
+        "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2
+    - name: routing-api-cli
+      env:
+        DIR: src/code.cloudfoundry.org/routing-api-cli
+      run: |
+        export DIR=$DIR
+        "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2
+  test-on-postgres:
+    runs-on: ubuntu-latest
+    needs: [repo-clone, determine-image-tag]
+    container: cloudfoundry/tas-runtime-postgres:${{ needs.determine-image-tag.outputs.go_version }}
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: repo
+    - run: |
+        tar -xzvf repo-artifact.tar.gz
+        tar -xzvf ci-artifact.tar.gz
+    - name: build binaries
+      run: |
+        export DEFAULT_PARAMS="${GITHUB_WORKSPACE}/ci/routing-release/default-params/build-binaries/linux.yml"
+        "${GITHUB_WORKSPACE}"/ci/shared/tasks/build-binaries/task.bash
+    - name: gorouter-postgres
+      env:
+        DIR: src/code.cloudfoundry.org/gorouter
+        DB: postgres
+      run: |
+        "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2
+    - name: cf-tcp-router-postgres
+      env:
+        DIR: src/code.cloudfoundry.org/cf-tcp-router
+        DB: postgres
+      run: |
+        "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2
+    - name: routing-api-postgres
+      env:
+        DIR: src/code.cloudfoundry.org/routing-api
+        DB: postgres
+      run: |
+        "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2
+  test-on-mysql-8-0:
+    runs-on: ubuntu-latest
+    needs: [repo-clone, determine-image-tag]
+    container: cloudfoundry/tas-runtime-mysql-8.0:${{ needs.determine-image-tag.outputs.go_version }}
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: repo
+    - run: |
+        tar -xzvf repo-artifact.tar.gz
+        tar -xzvf ci-artifact.tar.gz
+    - name: build binaries
+      run: |
+        export DEFAULT_PARAMS="${GITHUB_WORKSPACE}/ci/routing-release/default-params/build-binaries/linux.yml"
+        "${GITHUB_WORKSPACE}"/ci/shared/tasks/build-binaries/task.bash
+    - name: gorouter-mysql
+      env:
+        DIR: src/code.cloudfoundry.org/gorouter
+        DB: mysql
+      run: |
+        "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2
+    - name: cf-tcp-router-mysql
+      env:
+        DIR: src/code.cloudfoundry.org/cf-tcp-router
+        DB: mysql
+      run: |
+        "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2
+    - name: routing-api-mysql
+      env:
+        DIR: src/code.cloudfoundry.org/routing-api
+        DB: mysql
+      run: |
+        "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2

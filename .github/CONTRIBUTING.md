@@ -39,7 +39,7 @@ Initial Setup
 mkdir -p ~/workspace
 cd ~/workspace
 
-# clone ci
+# clone ci - used by the routing-release's docker container's test scripts
 git clone https://github.com/cloudfoundry/wg-app-platform-runtime-ci.git
 
 # clone repo
@@ -47,7 +47,7 @@ git clone https://github.com/cloudfoundry/routing-release.git --recursive
 cd routing-release
 ```
 
-Running Tests
+Running Unit and Integration Tests
 ---------------
 
 > [!TIP]
@@ -58,7 +58,7 @@ script can be used for interactive development with a long running container.
 - `./scripts/test-in-docker.bash`: Create docker container and run all tests and setup in a single script.
   - `./scripts/test-in-docker.bash <package> <sub-package>`: For running tests under a specific package and/or sub-package
 
-When inside docker container:
+When inside a docker container:
 
 - `/repo/scripts/docker/build-binaries.bash`: (REQUIRED) This will build required binaries for running tests.
 - `/repo/scripts/docker/test.bash`: This will run all tests in this repo.
@@ -68,4 +68,14 @@ When inside docker container:
 - `/repo/scripts/docker/lint.bash`: This will run required linters.
 
 > [!IMPORTANT]
-> If you are about to submit a PR, please make sure to run `./scripts/test-in-docker.bash` for MySQL and Postgres to ensure everything is tested in clean container. If you are developing, you can create create a docker container first, then the only required script to run before testing your specific component is `build-binaries.bash`.
+> If you are about to submit a PR, please make sure to run `DB=mysql ./scripts/test-in-docker.bash` (for MySQL) or `DB=postgres ./scripts/test-in-docker.bash` (for Postgres) to ensure everything is tested in a clean environment. If you are developing, you can create a docker container first. In this case, the script `build-binaries.bash` must be executed before testing your specific component.
+
+Running Unit and Integration Tests in CI
+---------------
+
+A member of the CF Network Approver group can trigger the Unit and Integration test workflow on a PR by adding the `ready-to-run` label. Note that the workflow only triggers on the labeling event — if you push new commits while the label is already set, you must remove and re-add it to re-run the tests.
+
+Running Routing Acceptance Tests (RATS)
+---------------
+
+For detailed documentation on how to run Routing Acceptance Tests (RATS) on your local machine, see the [Guide to Running Routing Acceptance Tests (RATS)](../src/code.cloudfoundry.org/routing-acceptance-tests/docs/running-acceptance-tests.md). There you will find detailed instructions for local testing with CF-on-Kind.
