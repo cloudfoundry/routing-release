@@ -217,10 +217,11 @@ func (s *testState) newMtlsGetRequest(url string) (*http.Request, *http.Client) 
 
 			// Create TLS config for this connection
 			tlsConfig := &tls.Config{
-				ServerName:         originalHost, // SNI uses original hostname
-				RootCAs:            baseTransport.TLSClientConfig.RootCAs,
-				Certificates:       currentCerts, // Use current certificates from baseTransport
-				InsecureSkipVerify: true,         // Skip cert verification since we connect to 127.0.0.1
+				ServerName:           originalHost, // SNI uses original hostname
+				RootCAs:              baseTransport.TLSClientConfig.RootCAs,
+				Certificates:         currentCerts, // Use current certificates from baseTransport
+				GetClientCertificate: baseTransport.TLSClientConfig.GetClientCertificate,
+				InsecureSkipVerify:   true, // Skip cert verification since we connect to 127.0.0.1
 			}
 
 			// Create a plain dialer for the TCP connection

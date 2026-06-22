@@ -51,6 +51,7 @@ var _ = Describe("Identity-Aware Routing", func() {
 			// Configure GoRouter with mTLS domain
 			testState.cfg.EnableSSL = true
 			testState.cfg.ClientCertificateValidationString = "request"
+			testState.cfg.MaxTLSVersionString = "TLSv1.3"
 		})
 
 		AfterEach(func() {
@@ -142,10 +143,11 @@ var _ = Describe("Identity-Aware Routing", func() {
 				testState.register(backendApp, mtlsDomain)
 
 				// Configure client with unknown cert
+				unknownTLSCert := unknownCert.TLSCert()
 				clientTLSConfig := &tls.Config{
 					RootCAs: testState.client.Transport.(*http.Transport).TLSClientConfig.RootCAs,
-					Certificates: []tls.Certificate{
-						unknownCert.TLSCert(),
+					GetClientCertificate: func(*tls.CertificateRequestInfo) (*tls.Certificate, error) {
+						return &unknownTLSCert, nil
 					},
 				}
 				testState.client.Transport.(*http.Transport).TLSClientConfig = clientTLSConfig
