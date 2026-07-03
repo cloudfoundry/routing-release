@@ -3057,24 +3057,26 @@ var _ = Describe("Proxy", func() {
 			Expect(err).To(BeNil())
 		})
 
-		It("does not match IPv4-mapped IPv6 address to IPv4 prefix", func() {
+		It("matches IPv4-mapped IPv6 address to IPv4 prefix and blocks it", func() {
 			blockList = []netip.Prefix{netip.MustParsePrefix("192.168.1.0/24")}
 			config = routeservice.NewRouteServiceConfig(
 				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, false, blockList,
 			)
 			control := proxy.RouteServiceDialControl(config)
 			err := control("tcp", "[::ffff:192.168.1.1]:80", nil)
-			Expect(err).To(BeNil())
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("connection to 192.168.1.1 not allowed"))
 		})
 
-		It("does not match IP with IPv6 zone to any prefix", func() {
+		It("matches IP with IPv6 zone to prefix and blocks it", func() {
 			blockList = []netip.Prefix{netip.MustParsePrefix("fe80::/10")}
 			config = routeservice.NewRouteServiceConfig(
 				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, false, blockList,
 			)
 			control := proxy.RouteServiceDialControl(config)
 			err := control("tcp", "[fe80::1%lo0]:80", nil)
-			Expect(err).To(BeNil())
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("connection to fe80::1 not allowed"))
 		})
 
 		It("allows connection when IP is not in blocklist", func() {

@@ -336,9 +336,14 @@ func RouteServiceDialControl(routeServiceConfig *routeservice.RouteServiceConfig
 			return fmt.Errorf("wrong address format '%s': an IP and a port number are expected", address)
 		}
 
+		// Normalize the address: strip any IPv6 zone identifier (e.g. fe80::1%lo0)
+		// and unmap IPv4-mapped IPv6 addresses (e.g. ::ffff:192.168.1.1 → 192.168.1.1)
+		// so that prefix matching works correctly in both cases.
+		addr := addrPort.Addr().WithZone("").Unmap()
+
 		for _, blockedIP := range routeServiceConfig.EgressBlockList() {
-			if blockedIP.Contains(addrPort.Addr()) {
-				return fmt.Errorf("connection to %s not allowed", addrPort.Addr().String())
+			if blockedIP.Contains(addr) {
+				return fmt.Errorf("connection to %s not allowed", addr.String())
 			}
 		}
 		return nil
