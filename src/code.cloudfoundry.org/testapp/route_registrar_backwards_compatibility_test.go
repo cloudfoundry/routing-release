@@ -30,6 +30,7 @@ var _ = DescribeTable("Testing HTTP Endpoints",
 		url := getURL(expectedResponse)
 		fmt.Println("URL:", url)
 		tr := &http.Transport{
+			Proxy:           http.ProxyFromEnvironment,
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		}
 		client := &http.Client{Transport: tr}
