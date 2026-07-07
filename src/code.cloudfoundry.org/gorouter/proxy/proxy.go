@@ -145,9 +145,13 @@ func NewProxy(
 			// Rewrite mode strips X-Forwarded-* from r.Out before calling this
 			// function. Restore them to replicate the behavior Director had:
 			// - X-Forwarded-Proto: copy the value already set by the XForwardedProto middleware.
+			// - X-Forwarded-Host: preserve whatever the client/middleware set.
 			// - X-Forwarded-For: append the client IP from r.In.RemoteAddr.
 			if proto := r.In.Header.Get("X-Forwarded-Proto"); proto != "" {
 				r.Out.Header.Set("X-Forwarded-Proto", proto)
+			}
+			if host := r.In.Header.Get("X-Forwarded-Host"); host != "" {
+				r.Out.Header.Set("X-Forwarded-Host", host)
 			}
 			if clientIP, _, err := net.SplitHostPort(r.In.RemoteAddr); err == nil {
 				if prior := r.In.Header.Get("X-Forwarded-For"); prior != "" {
