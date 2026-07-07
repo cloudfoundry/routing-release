@@ -142,6 +142,20 @@ func NewProxy(
 	rproxy := &httputil.ReverseProxy{
 		Rewrite: func(r *httputil.ProxyRequest) {
 			p.setupProxyRequest(r.Out)
+			// Rewrite mode strips X-Forwarded-* from r.Out before calling this
+			// function. Restore them to replicate the behavior Director had:
+			// - X-Forwarded-Proto: copy the value already set by the XForwardedProto middleware.
+			// - X-Forwarded-For: append the client IP from r.In.RemoteAddr.
+			if proto := r.In.Header.Get("X-Forwarded-Proto"); proto != "" {
+				r.Out.Header.Set("X-Forwarded-Proto", proto)
+			}
+			if clientIP, _, err := net.SplitHostPort(r.In.RemoteAddr); err == nil {
+				if prior := r.In.Header.Get("X-Forwarded-For"); prior != "" {
+					r.Out.Header.Set("X-Forwarded-For", prior+", "+clientIP)
+				} else {
+					r.Out.Header.Set("X-Forwarded-For", clientIP)
+				}
+			}
 		},
 		Transport:      prt,
 		FlushInterval:  50 * time.Millisecond,
