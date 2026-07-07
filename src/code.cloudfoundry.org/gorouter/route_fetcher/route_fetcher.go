@@ -117,7 +117,7 @@ func (r *RouteFetcher) startEventCycle() {
 					return
 				}
 				err = r.subscribeToEvents(token)
-				if err != nil && err.Error() == "unauthorized" {
+				if err.Error() == "unauthorized" {
 					forceUpdate = true
 				} else {
 					forceUpdate = false

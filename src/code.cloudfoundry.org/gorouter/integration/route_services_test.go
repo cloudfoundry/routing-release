@@ -94,8 +94,8 @@ var _ = Describe("Route services", func() {
 
 		wsRouteService = httptest.NewUnstartedServer(
 			&httputil.ReverseProxy{
-				Director: func(req *http.Request) {
-					forwardedURLStr := req.Header.Get("X-Cf-Forwarded-Url")
+				Rewrite: func(r *httputil.ProxyRequest) {
+					forwardedURLStr := r.Out.Header.Get("X-Cf-Forwarded-Url")
 
 					forwardedURL, err := url.Parse(forwardedURLStr)
 					if err != nil {
@@ -103,11 +103,11 @@ var _ = Describe("Route services", func() {
 						return
 					}
 
-					req.URL = &url.URL{
+					r.Out.URL = &url.URL{
 						Scheme: "http",
 						Host:   fmt.Sprintf("127.0.0.1:%d", testState.cfg.Port),
 					}
-					req.Host = forwardedURL.Host
+					r.Out.Host = forwardedURL.Host
 				},
 				Transport: &http.Transport{
 					TLSClientConfig: &tls.Config{

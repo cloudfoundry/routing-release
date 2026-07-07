@@ -140,7 +140,9 @@ func NewProxy(
 	)
 
 	rproxy := &httputil.ReverseProxy{
-		Director:       p.setupProxyRequest,
+		Rewrite: func(r *httputil.ProxyRequest) {
+			p.setupProxyRequest(r.Out)
+		},
 		Transport:      prt,
 		FlushInterval:  50 * time.Millisecond,
 		BufferPool:     p.bufferPool,
