@@ -343,7 +343,11 @@ func RouteServiceDialControl(routeServiceConfig *routeservice.RouteServiceConfig
 
 		for _, blockedIP := range routeServiceConfig.EgressBlockList() {
 			if blockedIP.Contains(addr) {
-				return fmt.Errorf("connection to %s not allowed", addr.String())
+				original := addrPort.Addr().String()
+				if original == addr.String() {
+					return fmt.Errorf("connection to %s not allowed", addr.String())
+				}
+				return fmt.Errorf("connection to %s (normalized: %s) not allowed", original, addr.String())
 			}
 		}
 		return nil

@@ -3065,7 +3065,10 @@ var _ = Describe("Proxy", func() {
 			control := proxy.RouteServiceDialControl(config)
 			err := control("tcp", "[::ffff:192.168.1.1]:80", nil)
 			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(ContainSubstring("connection to 192.168.1.1 not allowed"))
+			// Error includes original (::ffff:192.168.1.1) and normalized (192.168.1.1) addresses
+			Expect(err.Error()).To(ContainSubstring("::ffff:192.168.1.1"))
+			Expect(err.Error()).To(ContainSubstring("192.168.1.1"))
+			Expect(err.Error()).To(ContainSubstring("not allowed"))
 		})
 
 		It("matches IP with IPv6 zone to prefix and blocks it", func() {
@@ -3076,7 +3079,32 @@ var _ = Describe("Proxy", func() {
 			control := proxy.RouteServiceDialControl(config)
 			err := control("tcp", "[fe80::1%lo0]:80", nil)
 			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(ContainSubstring("connection to fe80::1 not allowed"))
+			// Error includes original (fe80::1%lo0) and normalized (fe80::1) addresses
+			Expect(err.Error()).To(ContainSubstring("fe80::1%lo0"))
+			Expect(err.Error()).To(ContainSubstring("fe80::1"))
+			Expect(err.Error()).To(ContainSubstring("not allowed"))
+		})
+
+		It("blocks plain IPv6 address matched by IPv6 prefix", func() {
+			blockList = []netip.Prefix{netip.MustParsePrefix("2001:db8::/32")}
+			config = routeservice.NewRouteServiceConfig(
+				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, false, blockList,
+			)
+			control := proxy.RouteServiceDialControl(config)
+			err := control("tcp", "[2001:db8::1]:80", nil)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("connection to 2001:db8::1 not allowed"))
+		})
+
+		It("allows connection when IPv6 address with zone falls outside all blocklist prefixes", func() {
+			blockList = []netip.Prefix{netip.MustParsePrefix("10.0.0.0/8")}
+			config = routeservice.NewRouteServiceConfig(
+				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, false, blockList,
+			)
+			control := proxy.RouteServiceDialControl(config)
+			// fe80::1%lo0 is a link-local address not in 10.0.0.0/8; must be allowed
+			err := control("tcp", "[fe80::1%lo0]:80", nil)
+			Expect(err).To(BeNil())
 		})
 
 		It("allows connection when IP is not in blocklist", func() {
