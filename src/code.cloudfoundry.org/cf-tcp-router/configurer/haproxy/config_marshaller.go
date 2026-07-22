@@ -108,7 +108,7 @@ func (cm configMarshaller) marshalHAProxyBackend(backendName string, backend mod
 		if server.TLSPort > 0 {
 			output.WriteString(fmt.Sprintf("\n  server server_%s_%d %s:%d ssl verify required ca-file %s", server.Address, server.TLSPort, server.Address, server.TLSPort, backendTlsCfg.CACertificatePath))
 
-			if backendTlsCfg.ClientCertAndKeyPath != "" {
+			if !enableFrontendTLS && backendTlsCfg.ClientCertAndKeyPath != "" {
 				output.WriteString(fmt.Sprintf(" crt %s", backendTlsCfg.ClientCertAndKeyPath))
 			}
 
