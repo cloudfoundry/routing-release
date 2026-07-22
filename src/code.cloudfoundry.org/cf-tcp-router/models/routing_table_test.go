@@ -488,6 +488,45 @@ var _ = Describe("RoutingTable", func() {
 						)
 					})
 				})
+
+				Context("because EnableBackendMTLS does not match", func() {
+					It("adds the new entry and indicates the config needs to be reloaded", func() {
+						newBackendServerInfo := models.BackendServerInfo{
+							Address:           existingBackendServerInfo.Address,
+							Port:              existingBackendServerInfo.Port,
+							EnableBackendMTLS: true,
+							ModificationTag:   routing_api_models.ModificationTag{Guid: "33333333-3333-3333-3333-333333333333", Index: 1},
+						}
+
+						reloadConfig := routingTable.UpsertBackendServerKey(existingRoutingKey, newBackendServerInfo)
+
+						Expect(reloadConfig).To(BeTrue())
+						Expect(logger).To(gbytes.Say("applying-change-to-table"))
+						Expect(routingTable.Size()).To(Equal(1))
+
+						testutil.RoutingTableEntryMatches(
+							routingTable.Entries[existingRoutingKey],
+							models.RoutingTableEntry{
+								Backends: map[models.BackendServerKey]models.BackendServerDetails{
+									{
+										Address: existingBackendServerInfo.Address,
+										Port:    existingBackendServerInfo.Port,
+									}: {
+										ModificationTag: existingBackendServerInfo.ModificationTag,
+										TTL:             existingBackendServerInfo.TTL,
+									},
+									{
+										Address:           newBackendServerInfo.Address,
+										Port:              newBackendServerInfo.Port,
+										EnableBackendMTLS: true,
+									}: {
+										ModificationTag: newBackendServerInfo.ModificationTag,
+									},
+								},
+							},
+						)
+					})
+				})
 			})
 		})
 	})

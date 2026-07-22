@@ -259,6 +259,7 @@ func (u *updater) toRoutingTableEntry(logger lager.Logger, routeMapping apimodel
 		TerminateFrontendTLS: routeMapping.TerminateFrontendTLS,
 		ALPNs:                routeMapping.ALPNs,
 		SniRewriteHostname:   sniRewriteHostname,
+		EnableBackendMTLS:    routeMapping.EnableBackendMTLS,
 	}
 	return routingKey, backendServerInfo
 }

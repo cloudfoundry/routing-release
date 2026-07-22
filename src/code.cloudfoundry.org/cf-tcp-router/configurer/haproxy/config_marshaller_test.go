@@ -264,6 +264,80 @@ backend backend_80
 `))
 
 					})
+
+					Context("when frontend TLS is not terminated (pre-existing behavior)", func() {
+						Context("when EnableBackendMTLS is false (default/unset)", func() {
+							It("still presents the client cert, preserving behavior that predates EnableBackendMTLS", func() {
+								haproxyConf = models.HAProxyConfig{
+									80: {
+										"": {
+											{Address: "host-88.internal", Port: 8888, TLSPort: 8443, InstanceID: "host-88-instance-id"},
+										},
+									},
+								}
+								Expect(marshaller.Marshal(haproxyConf, backendTlsCfg, frontendTlsCfg)).To(Equal(`
+frontend frontend_80
+  mode tcp
+  bind :80
+  default_backend backend_80
+
+backend backend_80
+  mode tcp
+  server server_host-88.internal_8443 host-88.internal:8443 ssl verify required ca-file /fake/path/to/ca.pem crt /fake/path/to/client_cert_and_key.pem verifyhost host-88-instance-id
+`))
+							})
+						})
+					})
+
+					Context("when frontend TLS is terminated", func() {
+						BeforeEach(func() {
+							frontendTlsCfg[0].Enabled = true
+						})
+
+						Context("when EnableBackendMTLS is false (default)", func() {
+							It("does not present the client cert", func() {
+								haproxyConf = models.HAProxyConfig{
+									80: {
+										"": {
+											{Address: "host-88.internal", Port: 8888, TLSPort: 8443, InstanceID: "host-88-instance-id", TerminateFrontendTLS: true},
+										},
+									},
+								}
+								Expect(marshaller.Marshal(haproxyConf, backendTlsCfg, frontendTlsCfg)).To(Equal(`
+frontend frontend_80
+  mode tcp
+  bind :80 ssl crt /fake/path/to/certs/
+  default_backend backend_80
+
+backend backend_80
+  mode tcp
+  server server_host-88.internal_8443 host-88.internal:8443 ssl verify required ca-file /fake/path/to/ca.pem verifyhost host-88-instance-id
+`))
+							})
+						})
+
+						Context("when EnableBackendMTLS is true", func() {
+							It("presents the client cert", func() {
+								haproxyConf = models.HAProxyConfig{
+									80: {
+										"": {
+											{Address: "host-88.internal", Port: 8888, TLSPort: 8443, InstanceID: "host-88-instance-id", TerminateFrontendTLS: true, EnableBackendMTLS: true},
+										},
+									},
+								}
+								Expect(marshaller.Marshal(haproxyConf, backendTlsCfg, frontendTlsCfg)).To(Equal(`
+frontend frontend_80
+  mode tcp
+  bind :80 ssl crt /fake/path/to/certs/
+  default_backend backend_80
+
+backend backend_80
+  mode tcp
+  server server_host-88.internal_8443 host-88.internal:8443 ssl verify required ca-file /fake/path/to/ca.pem crt /fake/path/to/client_cert_and_key.pem verifyhost host-88-instance-id
+`))
+							})
+						})
+					})
 				})
 
 				Context("when SniRewriteHostname is provided", func() {
