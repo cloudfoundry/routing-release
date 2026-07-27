@@ -405,7 +405,7 @@ func setupRoutingAPIClient(logger *slog.Logger, c *config.Config) (routing_api.C
 		}
 		client.SetToken(token.AccessToken)
 	}
-	
+
 	// Test connectivity
 	if _, err := client.Routes(); err != nil {
 		return nil, err
