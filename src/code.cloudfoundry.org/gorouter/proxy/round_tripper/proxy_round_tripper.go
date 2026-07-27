@@ -452,7 +452,7 @@ func (rt *roundTripper) timedRoundTrip(tr http.RoundTripper, request *http.Reque
 		return tr.RoundTrip(request)
 	}
 
-	reqCtx, cancel := context.WithTimeout(request.Context(), rt.config.EndpointTimeout)
+	reqCtx, cancel := context.WithTimeout(request.Context(), rt.getEndpointTimeout(request))
 	request = request.WithContext(reqCtx)
 
 	// unfortunately if the cancel function above is not called that

@@ -3050,7 +3050,12 @@ var _ = Describe("ProxyRoundTripper", func() {
 				})
 				Context("when http/2 endpoint timeout is not 0", func() {
 					BeforeEach(func() {
-						cfg.Http2EndpointTimeout = 15 * time.Millisecond
+						// Use a value clearly distinct from cfg.EndpointTimeout (10ms) so the
+						// test can detect whether the wrong timeout is used.
+						cfg.Http2EndpointTimeout = 50 * time.Millisecond
+						req.Proto = "HTTP/2.0"
+						req.ProtoMajor = 2
+						req.ProtoMinor = 0
 						transport.RoundTripStub = func(req *http.Request) (*http.Response, error) {
 							reqCh <- req
 							return &http.Response{}, nil
@@ -3064,7 +3069,9 @@ var _ = Describe("ProxyRoundTripper", func() {
 
 						deadLine, deadlineSet := request.Context().Deadline()
 						Expect(deadlineSet).To(BeTrue())
-						Expect(deadLine).To(BeTemporally("~", before.Add(15*time.Millisecond), 15*time.Millisecond))
+						// Tolerance of 10ms: tight enough to distinguish Http2EndpointTimeout
+						// (50ms) from EndpointTimeout (10ms) if the wrong value is used.
+						Expect(deadLine).To(BeTemporally("~", before.Add(50*time.Millisecond), 10*time.Millisecond))
 						Eventually(func() string {
 							err := request.Context().Err()
 							if err != nil {
