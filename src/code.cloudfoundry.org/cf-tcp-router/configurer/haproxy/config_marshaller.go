@@ -112,6 +112,10 @@ func (cm configMarshaller) marshalHAProxyBackend(backendName string, backend mod
 				output.WriteString(fmt.Sprintf(" crt %s", backendTlsCfg.ClientCertAndKeyPath))
 			}
 
+			if server.ALPNs != "" {
+				output.WriteString(fmt.Sprintf(" alpn %s", server.ALPNs))
+			}
+
 			if server.InstanceID != "" {
 				output.WriteString(fmt.Sprintf(" verifyhost %s", server.InstanceID))
 			}

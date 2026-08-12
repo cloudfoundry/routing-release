@@ -644,6 +644,43 @@ backend backend_1025_rmq2.sys.tas.foobar.com
   server server_88.0.0.38_8890 88.0.0.38:8890
 `))
 			})
+
+			It("and backend_tls is enabled and ALPNs are defined", func() {
+				backendTlsCfg.Enabled = true
+				backendTlsCfg.ClientCertAndKeyPath = "/fake/path/to/client_cert_and_key.pem"
+
+				haproxyConf = models.HAProxyConfig{
+					1025: {
+						"rmq1.sys.tas.foobar.com": {
+							{Address: "88.0.0.36", TLSPort: 8888, InstanceID: "host-88-instance-id", TerminateFrontendTLS: true, EnableBackendMTLS: true, ALPNs: "alpn1,alpn2"},
+						},
+						"rmq2.sys.tas.foobar.com": {
+							{Address: "88.0.0.37", TLSPort: 8889, InstanceID: "host-89-instance-id", TerminateFrontendTLS: true, EnableBackendMTLS: true, ALPNs: "alpn1,alpn3"},
+							{Address: "88.0.0.38", TLSPort: 8890, InstanceID: "host-90-instance-id", TerminateFrontendTLS: true, EnableBackendMTLS: true, ALPNs: "alpn4,alpn1"},
+						},
+					},
+				}
+				actual := marshaller.Marshal(haproxyConf, backendTlsCfg, frontendTlsCfg)
+
+				Expect(actual).To(Equal(`
+frontend frontend_1025
+  mode tcp
+  bind :1025 ssl crt /fake/path/to/certs/ alpn alpn1,alpn2,alpn3,alpn4
+  tcp-request inspect-delay 5s
+  tcp-request content accept if { req.ssl_hello_type gt 0 }
+  use_backend backend_1025_rmq1.sys.tas.foobar.com if { ssl_fc_sni rmq1.sys.tas.foobar.com }
+  use_backend backend_1025_rmq2.sys.tas.foobar.com if { ssl_fc_sni rmq2.sys.tas.foobar.com }
+
+backend backend_1025_rmq1.sys.tas.foobar.com
+  mode tcp
+  server server_88.0.0.36_8888 88.0.0.36:8888 ssl verify required ca-file /fake/path/to/ca.pem crt /fake/path/to/client_cert_and_key.pem alpn alpn1,alpn2 verifyhost host-88-instance-id
+
+backend backend_1025_rmq2.sys.tas.foobar.com
+  mode tcp
+  server server_88.0.0.37_8889 88.0.0.37:8889 ssl verify required ca-file /fake/path/to/ca.pem crt /fake/path/to/client_cert_and_key.pem alpn alpn1,alpn3 verifyhost host-89-instance-id
+  server server_88.0.0.38_8890 88.0.0.38:8890 ssl verify required ca-file /fake/path/to/ca.pem crt /fake/path/to/client_cert_and_key.pem alpn alpn4,alpn1 verifyhost host-90-instance-id
+`))
+			})
 		})
 	})
 })
