@@ -4,7 +4,7 @@ go 1.23.0
 
 toolchain go1.24.3
 
-require github.com/tedsuo/ifrit v0.0.0-20230516164442-7862c310ad26
+require github.com/tedsuo/ifrit v0.0.0-20260418191334-846868129986
 
 require (
 	github.com/go-logr/logr v1.4.3 // indirect
@@ -19,4 +19,9 @@ require (
 	golang.org/x/text v0.25.0 // indirect
 	golang.org/x/tools v0.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+)
+
+replace (
+	// pin ifrit until https://github.com/tedsuo/ifrit/pull/48 is merged
+	github.com/tedsuo/ifrit => github.com/tedsuo/ifrit v0.0.0-20260418191334-846868129986
 )
