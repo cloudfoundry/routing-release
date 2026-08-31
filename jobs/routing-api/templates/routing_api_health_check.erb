@@ -3,21 +3,25 @@
 # this script is ran by the route-registrar
 
 PORT=<%= p("routing_api.mtls_port") %>
-URL="https://localhost:${PORT}/routing/v1/routes"
+URL="https://localhost:${PORT}/routing/v1/health"
 
-echo $(date --rfc-3339=ns) "routing_api_health_check: route-registrar about to curl $URL"
-curl \
+status=$(curl \
   -s \
-  --max-time <%= p('routing_api.health_check_timeout_per_retry') %> \
-  --retry-max-time <%= p('routing_api.health_check_total_timeout') %> \
+  --max-time 2 \
+  --retry-max-time 6 \
   --cert /var/vcap/jobs/routing-api/config/certs/routing-api/client.crt \
   --key /var/vcap/jobs/routing-api/config/certs/routing-api/client.key \
   --retry 100000 \
   --retry-delay 1 \
+  -o /dev/null \
+  -w "%{http_code}" \
   -k \
-  "${URL}"
-status=$?
-if [[ $status > 0 ]] ; then
-  echo $(date --rfc-3339=ns) "Failed to hit ${URL}"
-  exit $status
+  "${URL}" \
+)
+
+if [ "$status" -eq 200 ]; then
+  echo $(date --rfc-3339=ns) "routing_api_health_check: service is healthy"
+else
+  echo $(date --rfc-3339=ns) "routing_api_health_check: service is UNHEALTHY (url: $URL, status: $status)"
+  exit 1
 fi
