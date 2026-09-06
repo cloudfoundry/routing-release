@@ -1,10 +1,11 @@
 # code.cloudfoundry.org/tlsconfig v0.65.0
 ## explicit; go 1.25.8
 code.cloudfoundry.org/tlsconfig
-# github.com/klauspost/compress v1.19.2
-## explicit; go 1.24
+# github.com/klauspost/compress v1.20.0
+## explicit; go 1.25
 github.com/klauspost/compress/flate
 github.com/klauspost/compress/internal/le
+github.com/klauspost/compress/internal/regmask
 # github.com/nats-io/nats.go v1.53.1
 ## explicit; go 1.25.0
 github.com/nats-io/nats.go
@@ -17,8 +18,8 @@ github.com/nats-io/nkeys
 # github.com/nats-io/nuid v1.0.1
 ## explicit
 github.com/nats-io/nuid
-# golang.org/x/crypto v0.55.0
-## explicit; go 1.25.0
+# golang.org/x/crypto v0.56.0
+## explicit; go 1.26.0
 golang.org/x/crypto/blake2b
 golang.org/x/crypto/curve25519
 golang.org/x/crypto/internal/alias
