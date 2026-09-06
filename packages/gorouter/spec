@@ -125,6 +125,7 @@ files:
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/internal/cpuinfo/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/internal/cpuinfo/*.s # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/internal/le/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/klauspost/compress/internal/regmask/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/internal/snapref/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/zstd/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/klauspost/compress/zstd/*.s # gosub
@@ -198,9 +199,11 @@ files:
   - code.cloudfoundry.org/vendor/go.step.sm/crypto/fingerprint/*.go # gosub
   - code.cloudfoundry.org/vendor/go.step.sm/crypto/internal/bcrypt_pbkdf/*.go # gosub
   - code.cloudfoundry.org/vendor/go.step.sm/crypto/internal/emoji/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.step.sm/crypto/internal/utils/convert/*.go # gosub
   - code.cloudfoundry.org/vendor/go.step.sm/crypto/internal/utils/file/*.go # gosub
   - code.cloudfoundry.org/vendor/go.step.sm/crypto/internal/utils/utfbom/*.go # gosub
   - code.cloudfoundry.org/vendor/go.step.sm/crypto/keyutil/*.go # gosub
+  - code.cloudfoundry.org/vendor/go.step.sm/crypto/mldsa/*.go # gosub
   - code.cloudfoundry.org/vendor/go.step.sm/crypto/pemutil/*.go # gosub
   - code.cloudfoundry.org/vendor/go.step.sm/crypto/randutil/*.go # gosub
   - code.cloudfoundry.org/vendor/go.step.sm/crypto/x25519/*.go # gosub
