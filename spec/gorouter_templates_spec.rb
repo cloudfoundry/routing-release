@@ -1487,6 +1487,26 @@ describe 'gorouter' do
             end
           end
 
+          context 'to a field documented in the job spec' do
+            available_fields = YAML.load_file(File.join(File.dirname(__FILE__), '..', 'jobs', 'gorouter', 'spec'))
+                                   .fetch('properties')
+                                   .fetch('router.logging.extra_access_log_fields')
+                                   .fetch('description')[/Available fields are: (.*)/, 1]
+                                   .split(',').map(&:strip)
+
+            available_fields.each do |field|
+              context "[\"#{field}\"]" do
+                before do
+                  deployment_manifest_fragment['router']['logging'] = { 'extra_access_log_fields' => [field] }
+                end
+
+                it 'renders the config property' do
+                  expect(parsed_yaml['logging']['extra_access_log_fields']).to eq([field])
+                end
+              end
+            end
+          end
+
           context 'to ["foobar"]' do
             before do
               deployment_manifest_fragment['router']['logging'] = { 'extra_access_log_fields' => ['foobar'] }

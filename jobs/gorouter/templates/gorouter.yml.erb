@@ -412,7 +412,7 @@ if p('router.enable_log_attempts_details')
 end
 
 if_p('router.logging.extra_access_log_fields') do |extra_fields|
-  valid_extra_log_fields=['backend_time', 'dial_time', 'dns_time', 'failed_attempts', 'failed_attempts_time', 'local_address', 'tls_time']
+  valid_extra_log_fields=['backend_time', 'caller_cf_app', 'caller_cf_org', 'caller_cf_space', 'dial_time', 'dns_time', 'failed_attempts', 'failed_attempts_time', 'local_address', 'route_policy', 'tls_sni', 'tls_time']
   if !extra_fields.all? { |el| valid_extra_log_fields.include?(el) }
     raise "router.logging.extra_access_log_fields (#{extra_fields}) contains invalid values, valid are #{valid_extra_log_fields}"
   end
