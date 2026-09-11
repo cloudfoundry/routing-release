@@ -43,7 +43,7 @@ type RegistryMessage struct {
 type RegistryMessageOpts struct {
 	LoadBalancingAlgorithm string  `json:"loadbalancing"`
 	HashHeaderName         string  `json:"hash_header"`
-	HashBalance            float64 `json:"hash_balance"`
+	HashBalance            float64 `json:"hash_balance,string"`
 	// RFC route policy options (from Cloud Controller via Diego sync)
 	RoutePolicyScope   string `json:"route_policy_scope,omitempty"`
 	RoutePolicySources string `json:"route_policy_sources,omitempty"`
