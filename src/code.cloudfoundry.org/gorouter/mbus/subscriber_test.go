@@ -731,6 +731,35 @@ var _ = Describe("Subscriber", func() {
 				Expect(expectedEndpoint.HashBalanceFactor).To(Equal(0.0))
 				Expect(originalEndpoint).To(Equal(expectedEndpoint))
 			})
+
+			It("parses hash_balance from incoming JSON as a string", func() {
+				data := []byte(`{"host":"host","app":"app","uris":["test.example.com"],"options":{"loadbalancing":"hash","hash_header":"X-Header","hash_balance":"1.5"}}`)
+
+				err := natsClient.Publish("router.register", data)
+				Expect(err).ToNot(HaveOccurred())
+
+				Eventually(registry.RegisterCallCount).Should(Equal(1))
+				_, originalEndpoint := registry.RegisterArgsForCall(0)
+				expectedEndpoint := route.NewEndpoint(&route.EndpointOpts{
+					Host:                   "host",
+					AppId:                  "app",
+					Protocol:               "http1",
+					LoadBalancingAlgorithm: "hash",
+					HashHeaderName:         "X-Header",
+					HashBalanceFactor:      1.5,
+				})
+
+				Expect(originalEndpoint).To(Equal(expectedEndpoint))
+			})
+
+			It("rejects route if hash_balance value is not a string", func() {
+				data := []byte(`{"host":"host","app":"app","uris":["test.example.com"],"options":{"loadbalancing":"hash","hash_header":"X-Header","hash_balance":1.5}}`)
+
+				err := natsClient.Publish("router.register", data)
+				Expect(err).ToNot(HaveOccurred())
+
+				Consistently(registry.RegisterCallCount).Should(BeZero())
+			})
 		})
 	})
 
