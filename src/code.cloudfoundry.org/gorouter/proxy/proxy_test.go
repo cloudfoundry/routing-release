@@ -31,7 +31,6 @@ import (
 	"github.com/onsi/gomega/gbytes"
 	"github.com/openzipkin/zipkin-go/propagation/b3"
 	"go.uber.org/zap"
-	"golang.org/x/net/http2"
 	"golang.org/x/net/websocket"
 
 	"code.cloudfoundry.org/gorouter/common/health"
@@ -164,13 +163,14 @@ var _ = Describe("Proxy", func() {
 					tlsCert, err := tls.X509KeyPair(gorouterCertChain.CACertPEM, gorouterCertChain.CAPrivKeyPEM)
 					Expect(err).NotTo(HaveOccurred())
 
+					h2ClientTLSConfig := &tls.Config{
+						Certificates: []tls.Certificate{tlsCert},
+						RootCAs:      rootCACertPool,
+					}
+					h2OnlyProtocols := new(http.Protocols)
+					h2OnlyProtocols.SetHTTP2(true)
 					client := &http.Client{
-						Transport: &http2.Transport{
-							TLSClientConfig: &tls.Config{
-								Certificates: []tls.Certificate{tlsCert},
-								RootCAs:      rootCACertPool,
-							},
-						},
+						Transport: &http.Transport{TLSClientConfig: h2ClientTLSConfig, Protocols: h2OnlyProtocols},
 					}
 
 					req, err := http.NewRequest("GET", "https://"+proxyServer.Addr().String(), nil)
