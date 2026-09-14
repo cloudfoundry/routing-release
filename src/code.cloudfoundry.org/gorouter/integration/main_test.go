@@ -30,7 +30,6 @@ import (
 	. "github.com/onsi/gomega/gbytes"
 	. "github.com/onsi/gomega/gexec"
 	"github.com/onsi/gomega/ghttp"
-	"golang.org/x/net/http2"
 
 	tls_helpers "code.cloudfoundry.org/cf-routing-test-helpers/tls"
 	"code.cloudfoundry.org/gorouter/config"
@@ -309,10 +308,15 @@ var _ = Describe("Router Integration", func() {
 			Expect(resp.StatusCode).To(Equal(http.StatusOK))
 			Expect(resp.Proto).To(Equal("HTTP/1.1"))
 
-			h2_client := &http.Client{Transport: &http2.Transport{TLSClientConfig: clientTLSConfig}}
-			_, err = h2_client.Get(fmt.Sprintf("https://test.%s:%d", test_util.LocalhostDNS, cfg.SSLPort))
-			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(ContainSubstring("unexpected ALPN protocol"))
+			h2OnlyProtocols := new(http.Protocols)
+			h2OnlyProtocols.SetHTTP2(true)
+			h2_client := &http.Client{Transport: &http.Transport{TLSClientConfig: clientTLSConfig.Clone(), Protocols: h2OnlyProtocols}}
+			resp, err = h2_client.Get(fmt.Sprintf("https://test.%s:%d", test_util.LocalhostDNS, cfg.SSLPort))
+			// HTTP/2 is disabled on the server, so a client attempting h2 must not
+			// negotiate it over ALPN and falls back to HTTP/1.1.
+			Expect(err).ToNot(HaveOccurred())
+			Expect(resp.TLS.NegotiatedProtocol).ToNot(Equal("h2"))
+			Expect(resp.Proto).To(Equal("HTTP/1.1"))
 		})
 	})
 
@@ -355,7 +359,9 @@ var _ = Describe("Router Integration", func() {
 				}
 			}()
 			Eventually(func() bool { return appRegistered(routesUri, runningApp1) }).Should(BeTrue())
-			client := &http.Client{Transport: &http2.Transport{TLSClientConfig: clientTLSConfig}}
+			h2OnlyProtocols := new(http.Protocols)
+			h2OnlyProtocols.SetHTTP2(true)
+			client := &http.Client{Transport: &http.Transport{TLSClientConfig: clientTLSConfig.Clone(), Protocols: h2OnlyProtocols}}
 			resp, err := client.Get(fmt.Sprintf("https://test.%s:%d", test_util.LocalhostDNS, cfg.SSLPort))
 			Expect(err).ToNot(HaveOccurred())
 			Expect(resp.StatusCode).To(Equal(http.StatusOK))
