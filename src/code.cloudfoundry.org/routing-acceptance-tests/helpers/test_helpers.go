@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"code.cloudfoundry.org/clock"
@@ -113,7 +114,7 @@ func UpdateOrgQuota(context cfworkflow_helpers.UserContext) {
 	err := os.Setenv("CF_TRACE", "false")
 	Expect(err).NotTo(HaveOccurred())
 	cfworkflow_helpers.AsUser(context, context.Timeout, func() {
-		orgGuid := cf.Cf("org", context.Org, "--guid").Wait(context.Timeout).Out.Contents()
+		orgGuid := strings.TrimSpace(string(cf.Cf("org", context.Org, "--guid").Wait(context.Timeout).Out.Contents()))
 		f, err := os.CreateTemp("", "curl-json")
 		Expect(err).NotTo(HaveOccurred())
 		defer f.Close()
