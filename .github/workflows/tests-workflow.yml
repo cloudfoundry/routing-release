@@ -1,6 +1,6 @@
 name: unit-integration-tests
 on:
-  pull_request_target:
+  pull_request:
     types:
     - labeled
 env:
@@ -29,12 +29,12 @@ jobs:
   repo-clone:
     if: github.event.label.name == 'ready-to-run'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
     - name: routing-release-repo
       uses: actions/checkout@v4
       with:
-        repository: ${{ github.event.pull_request.head.repo.full_name }}
-        ref: ${{ github.event.pull_request.head.ref }}
         submodules: recursive
         path: repo
     - name: Check out wg-appruntime code
