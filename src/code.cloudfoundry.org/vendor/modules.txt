@@ -1,29 +1,29 @@
-# code.cloudfoundry.org/cfhttp/v2 v2.94.0
-## explicit; go 1.25.0
+# code.cloudfoundry.org/cfhttp/v2 v2.95.0
+## explicit; go 1.26.0
 code.cloudfoundry.org/cfhttp/v2
-# code.cloudfoundry.org/clock v1.87.0
-## explicit; go 1.25.0
+# code.cloudfoundry.org/clock v1.88.0
+## explicit; go 1.26.0
 code.cloudfoundry.org/clock
 code.cloudfoundry.org/clock/fakeclock
-# code.cloudfoundry.org/debugserver v0.114.0
-## explicit; go 1.25.0
+# code.cloudfoundry.org/debugserver v0.115.0
+## explicit; go 1.26.0
 code.cloudfoundry.org/debugserver
-# code.cloudfoundry.org/diego-db-helpers v0.17.0
+# code.cloudfoundry.org/diego-db-helpers v0.18.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/diego-db-helpers/guidprovider
 code.cloudfoundry.org/diego-db-helpers/sqldb/helpers
 code.cloudfoundry.org/diego-db-helpers/sqldb/helpers/monitor
-# code.cloudfoundry.org/diego-logging-client v0.124.0
-## explicit; go 1.25.8
+# code.cloudfoundry.org/diego-logging-client v0.125.0
+## explicit; go 1.26.0
 code.cloudfoundry.org/diego-logging-client
 code.cloudfoundry.org/diego-logging-client/testhelpers
-# code.cloudfoundry.org/durationjson v0.89.0
-## explicit; go 1.25.0
+# code.cloudfoundry.org/durationjson v0.90.0
+## explicit; go 1.26.0
 code.cloudfoundry.org/durationjson
-# code.cloudfoundry.org/eventhub v0.89.0
-## explicit; go 1.25.0
+# code.cloudfoundry.org/eventhub v0.90.0
+## explicit; go 1.26.0
 code.cloudfoundry.org/eventhub
-# code.cloudfoundry.org/go-diodes v0.0.0-20260831145205-e8366a756183
+# code.cloudfoundry.org/go-diodes v0.0.0-20260914115851-7fd03ae06e34
 ## explicit; go 1.25.0
 code.cloudfoundry.org/go-diodes
 # code.cloudfoundry.org/go-loggregator/v9 v9.2.1
@@ -31,20 +31,20 @@ code.cloudfoundry.org/go-diodes
 code.cloudfoundry.org/go-loggregator/v9
 code.cloudfoundry.org/go-loggregator/v9/rpc/loggregator_v2
 code.cloudfoundry.org/go-loggregator/v9/runtimeemitter
-# code.cloudfoundry.org/go-metric-registry v0.0.0-20260901100552-589270c3b9ea
-## explicit; go 1.25.8
+# code.cloudfoundry.org/go-metric-registry v0.0.0-20260915045411-6e7ffc53e0ba
+## explicit; go 1.26.0
 code.cloudfoundry.org/go-metric-registry
-# code.cloudfoundry.org/lager/v3 v3.86.0
-## explicit; go 1.25.0
+# code.cloudfoundry.org/lager/v3 v3.87.0
+## explicit; go 1.26.0
 code.cloudfoundry.org/lager/v3
 code.cloudfoundry.org/lager/v3/internal/truncate
 code.cloudfoundry.org/lager/v3/lagerctx
 code.cloudfoundry.org/lager/v3/lagerflags
 code.cloudfoundry.org/lager/v3/lagertest
-# code.cloudfoundry.org/localip v0.88.0
-## explicit; go 1.25.0
+# code.cloudfoundry.org/localip v0.89.0
+## explicit; go 1.26.0
 code.cloudfoundry.org/localip
-# code.cloudfoundry.org/locket v1.12.0
+# code.cloudfoundry.org/locket v1.13.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/locket
 code.cloudfoundry.org/locket/cmd/locket
@@ -59,7 +59,7 @@ code.cloudfoundry.org/locket/lock
 code.cloudfoundry.org/locket/metrics
 code.cloudfoundry.org/locket/metrics/helpers
 code.cloudfoundry.org/locket/models
-# code.cloudfoundry.org/routing-api v0.15.0
+# code.cloudfoundry.org/routing-api v0.16.0
 ## explicit; go 1.26.4
 code.cloudfoundry.org/routing-api
 code.cloudfoundry.org/routing-api/admin
@@ -78,7 +78,7 @@ code.cloudfoundry.org/routing-api/test_helpers
 code.cloudfoundry.org/routing-api/trace
 code.cloudfoundry.org/routing-api/uaaclient
 code.cloudfoundry.org/routing-api/uaaclient/fakes
-# code.cloudfoundry.org/tlsconfig v0.66.0
+# code.cloudfoundry.org/tlsconfig v0.67.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/tlsconfig
 # filippo.io/edwards25519 v1.2.0
@@ -251,14 +251,14 @@ github.com/munnerz/goautoneg
 # github.com/nats-io/jwt/v2 v2.8.2
 ## explicit; go 1.25.0
 github.com/nats-io/jwt/v2
-# github.com/nats-io/nats-server/v2 v2.14.6
+# github.com/nats-io/nats-server/v2 v2.15.0
 ## explicit; go 1.26.0
 github.com/nats-io/nats-server/v2
 github.com/nats-io/nats-server/v2/conf
-github.com/nats-io/nats-server/v2/internal/fastrand
 github.com/nats-io/nats-server/v2/internal/ldap
 github.com/nats-io/nats-server/v2/logger
 github.com/nats-io/nats-server/v2/server
+github.com/nats-io/nats-server/v2/server/archive
 github.com/nats-io/nats-server/v2/server/ats
 github.com/nats-io/nats-server/v2/server/avl
 github.com/nats-io/nats-server/v2/server/certidp
@@ -270,8 +270,8 @@ github.com/nats-io/nats-server/v2/server/stree
 github.com/nats-io/nats-server/v2/server/sysmem
 github.com/nats-io/nats-server/v2/server/thw
 github.com/nats-io/nats-server/v2/server/tpm
-# github.com/nats-io/nats.go v1.53.1
-## explicit; go 1.25.0
+# github.com/nats-io/nats.go v1.54.0
+## explicit; go 1.26.0
 github.com/nats-io/nats.go
 github.com/nats-io/nats.go/encoders/builtin
 github.com/nats-io/nats.go/internal/parser
@@ -285,7 +285,7 @@ github.com/nats-io/nuid
 # github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 ## explicit
 github.com/nu7hatch/gouuid
-# github.com/onsi/ginkgo/v2 v2.32.2
+# github.com/onsi/ginkgo/v2 v2.33.0
 ## explicit; go 1.25.0
 github.com/onsi/ginkgo/v2
 github.com/onsi/ginkgo/v2/config
@@ -309,7 +309,7 @@ github.com/onsi/ginkgo/v2/internal/reporters
 github.com/onsi/ginkgo/v2/internal/testingtproxy
 github.com/onsi/ginkgo/v2/reporters
 github.com/onsi/ginkgo/v2/types
-# github.com/onsi/gomega v1.43.0
+# github.com/onsi/gomega v1.43.1
 ## explicit; go 1.25.0
 github.com/onsi/gomega
 github.com/onsi/gomega/format
@@ -393,7 +393,7 @@ github.com/vmihailenco/msgpack/v5/msgpcode
 github.com/vmihailenco/tagparser/v2
 github.com/vmihailenco/tagparser/v2/internal
 github.com/vmihailenco/tagparser/v2/internal/parser
-# go.step.sm/crypto v0.90.0
+# go.step.sm/crypto v0.91.0
 ## explicit; go 1.26.0
 go.step.sm/crypto/fingerprint
 go.step.sm/crypto/internal/bcrypt_pbkdf
@@ -550,10 +550,10 @@ golang.org/x/tools/internal/pkgbits
 golang.org/x/tools/internal/stdlib
 golang.org/x/tools/internal/typesinternal
 golang.org/x/tools/internal/versions
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20260911204522-f61a6ca850bd
-## explicit; go 1.25.0
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20260918162117-cecb64721679
+## explicit; go 1.26.0
 google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.83.2
+# google.golang.org/grpc v1.84.0
 ## explicit; go 1.25.0
 google.golang.org/grpc
 google.golang.org/grpc/attributes
@@ -664,7 +664,7 @@ gopkg.in/yaml.v3
 # gorm.io/driver/mysql v1.6.0
 ## explicit; go 1.18
 gorm.io/driver/mysql
-# gorm.io/driver/postgres v1.6.2
+# gorm.io/driver/postgres v1.6.3
 ## explicit; go 1.25.0
 gorm.io/driver/postgres
 # gorm.io/gorm v1.31.2
