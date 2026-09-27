@@ -1,29 +1,29 @@
-# code.cloudfoundry.org/cfhttp/v2 v2.95.0
+# code.cloudfoundry.org/cfhttp/v2 v2.96.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/cfhttp/v2
-# code.cloudfoundry.org/clock v1.88.0
+# code.cloudfoundry.org/clock v1.89.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/clock
 code.cloudfoundry.org/clock/fakeclock
-# code.cloudfoundry.org/debugserver v0.115.0
+# code.cloudfoundry.org/debugserver v0.116.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/debugserver
-# code.cloudfoundry.org/diego-db-helpers v0.18.0
+# code.cloudfoundry.org/diego-db-helpers v0.19.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/diego-db-helpers/guidprovider
 code.cloudfoundry.org/diego-db-helpers/sqldb/helpers
 code.cloudfoundry.org/diego-db-helpers/sqldb/helpers/monitor
-# code.cloudfoundry.org/diego-logging-client v0.125.0
+# code.cloudfoundry.org/diego-logging-client v0.126.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/diego-logging-client
 code.cloudfoundry.org/diego-logging-client/testhelpers
-# code.cloudfoundry.org/durationjson v0.90.0
+# code.cloudfoundry.org/durationjson v0.91.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/durationjson
-# code.cloudfoundry.org/eventhub v0.90.0
+# code.cloudfoundry.org/eventhub v0.91.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/eventhub
-# code.cloudfoundry.org/go-diodes v0.0.0-20260914115851-7fd03ae06e34
+# code.cloudfoundry.org/go-diodes v0.0.0-20260921100641-e75e32521ad8
 ## explicit; go 1.25.0
 code.cloudfoundry.org/go-diodes
 # code.cloudfoundry.org/go-loggregator/v9 v9.2.1
@@ -31,20 +31,20 @@ code.cloudfoundry.org/go-diodes
 code.cloudfoundry.org/go-loggregator/v9
 code.cloudfoundry.org/go-loggregator/v9/rpc/loggregator_v2
 code.cloudfoundry.org/go-loggregator/v9/runtimeemitter
-# code.cloudfoundry.org/go-metric-registry v0.0.0-20260915045411-6e7ffc53e0ba
+# code.cloudfoundry.org/go-metric-registry v0.0.0-20260922073832-5661ea5c3a88
 ## explicit; go 1.26.0
 code.cloudfoundry.org/go-metric-registry
-# code.cloudfoundry.org/lager/v3 v3.87.0
+# code.cloudfoundry.org/lager/v3 v3.88.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/lager/v3
 code.cloudfoundry.org/lager/v3/internal/truncate
 code.cloudfoundry.org/lager/v3/lagerctx
 code.cloudfoundry.org/lager/v3/lagerflags
 code.cloudfoundry.org/lager/v3/lagertest
-# code.cloudfoundry.org/localip v0.89.0
+# code.cloudfoundry.org/localip v0.90.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/localip
-# code.cloudfoundry.org/locket v1.13.0
+# code.cloudfoundry.org/locket v1.14.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/locket
 code.cloudfoundry.org/locket/cmd/locket
@@ -78,7 +78,7 @@ code.cloudfoundry.org/routing-api/test_helpers
 code.cloudfoundry.org/routing-api/trace
 code.cloudfoundry.org/routing-api/uaaclient
 code.cloudfoundry.org/routing-api/uaaclient/fakes
-# code.cloudfoundry.org/tlsconfig v0.67.0
+# code.cloudfoundry.org/tlsconfig v0.68.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/tlsconfig
 # filippo.io/edwards25519 v1.2.0
@@ -111,8 +111,8 @@ github.com/cespare/xxhash/v2
 ## explicit; go 1.25.0
 github.com/cloudfoundry-community/go-uaa
 github.com/cloudfoundry-community/go-uaa/passwordcredentials
-# github.com/cloudfoundry/cf-test-helpers/v2 v2.13.0
-## explicit; go 1.23.0
+# github.com/cloudfoundry/cf-test-helpers/v2 v2.14.0
+## explicit; go 1.26.8
 github.com/cloudfoundry/cf-test-helpers/v2/cf
 github.com/cloudfoundry/cf-test-helpers/v2/commandreporter
 github.com/cloudfoundry/cf-test-helpers/v2/commandstarter
@@ -185,7 +185,7 @@ github.com/google/go-cmp/cmp/internal/value
 github.com/google/go-tpm/legacy/tpm2
 github.com/google/go-tpm/tpmutil
 github.com/google/go-tpm/tpmutil/tbs
-# github.com/google/pprof v0.0.0-20260906184651-6331bc6350fe
+# github.com/google/pprof v0.0.0-20260926063103-aaccee046517
 ## explicit; go 1.25.0
 github.com/google/pprof/profile
 # github.com/honeycombio/libhoney-go v1.27.1
@@ -228,7 +228,7 @@ github.com/jinzhu/now
 ## explicit; go 1.25.0
 github.com/kisielk/errcheck
 github.com/kisielk/errcheck/errcheck
-# github.com/klauspost/compress v1.20.0
+# github.com/klauspost/compress v1.20.1
 ## explicit; go 1.25
 github.com/klauspost/compress
 github.com/klauspost/compress/flate
@@ -309,7 +309,7 @@ github.com/onsi/ginkgo/v2/internal/reporters
 github.com/onsi/ginkgo/v2/internal/testingtproxy
 github.com/onsi/ginkgo/v2/reporters
 github.com/onsi/ginkgo/v2/types
-# github.com/onsi/gomega v1.43.1
+# github.com/onsi/gomega v1.44.0
 ## explicit; go 1.25.0
 github.com/onsi/gomega
 github.com/onsi/gomega/format
@@ -550,7 +550,7 @@ golang.org/x/tools/internal/pkgbits
 golang.org/x/tools/internal/stdlib
 golang.org/x/tools/internal/typesinternal
 golang.org/x/tools/internal/versions
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20260918162117-cecb64721679
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20260921155816-b14227669459
 ## explicit; go 1.26.0
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.84.0

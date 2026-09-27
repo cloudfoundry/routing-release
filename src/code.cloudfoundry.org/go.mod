@@ -1,6 +1,6 @@
 module code.cloudfoundry.org
 
-go 1.26.4
+go 1.26.8
 
 // pin ifrit until https://github.com/tedsuo/ifrit/pull/48 is merged
 replace github.com/tedsuo/ifrit => github.com/tedsuo/ifrit v0.0.0-20260418191334-846868129986
@@ -8,17 +8,17 @@ replace github.com/tedsuo/ifrit => github.com/tedsuo/ifrit v0.0.0-20260418191334
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
 
 require (
-	code.cloudfoundry.org/clock v1.88.0
-	code.cloudfoundry.org/debugserver v0.115.0
-	code.cloudfoundry.org/diego-logging-client v0.125.0
-	code.cloudfoundry.org/go-metric-registry v0.0.0-20260915045411-6e7ffc53e0ba
-	code.cloudfoundry.org/lager/v3 v3.87.0
-	code.cloudfoundry.org/localip v0.89.0
-	code.cloudfoundry.org/locket v1.13.0
+	code.cloudfoundry.org/clock v1.89.0
+	code.cloudfoundry.org/debugserver v0.116.0
+	code.cloudfoundry.org/diego-logging-client v0.126.0
+	code.cloudfoundry.org/go-metric-registry v0.0.0-20260922073832-5661ea5c3a88
+	code.cloudfoundry.org/lager/v3 v3.88.0
+	code.cloudfoundry.org/localip v0.90.0
+	code.cloudfoundry.org/locket v1.14.0
 	code.cloudfoundry.org/routing-api v0.16.0
-	code.cloudfoundry.org/tlsconfig v0.67.0
+	code.cloudfoundry.org/tlsconfig v0.68.0
 	github.com/armon/go-proxyproto v0.1.0
-	github.com/cloudfoundry/cf-test-helpers/v2 v2.13.0
+	github.com/cloudfoundry/cf-test-helpers/v2 v2.14.0
 	github.com/cloudfoundry/custom-cats-reporters v0.0.2
 	github.com/cloudfoundry/dropsonde v1.1.0
 	github.com/cloudfoundry/sonde-go v0.0.0-20260818080958-d46298cd8513
@@ -27,7 +27,7 @@ require (
 	github.com/nats-io/nats.go v1.54.0
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.33.0
-	github.com/onsi/gomega v1.43.1
+	github.com/onsi/gomega v1.44.0
 	github.com/openzipkin/zipkin-go v0.4.3
 	github.com/rcrowley/go-metrics v0.0.0-20250401214520-65e299d6c5c9
 	github.com/tedsuo/ifrit v0.0.0-20260908181113-dd353a7daa27
@@ -46,11 +46,11 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/cfhttp/v2 v2.95.0 // indirect
-	code.cloudfoundry.org/diego-db-helpers v0.18.0 // indirect
-	code.cloudfoundry.org/durationjson v0.90.0 // indirect
-	code.cloudfoundry.org/eventhub v0.90.0 // indirect
-	code.cloudfoundry.org/go-diodes v0.0.0-20260914115851-7fd03ae06e34 // indirect
+	code.cloudfoundry.org/cfhttp/v2 v2.96.0 // indirect
+	code.cloudfoundry.org/diego-db-helpers v0.19.0 // indirect
+	code.cloudfoundry.org/durationjson v0.91.0 // indirect
+	code.cloudfoundry.org/eventhub v0.91.0 // indirect
+	code.cloudfoundry.org/go-diodes v0.0.0-20260921100641-e75e32521ad8 // indirect
 	code.cloudfoundry.org/go-loggregator/v9 v9.2.1 // indirect
 	filippo.io/edwards25519 v1.2.0 // indirect
 	github.com/Masterminds/semver/v3 v3.5.0 // indirect
@@ -71,7 +71,7 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/go-tpm v0.9.8 // indirect
-	github.com/google/pprof v0.0.0-20260906184651-6331bc6350fe // indirect
+	github.com/google/pprof v0.0.0-20260926063103-aaccee046517 // indirect
 	github.com/honeycombio/libhoney-go v1.27.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
@@ -79,7 +79,7 @@ require (
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
-	github.com/klauspost/compress v1.20.0 // indirect
+	github.com/klauspost/compress v1.20.1 // indirect
 	github.com/minio/highwayhash v1.0.4 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/nats-io/jwt/v2 v2.8.2 // indirect
@@ -102,7 +102,7 @@ require (
 	golang.org/x/sys v0.48.0 // indirect
 	golang.org/x/text v0.42.0 // indirect
 	golang.org/x/time v0.16.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260918162117-cecb64721679 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260921155816-b14227669459 // indirect
 	google.golang.org/grpc v1.84.0 // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 	gorm.io/driver/mysql v1.6.0 // indirect
