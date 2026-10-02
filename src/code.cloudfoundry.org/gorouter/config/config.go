@@ -95,9 +95,11 @@ type StatusConfig struct {
 }
 
 type StatusTLSConfig struct {
-	Port        uint16 `yaml:"port"`
-	Certificate string `yaml:"certificate"`
-	Key         string `yaml:"key"`
+	Port            uint16 `yaml:"port"`
+	Certificate     string `yaml:"certificate"`
+	CertificateFile string `yaml:"certificate_file"`
+	Key             string `yaml:"key"`
+	KeyFile         string `yaml:"key_file"`
 }
 
 type StatusRoutesConfig struct {
@@ -134,6 +136,7 @@ type NatsConfig struct {
 	Pass                  string           `yaml:"pass"`
 	TLSEnabled            bool             `yaml:"tls_enabled"`
 	CACerts               string           `yaml:"ca_certs"`
+	CACertsFile           string           `yaml:"ca_certs_file"`
 	CAPool                *x509.CertPool   `yaml:"-"`
 	ClientAuthCertificate tls.Certificate  `yaml:"-"`
 	TLSPem                `yaml:",inline"` // embed to get cert_chain and private_key for client authentication
@@ -155,6 +158,7 @@ type RoutingApiConfig struct {
 	Port                  int            `yaml:"port"`
 	AuthDisabled          bool           `yaml:"auth_disabled"`
 	CACerts               string         `yaml:"ca_certs"`
+	CACertsFile           string         `yaml:"ca_certs_file"`
 	CAPool                *x509.CertPool `yaml:"-"`
 	ClientAuthCertificate tls.Certificate
 	TLSPem                `yaml:",inline"` // embed to get cert_chain and private_key for client authentication
@@ -167,6 +171,7 @@ type OAuthConfig struct {
 	ClientName        string `yaml:"client_name"`
 	ClientSecret      string `yaml:"client_secret"`
 	CACerts           string `yaml:"ca_certs"`
+	CACertsFile       string `yaml:"ca_certs_file"`
 }
 
 type BackendConfig struct {
@@ -219,8 +224,32 @@ type Tracing struct {
 }
 
 type TLSPem struct {
-	CertChain  string `yaml:"cert_chain"`
-	PrivateKey string `yaml:"private_key"`
+	CertChain      string `yaml:"cert_chain"`
+	PrivateKey     string `yaml:"private_key"`
+	CertChainFile  string `yaml:"cert_chain_file"`
+	PrivateKeyFile string `yaml:"private_key_file"`
+}
+
+func resolveFileField(fieldName string, inline *string, file string) error {
+	if file == "" {
+		return nil
+	}
+	if *inline != "" {
+		return fmt.Errorf("cannot specify both %s and %s_file", fieldName, fieldName)
+	}
+	contents, err := os.ReadFile(file)
+	if err != nil {
+		return err
+	}
+	*inline = string(contents)
+	return nil
+}
+
+func (p *TLSPem) resolveFiles() error {
+	if err := resolveFileField("cert_chain", &p.CertChain, p.CertChainFile); err != nil {
+		return err
+	}
+	return resolveFileField("private_key", &p.PrivateKey, p.PrivateKeyFile)
 }
 
 var defaultLoggingConfig = LoggingConfig{
@@ -379,6 +408,7 @@ type MtlsDomainConfig struct {
 	Domain              string         `yaml:"domain"`
 	CAPool              *x509.CertPool `yaml:"-"`
 	CACerts             string         `yaml:"ca_certs"`
+	CACertsFile         string         `yaml:"ca_certs_file"`
 	ForwardedClientCert string         `yaml:"forwarded_client_cert"`
 	XFCCFormat          string         `yaml:"xfcc_format"` // "raw" (default) or "envoy"
 	// Computed fields
@@ -407,8 +437,10 @@ type Config struct {
 	SSLCertificates                []tls.Certificate `yaml:"-"`
 	TLSPEM                         []TLSPem          `yaml:"tls_pem,omitempty"`
 	CACerts                        []string          `yaml:"ca_certs,omitempty"`
+	CACertsFile                    string            `yaml:"ca_certs_file,omitempty"`
 	CAPool                         *x509.CertPool    `yaml:"-"`
 	ClientCACerts                  string            `yaml:"client_ca_certs,omitempty"`
+	ClientCACertsFile              string            `yaml:"client_ca_certs_file,omitempty"`
 	ClientCAPool                   *x509.CertPool    `yaml:"-"`
 
 	// Domains configures domains that require client certificates (mTLS).
@@ -609,6 +641,10 @@ func IsLoadBalancingAlgorithmValid(lbAlgo string) bool {
 }
 
 func (c *Config) Process() error {
+	if err := c.resolveFileReferences(); err != nil {
+		return err
+	}
+
 	if c.GoMaxProcs == -1 {
 		c.GoMaxProcs = runtime.NumCPU()
 	}
@@ -874,6 +910,59 @@ func (c *Config) processCipherSuites() ([]uint16, error) {
 	}
 
 	return convertCipherStringToInt(ciphers, cipherMap)
+}
+
+func (c *Config) resolveFileReferences() error {
+	for _, pem := range []*TLSPem{
+		&c.Nats.TLSPem,
+		&c.Backends.TLSPem,
+		&c.RouteServiceConfig.TLSPem,
+		&c.RoutingApi.TLSPem,
+	} {
+		if err := pem.resolveFiles(); err != nil {
+			return err
+		}
+	}
+
+	for i := range c.TLSPEM {
+		if err := c.TLSPEM[i].resolveFiles(); err != nil {
+			return err
+		}
+	}
+
+	for _, f := range []struct {
+		fieldName string
+		inline    *string
+		file      string
+	}{
+		{"status.tls.certificate", &c.Status.TLS.Certificate, c.Status.TLS.CertificateFile},
+		{"status.tls.key", &c.Status.TLS.Key, c.Status.TLS.KeyFile},
+		{"client_ca_certs", &c.ClientCACerts, c.ClientCACertsFile},
+		{"nats.ca_certs", &c.Nats.CACerts, c.Nats.CACertsFile},
+		{"routing_api.ca_certs", &c.RoutingApi.CACerts, c.RoutingApi.CACertsFile},
+		{"oauth.ca_certs", &c.OAuth.CACerts, c.OAuth.CACertsFile},
+	} {
+		if err := resolveFileField(f.fieldName, f.inline, f.file); err != nil {
+			return err
+		}
+	}
+
+	for i := range c.Domains {
+		if err := resolveFileField(fmt.Sprintf("domains[%d].CACerts", i), &c.Domains[i].CACerts, c.Domains[i].CACertsFile); err != nil {
+			return err
+		}
+	}
+
+	// ca_certs is a list; ca_certs_file contributes one more entry.
+	if c.CACertsFile != "" {
+		contents, err := os.ReadFile(c.CACertsFile)
+		if err != nil {
+			return err
+		}
+		c.CACerts = append(c.CACerts, string(contents))
+	}
+
+	return nil
 }
 
 func (c *Config) buildCertPool() error {
