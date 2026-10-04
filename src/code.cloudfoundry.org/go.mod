@@ -8,14 +8,14 @@ replace github.com/tedsuo/ifrit => github.com/tedsuo/ifrit v0.0.0-20260418191334
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v2.0.2-0.20150911070441-6fa055a7b594+incompatible
 
 require (
-	code.cloudfoundry.org/clock v1.89.0
-	code.cloudfoundry.org/debugserver v0.116.0
-	code.cloudfoundry.org/diego-logging-client v0.126.0
-	code.cloudfoundry.org/go-metric-registry v0.0.0-20260922073832-5661ea5c3a88
-	code.cloudfoundry.org/lager/v3 v3.88.0
-	code.cloudfoundry.org/localip v0.90.0
-	code.cloudfoundry.org/locket v1.14.0
-	code.cloudfoundry.org/routing-api v0.16.0
+	code.cloudfoundry.org/clock v1.90.0
+	code.cloudfoundry.org/debugserver v0.117.0
+	code.cloudfoundry.org/diego-logging-client v0.127.0
+	code.cloudfoundry.org/go-metric-registry v0.0.0-20260928211359-6c1485edfdb8
+	code.cloudfoundry.org/lager/v3 v3.89.0
+	code.cloudfoundry.org/localip v0.91.0
+	code.cloudfoundry.org/locket v1.15.0
+	code.cloudfoundry.org/routing-api v0.18.0
 	code.cloudfoundry.org/tlsconfig v0.68.0
 	github.com/armon/go-proxyproto v0.1.0
 	github.com/cloudfoundry/cf-test-helpers/v2 v2.14.0
@@ -40,17 +40,17 @@ require (
 	golang.org/x/crypto v0.57.0
 	golang.org/x/net v0.59.0
 	golang.org/x/oauth2 v0.37.0
-	golang.org/x/tools v0.50.0
+	golang.org/x/tools v0.51.0
 	google.golang.org/protobuf v1.36.12
 	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
-	code.cloudfoundry.org/cfhttp/v2 v2.96.0 // indirect
-	code.cloudfoundry.org/diego-db-helpers v0.19.0 // indirect
-	code.cloudfoundry.org/durationjson v0.91.0 // indirect
-	code.cloudfoundry.org/eventhub v0.91.0 // indirect
-	code.cloudfoundry.org/go-diodes v0.0.0-20260921100641-e75e32521ad8 // indirect
+	code.cloudfoundry.org/cfhttp/v2 v2.97.0 // indirect
+	code.cloudfoundry.org/diego-db-helpers v0.20.0 // indirect
+	code.cloudfoundry.org/durationjson v0.92.0 // indirect
+	code.cloudfoundry.org/eventhub v0.92.0 // indirect
+	code.cloudfoundry.org/go-diodes v0.0.0-20260928063035-f81ac938b818 // indirect
 	code.cloudfoundry.org/go-loggregator/v9 v9.2.1 // indirect
 	filippo.io/edwards25519 v1.2.0 // indirect
 	github.com/Masterminds/semver/v3 v3.5.0 // indirect
@@ -71,7 +71,7 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/go-tpm v0.9.8 // indirect
-	github.com/google/pprof v0.0.0-20260926063103-aaccee046517 // indirect
+	github.com/google/pprof v0.0.0-20261003200830-ebaad5f31b4d // indirect
 	github.com/honeycombio/libhoney-go v1.27.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
@@ -88,7 +88,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_golang v1.24.1 // indirect
 	github.com/prometheus/client_model v0.6.3 // indirect
-	github.com/prometheus/common v0.71.0 // indirect
+	github.com/prometheus/common v0.72.0 // indirect
 	github.com/prometheus/procfs v0.22.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/square/certstrap v1.3.0 // indirect
@@ -102,7 +102,7 @@ require (
 	golang.org/x/sys v0.48.0 // indirect
 	golang.org/x/text v0.42.0 // indirect
 	golang.org/x/time v0.16.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260921155816-b14227669459 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260928230214-8a89bd6388cc // indirect
 	google.golang.org/grpc v1.84.0 // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 	gorm.io/driver/mysql v1.6.0 // indirect

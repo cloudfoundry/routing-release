@@ -1,29 +1,29 @@
-# code.cloudfoundry.org/cfhttp/v2 v2.96.0
+# code.cloudfoundry.org/cfhttp/v2 v2.97.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/cfhttp/v2
-# code.cloudfoundry.org/clock v1.89.0
+# code.cloudfoundry.org/clock v1.90.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/clock
 code.cloudfoundry.org/clock/fakeclock
-# code.cloudfoundry.org/debugserver v0.116.0
+# code.cloudfoundry.org/debugserver v0.117.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/debugserver
-# code.cloudfoundry.org/diego-db-helpers v0.19.0
+# code.cloudfoundry.org/diego-db-helpers v0.20.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/diego-db-helpers/guidprovider
 code.cloudfoundry.org/diego-db-helpers/sqldb/helpers
 code.cloudfoundry.org/diego-db-helpers/sqldb/helpers/monitor
-# code.cloudfoundry.org/diego-logging-client v0.126.0
+# code.cloudfoundry.org/diego-logging-client v0.127.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/diego-logging-client
 code.cloudfoundry.org/diego-logging-client/testhelpers
-# code.cloudfoundry.org/durationjson v0.91.0
+# code.cloudfoundry.org/durationjson v0.92.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/durationjson
-# code.cloudfoundry.org/eventhub v0.91.0
+# code.cloudfoundry.org/eventhub v0.92.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/eventhub
-# code.cloudfoundry.org/go-diodes v0.0.0-20260921100641-e75e32521ad8
+# code.cloudfoundry.org/go-diodes v0.0.0-20260928063035-f81ac938b818
 ## explicit; go 1.25.0
 code.cloudfoundry.org/go-diodes
 # code.cloudfoundry.org/go-loggregator/v9 v9.2.1
@@ -31,20 +31,20 @@ code.cloudfoundry.org/go-diodes
 code.cloudfoundry.org/go-loggregator/v9
 code.cloudfoundry.org/go-loggregator/v9/rpc/loggregator_v2
 code.cloudfoundry.org/go-loggregator/v9/runtimeemitter
-# code.cloudfoundry.org/go-metric-registry v0.0.0-20260922073832-5661ea5c3a88
+# code.cloudfoundry.org/go-metric-registry v0.0.0-20260928211359-6c1485edfdb8
 ## explicit; go 1.26.0
 code.cloudfoundry.org/go-metric-registry
-# code.cloudfoundry.org/lager/v3 v3.88.0
+# code.cloudfoundry.org/lager/v3 v3.89.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/lager/v3
 code.cloudfoundry.org/lager/v3/internal/truncate
 code.cloudfoundry.org/lager/v3/lagerctx
 code.cloudfoundry.org/lager/v3/lagerflags
 code.cloudfoundry.org/lager/v3/lagertest
-# code.cloudfoundry.org/localip v0.90.0
+# code.cloudfoundry.org/localip v0.91.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/localip
-# code.cloudfoundry.org/locket v1.14.0
+# code.cloudfoundry.org/locket v1.15.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/locket
 code.cloudfoundry.org/locket/cmd/locket
@@ -59,7 +59,7 @@ code.cloudfoundry.org/locket/lock
 code.cloudfoundry.org/locket/metrics
 code.cloudfoundry.org/locket/metrics/helpers
 code.cloudfoundry.org/locket/models
-# code.cloudfoundry.org/routing-api v0.16.0
+# code.cloudfoundry.org/routing-api v0.18.0
 ## explicit; go 1.26.4
 code.cloudfoundry.org/routing-api
 code.cloudfoundry.org/routing-api/admin
@@ -185,7 +185,7 @@ github.com/google/go-cmp/cmp/internal/value
 github.com/google/go-tpm/legacy/tpm2
 github.com/google/go-tpm/tpmutil
 github.com/google/go-tpm/tpmutil/tbs
-# github.com/google/pprof v0.0.0-20260926063103-aaccee046517
+# github.com/google/pprof v0.0.0-20261003200830-ebaad5f31b4d
 ## explicit; go 1.25.0
 github.com/google/pprof/profile
 # github.com/honeycombio/libhoney-go v1.27.1
@@ -346,8 +346,8 @@ github.com/prometheus/client_golang/prometheus/promhttp/internal
 # github.com/prometheus/client_model v0.6.3
 ## explicit; go 1.23
 github.com/prometheus/client_model/go
-# github.com/prometheus/common v0.71.0
-## explicit; go 1.25.0
+# github.com/prometheus/common v0.72.0
+## explicit; go 1.26.0
 github.com/prometheus/common/expfmt
 github.com/prometheus/common/model
 # github.com/prometheus/procfs v0.22.0
@@ -511,7 +511,7 @@ golang.org/x/text/width
 # golang.org/x/time v0.16.0
 ## explicit; go 1.26.0
 golang.org/x/time/rate
-# golang.org/x/tools v0.50.0
+# golang.org/x/tools v0.51.0
 ## explicit; go 1.26.0
 golang.org/x/tools/cover
 golang.org/x/tools/go/analysis
@@ -530,7 +530,6 @@ golang.org/x/tools/go/ast/inspector
 golang.org/x/tools/go/gcexportdata
 golang.org/x/tools/go/packages
 golang.org/x/tools/go/types/objectpath
-golang.org/x/tools/internal/aliases
 golang.org/x/tools/internal/analysis/analyzerutil
 golang.org/x/tools/internal/analysis/driverutil
 golang.org/x/tools/internal/astutil/free
@@ -550,7 +549,7 @@ golang.org/x/tools/internal/pkgbits
 golang.org/x/tools/internal/stdlib
 golang.org/x/tools/internal/typesinternal
 golang.org/x/tools/internal/versions
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20260921155816-b14227669459
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20260928230214-8a89bd6388cc
 ## explicit; go 1.26.0
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.84.0
