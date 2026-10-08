@@ -132,7 +132,6 @@ type NatsConfig struct {
 	Hosts                 []NatsHost       `yaml:"hosts"`
 	User                  string           `yaml:"user"`
 	Pass                  string           `yaml:"pass"`
-	TLSEnabled            bool             `yaml:"tls_enabled"`
 	CACerts               string           `yaml:"ca_certs"`
 	CAPool                *x509.CertPool   `yaml:"-"`
 	ClientAuthCertificate tls.Certificate  `yaml:"-"`
@@ -663,19 +662,19 @@ func (c *Config) Process() error {
 		c.RoutingApi.CAPool = certPool
 	}
 
-	if c.Nats.TLSEnabled {
+	if c.Nats.CertChain != "" && c.Nats.PrivateKey != "" {
 		certificate, err := tls.X509KeyPair([]byte(c.Nats.CertChain), []byte(c.Nats.PrivateKey))
 		if err != nil {
 			return fmt.Errorf("Error loading NATS key pair: %s", err.Error())
 		}
 		c.Nats.ClientAuthCertificate = certificate
-
-		certPool := x509.NewCertPool()
-		if ok := certPool.AppendCertsFromPEM([]byte(c.Nats.CACerts)); !ok {
-			return fmt.Errorf("Error while adding CACerts to gorouter's routing-api cert pool: \n%s\n", c.Nats.CACerts)
-		}
-		c.Nats.CAPool = certPool
 	}
+
+	certPool := x509.NewCertPool()
+	if ok := certPool.AppendCertsFromPEM([]byte(c.Nats.CACerts)); !ok {
+		return fmt.Errorf("Error while adding CACerts to gorouter's NATS cert pool: \n%s\n", c.Nats.CACerts)
+	}
+	c.Nats.CAPool = certPool
 
 	healthTLS := c.Status.TLS
 	if healthTLS == defaultStatusTLSConfig && !c.Status.EnableNonTLSHealthChecks {

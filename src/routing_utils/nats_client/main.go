@@ -149,17 +149,18 @@ func main() {
 func natsOptions(c *Config) (nats.Options, error) {
 	options := nats.DefaultOptions
 	options.Servers = c.NatsServers()
-	if c.Nats.TLSEnabled {
-		var err error
-		options.TLSConfig, err = tlsconfig.Build(
-			tlsconfig.WithInternalServiceDefaults(),
-			tlsconfig.WithIdentity(c.Nats.ClientAuthCertificate),
-		).Client(
-			tlsconfig.WithAuthority(c.Nats.CAPool),
-		)
-		if err != nil {
-			return nats.Options{}, err
-		}
+
+	tlsOpts := []tlsconfig.TLSOption{tlsconfig.WithInternalServiceDefaults()}
+	if len(c.Nats.ClientAuthCertificate.Certificate) > 0 {
+		tlsOpts = append(tlsOpts, tlsconfig.WithIdentity(c.Nats.ClientAuthCertificate))
+	}
+
+	var err error
+	options.TLSConfig, err = tlsconfig.Build(tlsOpts...).Client(
+		tlsconfig.WithAuthority(c.Nats.CAPool),
+	)
+	if err != nil {
+		return nats.Options{}, err
 	}
 	options.PingInterval = c.NatsClientPingInterval
 	options.MaxReconnect = -1
@@ -185,7 +186,6 @@ type NatsConfig struct {
 	Hosts                 []NatsHost       `yaml:"hosts"`
 	User                  string           `yaml:"user"`
 	Pass                  string           `yaml:"pass"`
-	TLSEnabled            bool             `yaml:"tls_enabled"`
 	CACerts               string           `yaml:"ca_certs"`
 	CAPool                *x509.CertPool   `yaml:"-"`
 	ClientAuthCertificate tls.Certificate  `yaml:"-"`
@@ -214,19 +214,19 @@ func loadConfig(path string) (*Config, error) {
 		return nil, err
 	}
 
-	if config.Nats.TLSEnabled {
+	if config.Nats.CertChain != "" && config.Nats.PrivateKey != "" {
 		certificate, err := tls.X509KeyPair([]byte(config.Nats.CertChain), []byte(config.Nats.PrivateKey))
 		if err != nil {
 			return nil, fmt.Errorf("Error loading NATS key pair: %s", err.Error())
 		}
 		config.Nats.ClientAuthCertificate = certificate
-
-		certPool := x509.NewCertPool()
-		if ok := certPool.AppendCertsFromPEM([]byte(config.Nats.CACerts)); !ok {
-			return nil, fmt.Errorf("Error while adding CACerts to NATs cert pool: \n%s\n", config.Nats.CACerts)
-		}
-		config.Nats.CAPool = certPool
 	}
+
+	certPool := x509.NewCertPool()
+	if ok := certPool.AppendCertsFromPEM([]byte(config.Nats.CACerts)); !ok {
+		return nil, fmt.Errorf("Error while adding CACerts to NATs cert pool: \n%s\n", config.Nats.CACerts)
+	}
+	config.Nats.CAPool = certPool
 
 	return config, nil
 }

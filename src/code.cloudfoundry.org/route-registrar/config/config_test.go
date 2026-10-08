@@ -145,7 +145,6 @@ var _ = Describe("Config", func() {
 			},
 			DynamicConfigGlobs: []string{"/some/config/*/path1", "/some/config/*/path2"},
 			NATSmTLSConfig: config.ClientTLSConfigSchema{
-				Enabled:  true,
 				CertPath: "cert-path",
 				KeyPath:  "key-path",
 				CAPath:   "ca-path",
@@ -281,7 +280,6 @@ var _ = Describe("Config", func() {
 				},
 				DynamicConfigGlobs: []string{"/some/config/*/path1", "/some/config/*/path2"},
 				NATSmTLSConfig: config.ClientTLSConfigSchema{
-					Enabled:  true,
 					CertPath: "cert-path",
 					KeyPath:  "key-path",
 					CAPath:   "ca-path",
@@ -376,7 +374,6 @@ var _ = Describe("Config", func() {
 				},
 				DynamicConfigGlobs: []string{"/some/config/*/path1", "/some/config/*/path2"},
 				NATSmTLSConfig: config.ClientTLSConfig{
-					Enabled:  true,
 					CertPath: "cert-path",
 					KeyPath:  "key-path",
 					CAPath:   "ca-path",

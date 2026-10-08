@@ -60,17 +60,18 @@ func Connect(c *config.Config, reconnected chan<- Signal, l *slog.Logger) *nats.
 func natsOptions(l *slog.Logger, c *config.Config, natsHost *atomic.Value, natsAddr *atomic.Value, reconnected chan<- Signal) nats.Options {
 	options := nats.GetDefaultOptions()
 	options.Servers = c.NatsServers()
-	if c.Nats.TLSEnabled {
-		var err error
-		options.TLSConfig, err = tlsconfig.Build(
-			tlsconfig.WithInternalServiceDefaults(),
-			tlsconfig.WithIdentity(c.Nats.ClientAuthCertificate),
-		).Client(
-			tlsconfig.WithAuthority(c.Nats.CAPool),
-		)
-		if err != nil {
-			log.Fatal(l, "nats-tls-config-invalid", log.ErrAttr(err))
-		}
+
+	tlsOpts := []tlsconfig.TLSOption{tlsconfig.WithInternalServiceDefaults()}
+	if len(c.Nats.ClientAuthCertificate.Certificate) > 0 {
+		tlsOpts = append(tlsOpts, tlsconfig.WithIdentity(c.Nats.ClientAuthCertificate))
+	}
+
+	var err error
+	options.TLSConfig, err = tlsconfig.Build(tlsOpts...).Client(
+		tlsconfig.WithAuthority(c.Nats.CAPool),
+	)
+	if err != nil {
+		log.Fatal(l, "nats-tls-config-invalid", log.ErrAttr(err))
 	}
 	options.PingInterval = c.NatsClientPingInterval
 	options.MaxReconnect = -1

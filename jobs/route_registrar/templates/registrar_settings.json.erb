@@ -1,21 +1,7 @@
 <%=
   require 'json'
 
-nats_err_msg = <<-TEXT
-Using nats (instead of nats-tls) is deprecated. The nats process will
-be removed soon. Please migrate to using nats-tls as soon as possible.
-If you must continue using nats for a short time you can set the
-nats.fail_if_using_nats_without_tls property on route_registrar to
-false.
-TEXT
-  nats_link_name = 'nats'
-  if p('nats.tls.enabled')
-    nats_link_name = 'nats-tls'
-  else
-    if p('nats.fail_if_using_nats_without_tls')
-      raise nats_err_msg
-    end
-  end
+nats_link_name = 'nats-tls'
 
   nats_machines = nil
   if_p('nats.machines') do |ips|
@@ -198,7 +184,6 @@ TEXT
   routing_api['skip_ssl_validation'] = p('route_registrar.routing_api.skip_ssl_validation')
 
   nats_mtls_config = {
-     enabled: p('nats.tls.enabled'),
      cert_path: '/var/vcap/jobs/route_registrar/config/nats/certs/client.crt',
      key_path: '/var/vcap/jobs/route_registrar/config/nats/certs/client_private.key',
      ca_path: '/var/vcap/jobs/route_registrar/config/nats/certs/server_ca.crt'

@@ -1,6 +1,8 @@
 package test_util
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"os"
 	"os/exec"
@@ -36,7 +38,9 @@ func (runner *NATSRunner) Start() {
 		os.Exit(1)
 	}
 
-	cmd := exec.Command(natsServer, "-p", strconv.Itoa(runner.port))
+	caCertPEM, certFile, keyFile := NatsTLSFixture()
+
+	cmd := exec.Command(natsServer, "-p", strconv.Itoa(runner.port), "--tls", "--tlscert", certFile, "--tlskey", keyFile)
 	sess, err := gexec.Start(
 		cmd,
 		gexec.NewPrefixedWriter("\x1b[32m[o]\x1b[34m[nats-server]\x1b[0m ", ginkgo.GinkgoWriter),
@@ -48,9 +52,15 @@ func (runner *NATSRunner) Start() {
 
 	Expect(err).NotTo(HaveOccurred())
 
+	certPool := x509.NewCertPool()
+	Expect(certPool.AppendCertsFromPEM([]byte(caCertPEM))).To(BeTrue())
+
 	var messageBus *nats.Conn
 	Eventually(func() error {
-		messageBus, err = nats.Connect(fmt.Sprintf("nats://127.0.0.1:%d", runner.port))
+		messageBus, err = nats.Connect(
+			fmt.Sprintf("nats://127.0.0.1:%d", runner.port),
+			nats.Secure(&tls.Config{RootCAs: certPool}),
+		)
 		return err
 	}, 5, 0.1).ShouldNot(HaveOccurred())
 

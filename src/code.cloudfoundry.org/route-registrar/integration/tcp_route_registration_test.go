@@ -3,7 +3,6 @@ package integration
 import (
 	"crypto/tls"
 	"fmt"
-	"net"
 	"net/http"
 	"os"
 	"os/exec"
@@ -22,11 +21,13 @@ import (
 
 var _ = Describe("TCP Route Registration", func() {
 	var (
-		oauthServer      *ghttp.Server
-		routingAPIServer *ghttp.Server
-		natsCmd          *exec.Cmd
-		rootConfig       config.ConfigSchema
-		oauthHandlers    []http.HandlerFunc
+		oauthServer                       *ghttp.Server
+		routingAPIServer                  *ghttp.Server
+		natsCmd                           *exec.Cmd
+		rootConfig                        config.ConfigSchema
+		oauthHandlers                     []http.HandlerFunc
+		natsCAPath                        string
+		mtlsNATSCertPath, mtlsNATSKeyPath string
 	)
 
 	BeforeEach(func() {
@@ -117,7 +118,22 @@ var _ = Describe("TCP Route Registration", func() {
 			RegistrationInterval: "100ns",
 		}}
 		rootConfig.Routes = routes
-		natsCmd = startNats()
+
+		natsHost := "127.0.0.1"
+		// The server cert and client cert are the same
+		natsCAPath, mtlsNATSCertPath, mtlsNATSKeyPath, _ = tls_helpers.GenerateCaAndMutualTlsCerts()
+		natsCmd = startNatsTLS(natsHost, natsPort, natsCAPath, mtlsNATSCertPath, mtlsNATSKeyPath)
+
+		rootConfig.MessageBusServers = []config.MessageBusServerSchema{
+			{
+				Host: fmt.Sprintf("%s:%d", natsHost, natsPort),
+			},
+		}
+		rootConfig.NATSmTLSConfig = config.ClientTLSConfigSchema{
+			CertPath: mtlsNATSCertPath,
+			KeyPath:  mtlsNATSKeyPath,
+			CAPath:   natsCAPath,
+		}
 	})
 
 	JustBeforeEach(func() {
@@ -128,6 +144,8 @@ var _ = Describe("TCP Route Registration", func() {
 
 	AfterEach(func() {
 		Expect(natsCmd.Process.Kill()).To(Succeed())
+		Expect(os.Remove(mtlsNATSCertPath)).To(Succeed())
+		Expect(os.Remove(mtlsNATSKeyPath)).To(Succeed())
 		routingAPIServer.Close()
 		oauthServer.Close()
 	})
@@ -254,33 +272,4 @@ func registerRoute() (*gexec.Session, error) {
 	)
 
 	return gexec.Start(command, GinkgoWriter, GinkgoWriter)
-}
-
-func startNats() *exec.Cmd {
-	natsUsername := "nats"
-	natsPassword := "nats"
-
-	natsServer, exists := os.LookupEnv("NATS_SERVER_BINARY")
-	if !exists {
-		fmt.Println("You need nats-server installed and set NATS_SERVER_BINARY env variable")
-		os.Exit(1)
-	}
-	natsCmd := exec.Command(
-		natsServer,
-		"-p", fmt.Sprintf("%d", natsPort),
-		"--user", natsUsername,
-		"--pass", natsPassword,
-	)
-
-	err := natsCmd.Start()
-	Expect(err).NotTo(HaveOccurred())
-
-	natsAddress := fmt.Sprintf("127.0.0.1:%d", natsPort)
-
-	Eventually(func() error {
-		_, err := net.Dial("tcp", natsAddress)
-		return err
-	}).Should(Succeed())
-
-	return natsCmd
 }

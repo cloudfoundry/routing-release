@@ -33,10 +33,7 @@ describe 'route_registrar' do
             ]
           }
         ],
-        'routing_api' => {},
-        'nats' => {
-          'fail_if_using_nats_without_tls' => false
-        }
+        'routing_api' => {}
       }
     }
   end
@@ -274,7 +271,7 @@ describe 'route_registrar' do
     let(:links) do
       [
         Bosh::Template::Test::Link.new(
-          name: 'nats',
+          name: 'nats-tls',
           properties: {
             'nats' => {
               'hostname' => 'nats-host', 'user' => 'nats-user', 'password' => 'nats-password', 'port' => 8080
@@ -287,78 +284,10 @@ describe 'route_registrar' do
 
     describe 'nats properties' do
       it 'renders with the default' do
-        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
         rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
         expect(rendered_hash['message_bus_servers'][0]['host']).to eq('nats-host:8080')
         expect(rendered_hash['message_bus_servers'][0]['user']).to eq('nats-user')
         expect(rendered_hash['message_bus_servers'][0]['password']).to eq('nats-password')
-      end
-    end
-
-    context 'when nats-tls link is present' do
-      let(:links) do
-        [
-          Bosh::Template::Test::Link.new(
-            name: 'nats',
-            properties: {
-              'nats' => {
-                'hostname' => 'nats-host', 'user' => 'nats-user', 'password' => 'nats-password', 'port' => 8080
-              }
-            },
-            instances: [Bosh::Template::Test::LinkInstance.new(address: 'my-nats-ip')]
-          ),
-          Bosh::Template::Test::Link.new(
-            name: 'nats-tls',
-            properties: {
-              'nats' => {
-                'hostname' => 'nats-tls-host', 'user' => 'nats-tls-user', 'password' => 'nats-tls-password', 'port' => 9090
-              }
-            },
-            instances: [Bosh::Template::Test::LinkInstance.new(address: 'my-nats-tls-ip')]
-          )
-        ]
-      end
-
-      context 'when mTLS is enabled for NATS' do
-        it 'renders with the nats-tls properties' do
-          merged_manifest_properties['nats'] = { 'tls' => { 'enabled' => true } }
-
-          rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
-          expect(rendered_hash['nats_mtls_config']['enabled']).to be true
-          expect(rendered_hash['message_bus_servers'].length).to eq(1)
-          expect(rendered_hash['message_bus_servers'][0]['host']).to eq('nats-tls-host:9090')
-          expect(rendered_hash['message_bus_servers'][0]['user']).to eq('nats-tls-user')
-          expect(rendered_hash['message_bus_servers'][0]['password']).to eq('nats-tls-password')
-        end
-      end
-
-      context 'when mTLS is not enabled for NATS' do
-        context 'when nats.fail_if_using_nats_without_tls is false' do
-          it 'renders with the default nat properties' do
-            merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
-            rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
-            expect(rendered_hash['nats_mtls_config']['enabled']).to be false
-            expect(rendered_hash['message_bus_servers'].length).to eq(1)
-            expect(rendered_hash['message_bus_servers'][0]['host']).to eq('nats-host:8080')
-            expect(rendered_hash['message_bus_servers'][0]['user']).to eq('nats-user')
-            expect(rendered_hash['message_bus_servers'][0]['password']).to eq('nats-password')
-          end
-        end
-        context 'when nats.fail_if_using_nats_without_tls is true' do
-          it 'fails' do
-            nats_err_msg = <<~TEXT
-              Using nats (instead of nats-tls) is deprecated. The nats process will
-              be removed soon. Please migrate to using nats-tls as soon as possible.
-              If you must continue using nats for a short time you can set the
-              nats.fail_if_using_nats_without_tls property on route_registrar to
-              false.
-            TEXT
-            merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => true }
-            expect { template.render(merged_manifest_properties, consumes: links) }.to raise_error(
-              RuntimeError, nats_err_msg
-            )
-          end
-        end
       end
     end
 
@@ -377,17 +306,12 @@ describe 'route_registrar' do
         ]
       end
 
-      context 'when mTLS is enabled for NATS' do
-        it 'renders with the nats-tls properties without password authentication' do
-          merged_manifest_properties['nats'] = { 'tls' => { 'enabled' => true } }
-
-          rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
-          expect(rendered_hash['nats_mtls_config']['enabled']).to be true
-          expect(rendered_hash['message_bus_servers'].length).to eq(1)
-          expect(rendered_hash['message_bus_servers'][0]['host']).to eq('nats-tls-host:9090')
-          expect(rendered_hash['message_bus_servers'][0]['user']).to be_nil
-          expect(rendered_hash['message_bus_servers'][0]['password']).to be_nil
-        end
+      it 'renders with the nats-tls properties without password authentication' do
+        rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
+        expect(rendered_hash['message_bus_servers'].length).to eq(1)
+        expect(rendered_hash['message_bus_servers'][0]['host']).to eq('nats-tls-host:9090')
+        expect(rendered_hash['message_bus_servers'][0]['user']).to be_nil
+        expect(rendered_hash['message_bus_servers'][0]['password']).to be_nil
       end
     end
 
@@ -423,10 +347,6 @@ describe 'route_registrar' do
             instances: [Bosh::Template::Test::LinkInstance.new(address: 'my-nats-tls-ip')]
           )
         ]
-      end
-
-      before do
-        merged_manifest_properties['nats'] = { 'tls' => { 'enabled' => true } }
       end
 
       context 'when routing_api is mtls only' do
@@ -619,7 +539,6 @@ describe 'route_registrar' do
 
     describe 'when given a valid set of properties' do
       it 'renders the template' do
-        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
         rendered_hash = JSON.parse(template.render(merged_manifest_properties, consumes: links))
         expect(rendered_hash).to eq(
           'host' => '192.168.0.0',
@@ -647,7 +566,6 @@ describe 'route_registrar' do
             'max_ttl' => '120s'
           },
           'nats_mtls_config' => {
-            'enabled' => false,
             'cert_path' => '/var/vcap/jobs/route_registrar/config/nats/certs/client.crt',
             'key_path' => '/var/vcap/jobs/route_registrar/config/nats/certs/client_private.key',
             'ca_path' => '/var/vcap/jobs/route_registrar/config/nats/certs/server_ca.crt'
@@ -661,7 +579,6 @@ describe 'route_registrar' do
     describe 'when skip_ssl_validation is enabled' do
       before do
         merged_manifest_properties['route_registrar']['routing_api'] = { 'skip_ssl_validation' => true }
-        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
       end
 
       it 'renders skip_ssl_validation as true' do
@@ -673,7 +590,6 @@ describe 'route_registrar' do
     describe 'when tls is enabled and the san is not provided' do
       before do
         merged_manifest_properties['route_registrar']['routes'][0].delete('server_cert_domain_san')
-        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
       end
       it 'should required san if tls_port is provided' do
         expect { template.render(merged_manifest_properties, consumes: links) }.to raise_error(
@@ -685,7 +601,6 @@ describe 'route_registrar' do
     describe 'when tls is enabled and the san is not provided' do
       before do
         merged_manifest_properties['route_registrar']['routes'][0]['server_cert_domain_san'] = ''
-        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
       end
       it 'should required san if tls_port is provided' do
         expect { template.render(merged_manifest_properties, consumes: links) }.to raise_error(
@@ -697,7 +612,6 @@ describe 'route_registrar' do
     describe 'when type is sni and frontend_tls is enabled and sni_routable_san is provided' do
       before do
         merged_manifest_properties['route_registrar']['routes'][0] = sni_route
-        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
       end
 
       it 'should use the provided sni_routable_san' do
@@ -722,7 +636,6 @@ describe 'route_registrar' do
         merged_manifest_properties['route_registrar']['routes'][0] = sni_route
         merged_manifest_properties['route_registrar']['routes'][0]['terminate_frontend_tls'] = false
         merged_manifest_properties['route_registrar']['routes'][0].delete('sni_rewrite_san')
-        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
       end
 
       it 'raises an error for invalid sni_routable_san' do
@@ -736,7 +649,6 @@ describe 'route_registrar' do
       before do
         merged_manifest_properties['route_registrar']['routes'][0] = sni_route
         merged_manifest_properties['route_registrar']['routes'][0]['sni_routable_san'] = ''
-        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
       end
 
       it 'raises an error for invalid sni_routable_san' do
@@ -750,7 +662,6 @@ describe 'route_registrar' do
       before do
         merged_manifest_properties['route_registrar']['routes'][0] = sni_route
         merged_manifest_properties['route_registrar']['routes'][0].delete('sni_routable_san')
-        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
       end
 
       it 'raises an error for invalid sni_routable_san' do
@@ -764,7 +675,6 @@ describe 'route_registrar' do
       before do
         merged_manifest_properties['route_registrar']['routes'][0] = sni_route
         merged_manifest_properties['route_registrar']['routes'][0]['sni_rewrite_san'] = 'rewrite.example.com'
-        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
       end
 
       it 'should use the provided sni_rewrite_san' do
@@ -778,7 +688,6 @@ describe 'route_registrar' do
         merged_manifest_properties['route_registrar']['routes'][0] = sni_route
         merged_manifest_properties['route_registrar']['routes'][0]['type'] = 'http'
         merged_manifest_properties['route_registrar']['routes'][0]['sni_rewrite_san'] = 'rewrite.example.com'
-        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
       end
 
       it 'raises an error for invalid sni_rewrite_san' do
@@ -793,7 +702,6 @@ describe 'route_registrar' do
         merged_manifest_properties['route_registrar']['routes'][0] = sni_route
         merged_manifest_properties['route_registrar']['routes'][0]['terminate_frontend_tls'] = false
         merged_manifest_properties['route_registrar']['routes'][0]['sni_rewrite_san'] = 'rewrite.example.com'
-        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
       end
 
       it 'raises an error for invalid sni_rewrite_san' do
@@ -808,7 +716,6 @@ describe 'route_registrar' do
         merged_manifest_properties['route_registrar']['routes'][0] = sni_route
         merged_manifest_properties['route_registrar']['routes'][0].delete('terminate_frontend_tls')
         merged_manifest_properties['route_registrar']['routes'][0]['sni_rewrite_san'] = 'rewrite.example.com'
-        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
       end
 
       it 'raises an error for invalid sni_rewrite_san' do
@@ -822,7 +729,6 @@ describe 'route_registrar' do
       before do
         merged_manifest_properties['route_registrar']['routes'][0] = sni_route
         merged_manifest_properties['route_registrar']['routes'][0]['sni_rewrite_san'] = ''
-        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
       end
 
       it 'renders the template successfully' do
@@ -834,7 +740,6 @@ describe 'route_registrar' do
       before do
         merged_manifest_properties['route_registrar']['routes'][0] = sni_route
         merged_manifest_properties['route_registrar']['routes'][0].delete('sni_rewrite_san')
-        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
       end
 
       it 'renders the template successfully' do
@@ -846,7 +751,6 @@ describe 'route_registrar' do
       before do
         merged_manifest_properties['route_registrar']['routes'][0].delete('tls_port')
         merged_manifest_properties['route_registrar']['routes'][0].delete('server_cert_domain_san')
-        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
       end
 
       it 'renders the template' do
@@ -856,7 +760,6 @@ describe 'route_registrar' do
 
     describe 'when protocol is provided' do
       before do
-        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
       end
 
       it 'uses configured protocol http1' do
@@ -879,7 +782,6 @@ describe 'route_registrar' do
 
     describe 'when per-route options are provided' do
       before do
-        merged_manifest_properties['nats'] = { 'fail_if_using_nats_without_tls' => false }
         merged_manifest_properties['route_registrar']['routes'][0]['options'] = {}
       end
 
@@ -925,7 +827,7 @@ describe 'route_registrar' do
       end
       context 'when properties and link is provided' do
         before do
-          merged_manifest_properties['nats'] = { 'tls' => { 'enabled' => true, 'ca_cert' => 'the ca cert from properties' } }
+          merged_manifest_properties['nats'] = { 'tls' => { 'ca_cert' => 'the ca cert from properties' } }
         end
         it 'should prefer the value in the properties' do
           rendered_template = template.render(merged_manifest_properties, consumes: links)
@@ -940,7 +842,7 @@ describe 'route_registrar' do
       end
       context 'when properties and no link is provided' do
         before do
-          merged_manifest_properties['nats'] = { 'tls' => { 'enabled' => true, 'ca_cert' => 'the ca cert from properties' } }
+          merged_manifest_properties['nats'] = { 'tls' => { 'ca_cert' => 'the ca cert from properties' } }
         end
 
         it 'should prefer the value in the properties' do
