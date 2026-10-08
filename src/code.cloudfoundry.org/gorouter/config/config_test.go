@@ -21,7 +21,7 @@ var _ = Describe("Config", func() {
 
 	BeforeEach(func() {
 		var err error
-		config, err = DefaultConfig()
+		config, err = defaultConfigWithValidNats()
 		Expect(err).ToNot(HaveOccurred())
 		cfgForSnippet = baseConfigFixture()
 	})
@@ -36,7 +36,7 @@ var _ = Describe("Config", func() {
 
 		Context("zone", func() {
 			It("can set the zone", func() {
-				cfg, err := DefaultConfig()
+				cfg, err := defaultConfigWithValidNats()
 				Expect(err).ToNot(HaveOccurred())
 				var b = []byte(`
 zone: meow-zone
@@ -81,7 +81,7 @@ zone: meow-zone
 			})
 
 			It("can override the load balance strategy", func() {
-				cfg, err := DefaultConfig()
+				cfg, err := defaultConfigWithValidNats()
 				Expect(err).ToNot(HaveOccurred())
 				var b = []byte(`
 balancing_algorithm: least-connection
@@ -92,7 +92,7 @@ balancing_algorithm: least-connection
 			})
 
 			It("can NOT override the load balance strategy to hash (not available as global default)", func() {
-				cfg, err := DefaultConfig()
+				cfg, err := defaultConfigWithValidNats()
 				Expect(err).ToNot(HaveOccurred())
 				var b = []byte(`
 balancing_algorithm: hash
@@ -102,7 +102,7 @@ balancing_algorithm: hash
 			})
 
 			It("does not allow an invalid load balance strategy", func() {
-				cfg, err := DefaultConfig()
+				cfg, err := defaultConfigWithValidNats()
 				Expect(err).ToNot(HaveOccurred())
 				cfgForSnippet.LoadBalance = "foo-bar"
 				cfg.Initialize(createYMLSnippet(cfgForSnippet))
@@ -116,7 +116,7 @@ balancing_algorithm: hash
 			})
 
 			It("can override the load balance az preference", func() {
-				cfg, err := DefaultConfig()
+				cfg, err := defaultConfigWithValidNats()
 				Expect(err).ToNot(HaveOccurred())
 				var b = []byte(`
 balancing_algorithm_az_preference: locally-optimistic
@@ -127,7 +127,7 @@ balancing_algorithm_az_preference: locally-optimistic
 			})
 
 			It("does not allow an invalid load balance strategy", func() {
-				cfg, err := DefaultConfig()
+				cfg, err := defaultConfigWithValidNats()
 				Expect(err).ToNot(HaveOccurred())
 				cfgForSnippet.LoadBalanceAZPreference = "meow-only"
 				cfg.Initialize(createYMLSnippet(cfgForSnippet))
@@ -382,7 +382,7 @@ nats:
 				Expect(config.Nats.Hosts[0].Port).To(Equal(uint16(4223)))
 			})
 
-			Context("when TLSEnabled is set to true", func() {
+			Context("NATS TLS config", func() {
 				var (
 					err           error
 					configSnippet *Config
@@ -407,8 +407,7 @@ nats:
 
 					configSnippet = &Config{
 						Nats: NatsConfig{
-							TLSEnabled: true,
-							CACerts:    fmt.Sprintf("%s%s", caCertChain.CertPEM, caCertChain.CACertPEM),
+							CACerts: fmt.Sprintf("%s%s", caCertChain.CertPEM, caCertChain.CACertPEM),
 							TLSPem: TLSPem{
 								CertChain:  string(clientCertPEM),
 								PrivateKey: string(clientKeyPEM),
@@ -2349,6 +2348,16 @@ drain_timeout: 60s
 		})
 	})
 })
+
+func defaultConfigWithValidNats() (*Config, error) {
+	cfg, err := DefaultConfig()
+	if err != nil {
+		return nil, err
+	}
+	caCertChain := test_util.CreateSignedCertWithRootCA(test_util.CertNames{SANs: test_util.SubjectAltNames{DNS: "nats-ca-test"}})
+	cfg.Nats.CACerts = fmt.Sprintf("%s%s", caCertChain.CertPEM, caCertChain.CACertPEM)
+	return cfg, nil
+}
 
 func baseConfigFixture() *Config {
 	key, cert := test_util.CreateKeyPair("healthTLSEndpoint")

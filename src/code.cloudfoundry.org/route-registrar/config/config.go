@@ -88,7 +88,6 @@ const (
 )
 
 type ClientTLSConfigSchema struct {
-	Enabled  bool   `json:"enabled"`
 	CertPath string `json:"cert_path"`
 	KeyPath  string `json:"key_path"`
 	CAPath   string `json:"ca_path"`
@@ -133,7 +132,6 @@ type Config struct {
 }
 
 type ClientTLSConfig struct {
-	Enabled  bool
 	CertPath string
 	KeyPath  string
 	CAPath   string

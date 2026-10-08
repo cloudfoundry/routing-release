@@ -1842,6 +1842,17 @@ func newMessageBus(c *config.Config) (*nats.Conn, error) {
 		natsMembers = append(natsMembers, uri.String())
 	}
 	options.Servers = natsMembers
+
+	certPool := x509.NewCertPool()
+	Expect(certPool.AppendCertsFromPEM([]byte(c.Nats.CACerts))).To(BeTrue())
+	tlsConfig, err := tlsconfig.Build(
+		tlsconfig.WithInternalServiceDefaults(),
+	).Client(
+		tlsconfig.WithAuthority(certPool),
+	)
+	Expect(err).NotTo(HaveOccurred())
+	options.TLSConfig = tlsConfig
+
 	return options.Connect()
 }
 

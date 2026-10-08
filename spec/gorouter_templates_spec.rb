@@ -268,7 +268,6 @@ describe 'gorouter' do
           'port' => 8080,
           'user' => 'test',
           'password' => 'test_pass',
-          'tls_enabled' => true,
           'ca_certs' => 'test_ca_cert',
           'cert_chain' => 'test_cert_chain',
           'private_key' => 'test_private_key'

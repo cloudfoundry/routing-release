@@ -64,17 +64,15 @@ func (r *registrar) Run(signals <-chan os.Signal, ready chan<- struct{}) error {
 	var err error
 	var tlsConfig *tls.Config
 
-	if r.config.NATSmTLSConfig.Enabled {
-		tlsConfig, err = tlsconfig.Build(
-			tlsconfig.WithInternalServiceDefaults(),
-			tlsconfig.WithIdentityFromFile(r.config.NATSmTLSConfig.CertPath, r.config.NATSmTLSConfig.KeyPath),
-		).Client(
-			tlsconfig.WithAuthorityFromFile(r.config.NATSmTLSConfig.CAPath),
-		)
+	tlsConfig, err = tlsconfig.Build(
+		tlsconfig.WithInternalServiceDefaults(),
+		tlsconfig.WithIdentityFromFile(r.config.NATSmTLSConfig.CertPath, r.config.NATSmTLSConfig.KeyPath),
+	).Client(
+		tlsconfig.WithAuthorityFromFile(r.config.NATSmTLSConfig.CAPath),
+	)
 
-		if err != nil {
-			return fmt.Errorf("failed building NATS mTLS config: %s", err)
-		}
+	if err != nil {
+		return fmt.Errorf("failed building NATS mTLS config: %s", err)
 	}
 
 	if len(r.config.MessageBusServers) > 0 {

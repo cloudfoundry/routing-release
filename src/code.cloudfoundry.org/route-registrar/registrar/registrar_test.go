@@ -68,15 +68,16 @@ var _ = Describe("Registrar.RegisterRoutes", func() {
 			Password: natsPassword,
 		}
 
+		natsCAPath, mtlsNATSClientCertPath, mtlsNATSClientKeyPath, _ := tls_helpers.GenerateCaAndMutualTlsCerts()
+
 		rrConfig = config.Config{
 			// doesn't matter if these are the same, just want to send a slice
 			MessageBusServers: []config.MessageBusServer{messageBusServer, messageBusServer},
 			Host:              "my host",
 			NATSmTLSConfig: config.ClientTLSConfig{
-				Enabled:  false,
-				CertPath: "should-not-be-used",
-				KeyPath:  "should-not-be-used",
-				CAPath:   "should-not-be-used",
+				CertPath: mtlsNATSClientCertPath,
+				KeyPath:  mtlsNATSClientKeyPath,
+				CAPath:   natsCAPath,
 			},
 			UnregistrationMessageLimit: 5,
 		}
@@ -134,50 +135,28 @@ var _ = Describe("Registrar.RegisterRoutes", func() {
 
 		Expect(fakeMessageBus.ConnectCallCount()).To(Equal(1))
 		_, passedTLSConfig := fakeMessageBus.ConnectArgsForCall(0)
-		Expect(passedTLSConfig).To(BeNil())
+		Expect(passedTLSConfig).NotTo(BeNil())
 	})
 
-	Context("when the client TLS config is enabled", func() {
+	Context("when the client TLS config is invalid", func() {
 		BeforeEach(func() {
-			rrConfig.NATSmTLSConfig.Enabled = true
-			natsCAPath, mtlsNATSClientCertPath, mtlsNATClientKeyPath, _ := tls_helpers.GenerateCaAndMutualTlsCerts()
-			rrConfig.NATSmTLSConfig.CAPath = natsCAPath
-			rrConfig.NATSmTLSConfig.CertPath = mtlsNATSClientCertPath
-			rrConfig.NATSmTLSConfig.KeyPath = mtlsNATClientKeyPath
+			rrConfig.NATSmTLSConfig.CertPath = "invalid"
 		})
 
 		JustBeforeEach(func() {
 			r = registrar.NewRegistrar(rrConfig, fakeHealthChecker, logger, fakeMessageBus, nil, time.Minute)
 		})
 
-		It("connects to the message bus with a TLS config", func() {
+		It("forwards the error parsing the TLS config", func() {
 			runStatus := make(chan error)
 			go func() {
 				runStatus <- r.Run(signals, ready)
 			}()
-			Eventually(ready).Should(BeClosed())
 
-			Expect(fakeMessageBus.ConnectCallCount()).To(Equal(1))
-			_, passedTLSConfig := fakeMessageBus.ConnectArgsForCall(0)
-			Expect(passedTLSConfig).NotTo(BeNil())
-		})
+			var returned error
+			Eventually(runStatus, 3).Should(Receive(&returned))
 
-		Context("when the client TLS config is invalid", func() {
-			BeforeEach(func() {
-				rrConfig.NATSmTLSConfig.CertPath = "invalid"
-			})
-
-			It("forwards the error parsing the TLS config", func() {
-				runStatus := make(chan error)
-				go func() {
-					runStatus <- r.Run(signals, ready)
-				}()
-
-				var returned error
-				Eventually(runStatus, 3).Should(Receive(&returned))
-
-				Expect(returned).To(MatchError(ContainSubstring("failed building NATS mTLS config")))
-			})
+			Expect(returned).To(MatchError(ContainSubstring("failed building NATS mTLS config")))
 		})
 	})
 

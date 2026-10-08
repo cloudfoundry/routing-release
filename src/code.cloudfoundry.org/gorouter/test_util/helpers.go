@@ -16,6 +16,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -288,10 +289,12 @@ func generateConfig(statusPort, statusTLSPort, statusRoutesPort, proxyPort, rout
 		natsHosts[i].Hostname = "localhost"
 		natsHosts[i].Port = natsPort
 	}
+	natsCACertPEM, _, _ := NatsTLSFixture()
 	c.Nats = config.NatsConfig{
-		User:  "nats",
-		Pass:  "nats",
-		Hosts: natsHosts,
+		User:    "nats",
+		Pass:    "nats",
+		Hosts:   natsHosts,
+		CACerts: natsCACertPEM,
 	}
 
 	c.Logging.Level = "debug"
@@ -342,6 +345,33 @@ func (cc *CertChain) WriteCACertToDir(dir string) string {
 	Expect(err).ToNot(HaveOccurred())
 
 	return file.Name()
+}
+
+var (
+	natsTLSFixtureOnce sync.Once
+	natsTLSCertChain   CertChain
+	natsTLSCertFile    string
+	natsTLSKeyFile     string
+)
+
+// NatsTLSFixture returns a shared, lazily-generated CA/server certificate
+// used to run NATS over TLS in tests: the CA PEM (to trust the server), and
+// the server cert/key file paths (for starting a TLS-enabled nats-server).
+func NatsTLSFixture() (caCertPEM string, certFile string, keyFile string) {
+	natsTLSFixtureOnce.Do(func() {
+		natsTLSCertChain = CreateSignedCertWithRootCA(CertNames{SANs: SubjectAltNames{DNS: "localhost", IP: "127.0.0.1"}})
+
+		dir, err := os.MkdirTemp("", "nats-tls")
+		Expect(err).ToNot(HaveOccurred())
+
+		natsTLSCertFile = filepath.Join(dir, "nats-server.crt")
+		natsTLSKeyFile = filepath.Join(dir, "nats-server.key")
+
+		Expect(os.WriteFile(natsTLSCertFile, natsTLSCertChain.CertPEM, 0644)).To(Succeed())
+		Expect(os.WriteFile(natsTLSKeyFile, natsTLSCertChain.PrivKeyPEM, 0600)).To(Succeed())
+	})
+
+	return string(natsTLSCertChain.CACertPEM), natsTLSCertFile, natsTLSKeyFile
 }
 
 type SubjectAltNames struct {

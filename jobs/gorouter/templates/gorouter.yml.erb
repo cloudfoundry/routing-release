@@ -209,37 +209,33 @@ end
 
 nats = {}
 
-nats_link_name = 'nats'
-if p("nats.tls_enabled")
-  nats_link_name = 'nats-tls'
+nats_link_name = 'nats-tls'
 
-  nats_ca_certs = property_or_link(
-    'NATS server CA certificate',
-    'nats.ca_certs',
-    "nats.external.tls.ca",
-    link_name=nats_link_name,
-  )
-  if !nats_ca_certs.is_a?(String)
-    raise 'nats.ca_certs must be provided as a single string block'
-  end
-
-  nats_cert_chain = ''
-  nats_private_key = ''
-  if_p("nats.cert_chain") { |val| nats_cert_chain = val }
-  if_p("nats.private_key") { |val| nats_private_key = val }
-
-  if (nats_cert_chain != '') ^ (nats_private_key != '')
-    raise 'nats.cert_chain and nats.private_key must be both provided or not at all'
-  end
-  if !nats_cert_chain.is_a?(String)
-    raise 'nats.cert_chain must be provided as a single string block'
-  end
-
-  nats['tls_enabled'] = true
-  nats['ca_certs'] = nats_ca_certs
-  nats['cert_chain'] = nats_cert_chain
-  nats['private_key'] = nats_private_key
+nats_ca_certs = property_or_link(
+  'NATS server CA certificate',
+  'nats.ca_certs',
+  "nats.external.tls.ca",
+  link_name=nats_link_name,
+)
+if !nats_ca_certs.is_a?(String)
+  raise 'nats.ca_certs must be provided as a single string block'
 end
+
+nats_cert_chain = ''
+nats_private_key = ''
+if_p("nats.cert_chain") { |val| nats_cert_chain = val }
+if_p("nats.private_key") { |val| nats_private_key = val }
+
+if (nats_cert_chain != '') ^ (nats_private_key != '')
+  raise 'nats.cert_chain and nats.private_key must be both provided or not at all'
+end
+if !nats_cert_chain.is_a?(String)
+  raise 'nats.cert_chain must be provided as a single string block'
+end
+
+nats['ca_certs'] = nats_ca_certs
+nats['cert_chain'] = nats_cert_chain
+nats['private_key'] = nats_private_key
 
 nats_port = property_or_link(
   'NATS server port number',

@@ -11,7 +11,6 @@ import (
 	tls_helpers "code.cloudfoundry.org/cf-routing-test-helpers/tls"
 	"code.cloudfoundry.org/route-registrar/config"
 	"code.cloudfoundry.org/route-registrar/messagebus"
-	"code.cloudfoundry.org/routing-api/test_helpers"
 	"code.cloudfoundry.org/tlsconfig"
 	"github.com/nats-io/nats.go"
 	"github.com/onsi/gomega/gbytes"
@@ -23,46 +22,36 @@ import (
 
 var _ = Describe("Main", func() {
 	var (
-		natsCmd       *exec.Cmd
-		testSpyClient *nats.Conn
+		natsCmd                           *exec.Cmd
+		testSpyClient                     *nats.Conn
+		natsCAPath                        string
+		mtlsNATSCertPath, mtlsNATSKeyPath string
 	)
 
 	BeforeEach(func() {
-		natsUsername := "nats"
-		natsPassword := "nats"
 		natsHost := "127.0.0.1"
 
+		// The server cert and client cert are the same
+		natsCAPath, mtlsNATSCertPath, mtlsNATSKeyPath, _ = tls_helpers.GenerateCaAndMutualTlsCerts()
+
+		natsCmd = startNatsTLS(natsHost, natsPort, natsCAPath, mtlsNATSCertPath, mtlsNATSKeyPath)
+
 		rootConfig := initConfig()
-		writeConfig(rootConfig)
-
-		natsServer, exists := os.LookupEnv("NATS_SERVER_BINARY")
-		if !exists {
-			fmt.Println("You need nats-server installed and set NATS_SERVER_BINARY env variable")
-			os.Exit(1)
+		rootConfig.MessageBusServers = []config.MessageBusServerSchema{
+			{
+				Host: fmt.Sprintf("%s:%d", natsHost, natsPort),
+			},
 		}
-
-		natsCmd = exec.Command(
-			natsServer,
-			"-p", fmt.Sprintf("%d", natsPort),
-			"--user", natsUsername,
-			"--pass", natsPassword,
-		)
-
-		err := natsCmd.Start()
-		Expect(err).NotTo(HaveOccurred())
-
-		natsAddress := fmt.Sprintf("127.0.0.1:%d", natsPort)
-
-		Eventually(func() error {
-			_, err := net.Dial("tcp", natsAddress)
-			return err
-		}).Should(Succeed())
+		rootConfig.NATSmTLSConfig = config.ClientTLSConfigSchema{
+			CertPath: mtlsNATSCertPath,
+			KeyPath:  mtlsNATSKeyPath,
+			CAPath:   natsCAPath,
+		}
+		writeConfig(rootConfig)
 
 		servers := []string{
 			fmt.Sprintf(
-				"nats://%s:%s@%s:%d",
-				natsUsername,
-				natsPassword,
+				"nats://%s:%d",
 				natsHost,
 				natsPort,
 			),
@@ -70,6 +59,16 @@ var _ = Describe("Main", func() {
 
 		opts := nats.GetDefaultOptions()
 		opts.Servers = servers
+
+		spyClientTLSConfig, err := tlsconfig.Build(
+			tlsconfig.WithInternalServiceDefaults(),
+			tlsconfig.WithIdentityFromFile(mtlsNATSCertPath, mtlsNATSKeyPath),
+		).Client(
+			tlsconfig.WithAuthorityFromFile(natsCAPath),
+		)
+		Expect(err).NotTo(HaveOccurred())
+
+		opts.TLSConfig = spyClientTLSConfig
 
 		Eventually(func() error {
 			testSpyClient, err = opts.Connect()
@@ -79,12 +78,10 @@ var _ = Describe("Main", func() {
 	})
 
 	AfterEach(func() {
+		testSpyClient.Close()
+		Expect(os.Remove(mtlsNATSCertPath)).To(Succeed())
+		Expect(os.Remove(mtlsNATSKeyPath)).To(Succeed())
 		Expect(natsCmd.Process.Kill()).To(Succeed())
-		natsAddress := fmt.Sprintf("127.0.0.1:%d", natsPort)
-		Eventually(func() error {
-			_, err := net.Dial("tcp", natsAddress)
-			return err
-		}).ShouldNot(Succeed())
 	})
 
 	It("Writes pid to the provided pidfile", func() {
@@ -216,124 +213,6 @@ var _ = Describe("Main", func() {
 		})
 	})
 
-	Context("When route registrar is configured to use mTLS to connect to NATS", func() {
-		var (
-			natsCAPath                        string
-			mtlsNATSCertPath, mtlsNATSKeyPath string
-			tlsTestSpyClient                  *nats.Conn
-			tlsNATSCmd                        *exec.Cmd
-		)
-
-		BeforeEach(func() {
-			natsHost := "127.0.0.1"
-			natsTLSPort := test_helpers.NextAvailPort()
-
-			// The server cert and client cert are the same
-			natsCAPath, mtlsNATSCertPath, mtlsNATSKeyPath, _ = tls_helpers.GenerateCaAndMutualTlsCerts()
-
-			tlsNATSCmd = startNatsTLS(natsHost, natsTLSPort, natsCAPath, mtlsNATSCertPath, mtlsNATSKeyPath)
-
-			tlsServers := []string{
-				fmt.Sprintf(
-					"nats://%s:%d",
-					natsHost,
-					natsTLSPort,
-				),
-			}
-
-			tlsOpts := nats.GetDefaultOptions()
-			tlsOpts.Servers = tlsServers
-
-			spyClientTLSConfig, err := tlsconfig.Build(
-				tlsconfig.WithInternalServiceDefaults(),
-				tlsconfig.WithIdentityFromFile(mtlsNATSCertPath, mtlsNATSKeyPath),
-			).Client(
-				tlsconfig.WithAuthorityFromFile(natsCAPath),
-			)
-			Expect(err).NotTo(HaveOccurred())
-
-			tlsOpts.TLSConfig = spyClientTLSConfig
-
-			tlsTestSpyClient, err = tlsOpts.Connect()
-			Expect(err).ToNot(HaveOccurred())
-
-			Expect(err).ShouldNot(HaveOccurred())
-
-			// Ensure nats server is listening before tests
-			Eventually(func() string {
-				connStatus := tlsTestSpyClient.Status()
-				return fmt.Sprintf("%v", connStatus)
-			}, 5*time.Second).Should(Equal("CONNECTED"))
-
-			Expect(err).ShouldNot(HaveOccurred())
-
-			rootConfig := initConfig()
-			rootConfig.MessageBusServers = []config.MessageBusServerSchema{
-				{
-					Host: fmt.Sprintf("%s:%d", natsHost, natsTLSPort),
-				},
-			}
-			rootConfig.NATSmTLSConfig = config.ClientTLSConfigSchema{
-				Enabled:  true,
-				CertPath: mtlsNATSCertPath,
-				KeyPath:  mtlsNATSKeyPath,
-				CAPath:   natsCAPath,
-			}
-			writeConfig(rootConfig)
-		})
-
-		AfterEach(func() {
-			tlsTestSpyClient.Close()
-			Expect(os.Remove(mtlsNATSCertPath)).To(Succeed())
-			Expect(os.Remove(mtlsNATSKeyPath)).To(Succeed())
-
-			Expect(tlsNATSCmd.Process.Kill()).To(Succeed())
-		})
-
-		It("registers routes via NATS", func() {
-			const (
-				topic = "router.register"
-			)
-
-			registered := make(chan string)
-			tlsTestSpyClient.Subscribe(topic, func(msg *nats.Msg) {
-				registered <- string(msg.Data)
-			})
-
-			command := exec.Command(
-				routeRegistrarBinPath,
-				fmt.Sprintf("-configPath=%s", configFile),
-			)
-			session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
-			Expect(err).ShouldNot(HaveOccurred())
-
-			Eventually(session.Out).Should(gbytes.Say("Initializing"))
-			Eventually(session.Out).Should(gbytes.Say("Running"))
-			Eventually(session.Out, 10*time.Second).Should(gbytes.Say("Registering"))
-
-			var receivedMessage string
-			Eventually(registered, 10*time.Second).Should(Receive(&receivedMessage))
-
-			i12345 := uint16(12345)
-			expectedRegistryMessage := messagebus.Message{
-				URIs: []string{"uri-1", "uri-2"},
-				Host: "127.0.0.1",
-				Port: &i12345,
-				Tags: map[string]string{"tag1": "val1", "tag2": "val2"},
-			}
-
-			var registryMessage messagebus.Message
-			err = json.Unmarshal([]byte(receivedMessage), &registryMessage)
-			Expect(err).ShouldNot(HaveOccurred())
-
-			Expect(registryMessage.URIs).To(Equal(expectedRegistryMessage.URIs))
-			Expect(registryMessage.Port).To(Equal(expectedRegistryMessage.Port))
-			Expect(registryMessage.Tags).To(Equal(expectedRegistryMessage.Tags))
-
-			session.Kill().Wait()
-			Eventually(session).Should(gexec.Exit())
-		})
-	})
 })
 
 func initConfig() config.ConfigSchema {
