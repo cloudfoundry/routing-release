@@ -327,15 +327,19 @@ func setRequestXRequestStart(request *http.Request) {
 }
 
 func escapePathAndPreserveSlashes(unescaped string) string {
-	parts := strings.Split(unescaped, "/")
-	escapedPath := ""
-	for _, part := range parts {
-		escapedPart := url.PathEscape(part)
-		escapedPath = escapedPath + escapedPart + "/"
+	// Build the result in a single buffer: repeated string concatenation
+	// copies the accumulated path on every segment, which is quadratic for
+	// client-controlled paths with many segments.
+	var escapedPath strings.Builder
+	escapedPath.Grow(len(unescaped))
+	for i, part := range strings.Split(unescaped, "/") {
+		if i > 0 {
+			escapedPath.WriteByte('/')
+		}
+		escapedPath.WriteString(url.PathEscape(part))
 	}
-	escapedPath = strings.TrimSuffix(escapedPath, "/")
 
-	return escapedPath
+	return escapedPath.String()
 }
 
 // handleReverseProxyError writes an appropriate HTTP error response for errors
