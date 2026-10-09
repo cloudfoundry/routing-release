@@ -374,6 +374,16 @@ func NatsTLSFixture() (caCertPEM string, certFile string, keyFile string) {
 	return string(natsTLSCertChain.CACertPEM), natsTLSCertFile, natsTLSKeyFile
 }
 
+func DefaultConfigWithValidNats() (*config.Config, error) {
+	cfg, err := config.DefaultConfig()
+	if err != nil {
+		return nil, err
+	}
+	caCertPEM, _, _ := NatsTLSFixture()
+	cfg.Nats.CACerts = caCertPEM
+	return cfg, nil
+}
+
 type SubjectAltNames struct {
 	DNS string
 	IP  string
