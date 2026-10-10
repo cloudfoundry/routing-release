@@ -26,7 +26,7 @@ var _ = Describe("MtlsSniCheck", func() {
 
 	BeforeEach(func() {
 		logger := test_util.NewTestLogger("mtls-sni-check")
-		cfg, _ = config.DefaultConfig()
+		cfg, _ = test_util.DefaultConfigWithValidNats()
 
 		certChain := test_util.CreateSignedCertWithRootCA(test_util.CertNames{SANs: test_util.SubjectAltNames{DNS: "test.com"}})
 		cfg.Domains = []config.MtlsDomainConfig{
@@ -188,7 +188,7 @@ var _ = Describe("domainMatches", func() {
 
 	BeforeEach(func() {
 		logger := test_util.NewTestLogger("domain-matches")
-		cfg, _ = config.DefaultConfig()
+		cfg, _ = test_util.DefaultConfigWithValidNats()
 		certChain := test_util.CreateSignedCertWithRootCA(test_util.CertNames{SANs: test_util.SubjectAltNames{DNS: "test.com"}})
 		cfg.Domains = []config.MtlsDomainConfig{
 			{
