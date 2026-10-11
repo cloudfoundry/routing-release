@@ -38,6 +38,8 @@ func executeAuthWithRetries(cmdStarter internal.Starter, reporter internal.Repor
 	var err error
 	var failures []string
 
+	reporter = internal.ObservedReporter(reporter)
+
 	for i := 0; i < CFAuthRetries; i++ {
 		auth, err = cmdStarter.Start(reporter, "cf", args...)
 		if err != nil {

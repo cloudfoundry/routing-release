@@ -27,6 +27,10 @@ func NewRedactingReporter(writer io.Writer, redactor Redactor) *RedactingReporte
 	}
 }
 
+func (r *RedactingReporter) Redactor() Redactor {
+	return r.redactor
+}
+
 func (r *RedactingReporter) Report(startTime time.Time, cmd *exec.Cmd) {
 	startColor := ""
 	endColor := ""
