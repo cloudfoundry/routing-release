@@ -146,35 +146,60 @@ func formatSubjectDN(name pkix.Name) string {
 
 	// Add CN first (if present)
 	if name.CommonName != "" {
-		parts = append(parts, "CN="+name.CommonName)
+		parts = append(parts, "CN="+escapeDNValue(name.CommonName))
 	}
 
 	// Add OUs (preserve order from certificate)
 	for _, ou := range name.OrganizationalUnit {
-		parts = append(parts, "OU="+ou)
+		parts = append(parts, "OU="+escapeDNValue(ou))
 	}
 
 	// Add O (Organization)
 	for _, o := range name.Organization {
-		parts = append(parts, "O="+o)
+		parts = append(parts, "O="+escapeDNValue(o))
 	}
 
 	// Add L (Locality)
 	for _, l := range name.Locality {
-		parts = append(parts, "L="+l)
+		parts = append(parts, "L="+escapeDNValue(l))
 	}
 
 	// Add ST (State/Province)
 	for _, st := range name.Province {
-		parts = append(parts, "ST="+st)
+		parts = append(parts, "ST="+escapeDNValue(st))
 	}
 
 	// Add C (Country)
 	for _, c := range name.Country {
-		parts = append(parts, "C="+c)
+		parts = append(parts, "C="+escapeDNValue(c))
 	}
 
 	return strings.Join(parts, ",")
+}
+
+func escapeDNValue(v string) string {
+	runes := []rune(v)
+	var b strings.Builder
+	for i, r := range runes {
+		switch r {
+		case ',', '+', '"', '\\', '<', '>', ';':
+			b.WriteByte('\\')
+			b.WriteRune(r)
+		case ' ':
+			if i == 0 || i == len(runes)-1 {
+				b.WriteByte('\\')
+			}
+			b.WriteRune(r)
+		case '#':
+			if i == 0 {
+				b.WriteByte('\\')
+			}
+			b.WriteRune(r)
+		default:
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
 }
 
 func sanitize(cert []byte) string {
