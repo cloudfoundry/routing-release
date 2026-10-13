@@ -244,6 +244,14 @@ func (r *RouteRegistry) Lookup(uri route.Uri) *route.EndpointPool {
 	return pool
 }
 
+// maxWildcardExpansions bounds how many times lookup() will strip a label
+// and retry as a wildcard match. DNS limits a name to at most 127 labels, so
+// this can never reject a syntactically valid hostname, while preventing a
+// Host header with an attacker-chosen number of labels from driving this
+// loop (and the per-iteration MatchUri hash of the shrinking string) to
+// quadratic cost under the registry's RLock.
+const maxWildcardExpansions = 127
+
 func (r *RouteRegistry) lookup(uri route.Uri) *route.EndpointPool {
 	r.RLock()
 	defer r.RUnlock()
@@ -251,7 +259,7 @@ func (r *RouteRegistry) lookup(uri route.Uri) *route.EndpointPool {
 	uri = uri.RouteKey()
 	var err error
 	pool := r.byURI.MatchUri(uri)
-	for pool == nil && err == nil {
+	for i := 0; pool == nil && err == nil && i < maxWildcardExpansions; i++ {
 		uri, err = uri.NextWildcard()
 		pool = r.byURI.MatchUri(uri)
 	}

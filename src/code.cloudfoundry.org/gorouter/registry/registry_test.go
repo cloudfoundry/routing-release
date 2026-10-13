@@ -3,6 +3,7 @@ package registry_test
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -1304,6 +1305,34 @@ var _ = Describe("RouteRegistry", func() {
 			Expect(reporter.CaptureLookupTimeCallCount()).To(Equal(1))
 			lookupTime := reporter.CaptureLookupTimeArgsForCall(0)
 			Expect(lookupTime).To(BeNumerically(">", 0))
+		})
+
+		It("still matches a legitimately deep wildcard route", func() {
+			app := route.NewEndpoint(&route.EndpointOpts{Host: "192.168.1.1", Port: 1234})
+			r.Register("*.a.b.c.d.e.f.g.h.i.j.wild.card", app)
+
+			p := r.Lookup(route.Uri("foo." + strings.Repeat("x.", 10) + "a.b.c.d.e.f.g.h.i.j.wild.card"))
+			Expect(p).ToNot(BeNil())
+			e := p.Endpoints(logger.Logger, "", false, route.RoutingProperties{LocallyOptimistic: locallyOptimistic, AZ: az}).Next(0)
+			Expect(e).ToNot(BeNil())
+			Expect(e.CanonicalAddr()).To(Equal("192.168.1.1:1234"))
+		})
+
+		It("bounds the number of wildcard expansions attempted for a miss, instead of scaling with attacker-controlled label count", func() {
+			// Regression test for TNZGOV-5949: a Host header with a huge
+			// number of dot-separated labels drove lookup()'s wildcard
+			// expansion loop to O(n^2) work under the registry's RLock.
+			hugeHost := route.Uri(strings.Repeat("a.", 200000) + "a")
+
+			start := time.Now()
+			p := r.Lookup(hugeHost)
+			elapsed := time.Since(start)
+
+			Expect(p).To(BeNil())
+			// The unbounded loop took tens of seconds for inputs this size;
+			// bounded to 127 expansions it should complete in well under a
+			// second even on a slow/loaded CI machine.
+			Expect(elapsed).To(BeNumerically("<", time.Second))
 		})
 
 		Context("has context path", func() {
