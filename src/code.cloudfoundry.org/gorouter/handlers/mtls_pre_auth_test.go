@@ -27,7 +27,7 @@ var _ = Describe("MtlsPreAuth", func() {
 
 	BeforeEach(func() {
 		logger := test_util.NewTestLogger("mtls-pre-auth")
-		cfg, _ = config.DefaultConfig()
+		cfg, _ = test_util.DefaultConfigWithValidNats()
 
 		// Configure mTLS domains
 		certChain := test_util.CreateSignedCertWithRootCA(test_util.CertNames{SANs: test_util.SubjectAltNames{DNS: "test.com"}})

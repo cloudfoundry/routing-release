@@ -34,7 +34,7 @@ var _ = Describe("CfIdentity", func() {
 	)
 
 	BeforeEach(func() {
-		cfg, _ = config.DefaultConfig()
+		cfg, _ = test_util.DefaultConfigWithValidNats()
 		certChain := test_util.CreateSignedCertWithRootCA(test_util.CertNames{SANs: test_util.SubjectAltNames{DNS: "test.com"}})
 		cfg.Domains = []config.MtlsDomainConfig{
 			{

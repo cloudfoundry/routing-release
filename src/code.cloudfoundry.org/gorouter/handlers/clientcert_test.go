@@ -233,7 +233,7 @@ var _ = Describe("Clientcert mTLS Domain XFCC Format", func() {
 			})
 
 			// Configure mTLS domain with Envoy format
-			cfg, err := config.DefaultConfig()
+			cfg, err := test_util.DefaultConfigWithValidNats()
 			Expect(err).NotTo(HaveOccurred())
 
 			cfg.Domains = []config.MtlsDomainConfig{{
@@ -316,7 +316,7 @@ var _ = Describe("Clientcert mTLS Domain XFCC Format", func() {
 			})
 
 			// Configure mTLS domain with raw format (default)
-			cfg, err := config.DefaultConfig()
+			cfg, err := test_util.DefaultConfigWithValidNats()
 			Expect(err).NotTo(HaveOccurred())
 
 			cfg.Domains = []config.MtlsDomainConfig{{
@@ -392,7 +392,7 @@ var _ = Describe("Clientcert mTLS Domain XFCC Format", func() {
 			})
 
 			// Configure mTLS domain without xfcc_format
-			cfg, err := config.DefaultConfig()
+			cfg, err := test_util.DefaultConfigWithValidNats()
 			Expect(err).NotTo(HaveOccurred())
 
 			cfg.Domains = []config.MtlsDomainConfig{{
