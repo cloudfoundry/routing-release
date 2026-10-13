@@ -5,6 +5,8 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -1412,7 +1414,7 @@ load_balancer_healthy_threshold: 10s
 					Expect(err).ToNot(HaveOccurred())
 
 					expectedTLSPEMs = []TLSPem{
-						TLSPem{
+						{
 							CertChain:  string(certPEM),
 							PrivateKey: string(keyPEM),
 						},
@@ -1452,7 +1454,7 @@ load_balancer_healthy_threshold: 10s
 
 				BeforeEach(func() {
 					keyPEM, _ := test_util.CreateECKeyPair("parsnip.com")
-					tlsPEMArray := []TLSPem{TLSPem{PrivateKey: string(keyPEM)}}
+					tlsPEMArray := []TLSPem{{PrivateKey: string(keyPEM)}}
 					configSnippet.TLSPEM = tlsPEMArray
 				})
 				It("fails to validate", func() {
@@ -1468,7 +1470,7 @@ load_balancer_healthy_threshold: 10s
 				BeforeEach(func() {
 					invalidPEMString := "-----BEGIN INVALID-----\ndGVzdA==\n-----END INVALID-----"
 					invalidPEM := []byte(invalidPEMString)
-					tlsPEMArray := []TLSPem{TLSPem{
+					tlsPEMArray := []TLSPem{{
 						PrivateKey: string(keyPEM1),
 						CertChain:  string(invalidPEM),
 					}}
@@ -1650,7 +1652,7 @@ load_balancer_healthy_threshold: 10s
 						configSnippet.VerifyClientCertificateMetadataRules = []VerifyClientCertificateMetadataRule{
 							{
 								CASubject:     CertSubject{CommonName: "abc.com"},
-								ValidSubjects: []CertSubject{CertSubject{Organization: []string{"abc, Inc."}}},
+								ValidSubjects: []CertSubject{{Organization: []string{"abc, Inc."}}},
 							},
 						}
 					})
@@ -2372,3 +2374,154 @@ func baseConfigFixture() *Config {
 	}
 	return cfg
 }
+
+var _ = Describe("sourcing certificates from files", func() {
+	var (
+		config *Config
+		dir    string
+		chain  test_util.CertChain
+	)
+
+	write := func(name string, contents []byte) string {
+		p := filepath.Join(dir, name)
+		Expect(os.WriteFile(p, contents, 0600)).To(Succeed())
+		return p
+	}
+
+	BeforeEach(func() {
+		var err error
+		config, err = defaultConfigWithValidNats()
+		Expect(err).ToNot(HaveOccurred())
+
+		dir, err = os.MkdirTemp("", "gorouter-certs")
+		Expect(err).ToNot(HaveOccurred())
+		DeferCleanup(func() { os.RemoveAll(dir) })
+
+		chain = test_util.CreateSignedCertWithRootCA(test_util.CertNames{SANs: test_util.SubjectAltNames{DNS: "spinach.com"}})
+	})
+
+	It("reads certs from files", func() {
+		certFile := write("tls.crt", chain.CertPEM)
+		keyFile := write("tls.key", chain.PrivKeyPEM)
+		caFile := write("ca.crt", chain.CACertPEM)
+
+		config.EnableSSL = true
+		config.ClientCertificateValidationString = "none"
+		config.CipherString = "ECDHE-RSA-AES128-GCM-SHA256"
+		config.TLSPEM = []TLSPem{{CertChainFile: certFile, PrivateKeyFile: keyFile}}
+		config.CACertsFile = caFile
+		config.ClientCACertsFile = caFile
+		config.Nats.CACerts = ""
+		config.Nats.CertChainFile = certFile
+		config.Nats.PrivateKeyFile = keyFile
+		config.Nats.CACertsFile = caFile
+		config.Backends.CertChainFile = certFile
+		config.Backends.PrivateKeyFile = keyFile
+		config.RouteServiceConfig.CertChainFile = certFile
+		config.RouteServiceConfig.PrivateKeyFile = keyFile
+
+		Expect(config.Process()).To(Succeed())
+
+		Expect(config.TLSPEM[0].CertChain).To(Equal(string(chain.CertPEM)))
+		Expect(config.TLSPEM[0].PrivateKey).To(Equal(string(chain.PrivKeyPEM)))
+		Expect(config.SSLCertificates).To(HaveLen(1))
+
+		Expect(config.CACerts).To(ContainElement(string(chain.CACertPEM)))
+		Expect(config.CAPool).ToNot(BeNil())
+
+		Expect(config.ClientCACerts).To(Equal(string(chain.CACertPEM)))
+		Expect(config.ClientCAPool).ToNot(BeNil())
+
+		Expect(config.Nats.CertChain).To(Equal(string(chain.CertPEM)))
+		Expect(config.Nats.CACerts).To(Equal(string(chain.CACertPEM)))
+		Expect(config.Nats.CAPool).ToNot(BeNil())
+
+		Expect(config.Backends.CertChain).To(Equal(string(chain.CertPEM)))
+		Expect(config.Backends.ClientAuthCertificate.Certificate).ToNot(BeEmpty())
+
+		Expect(config.RouteServiceConfig.CertChain).To(Equal(string(chain.CertPEM)))
+		Expect(config.RouteServiceConfig.ClientAuthCertificate.Certificate).ToNot(BeEmpty())
+	})
+
+	It("accepts ca_certs_file as a scalar path in YAML", func() {
+		caFile := write("ca.crt", chain.CACertPEM)
+		Expect(config.Initialize([]byte("ca_certs_file: " + caFile + "\n"))).To(Succeed())
+		Expect(config.Process()).To(Succeed())
+		Expect(config.CACerts).To(ContainElement(string(chain.CACertPEM)))
+	})
+
+	It("appends the ca_certs_file cert to the inline ca_certs list", func() {
+		chain2 := test_util.CreateSignedCertWithRootCA(test_util.CertNames{SANs: test_util.SubjectAltNames{DNS: "potato.com"}})
+		caFile := write("ca.crt", chain2.CACertPEM)
+		config.CACerts = []string{string(chain.CACertPEM)}
+		config.CACertsFile = caFile
+
+		Expect(config.Process()).To(Succeed())
+		Expect(config.CACerts).To(Equal([]string{string(chain.CACertPEM), string(chain2.CACertPEM)}))
+	})
+
+	It("reads status (health) TLS cert and key from files", func() {
+		certFile := write("status.crt", chain.CertPEM)
+		keyFile := write("status.key", chain.PrivKeyPEM)
+		config.Status.TLS = StatusTLSConfig{Port: 8443, CertificateFile: certFile, KeyFile: keyFile}
+
+		Expect(config.Process()).To(Succeed())
+		Expect(config.Status.TLS.Certificate).To(Equal(string(chain.CertPEM)))
+		Expect(config.Status.TLSCert.Certificate).ToNot(BeEmpty())
+	})
+
+	It("reads routing_api ca_certs and client cert from files", func() {
+		certFile := write("tls.crt", chain.CertPEM)
+		keyFile := write("tls.key", chain.PrivKeyPEM)
+		caFile := write("ca.crt", chain.CACertPEM)
+		config.RoutingApi.Uri = "https://routing-api.example.com"
+		config.RoutingApi.Port = 443
+		config.RoutingApi.CertChainFile = certFile
+		config.RoutingApi.PrivateKeyFile = keyFile
+		config.RoutingApi.CACertsFile = caFile
+
+		Expect(config.Process()).To(Succeed())
+		Expect(config.RoutingApi.CACerts).To(Equal(string(chain.CACertPEM)))
+		Expect(config.RoutingApi.CAPool).ToNot(BeNil())
+		Expect(config.RoutingApi.ClientAuthCertificate.Certificate).ToNot(BeEmpty())
+	})
+
+	It("reads mTLS domain ca_certs from a file", func() {
+		caFile := write("ca.crt", chain.CACertPEM)
+		config.Domains = []MtlsDomainConfig{{Domain: "secure.example.com", CACertsFile: caFile}}
+
+		Expect(config.Process()).To(Succeed())
+		Expect(config.Domains[0].CACerts).To(Equal(string(chain.CACertPEM)))
+		Expect(config.Domains[0].CAPool).ToNot(BeNil())
+	})
+
+	It("reports the YAML key when an mTLS domain sets both ca_certs and ca_certs_file", func() {
+		caFile := write("ca.crt", chain.CACertPEM)
+		config.Domains = []MtlsDomainConfig{{
+			Domain:      "secure.example.com",
+			CACerts:     string(chain.CACertPEM),
+			CACertsFile: caFile,
+		}}
+
+		Expect(config.Process()).To(MatchError(ContainSubstring("cannot specify both domains[0].ca_certs and domains[0].ca_certs_file")))
+	})
+
+	It("rejects setting both a single-valued field and its file sibling", func() {
+		caFile := write("ca.crt", chain.CACertPEM)
+		config.ClientCACerts = string(chain.CACertPEM)
+		config.ClientCACertsFile = caFile
+
+		Expect(config.Process()).To(MatchError(ContainSubstring("cannot specify both client_ca_certs and client_ca_certs_file")))
+	})
+
+	It("returns an error naming the field when a referenced file is missing", func() {
+		config.TLSPEM = []TLSPem{{
+			CertChainFile:  filepath.Join(dir, "missing.crt"),
+			PrivateKeyFile: filepath.Join(dir, "missing.key"),
+		}}
+		Expect(config.Process()).To(MatchError(And(
+			ContainSubstring("failed to read tls_pem[0].cert_chain_file"),
+			ContainSubstring("missing.crt"),
+		)))
+	})
+})
