@@ -944,6 +944,15 @@ func (c *Config) processMtlsDomains() error {
 			return fmt.Errorf("domains[%d].forwarded_client_cert must be one of %v",
 				i, AllowedForwardedClientCertModes)
 		}
+		// Identity-aware mTLS routing authorizes requests using the caller's
+		// TLS-verified peer certificate. 'forward' and 'always_forward' leave
+		// the client-controlled X-Forwarded-Client-Cert header untouched,
+		// which would let any client present a forged identity in that
+		// header; only 'sanitize_set' is safe for an mTLS domain.
+		if domain.ForwardedClientCert != SANITIZE_SET {
+			return fmt.Errorf("domains[%d].forwarded_client_cert must be 'sanitize_set'; 'forward' and 'always_forward' are not safe for identity-aware mTLS domains",
+				i)
+		}
 
 		// Validate xfcc_format
 		if domain.XFCCFormat == "" {
@@ -952,10 +961,6 @@ func (c *Config) processMtlsDomains() error {
 		if !slices.Contains(AllowedXFCCFormats, domain.XFCCFormat) {
 			return fmt.Errorf("domains[%d].xfcc_format must be one of %v",
 				i, AllowedXFCCFormats)
-		}
-		if domain.XFCCFormat != XFCC_FORMAT_RAW && domain.ForwardedClientCert == ALWAYS_FORWARD {
-			return fmt.Errorf("domains[%d].xfcc_format has no effect when forwarded_client_cert is 'always_forward'; remove xfcc_format or change forwarded_client_cert to 'sanitize_set'",
-				i)
 		}
 
 		// Build CA pool for this domain

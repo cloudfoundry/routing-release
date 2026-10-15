@@ -531,6 +531,13 @@ if_p('router.domains') do |domains|
       unless valid_modes.include?(mode)
         raise "Invalid forwarded_client_cert mode '#{mode}' for domain '#{domain_config['name']}'. Must be one of: #{valid_modes.join(', ')}"
       end
+      # Identity-aware mTLS routing authorizes requests using the caller's
+      # TLS-verified peer certificate. 'forward' and 'always_forward' leave
+      # the client-controlled X-Forwarded-Client-Cert header untouched,
+      # which would let any client present a forged identity in that header.
+      unless mode == 'sanitize_set'
+        raise "forwarded_client_cert for domain '#{domain_config['name']}' must be 'sanitize_set'; 'forward' and 'always_forward' are not safe for identity-aware mTLS domains"
+      end
       processed_entry['forwarded_client_cert'] = mode
     end
 
@@ -539,9 +546,6 @@ if_p('router.domains') do |domains|
       format = domain_config['xfcc_format'].downcase
       unless valid_formats.include?(format)
         raise "Invalid xfcc_format '#{format}' for domain '#{domain_config['name']}'. Must be one of: #{valid_formats.join(', ')}"
-      end
-      if processed_entry['forwarded_client_cert'] == 'always_forward'
-        raise "xfcc_format has no effect for domain '#{domain_config['name']}' when forwarded_client_cert is 'always_forward'. Remove xfcc_format or change forwarded_client_cert to 'sanitize_set'."
       end
       processed_entry['xfcc_format'] = format
     end

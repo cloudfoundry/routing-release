@@ -2302,21 +2302,6 @@ drain_timeout: 60s
 			Expect(err).To(MatchError(ContainSubstring("domains[0].domain is required")))
 		})
 
-		It("returns an error when xfcc_format is set with always_forward", func() {
-			cfgForSnippet.Domains = []MtlsDomainConfig{
-				{
-					Domain:              "*.apps.identity",
-					XFCCFormat:          "envoy",
-					ForwardedClientCert: "always_forward",
-					CACerts:             string(certChain.CACertPEM),
-				},
-			}
-			err := config.Initialize(createYMLSnippet(cfgForSnippet))
-			Expect(err).ToNot(HaveOccurred())
-			err = config.Process()
-			Expect(err).To(MatchError(ContainSubstring("xfcc_format has no effect when forwarded_client_cert is 'always_forward'")))
-		})
-
 		It("allows xfcc_format with sanitize_set", func() {
 			cfgForSnippet.Domains = []MtlsDomainConfig{
 				{
@@ -2332,11 +2317,14 @@ drain_timeout: 60s
 			Expect(err).ToNot(HaveOccurred())
 		})
 
-		It("allows raw xfcc_format with always_forward", func() {
+		It("returns an error when forwarded_client_cert is always_forward", func() {
+			// Identity-aware mTLS routing authorizes requests using the
+			// caller's TLS-verified peer certificate. 'always_forward' would
+			// leave the client-controlled X-Forwarded-Client-Cert header
+			// untouched, letting any client present a forged identity.
 			cfgForSnippet.Domains = []MtlsDomainConfig{
 				{
 					Domain:              "*.apps.identity",
-					XFCCFormat:          "raw",
 					ForwardedClientCert: "always_forward",
 					CACerts:             string(certChain.CACertPEM),
 				},
@@ -2344,7 +2332,21 @@ drain_timeout: 60s
 			err := config.Initialize(createYMLSnippet(cfgForSnippet))
 			Expect(err).ToNot(HaveOccurred())
 			err = config.Process()
+			Expect(err).To(MatchError(ContainSubstring("domains[0].forwarded_client_cert must be 'sanitize_set'")))
+		})
+
+		It("returns an error when forwarded_client_cert is forward", func() {
+			cfgForSnippet.Domains = []MtlsDomainConfig{
+				{
+					Domain:              "*.apps.identity",
+					ForwardedClientCert: "forward",
+					CACerts:             string(certChain.CACertPEM),
+				},
+			}
+			err := config.Initialize(createYMLSnippet(cfgForSnippet))
 			Expect(err).ToNot(HaveOccurred())
+			err = config.Process()
+			Expect(err).To(MatchError(ContainSubstring("domains[0].forwarded_client_cert must be 'sanitize_set'")))
 		})
 	})
 })

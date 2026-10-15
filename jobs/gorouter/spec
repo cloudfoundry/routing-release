@@ -201,11 +201,16 @@ properties:
     default: false
   router.domains:
     description: |
-      Array of domains requiring mutual TLS authentication. Each domain can have its own CA certificate pool, forwarded_client_cert mode, and xfcc_format.
+      Array of domains requiring mutual TLS authentication. Each domain can have its own CA certificate pool and xfcc_format.
       For non-wildcard domains, the domain must match the request host exactly.
       For wildcard domains (e.g., *.apps.identity), the wildcard must be the leftmost label and matches any single label.
 
       These domains enforce client certificate validation independently of `router.client_cert_validation` — clients connecting to these domains are always required to present a valid certificate signed by the domain's configured CA.
+
+      forwarded_client_cert must be "sanitize_set" (the default) for these domains: Gorouter authorizes requests on these
+      domains using the caller's identity from its TLS-verified client certificate, so the X-Forwarded-Client-Cert header
+      must always be replaced with that same verified certificate rather than left for the client to set. "forward" and
+      "always_forward" are rejected here, since they would let a client supply its own, unverified identity in the header.
 
       xfcc_format controls the format of the X-Forwarded-Client-Cert header:
       - "raw" (default): Full base64-encoded certificate (~1.5KB)
@@ -224,7 +229,7 @@ properties:
         -----BEGIN CERTIFICATE-----
         <CA certificate for secure.example.com>
         -----END CERTIFICATE-----
-      forwarded_client_cert: forward
+      forwarded_client_cert: sanitize_set
       xfcc_format: raw
   router.backends.max_attempts:
     description: |

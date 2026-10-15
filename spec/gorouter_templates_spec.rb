@@ -1904,8 +1904,8 @@ describe 'gorouter' do
           ]
         end
 
-        it 'raises an error because xfcc_format has no effect with always_forward' do
-          expect { parsed_yaml }.to raise_error(/xfcc_format has no effect.*always_forward/)
+        it 'raises an error because always_forward is not safe for identity-aware mTLS domains' do
+          expect { parsed_yaml }.to raise_error(/forwarded_client_cert.*must be 'sanitize_set'/)
         end
       end
 
@@ -1920,8 +1920,24 @@ describe 'gorouter' do
           ]
         end
 
-        it 'renders successfully' do
-          expect { parsed_yaml }.not_to raise_error
+        it 'raises an error because always_forward is not safe for identity-aware mTLS domains' do
+          expect { parsed_yaml }.to raise_error(/forwarded_client_cert.*must be 'sanitize_set'/)
+        end
+      end
+
+      context 'when forward is set' do
+        before do
+          deployment_manifest_fragment['router']['domains'] = [
+            {
+              'name' => '*.apps.mtls.internal',
+              'ca_certs' => TEST_CERT,
+              'forwarded_client_cert' => 'forward'
+            }
+          ]
+        end
+
+        it 'raises an error because forward is not safe for identity-aware mTLS domains' do
+          expect { parsed_yaml }.to raise_error(/forwarded_client_cert.*must be 'sanitize_set'/)
         end
       end
 

@@ -87,11 +87,9 @@ var _ = Describe("CfIdentity", func() {
 	Context("when TLS is not used", func() {
 		BeforeEach(func() {
 			request.TLS = nil
-			cert := generateTestCert("app:should-not-extract")
-			request.Header.Set("X-Forwarded-Client-Cert", buildGoRouterXFCCHeader(cert))
 		})
 
-		It("calls next without extracting identity, even when a valid XFCC header is present", func() {
+		It("calls next without extracting identity", func() {
 			runHandler()
 			Expect(nextCalled).To(BeTrue())
 			Expect(requestInfo.CallerIdentity).To(BeNil())
@@ -101,12 +99,12 @@ var _ = Describe("CfIdentity", func() {
 	Context("when host is not an mTLS domain", func() {
 		BeforeEach(func() {
 			request = test_util.NewRequest("GET", "regular.example.com", "/", nil)
-			request.TLS = &tls.ConnectionState{}
-			cert := generateTestCert("app:should-not-extract")
-			request.Header.Set("X-Forwarded-Client-Cert", buildGoRouterXFCCHeader(cert))
+			request.TLS = &tls.ConnectionState{
+				PeerCertificates: []*x509.Certificate{generateTestCert("app:should-not-extract")},
+			}
 		})
 
-		It("calls next without extracting identity, even when a valid XFCC header is present", func() {
+		It("calls next without extracting identity, even with a peer certificate present", func() {
 			runHandler()
 			Expect(nextCalled).To(BeTrue())
 			Expect(requestInfo.CallerIdentity).To(BeNil())
@@ -115,13 +113,12 @@ var _ = Describe("CfIdentity", func() {
 
 	Context("when RequestInfo is not in context", func() {
 		BeforeEach(func() {
-			cert := generateTestCert("app:should-not-extract")
-			request.Header.Set("X-Forwarded-Client-Cert", buildGoRouterXFCCHeader(cert))
+			request.TLS.PeerCertificates = []*x509.Certificate{generateTestCert("app:should-not-extract")}
 		})
 
 		It("calls next without extracting identity or creating a RequestInfo", func() {
 			// No NewRequestInfo middleware in front of the handler, so the
-			// context has no RequestInfo. Even with a valid XFCC header on an
+			// context has no RequestInfo. Even with a valid peer cert on an
 			// mTLS domain, the handler must bail out cleanly without panicking
 			// and without storing any identity.
 			handler.ServeHTTP(recorder, request, nextHandler)
@@ -134,7 +131,7 @@ var _ = Describe("CfIdentity", func() {
 	})
 
 	Context("when RequestInfo is in context", func() {
-		Context("when X-Forwarded-Client-Cert header is not present", func() {
+		Context("when there is no TLS peer certificate", func() {
 			It("calls next handler without setting identity", func() {
 				runHandler()
 				Expect(nextCalled).To(BeTrue())
@@ -142,211 +139,102 @@ var _ = Describe("CfIdentity", func() {
 			})
 		})
 
-		Context("with raw format (*.apps.identity domain)", func() {
-			Context("with valid cert containing app GUID in OU", func() {
-				BeforeEach(func() {
-					cert := generateTestCert("app:test-app-guid-123")
-					request.Header.Set("X-Forwarded-Client-Cert", buildGoRouterXFCCHeader(cert))
-				})
-
-				It("extracts caller identity with app GUID", func() {
-					runHandler()
-					Expect(nextCalled).To(BeTrue())
-					Expect(requestInfo.CallerIdentity).NotTo(BeNil())
-					Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("test-app-guid-123"))
-				})
+		Context("with a valid TLS peer certificate containing app GUID in OU", func() {
+			BeforeEach(func() {
+				request.TLS.PeerCertificates = []*x509.Certificate{generateTestCert("app:test-app-guid-123")}
 			})
 
-			Context("with cert containing multiple OUs", func() {
-				BeforeEach(func() {
-					cert := generateTestCertWithMultipleOUs([]string{
-						"app:another-app-guid",
-						"space:test-space",
-						"organization:test-org",
-					})
-					request.Header.Set("X-Forwarded-Client-Cert", buildGoRouterXFCCHeader(cert))
-				})
-
-				It("extracts all GUIDs", func() {
-					runHandler()
-					Expect(nextCalled).To(BeTrue())
-					Expect(requestInfo.CallerIdentity).NotTo(BeNil())
-					Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("another-app-guid"))
-					Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal("test-space"))
-					Expect(requestInfo.CallerIdentity.OrgGUID).To(Equal("test-org"))
-				})
-			})
-
-			Context("with invalid base64 data", func() {
-				BeforeEach(func() {
-					request.Header.Set("X-Forwarded-Client-Cert", "not-valid-base64!!!")
-				})
-
-				It("does not set caller identity", func() {
-					runHandler()
-					Expect(nextCalled).To(BeTrue())
-					Expect(requestInfo.CallerIdentity).To(BeNil())
-				})
-			})
-
-			Context("with valid base64 but invalid certificate data", func() {
-				BeforeEach(func() {
-					request.Header.Set("X-Forwarded-Client-Cert", base64.StdEncoding.EncodeToString([]byte("not a cert")))
-				})
-
-				It("does not set caller identity", func() {
-					runHandler()
-					Expect(nextCalled).To(BeTrue())
-					Expect(requestInfo.CallerIdentity).To(BeNil())
-				})
-			})
-
-			Context("with cert missing app GUID in OU", func() {
-				BeforeEach(func() {
-					cert := generateTestCertWithMultipleOUs([]string{"space:some-space"})
-					request.Header.Set("X-Forwarded-Client-Cert", buildGoRouterXFCCHeader(cert))
-				})
-
-				It("does not set caller identity", func() {
-					runHandler()
-					Expect(nextCalled).To(BeTrue())
-					Expect(requestInfo.CallerIdentity).To(BeNil())
-				})
-			})
-
-			Context("with cert having empty app GUID", func() {
-				BeforeEach(func() {
-					cert := generateTestCert("app:")
-					request.Header.Set("X-Forwarded-Client-Cert", buildGoRouterXFCCHeader(cert))
-				})
-
-				It("does not set caller identity", func() {
-					runHandler()
-					Expect(nextCalled).To(BeTrue())
-					Expect(requestInfo.CallerIdentity).To(BeNil())
-				})
+			It("extracts caller identity with app GUID", func() {
+				runHandler()
+				Expect(nextCalled).To(BeTrue())
+				Expect(requestInfo.CallerIdentity).NotTo(BeNil())
+				Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("test-app-guid-123"))
 			})
 		})
 
-		Context("with envoy format (envoy.apps.identity domain)", func() {
+		Context("with a TLS peer certificate containing multiple OUs", func() {
+			BeforeEach(func() {
+				request.TLS.PeerCertificates = []*x509.Certificate{generateTestCertWithMultipleOUs([]string{
+					"app:another-app-guid",
+					"space:test-space",
+					"organization:test-org",
+				})}
+			})
+
+			It("extracts all GUIDs", func() {
+				runHandler()
+				Expect(nextCalled).To(BeTrue())
+				Expect(requestInfo.CallerIdentity).NotTo(BeNil())
+				Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("another-app-guid"))
+				Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal("test-space"))
+				Expect(requestInfo.CallerIdentity.OrgGUID).To(Equal("test-org"))
+			})
+		})
+
+		Context("with a TLS peer certificate missing app GUID in OU", func() {
+			BeforeEach(func() {
+				request.TLS.PeerCertificates = []*x509.Certificate{generateTestCertWithMultipleOUs([]string{"space:some-space"})}
+			})
+
+			It("does not set caller identity", func() {
+				runHandler()
+				Expect(nextCalled).To(BeTrue())
+				Expect(requestInfo.CallerIdentity).To(BeNil())
+			})
+		})
+
+		Context("with a TLS peer certificate having empty app GUID", func() {
+			BeforeEach(func() {
+				request.TLS.PeerCertificates = []*x509.Certificate{generateTestCert("app:")}
+			})
+
+			It("does not set caller identity", func() {
+				runHandler()
+				Expect(nextCalled).To(BeTrue())
+				Expect(requestInfo.CallerIdentity).To(BeNil())
+			})
+		})
+
+		// Regression tests for TNZGOV-18955 / TNZGOV-18956: CallerIdentity
+		// must always come from the TLS-verified peer certificate, never from
+		// the client-controlled X-Forwarded-Client-Cert header, regardless of
+		// what that header contains or how it got there (a forged header
+		// smuggled in via a Host-header parser mismatch, or a header forwarded
+		// verbatim because an operator configured forwarded_client_cert to
+		// forward/always_forward).
+		Context("with a forged X-Forwarded-Client-Cert header claiming a different identity than the TLS peer cert", func() {
+			BeforeEach(func() {
+				request.TLS.PeerCertificates = []*x509.Certificate{generateTestCert("app:real-app-guid")}
+				forgedCert := generateTestCertWithMultipleOUs([]string{
+					"app:victim-app-guid",
+					"space:victim-space-guid",
+					"organization:victim-org-guid",
+				})
+				request.Header.Set("X-Forwarded-Client-Cert", buildGoRouterXFCCHeader(forgedCert))
+			})
+
+			It("derives identity from the TLS peer certificate and ignores the header entirely", func() {
+				runHandler()
+				Expect(nextCalled).To(BeTrue())
+				Expect(requestInfo.CallerIdentity).NotTo(BeNil())
+				Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("real-app-guid"))
+				Expect(requestInfo.CallerIdentity.SpaceGUID).To(BeEmpty())
+				Expect(requestInfo.CallerIdentity.OrgGUID).To(BeEmpty())
+			})
+		})
+
+		Context("with a crafted envoy-format X-Forwarded-Client-Cert header and no TLS peer certificate", func() {
 			BeforeEach(func() {
 				request = test_util.NewRequest("GET", "envoy.apps.identity", "/", nil)
 				request.TLS = &tls.ConnectionState{}
+				xfccHeader := `Hash=abc123;Subject="CN=instance-id,OU=app:envoy-app-guid,OU=space:envoy-space-guid,OU=organization:envoy-org-guid"`
+				request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
 			})
 
-			Context("with comma-separated DN format", func() {
-				BeforeEach(func() {
-					xfccHeader := `Hash=abc123;Subject="CN=instance-id,OU=app:envoy-app-guid,OU=space:envoy-space-guid,OU=organization:envoy-org-guid"`
-					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-				})
-
-				It("extracts all GUIDs from Subject DN", func() {
-					runHandler()
-					Expect(nextCalled).To(BeTrue())
-					Expect(requestInfo.CallerIdentity).NotTo(BeNil())
-					Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("envoy-app-guid"))
-					Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal("envoy-space-guid"))
-					Expect(requestInfo.CallerIdentity.OrgGUID).To(Equal("envoy-org-guid"))
-				})
-			})
-
-			Context("with slash-separated DN format", func() {
-				BeforeEach(func() {
-					xfccHeader := `Hash=abc123;Subject="/CN=instance-id/OU=app:slash-app-guid/OU=space:slash-space-guid/OU=organization:slash-org-guid"`
-					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-				})
-
-				It("extracts all GUIDs from Subject DN", func() {
-					runHandler()
-					Expect(nextCalled).To(BeTrue())
-					Expect(requestInfo.CallerIdentity).NotTo(BeNil())
-					Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("slash-app-guid"))
-					Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal("slash-space-guid"))
-					Expect(requestInfo.CallerIdentity.OrgGUID).To(Equal("slash-org-guid"))
-				})
-			})
-
-			Context("with only app GUID in Subject", func() {
-				BeforeEach(func() {
-					xfccHeader := `Hash=def456;Subject="CN=instance,OU=app:only-app-guid"`
-					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-				})
-
-				It("extracts app GUID", func() {
-					runHandler()
-					Expect(nextCalled).To(BeTrue())
-					Expect(requestInfo.CallerIdentity).NotTo(BeNil())
-					Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("only-app-guid"))
-					Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal(""))
-					Expect(requestInfo.CallerIdentity.OrgGUID).To(Equal(""))
-				})
-			})
-
-			Context("with Subject but no app GUID", func() {
-				BeforeEach(func() {
-					xfccHeader := `Hash=ghi789;Subject="CN=instance,OU=space:some-space,OU=organization:some-org"`
-					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-				})
-
-				It("does not set caller identity (app GUID required)", func() {
-					runHandler()
-					Expect(nextCalled).To(BeTrue())
-					Expect(requestInfo.CallerIdentity).To(BeNil())
-				})
-			})
-
-			Context("with missing Subject field", func() {
-				BeforeEach(func() {
-					xfccHeader := `Hash=jkl012;Cert="some-pem-data"`
-					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-				})
-
-				It("does not set caller identity", func() {
-					runHandler()
-					Expect(nextCalled).To(BeTrue())
-					Expect(requestInfo.CallerIdentity).To(BeNil())
-				})
-			})
-
-			Context("with malformed Subject field (missing closing quote)", func() {
-				BeforeEach(func() {
-					xfccHeader := `Hash=jkl012;Subject="CN=instance,OU=app:test-app`
-					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-				})
-
-				It("does not set caller identity", func() {
-					runHandler()
-					Expect(nextCalled).To(BeTrue())
-					Expect(requestInfo.CallerIdentity).To(BeNil())
-				})
-			})
-
-			Context("with empty Subject", func() {
-				BeforeEach(func() {
-					xfccHeader := `Hash=mno345;Subject=""`
-					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-				})
-
-				It("does not set caller identity", func() {
-					runHandler()
-					Expect(nextCalled).To(BeTrue())
-					Expect(requestInfo.CallerIdentity).To(BeNil())
-				})
-			})
-
-			Context("with Subject containing extra whitespace", func() {
-				BeforeEach(func() {
-					xfccHeader := `Hash=pqr678;Subject="CN=instance, OU=app:whitespace-app-guid, OU=space:whitespace-space-guid"`
-					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
-				})
-
-				It("trims whitespace and extracts GUIDs", func() {
-					runHandler()
-					Expect(nextCalled).To(BeTrue())
-					Expect(requestInfo.CallerIdentity).NotTo(BeNil())
-					Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("whitespace-app-guid"))
-					Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal("whitespace-space-guid"))
-				})
+			It("does not set caller identity, since no verified peer certificate is present", func() {
+				runHandler()
+				Expect(nextCalled).To(BeTrue())
+				Expect(requestInfo.CallerIdentity).To(BeNil())
 			})
 		})
 	})

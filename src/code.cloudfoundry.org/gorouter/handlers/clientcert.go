@@ -56,7 +56,7 @@ func (c *clientCert) ServeHTTP(rw http.ResponseWriter, r *http.Request, next htt
 	// Determine forwarding mode and XFCC format - use domain-specific if on mTLS domain
 	forwardingMode := c.forwardingMode
 	xfccFormat := config.XFCC_FORMAT_RAW // Default for non-mTLS domains
-	mtlsDomainConfig := c.config.GetMtlsDomainConfig(r.Host)
+	mtlsDomainConfig := c.config.GetMtlsDomainConfig(hostWithoutPort(r.Host))
 	if mtlsDomainConfig != nil {
 		forwardingMode = mtlsDomainConfig.ForwardedClientCert
 		xfccFormat = mtlsDomainConfig.XFCCFormat
