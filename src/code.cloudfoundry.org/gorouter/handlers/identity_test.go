@@ -348,6 +348,57 @@ var _ = Describe("CfIdentity", func() {
 					Expect(requestInfo.CallerIdentity.SpaceGUID).To(Equal("whitespace-space-guid"))
 				})
 			})
+
+			// Regression tests for TNZGOV-18962: a correctly RFC-4514-escaped
+			// Subject DN (as produced by the fixed formatSubjectDN) must not
+			// let an attacker-influenced CN/O value be mistaken for
+			// additional RDNs, even when it contains an escaped comma or
+			// quote that would have broken the old naive comma/quote split.
+			Context("with an escaped comma in the CN value forging a fake OU (comma-injection attempt)", func() {
+				BeforeEach(func() {
+					// No legitimate "OU=app:" is present anywhere in this DN:
+					// "OU=app:injected-guid" only appears inside the escaped
+					// CN value. A naive, escape-unaware comma split would
+					// treat it as a real second RDN and forge an identity.
+					xfccHeader := `Hash=abc123;Subject="CN=instance\,OU=app:injected-guid"`
+					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+				})
+
+				It("does not forge a caller identity from the escaped CN value", func() {
+					runHandler()
+					Expect(nextCalled).To(BeTrue())
+					Expect(requestInfo.CallerIdentity).To(BeNil())
+				})
+			})
+
+			Context("with an escaped quote in the CN value (quote-injection attempt)", func() {
+				BeforeEach(func() {
+					xfccHeader := `Hash=abc123;Subject="CN=instance\"injected,OU=app:real-app-guid"`
+					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+				})
+
+				It("does not terminate the Subject value at the escaped quote", func() {
+					runHandler()
+					Expect(nextCalled).To(BeTrue())
+					Expect(requestInfo.CallerIdentity).NotTo(BeNil())
+					Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("real-app-guid"))
+				})
+			})
+
+			Context("with an escaped comma appended via Organization after the real OUs", func() {
+				BeforeEach(func() {
+					xfccHeader := `Hash=abc123;Subject="CN=instance,OU=app:real-app-guid,OU=organization:real-org-guid,O=acme\,OU=app:injected-guid"`
+					request.Header.Set("X-Forwarded-Client-Cert", xfccHeader)
+				})
+
+				It("does not let the trailing escaped value override the real app GUID", func() {
+					runHandler()
+					Expect(nextCalled).To(BeTrue())
+					Expect(requestInfo.CallerIdentity).NotTo(BeNil())
+					Expect(requestInfo.CallerIdentity.AppGUID).To(Equal("real-app-guid"))
+					Expect(requestInfo.CallerIdentity.OrgGUID).To(Equal("real-org-guid"))
+				})
+			})
 		})
 	})
 

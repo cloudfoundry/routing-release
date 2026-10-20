@@ -111,7 +111,7 @@ func extractIdentityFromEnvoyXFCC(xfcc string) (*CallerIdentity, error) {
 		return nil, errors.New("envoy format XFCC missing Subject field")
 	}
 	subjectStart += len("Subject=\"")
-	subjectEnd := strings.Index(xfcc[subjectStart:], "\"")
+	subjectEnd := indexUnescapedQuote(xfcc[subjectStart:])
 	if subjectEnd == -1 {
 		return nil, errors.New("malformed Subject field in XFCC header")
 	}
@@ -142,28 +142,27 @@ func extractIdentityFromRawXFCC(xfcc string) (*CallerIdentity, error) {
 // DN format: "CN=instance-id,OU=app:guid,OU=space:guid,OU=organization:guid"
 func extractIdentityFromSubjectDN(subjectDN string) (*CallerIdentity, error) {
 	identity := &CallerIdentity{}
-
-	// Split DN into RDNs (Relative Distinguished Names)
-	// Handle both comma and slash separators
+	// Trim before choosing a format so that leading whitespace does not hide
+	// the "/" prefix of the legacy slash-separated format.
+	subjectDN = trimDNWhitespace(subjectDN)
 	var rdns []string
-	if strings.Contains(subjectDN, ",") {
-		rdns = strings.Split(subjectDN, ",")
-	} else if strings.Contains(subjectDN, "/") {
-		// Some formats use "/" as separator
+	if strings.HasPrefix(subjectDN, "/") {
 		rdns = strings.Split(subjectDN, "/")
+	} else if strings.Contains(subjectDN, ",") || strings.Contains(subjectDN, "=") {
+		rdns = splitUnescapedComma(subjectDN)
 	} else {
 		return nil, fmt.Errorf("unrecognized DN format: %q", subjectDN)
 	}
 
 	for _, rdn := range rdns {
-		rdn = strings.TrimSpace(rdn)
+		rdn = trimDNWhitespace(rdn)
 		if rdn == "" {
 			continue
 		}
 
 		// Parse OU fields
 		if strings.HasPrefix(rdn, "OU=") {
-			ouValue := strings.TrimPrefix(rdn, "OU=")
+			ouValue := unescapeDNValue(strings.TrimPrefix(rdn, "OU="))
 			if strings.HasPrefix(ouValue, "app:") {
 				appGUID := strings.TrimPrefix(ouValue, "app:")
 				if appGUID != "" {
@@ -189,6 +188,81 @@ func extractIdentityFromSubjectDN(subjectDN string) (*CallerIdentity, error) {
 	}
 
 	return identity, nil
+}
+
+// trimDNWhitespace trims leading and trailing whitespace from a raw (still
+// escaped) DN or RDN. Trailing whitespace preceded by an odd run of
+// backslashes is an escaped space that is part of the value and is kept, so
+// that unescapeDNValue can later restore it.
+func trimDNWhitespace(s string) string {
+	s = strings.TrimLeft(s, " \t\r\n")
+	end := len(s)
+	for end > 0 && strings.IndexByte(" \t\r\n", s[end-1]) != -1 {
+		backslashes := 0
+		for i := end - 2; i >= 0 && s[i] == '\\'; i-- {
+			backslashes++
+		}
+		if backslashes%2 == 1 {
+			break
+		}
+		end--
+	}
+	return s[:end]
+}
+
+// indexUnescapedQuote returns the index of the first unescaped '"' in s, or
+// -1 if none is found. A '"' preceded by an odd backslash run is treated as
+// escaped (part of the value) rather than a terminator, mirroring the
+// RFC-4514-style escaping applied by formatSubjectDN.
+func indexUnescapedQuote(s string) int {
+	for i := 0; i < len(s); i++ {
+		if s[i] == '\\' && i+1 < len(s) {
+			i++
+			continue
+		}
+		if s[i] == '"' {
+			return i
+		}
+	}
+	return -1
+}
+
+// splitUnescapedComma splits s on commas, treating a backslash-escaped comma
+// (`\,`) as part of the surrounding value rather than an RDN separator.
+func splitUnescapedComma(s string) []string {
+	var parts []string
+	var cur strings.Builder
+	for i := 0; i < len(s); i++ {
+		if s[i] == '\\' && i+1 < len(s) {
+			cur.WriteByte(s[i])
+			cur.WriteByte(s[i+1])
+			i++
+			continue
+		}
+		if s[i] == ',' {
+			parts = append(parts, cur.String())
+			cur.Reset()
+			continue
+		}
+		cur.WriteByte(s[i])
+	}
+	parts = append(parts, cur.String())
+	return parts
+}
+
+// unescapeDNValue reverses the backslash-escaping applied by formatSubjectDN,
+// turning e.g. `app\,guid` back into `app,guid`.
+func unescapeDNValue(v string) string {
+	var b strings.Builder
+	for i := 0; i < len(v); i++ {
+		if v[i] == '\\' && i+1 < len(v) {
+			b.WriteByte(v[i+1])
+			i++
+			continue
+		}
+		b.WriteByte(v[i])
+	}
+	return b.String()
 }
 
 // extractIdentityFromCert extracts GUIDs from an X.509 certificate's OU fields
