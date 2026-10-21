@@ -140,3 +140,15 @@ var _ = Describe("modifyResponse", func() {
 		})
 	})
 })
+
+var _ = DescribeTable("traceKeyMatches",
+	func(provided, expected string, match bool) {
+		Expect(traceKeyMatches(provided, expected)).To(Equal(match))
+	},
+	Entry("identical keys", "trace-key", "trace-key", true),
+	Entry("same length, different last byte", "trace-kez", "trace-key", false),
+	Entry("same length, different first byte", "xrace-key", "trace-key", false),
+	Entry("provided is a prefix of expected", "trace", "trace-key", false),
+	Entry("provided extends expected", "trace-key-extra", "trace-key", false),
+	Entry("empty provided key", "", "trace-key", false),
+)
