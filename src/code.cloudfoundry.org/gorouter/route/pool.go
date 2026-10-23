@@ -398,7 +398,11 @@ func (p *EndpointPool) Put(endpoint *Endpoint) PoolPutResult {
 			endpoint.SetRoundTripper(oldEndpoint.RoundTripper())
 		}
 
-		p.RouteSvcUrl = e.endpoint.RouteServiceUrl
+		if e.endpoint.RouteServiceUrl != "" {
+			p.RouteSvcUrl = e.endpoint.RouteServiceUrl
+		} else {
+			p.recomputeRouteSvcUrl()
+		}
 		p.setPoolLoadBalancingAlgorithm(e.endpoint)
 		// Route policy fields are pool-level: all backends of a route carry the
 		// same policies (enforced by CAPI at registration time), so last-writer-wins
@@ -426,7 +430,9 @@ func (p *EndpointPool) Put(endpoint *Endpoint) PoolPutResult {
 		p.index[endpoint.CanonicalAddr()] = e
 		p.index[endpoint.PrivateInstanceId] = e
 
-		p.RouteSvcUrl = e.endpoint.RouteServiceUrl
+		if e.endpoint.RouteServiceUrl != "" {
+			p.RouteSvcUrl = e.endpoint.RouteServiceUrl
+		}
 		p.setPoolLoadBalancingAlgorithm(e.endpoint)
 		// Route policy fields are pool-level: all backends of a route carry the
 		// same policies (enforced by CAPI at registration time), so last-writer-wins
@@ -500,6 +506,29 @@ func (p *EndpointPool) Remove(endpoint *Endpoint) bool {
 	return false
 }
 
+func (p *EndpointPool) recomputeRouteSvcUrl() {
+	if p.RouteSvcUrl != "" {
+		for _, e := range p.endpoints {
+			if e.endpoint.RouteServiceUrl == p.RouteSvcUrl {
+				return
+			}
+		}
+	}
+
+	bestURL := ""
+	var bestUpdated time.Time
+	for _, e := range p.endpoints {
+		if e.endpoint.RouteServiceUrl != "" {
+			if bestURL == "" || e.updated.After(bestUpdated) {
+				bestURL = e.endpoint.RouteServiceUrl
+				bestUpdated = e.updated
+			}
+		}
+	}
+
+	p.RouteSvcUrl = bestURL
+}
+
 func (p *EndpointPool) removeEndpoint(e *endpointElem) {
 	i := e.index
 	es := p.endpoints
@@ -512,6 +541,7 @@ func (p *EndpointPool) removeEndpoint(e *endpointElem) {
 
 	delete(p.index, e.endpoint.CanonicalAddr())
 	delete(p.index, e.endpoint.PrivateInstanceId)
+	p.recomputeRouteSvcUrl()
 	p.Update()
 
 	if p.LoadBalancingAlgorithm == config.LOAD_BALANCE_HB {
