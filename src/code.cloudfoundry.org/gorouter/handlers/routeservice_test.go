@@ -248,25 +248,47 @@ var _ = Describe("Route Service Handler", func() {
 					Expect(signatureContents.ForwardedUrl).To(Equal(expectedURL))
 				}
 
-				It("sets the forwarded URL for an absolute-form request target", func() {
-					raw := "GET http://my_host.com/resource+9-9_9?query=dog HTTP/1.1\r\nHost: my_host.com\r\n\r\n"
-					var err error
-					req, err = http.ReadRequest(bufio.NewReader(strings.NewReader(raw)))
+				readRaw := func(target, host string) *http.Request {
+					raw := fmt.Sprintf("GET %s HTTP/1.1\r\nHost: %s\r\n\r\n", target, host)
+					r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(raw)))
 					Expect(err).NotTo(HaveOccurred())
+					return r
+				}
 
-					handler.ServeHTTP(resp, req)
+				DescribeTable("sets the forwarded URL",
+					func(target, host, expectedURL string) {
+						req = readRaw(target, host)
+						handler.ServeHTTP(resp, req)
 
-					var passedReq *http.Request
-					Eventually(reqChan).Should(Receive(&passedReq))
+						var passedReq *http.Request
+						Eventually(reqChan).Should(Receive(&passedReq))
 
-					assertForwardedURL(passedReq, "https://my_host.com/resource+9-9_9?query=dog")
-				})
+						assertForwardedURL(passedReq, expectedURL)
+					},
+					Entry("sets the forwarded URL for an absolute-form request target",
+						"http://my_host.com/resource+9-9_9?query=dog",
+						"my_host.com",
+						"https://my_host.com/resource+9-9_9?query=dog",
+					),
+					Entry("strips userinfo from an absolute-form request target",
+						"http://user:pw@my_host.com/resource+9-9_9?query=dog",
+						"my_host.com",
+						"https://my_host.com/resource+9-9_9?query=dog",
+					),
+					Entry("uses the host from an absolute-form target over the host header",
+						"http://my_host.com:8080/resource+9-9_9?query=dog",
+						"other.example.com",
+						"https://my_host.com/resource+9-9_9?query=dog",
+					),
+					Entry("normalizes an empty path in an absolute-form target to a slash",
+						"http://my_host.com",
+						"my_host.com",
+						"https://my_host.com/",
+					),
+				)
 
 				It("completes the round trip when the client started with an absolute-form target", func() {
-					raw := "GET http://my_host.com/resource+9-9_9?query=dog HTTP/1.1\r\nHost: my_host.com\r\n\r\n"
-					var err error
-					req, err = http.ReadRequest(bufio.NewReader(strings.NewReader(raw)))
-					Expect(err).NotTo(HaveOccurred())
+					req = readRaw("http://my_host.com/resource+9-9_9?query=dog", "my_host.com")
 
 					handler.ServeHTTP(resp, req)
 
@@ -278,8 +300,7 @@ var _ = Describe("Route Service Handler", func() {
 
 					nextCalled = false
 					resp = httptest.NewRecorder()
-					originReq, err := http.ReadRequest(bufio.NewReader(strings.NewReader("GET /resource+9-9_9?query=dog HTTP/1.1\r\nHost: my_host.com\r\n\r\n")))
-					Expect(err).NotTo(HaveOccurred())
+					originReq := readRaw("/resource+9-9_9?query=dog", "my_host.com")
 					originReq.Header.Set(routeservice.HeaderKeySignature, sig)
 					originReq.Header.Set(routeservice.HeaderKeyMetadata, meta)
 
@@ -293,74 +314,22 @@ var _ = Describe("Route Service Handler", func() {
 					Expect(secondPassedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(BeEmpty())
 				})
 
-				It("strips userinfo from an absolute-form request target", func() {
-					raw := "GET http://user:pw@my_host.com/resource+9-9_9?query=dog HTTP/1.1\r\nHost: my_host.com\r\n\r\n"
-					var err error
-					req, err = http.ReadRequest(bufio.NewReader(strings.NewReader(raw)))
-					Expect(err).NotTo(HaveOccurred())
+				DescribeTable("absolute-form guard: origin-form forwarded URL is byte-identical",
+					func(target string) {
+						req = readRaw(target, "my_host.com")
+						handler.ServeHTTP(resp, req)
 
-					handler.ServeHTTP(resp, req)
+						var passedReq *http.Request
+						Eventually(reqChan).Should(Receive(&passedReq))
 
-					var passedReq *http.Request
-					Eventually(reqChan).Should(Receive(&passedReq))
-
-					assertForwardedURL(passedReq, "https://my_host.com/resource+9-9_9?query=dog")
-				})
-
-				It("uses the host from an absolute-form target over the host header", func() {
-					raw := "GET http://my_host.com:8080/resource+9-9_9?query=dog HTTP/1.1\r\nHost: other.example.com\r\n\r\n"
-					var err error
-					req, err = http.ReadRequest(bufio.NewReader(strings.NewReader(raw)))
-					Expect(err).NotTo(HaveOccurred())
-
-					handler.ServeHTTP(resp, req)
-
-					var passedReq *http.Request
-					Eventually(reqChan).Should(Receive(&passedReq))
-
-					assertForwardedURL(passedReq, "https://my_host.com/resource+9-9_9?query=dog")
-				})
-
-				It("normalizes an empty path in an absolute-form target to a slash", func() {
-					raw := "GET http://my_host.com HTTP/1.1\r\nHost: my_host.com\r\n\r\n"
-					var err error
-					req, err = http.ReadRequest(bufio.NewReader(strings.NewReader(raw)))
-					Expect(err).NotTo(HaveOccurred())
-
-					handler.ServeHTTP(resp, req)
-
-					var passedReq *http.Request
-					Eventually(reqChan).Should(Receive(&passedReq))
-
-					assertForwardedURL(passedReq, "https://my_host.com/")
-				})
+						assertForwardedURL(passedReq, "https://my_host.com"+target)
+					},
+					Entry("target /a|b", "/a|b"),
+					Entry("target /a%2Fb", "/a%2Fb"),
+					Entry("target /p?", "/p?"),
+					Entry("target //x", "//x"),
+				)
 			})
-
-			DescribeTable("absolute-form guard: origin-form forwarded URL is byte-identical",
-				func(target string) {
-					raw := fmt.Sprintf("GET %s HTTP/1.1\r\nHost: my_host.com\r\n\r\n", target)
-					guardReq, err := http.ReadRequest(bufio.NewReader(strings.NewReader(raw)))
-					Expect(err).NotTo(HaveOccurred())
-
-					handler.ServeHTTP(resp, guardReq)
-
-					var passedReq *http.Request
-					Eventually(reqChan).Should(Receive(&passedReq))
-
-					expectedURL := "https://my_host.com" + target
-					Expect(passedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(Equal(expectedURL))
-
-					sig := passedReq.Header.Get(routeservice.HeaderKeySignature)
-					meta := passedReq.Header.Get(routeservice.HeaderKeyMetadata)
-					signatureContents, err := routeservice.SignatureContentsFromHeaders(sig, meta, crypto)
-					Expect(err).NotTo(HaveOccurred())
-					Expect(signatureContents.ForwardedUrl).To(Equal(expectedURL))
-				},
-				Entry("target /a|b", "/a|b"),
-				Entry("target /a%2Fb", "/a%2Fb"),
-				Entry("target /p?", "/p?"),
-				Entry("target //x", "//x"),
-			)
 
 			Context("when the route service has a route in the route registry", func() {
 				BeforeEach(func() {
