@@ -29,6 +29,24 @@ var _ = Describe("RouteRegistry", func() {
 	var locallyOptimistic bool
 	var az string
 
+	registerMixed := func(uri route.Uri, rs string) {
+		r.Register(uri, route.NewEndpoint(&route.EndpointOpts{
+			AppId:                "app-1",
+			Host:                 "192.168.1.1",
+			Port:                 1111,
+			PrivateInstanceIndex: "1",
+			RouteServiceUrl:      rs,
+			Tags:                 map[string]string{"process_id": "proc-1"},
+		}))
+		r.Register(uri, route.NewEndpoint(&route.EndpointOpts{
+			AppId:                "app-1",
+			Host:                 "192.168.1.2",
+			Port:                 2222,
+			PrivateInstanceIndex: "0",
+			Tags:                 map[string]string{"process_id": "proc-1"},
+		}))
+	}
+
 	BeforeEach(func() {
 		locallyOptimistic = false
 		az = "meow-zone"
@@ -1512,25 +1530,7 @@ var _ = Describe("RouteRegistry", func() {
 		Context("fail-closed route service url regressions", func() {
 			It("inherits route service url to surgical pool in fail-closed manner", func() {
 				uri := route.Uri("rs-app.example.com")
-				ep1 := route.NewEndpoint(&route.EndpointOpts{
-					AppId:                "app-1",
-					Host:                 "192.168.1.1",
-					Port:                 1111,
-					PrivateInstanceIndex: "1",
-					RouteServiceUrl:      "https://rs.example.com",
-					UseTLS:               false,
-				})
-				ep2 := route.NewEndpoint(&route.EndpointOpts{
-					AppId:                "app-1",
-					Host:                 "192.168.1.2",
-					Port:                 2222,
-					PrivateInstanceIndex: "0",
-					RouteServiceUrl:      "",
-					UseTLS:               false,
-				})
-
-				r.Register(uri, ep1)
-				r.Register(uri, ep2)
+				registerMixed(uri, "https://rs.example.com")
 
 				surgicalPool := r.LookupWithAppInstance(uri, "app-1", "0")
 				Expect(surgicalPool).ToNot(BeNil())
@@ -1539,25 +1539,7 @@ var _ = Describe("RouteRegistry", func() {
 
 			It("preserves empty route service url as a fail-closed guard when no endpoint has a route service url", func() {
 				uri := route.Uri("no-rs-app.example.com")
-				ep1 := route.NewEndpoint(&route.EndpointOpts{
-					AppId:                "app-1",
-					Host:                 "192.168.1.1",
-					Port:                 1111,
-					PrivateInstanceIndex: "1",
-					RouteServiceUrl:      "",
-					UseTLS:               false,
-				})
-				ep2 := route.NewEndpoint(&route.EndpointOpts{
-					AppId:                "app-1",
-					Host:                 "192.168.1.2",
-					Port:                 2222,
-					PrivateInstanceIndex: "0",
-					RouteServiceUrl:      "",
-					UseTLS:               false,
-				})
-
-				r.Register(uri, ep1)
-				r.Register(uri, ep2)
+				registerMixed(uri, "")
 
 				surgicalPool := r.LookupWithAppInstance(uri, "app-1", "0")
 				Expect(surgicalPool).ToNot(BeNil())
@@ -1728,27 +1710,7 @@ var _ = Describe("RouteRegistry", func() {
 			Context("fail-closed route service url regressions", func() {
 				It("inherits route service url to surgical pool in fail-closed manner", func() {
 					uri := route.Uri("rs-proc.example.com")
-					ep1 := route.NewEndpoint(&route.EndpointOpts{
-						AppId:                "app-1",
-						Host:                 "192.168.1.1",
-						Port:                 1111,
-						PrivateInstanceIndex: "1",
-						RouteServiceUrl:      "https://rs.example.com",
-						Tags:                 map[string]string{"process_id": "proc-1"},
-						UseTLS:               false,
-					})
-					ep2 := route.NewEndpoint(&route.EndpointOpts{
-						AppId:                "app-1",
-						Host:                 "192.168.1.2",
-						Port:                 2222,
-						PrivateInstanceIndex: "0",
-						RouteServiceUrl:      "",
-						Tags:                 map[string]string{"process_id": "proc-1"},
-						UseTLS:               false,
-					})
-
-					r.Register(uri, ep1)
-					r.Register(uri, ep2)
+					registerMixed(uri, "https://rs.example.com")
 
 					surgicalPool := r.LookupWithProcessInstance(uri, "proc-1", "0")
 					Expect(surgicalPool).ToNot(BeNil())
@@ -1757,31 +1719,20 @@ var _ = Describe("RouteRegistry", func() {
 
 				It("preserves empty route service url as a fail-closed guard when no endpoint has a route service url", func() {
 					uri := route.Uri("no-rs-proc.example.com")
-					ep1 := route.NewEndpoint(&route.EndpointOpts{
-						AppId:                "app-1",
-						Host:                 "192.168.1.1",
-						Port:                 1111,
-						PrivateInstanceIndex: "1",
-						RouteServiceUrl:      "",
-						Tags:                 map[string]string{"process_id": "proc-1"},
-						UseTLS:               false,
-					})
-					ep2 := route.NewEndpoint(&route.EndpointOpts{
-						AppId:                "app-1",
-						Host:                 "192.168.1.2",
-						Port:                 2222,
-						PrivateInstanceIndex: "0",
-						RouteServiceUrl:      "",
-						Tags:                 map[string]string{"process_id": "proc-1"},
-						UseTLS:               false,
-					})
-
-					r.Register(uri, ep1)
-					r.Register(uri, ep2)
+					registerMixed(uri, "")
 
 					surgicalPool := r.LookupWithProcessInstance(uri, "proc-1", "0")
 					Expect(surgicalPool).ToNot(BeNil())
 					Expect(surgicalPool.RouteServiceUrl()).To(Equal(""))
+				})
+
+				It("inherits route service url to surgical pool with empty process index in fail-closed manner", func() {
+					uri := route.Uri("rs-proc-all.example.com")
+					registerMixed(uri, "https://rs.example.com")
+
+					surgicalPool := r.LookupWithProcessInstance(uri, "proc-1", "")
+					Expect(surgicalPool).ToNot(BeNil())
+					Expect(surgicalPool.RouteServiceUrl()).To(Equal("https://rs.example.com"))
 				})
 			})
 		})

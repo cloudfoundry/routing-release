@@ -595,18 +595,18 @@ var _ = Describe("EndpointPool", func() {
 
 			It("remains fail-closed when pruning stale endpoints", func() {
 				ep1 := route.NewEndpoint(&route.EndpointOpts{
-					Host:                     "1.1.1.1",
-					Port:                     1111,
-					RouteServiceUrl:          "https://rs1.example.com",
-					StaleThresholdInSeconds:  60,
-					UseTLS:                   false,
+					Host:                    "1.1.1.1",
+					Port:                    1111,
+					RouteServiceUrl:         "https://rs1.example.com",
+					StaleThresholdInSeconds: 60,
+					UseTLS:                  false,
 				})
 				ep2 := route.NewEndpoint(&route.EndpointOpts{
-					Host:                     "2.2.2.2",
-					Port:                     2222,
-					RouteServiceUrl:          "https://rs2.example.com",
-					StaleThresholdInSeconds:  1,
-					UseTLS:                   false,
+					Host:                    "2.2.2.2",
+					Port:                    2222,
+					RouteServiceUrl:         "https://rs2.example.com",
+					StaleThresholdInSeconds: 1,
+					UseTLS:                  false,
 				})
 
 				pool.Put(ep1)
@@ -648,6 +648,34 @@ var _ = Describe("EndpointPool", func() {
 				ep1Same := route.NewEndpoint(&route.EndpointOpts{Host: "1.1.1.1", Port: 1111, RouteServiceUrl: "https://rs1.example.com", UseTLS: false})
 				res := pool.Put(ep1Same)
 				Expect(res).To(Equal(route.EndpointRefreshed))
+				Expect(pool.RouteServiceUrl()).To(Equal("https://rs2.example.com"))
+			})
+
+			It("falls back to surviving route service url on replace path in fail-closed manner", func() {
+				ep1 := route.NewEndpoint(&route.EndpointOpts{Host: "1.1.1.1", Port: 1111, RouteServiceUrl: "https://rs1.example.com"})
+				ep2 := route.NewEndpoint(&route.EndpointOpts{Host: "2.2.2.2", Port: 2222, RouteServiceUrl: "https://rs2.example.com"})
+
+				pool.Put(ep1)
+				pool.Put(ep2)
+				Expect(pool.RouteServiceUrl()).To(Equal("https://rs2.example.com"))
+
+				ep2NoRS := route.NewEndpoint(&route.EndpointOpts{Host: "2.2.2.2", Port: 2222, RouteServiceUrl: ""})
+				pool.Put(ep2NoRS)
+				Expect(pool.RouteServiceUrl()).To(Equal("https://rs1.example.com"))
+			})
+
+			It("selects newest updated route service url on remove in fail-closed manner", func() {
+				ep1 := route.NewEndpoint(&route.EndpointOpts{Host: "1.1.1.1", Port: 1111, RouteServiceUrl: "https://rs1.example.com"})
+				ep2 := route.NewEndpoint(&route.EndpointOpts{Host: "2.2.2.2", Port: 2222, RouteServiceUrl: "https://rs2.example.com"})
+				ep3 := route.NewEndpoint(&route.EndpointOpts{Host: "3.3.3.3", Port: 3333, RouteServiceUrl: "https://rs3.example.com"})
+
+				pool.Put(ep1)
+				pool.MarkUpdated(time.Now().Add(-10 * time.Second))
+				pool.Put(ep2)
+				pool.Put(ep3)
+				Expect(pool.RouteServiceUrl()).To(Equal("https://rs3.example.com"))
+
+				pool.Remove(ep3)
 				Expect(pool.RouteServiceUrl()).To(Equal("https://rs2.example.com"))
 			})
 		})
