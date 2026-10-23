@@ -8,12 +8,14 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/netip"
+	"strings"
 	"time"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
 	"github.com/urfave/negroni/v3"
+	"go.uber.org/zap/zapcore"
 
 	"code.cloudfoundry.org/gorouter/common/secure"
 	"code.cloudfoundry.org/gorouter/errorwriter"
@@ -733,6 +735,107 @@ var _ = Describe("Route Service Handler", func() {
 
 				Expect(nextCalled).To(BeFalse())
 			})
+		})
+
+		Context("when hairpinning with an allowlist", func() {
+			serveWith := func(rsURL, routeKey, poolHost string, registerRoute bool, allowlist []string, expected bool) {
+				endpoint := route.NewEndpoint(&route.EndpointOpts{RouteServiceUrl: rsURL})
+				Expect(routePool.Put(endpoint)).To(Equal(route.EndpointAdded))
+
+				if registerRoute {
+					routeMap[routeKey] = route.NewPool(&route.PoolOpts{Logger: logger.Logger, Host: poolHost, ContextPath: "/"})
+				}
+
+				config = routeservice.NewRouteServiceConfig(logger.Logger, true, true, allowlist, 60*time.Second, crypto, nil, true, false, true, nil)
+
+				h := negroni.New()
+				h.Use(handlers.NewRequestInfo())
+				h.UseFunc(testSetupHandler)
+				h.Use(prevHandler)
+				h.Use(handlers.NewRouteService(config, reg, logger.Logger, ew))
+				h.UseHandlerFunc(nextHandler)
+
+				h.ServeHTTP(resp, req)
+
+				var passedReq *http.Request
+				Eventually(reqChan).Should(Receive(&passedReq))
+
+				reqInfo, err := handlers.ContextRequestInfo(passedReq)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(reqInfo.ShouldRouteToInternalRouteService).To(Equal(expected))
+			}
+
+			DescribeTable("hairpin-allowlist: checks the requested route service hostname",
+				serveWith,
+				Entry("does not match multi-level subdomain with wildcard", "https://a.b.svc.example.com", "a.b.svc.example.com", "*.svc.example.com", true, []string{"*.svc.example.com"}, false),
+				Entry("matches exact hostname with path", "https://a.svc.example.com/rs-path", "a.svc.example.com/rs-path", "*.svc.example.com", true, []string{"a.svc.example.com"}, true),
+				Entry("does not match leading dot in hostname", "https://.example.com", ".example.com", "*.example.com", true, []string{"*.example.com"}, false),
+				Entry("does not match double leading dot in hostname", "https://..example.com", "..example.com", "*.example.com", true, []string{"*.example.com"}, false),
+				Entry("does not match wildcard in hostname", "https://*.example.com", "*.example.com", "*.example.com", true, []string{"*.example.com"}, false),
+				Entry("does not match double dot in hostname", "https://a..example.com", "a..example.com", "*.example.com", true, []string{"*.example.com"}, false),
+				Entry("does not match trailing dot in hostname", "https://a.example.com.", "a.example.com.", "*.example.com", true, []string{"*.example.com"}, false),
+				Entry("does not match IPv6 literal host", "https://[::1]:443", "[", "*.example.com", true, []string{"*.example.com"}, false),
+			)
+
+			It("hairpin-allowlist: logs a denied host at info once and at debug every time", func() {
+				endpoint := route.NewEndpoint(&route.EndpointOpts{RouteServiceUrl: "https://a.b.svc.example.com"})
+				Expect(routePool.Put(endpoint)).To(Equal(route.EndpointAdded))
+
+				routeMap["a.b.svc.example.com"] = route.NewPool(&route.PoolOpts{Logger: logger.Logger, Host: "*.svc.example.com", ContextPath: "/"})
+
+				config = routeservice.NewRouteServiceConfig(logger.Logger, true, true, []string{"*.svc.example.com"}, 60*time.Second, crypto, nil, true, false, true, nil)
+
+				h := negroni.New()
+				h.Use(handlers.NewRequestInfo())
+				h.UseFunc(testSetupHandler)
+				h.Use(prevHandler)
+				h.Use(handlers.NewRouteService(config, reg, logger.Logger, ew))
+				h.UseHandlerFunc(nextHandler)
+
+				h.ServeHTTP(resp, req)
+				var passedReq1 *http.Request
+				Eventually(reqChan).Should(Receive(&passedReq1))
+
+				resp2 := httptest.NewRecorder()
+				req2 := httptest.NewRequest("GET", "http://my_host.com/resource+9-9_9", nil)
+				h.ServeHTTP(resp2, req2)
+				var passedReq2 *http.Request
+				Eventually(reqChan).Should(Receive(&passedReq2))
+
+				infoLines := logger.Lines(zapcore.InfoLevel)
+				var matchingInfoLines []string
+				for _, line := range infoLines {
+					if strings.Contains(line, "route-service-hairpin-denied") {
+						matchingInfoLines = append(matchingInfoLines, line)
+					}
+				}
+				Expect(matchingInfoLines).To(HaveLen(1))
+				Expect(matchingInfoLines[0]).To(ContainSubstring(`"route_service_host":"a.b.svc.example.com"`))
+				Expect(matchingInfoLines[0]).To(ContainSubstring(`"reason":"hostname-not-in-allowlist"`))
+
+				debugLines := logger.Lines(zapcore.DebugLevel)
+				var matchingDebugLines []string
+				for _, line := range debugLines {
+					if strings.Contains(line, "route-service-hairpin-denied") {
+						matchingDebugLines = append(matchingDebugLines, line)
+					}
+				}
+				Expect(matchingDebugLines).To(HaveLen(2))
+				for _, line := range matchingDebugLines {
+					Expect(line).To(ContainSubstring(`"route_service_host":"a.b.svc.example.com"`))
+					Expect(line).To(ContainSubstring(`"reason":"hostname-not-in-allowlist"`))
+				}
+			})
+
+			DescribeTable("hairpin-allowlist guard: unchanged hairpin decisions",
+				serveWith,
+				Entry("does not match different subdomain", "https://a.x.example.com", "a.x.example.com", "*.example.com", true, []string{"a.x.example.com"}, false),
+				Entry("matches case-insensitively with userinfo and port", "https://user@A.Svc.Example.com:8443/rs-path", "A.Svc.Example.com/rs-path", "a.svc.example.com", true, []string{"a.svc.example.com"}, true),
+				Entry("does not hairpin when route is not registered", "https://a.svc.example.com", "", "", false, []string{"a.svc.example.com"}, false),
+				Entry("hairpins when allowlist is nil", "https://a.b.svc.example.com", "a.b.svc.example.com", "*.svc.example.com", true, nil, true),
+				Entry("matches exact hostname", "https://a.svc.example.com", "a.svc.example.com", "a.svc.example.com", true, []string{"a.svc.example.com"}, true),
+				Entry("matches when allowlist includes wildcard and exact host", "https://a.x.example.com", "a.x.example.com", "*.example.com", true, []string{"*.example.com", "a.x.example.com"}, true),
+			)
 		})
 	})
 
