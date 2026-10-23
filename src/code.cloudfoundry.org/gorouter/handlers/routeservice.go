@@ -153,7 +153,7 @@ func (r *RouteService) ServeHTTP(rw http.ResponseWriter, req *http.Request, next
 	} else {
 		recommendedScheme = "http"
 	}
-	forwardedURLRaw := recommendedScheme + "://" + hostWithoutPort(req.Host) + req.RequestURI
+	forwardedURLRaw := forwardedURL(recommendedScheme, req)
 	routeServiceArgs, err := r.config.CreateRequest(routeServiceURL, forwardedURLRaw)
 	if err != nil {
 		logger.Error("route-service-failed", log.ErrAttr(err))
@@ -305,7 +305,7 @@ func (r *RouteService) ArrivedViaRouteService(req *http.Request, logger *slog.Lo
 		recommendedScheme = "http"
 	}
 
-	forwardedURLRaw := recommendedScheme + "://" + hostWithoutPort(req.Host) + req.RequestURI
+	forwardedURLRaw := forwardedURL(recommendedScheme, req)
 	routeServiceURL := reqInfo.RoutePool.RouteServiceUrl()
 	rsSignature := req.Header.Get(routeservice.HeaderKeySignature)
 

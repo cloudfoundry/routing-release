@@ -46,6 +46,17 @@ func hostWithoutPort(reqHost string) string {
 	return host
 }
 
+// forwardedURL builds the X-CF-Forwarded-Url value. For absolute-form request
+// targets (RFC 9112 §3.2.2) only the path and query are kept; the host always
+// comes from req.Host.
+func forwardedURL(scheme string, req *http.Request) string {
+	uri := req.RequestURI
+	if req.URL.IsAbs() && req.URL.Opaque == "" {
+		uri = req.URL.RequestURI()
+	}
+	return scheme + "://" + hostWithoutPort(req.Host) + uri
+}
+
 func IsWebSocketUpgrade(request *http.Request) bool {
 	// websocket should be case insensitive per RFC6455 4.2.1
 	return strings.ToLower(upgradeHeader(request)) == "websocket"
