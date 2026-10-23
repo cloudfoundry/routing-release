@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/netip"
+	"strings"
 	"time"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -235,6 +236,131 @@ var _ = Describe("Route Service Handler", func() {
 				Expect(reqInfo.ShouldRouteToInternalRouteService).To(BeFalse())
 				Expect(nextCalled).To(BeTrue(), "Expected the next handler to be called.")
 			})
+
+			Context("when the request target is in absolute-form", func() {
+				assertForwardedURL := func(passedReq *http.Request, expectedURL string) {
+					Expect(passedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(Equal(expectedURL))
+
+					sig := passedReq.Header.Get(routeservice.HeaderKeySignature)
+					meta := passedReq.Header.Get(routeservice.HeaderKeyMetadata)
+					signatureContents, err := routeservice.SignatureContentsFromHeaders(sig, meta, crypto)
+					Expect(err).NotTo(HaveOccurred())
+					Expect(signatureContents.ForwardedUrl).To(Equal(expectedURL))
+				}
+
+				It("sets the forwarded URL for an absolute-form request target", func() {
+					raw := "GET http://my_host.com/resource+9-9_9?query=dog HTTP/1.1\r\nHost: my_host.com\r\n\r\n"
+					var err error
+					req, err = http.ReadRequest(bufio.NewReader(strings.NewReader(raw)))
+					Expect(err).NotTo(HaveOccurred())
+
+					handler.ServeHTTP(resp, req)
+
+					var passedReq *http.Request
+					Eventually(reqChan).Should(Receive(&passedReq))
+
+					assertForwardedURL(passedReq, "https://my_host.com/resource+9-9_9?query=dog")
+				})
+
+				It("completes the round trip when the client started with an absolute-form target", func() {
+					raw := "GET http://my_host.com/resource+9-9_9?query=dog HTTP/1.1\r\nHost: my_host.com\r\n\r\n"
+					var err error
+					req, err = http.ReadRequest(bufio.NewReader(strings.NewReader(raw)))
+					Expect(err).NotTo(HaveOccurred())
+
+					handler.ServeHTTP(resp, req)
+
+					var passedReq *http.Request
+					Eventually(reqChan).Should(Receive(&passedReq))
+
+					sig := passedReq.Header.Get(routeservice.HeaderKeySignature)
+					meta := passedReq.Header.Get(routeservice.HeaderKeyMetadata)
+
+					nextCalled = false
+					resp = httptest.NewRecorder()
+					originReq, err := http.ReadRequest(bufio.NewReader(strings.NewReader("GET /resource+9-9_9?query=dog HTTP/1.1\r\nHost: my_host.com\r\n\r\n")))
+					Expect(err).NotTo(HaveOccurred())
+					originReq.Header.Set(routeservice.HeaderKeySignature, sig)
+					originReq.Header.Set(routeservice.HeaderKeyMetadata, meta)
+
+					handler.ServeHTTP(resp, originReq)
+
+					Expect(resp.Code).To(Equal(http.StatusTeapot))
+					Expect(nextCalled).To(BeTrue())
+
+					var secondPassedReq *http.Request
+					Eventually(reqChan).Should(Receive(&secondPassedReq))
+					Expect(secondPassedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(BeEmpty())
+				})
+
+				It("strips userinfo from an absolute-form request target", func() {
+					raw := "GET http://user:pw@my_host.com/resource+9-9_9?query=dog HTTP/1.1\r\nHost: my_host.com\r\n\r\n"
+					var err error
+					req, err = http.ReadRequest(bufio.NewReader(strings.NewReader(raw)))
+					Expect(err).NotTo(HaveOccurred())
+
+					handler.ServeHTTP(resp, req)
+
+					var passedReq *http.Request
+					Eventually(reqChan).Should(Receive(&passedReq))
+
+					assertForwardedURL(passedReq, "https://my_host.com/resource+9-9_9?query=dog")
+				})
+
+				It("uses the host from an absolute-form target over the host header", func() {
+					raw := "GET http://my_host.com:8080/resource+9-9_9?query=dog HTTP/1.1\r\nHost: other.example.com\r\n\r\n"
+					var err error
+					req, err = http.ReadRequest(bufio.NewReader(strings.NewReader(raw)))
+					Expect(err).NotTo(HaveOccurred())
+
+					handler.ServeHTTP(resp, req)
+
+					var passedReq *http.Request
+					Eventually(reqChan).Should(Receive(&passedReq))
+
+					assertForwardedURL(passedReq, "https://my_host.com/resource+9-9_9?query=dog")
+				})
+
+				It("normalizes an empty path in an absolute-form target to a slash", func() {
+					raw := "GET http://my_host.com HTTP/1.1\r\nHost: my_host.com\r\n\r\n"
+					var err error
+					req, err = http.ReadRequest(bufio.NewReader(strings.NewReader(raw)))
+					Expect(err).NotTo(HaveOccurred())
+
+					handler.ServeHTTP(resp, req)
+
+					var passedReq *http.Request
+					Eventually(reqChan).Should(Receive(&passedReq))
+
+					assertForwardedURL(passedReq, "https://my_host.com/")
+				})
+			})
+
+			DescribeTable("absolute-form guard: origin-form forwarded URL is byte-identical",
+				func(target string) {
+					raw := fmt.Sprintf("GET %s HTTP/1.1\r\nHost: my_host.com\r\n\r\n", target)
+					guardReq, err := http.ReadRequest(bufio.NewReader(strings.NewReader(raw)))
+					Expect(err).NotTo(HaveOccurred())
+
+					handler.ServeHTTP(resp, guardReq)
+
+					var passedReq *http.Request
+					Eventually(reqChan).Should(Receive(&passedReq))
+
+					expectedURL := "https://my_host.com" + target
+					Expect(passedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(Equal(expectedURL))
+
+					sig := passedReq.Header.Get(routeservice.HeaderKeySignature)
+					meta := passedReq.Header.Get(routeservice.HeaderKeyMetadata)
+					signatureContents, err := routeservice.SignatureContentsFromHeaders(sig, meta, crypto)
+					Expect(err).NotTo(HaveOccurred())
+					Expect(signatureContents.ForwardedUrl).To(Equal(expectedURL))
+				},
+				Entry("target /a|b", "/a|b"),
+				Entry("target /a%2Fb", "/a%2Fb"),
+				Entry("target /p?", "/p?"),
+				Entry("target //x", "//x"),
+			)
 
 			Context("when the route service has a route in the route registry", func() {
 				BeforeEach(func() {
