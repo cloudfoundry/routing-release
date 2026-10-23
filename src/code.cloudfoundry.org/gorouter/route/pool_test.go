@@ -668,12 +668,53 @@ var _ = Describe("EndpointPool", func() {
 				ep1 := route.NewEndpoint(&route.EndpointOpts{Host: "1.1.1.1", Port: 1111, RouteServiceUrl: "https://rs1.example.com"})
 				ep2 := route.NewEndpoint(&route.EndpointOpts{Host: "2.2.2.2", Port: 2222, RouteServiceUrl: "https://rs2.example.com"})
 				ep3 := route.NewEndpoint(&route.EndpointOpts{Host: "3.3.3.3", Port: 3333, RouteServiceUrl: "https://rs3.example.com"})
+				ep4 := route.NewEndpoint(&route.EndpointOpts{Host: "4.4.4.4", Port: 4444, RouteServiceUrl: "https://rs4.example.com"})
 
 				pool.Put(ep1)
-				pool.MarkUpdated(time.Now().Add(-10 * time.Second))
 				pool.Put(ep2)
 				pool.Put(ep3)
-				Expect(pool.RouteServiceUrl()).To(Equal("https://rs3.example.com"))
+				pool.Put(ep4)
+
+				pool.MarkUpdated(time.Now().Add(-10 * time.Second))
+				Expect(pool.Put(ep2)).To(Equal(route.EndpointRefreshed))
+				Expect(pool.RouteServiceUrl()).To(Equal("https://rs4.example.com"))
+
+				pool.Remove(ep4)
+				Expect(pool.RouteServiceUrl()).To(Equal("https://rs2.example.com"))
+			})
+
+			It("breaks timestamp ties by lowest index on remove in fail-closed manner", func() {
+				t := time.Now().Add(-time.Minute)
+				ep0 := route.NewEndpoint(&route.EndpointOpts{Host: "0.0.0.0", Port: 1000, RouteServiceUrl: ""})
+				ep1 := route.NewEndpoint(&route.EndpointOpts{Host: "1.1.1.1", Port: 1111, RouteServiceUrl: "https://rs1.example.com"})
+				ep2 := route.NewEndpoint(&route.EndpointOpts{Host: "2.2.2.2", Port: 2222, RouteServiceUrl: "https://rs2.example.com"})
+				ep3 := route.NewEndpoint(&route.EndpointOpts{Host: "3.3.3.3", Port: 3333, RouteServiceUrl: "https://rs3.example.com"})
+				ep4 := route.NewEndpoint(&route.EndpointOpts{Host: "4.4.4.4", Port: 4444, RouteServiceUrl: "https://rs4.example.com"})
+
+				pool.Put(ep0)
+				pool.Put(ep1)
+				pool.Put(ep2)
+				pool.Put(ep3)
+				pool.Put(ep4)
+
+				pool.MarkUpdated(t)
+				pool.Remove(ep4)
+				Expect(pool.RouteServiceUrl()).To(Equal("https://rs1.example.com"))
+			})
+
+			It("keeps the current route service url on remove while an older endpoint still holds it in fail-closed manner", func() {
+				ep1 := route.NewEndpoint(&route.EndpointOpts{Host: "1.1.1.1", Port: 1111, RouteServiceUrl: "https://rs1.example.com"})
+				ep2 := route.NewEndpoint(&route.EndpointOpts{Host: "2.2.2.2", Port: 2222, RouteServiceUrl: "https://rs2.example.com"})
+				ep3 := route.NewEndpoint(&route.EndpointOpts{Host: "3.3.3.3", Port: 3333, RouteServiceUrl: ""})
+
+				pool.Put(ep1)
+				pool.Put(ep2)
+				pool.Put(ep3)
+				Expect(pool.RouteServiceUrl()).To(Equal("https://rs2.example.com"))
+
+				pool.MarkUpdated(time.Now().Add(-10 * time.Second))
+				Expect(pool.Put(ep1)).To(Equal(route.EndpointRefreshed))
+				Expect(pool.RouteServiceUrl()).To(Equal("https://rs2.example.com"))
 
 				pool.Remove(ep3)
 				Expect(pool.RouteServiceUrl()).To(Equal("https://rs2.example.com"))
