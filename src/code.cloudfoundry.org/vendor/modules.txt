@@ -1,29 +1,29 @@
-# code.cloudfoundry.org/cfhttp/v2 v2.99.0
+# code.cloudfoundry.org/cfhttp/v2 v2.100.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/cfhttp/v2
-# code.cloudfoundry.org/clock v1.92.0
+# code.cloudfoundry.org/clock v1.93.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/clock
 code.cloudfoundry.org/clock/fakeclock
-# code.cloudfoundry.org/debugserver v0.119.0
+# code.cloudfoundry.org/debugserver v0.120.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/debugserver
-# code.cloudfoundry.org/diego-db-helpers v0.22.0
+# code.cloudfoundry.org/diego-db-helpers v0.23.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/diego-db-helpers/guidprovider
 code.cloudfoundry.org/diego-db-helpers/sqldb/helpers
 code.cloudfoundry.org/diego-db-helpers/sqldb/helpers/monitor
-# code.cloudfoundry.org/diego-logging-client v0.129.0
+# code.cloudfoundry.org/diego-logging-client v0.130.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/diego-logging-client
 code.cloudfoundry.org/diego-logging-client/testhelpers
-# code.cloudfoundry.org/durationjson v0.94.0
+# code.cloudfoundry.org/durationjson v0.95.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/durationjson
-# code.cloudfoundry.org/eventhub v0.94.0
+# code.cloudfoundry.org/eventhub v0.95.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/eventhub
-# code.cloudfoundry.org/go-diodes v0.0.0-20260928063035-f81ac938b818
+# code.cloudfoundry.org/go-diodes v0.0.0-20261019063924-5f5277928191
 ## explicit; go 1.25.0
 code.cloudfoundry.org/go-diodes
 # code.cloudfoundry.org/go-loggregator/v9 v9.2.1
@@ -31,20 +31,20 @@ code.cloudfoundry.org/go-diodes
 code.cloudfoundry.org/go-loggregator/v9
 code.cloudfoundry.org/go-loggregator/v9/rpc/loggregator_v2
 code.cloudfoundry.org/go-loggregator/v9/runtimeemitter
-# code.cloudfoundry.org/go-metric-registry v0.0.0-20261014073100-cbf3e34f5bbb
+# code.cloudfoundry.org/go-metric-registry v0.0.0-20261021065224-1089b57231bb
 ## explicit; go 1.26.0
 code.cloudfoundry.org/go-metric-registry
-# code.cloudfoundry.org/lager/v3 v3.91.0
+# code.cloudfoundry.org/lager/v3 v3.92.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/lager/v3
 code.cloudfoundry.org/lager/v3/internal/truncate
 code.cloudfoundry.org/lager/v3/lagerctx
 code.cloudfoundry.org/lager/v3/lagerflags
 code.cloudfoundry.org/lager/v3/lagertest
-# code.cloudfoundry.org/localip v0.93.0
+# code.cloudfoundry.org/localip v0.94.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/localip
-# code.cloudfoundry.org/locket v1.17.0
+# code.cloudfoundry.org/locket v1.18.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/locket
 code.cloudfoundry.org/locket/cmd/locket
@@ -59,8 +59,8 @@ code.cloudfoundry.org/locket/lock
 code.cloudfoundry.org/locket/metrics
 code.cloudfoundry.org/locket/metrics/helpers
 code.cloudfoundry.org/locket/models
-# code.cloudfoundry.org/routing-api v0.20.0
-## explicit; go 1.26.4
+# code.cloudfoundry.org/routing-api v0.21.0
+## explicit; go 1.27.3
 code.cloudfoundry.org/routing-api
 code.cloudfoundry.org/routing-api/admin
 code.cloudfoundry.org/routing-api/cmd/config-validator
@@ -270,7 +270,7 @@ github.com/nats-io/nats-server/v2/server/stree
 github.com/nats-io/nats-server/v2/server/sysmem
 github.com/nats-io/nats-server/v2/server/thw
 github.com/nats-io/nats-server/v2/server/tpm
-# github.com/nats-io/nats.go v1.54.0
+# github.com/nats-io/nats.go v1.55.0
 ## explicit; go 1.26.0
 github.com/nats-io/nats.go
 github.com/nats-io/nats.go/encoders/builtin
@@ -350,8 +350,8 @@ github.com/prometheus/client_model/go
 ## explicit; go 1.26.0
 github.com/prometheus/common/expfmt
 github.com/prometheus/common/model
-# github.com/prometheus/procfs v0.22.0
-## explicit; go 1.25.0
+# github.com/prometheus/procfs v0.23.0
+## explicit; go 1.26.0
 github.com/prometheus/procfs
 github.com/prometheus/procfs/internal/fs
 github.com/prometheus/procfs/internal/parsers
@@ -361,8 +361,8 @@ github.com/rcrowley/go-metrics
 # github.com/russross/blackfriday/v2 v2.1.0
 ## explicit
 github.com/russross/blackfriday/v2
-# github.com/square/certstrap v1.4.0
-## explicit; go 1.24
+# github.com/square/certstrap v1.4.1
+## explicit; go 1.27.3
 github.com/square/certstrap/pkix
 # github.com/tedsuo/ifrit v0.0.0-20260908181113-dd353a7daa27 => github.com/tedsuo/ifrit v0.0.0-20260418191334-846868129986
 ## explicit; go 1.16
@@ -549,7 +549,7 @@ golang.org/x/tools/internal/pkgbits
 golang.org/x/tools/internal/stdlib
 golang.org/x/tools/internal/typesinternal
 golang.org/x/tools/internal/versions
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20261012220534-4341edf3f941
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20261019180522-ce908d29299b
 ## explicit; go 1.26.0
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.84.0
