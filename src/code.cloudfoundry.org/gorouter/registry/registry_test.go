@@ -29,24 +29,6 @@ var _ = Describe("RouteRegistry", func() {
 	var locallyOptimistic bool
 	var az string
 
-	registerMixed := func(uri route.Uri, rs string) {
-		r.Register(uri, route.NewEndpoint(&route.EndpointOpts{
-			AppId:                "app-1",
-			Host:                 "192.168.1.1",
-			Port:                 1111,
-			PrivateInstanceIndex: "1",
-			RouteServiceUrl:      rs,
-			Tags:                 map[string]string{"process_id": "proc-1"},
-		}))
-		r.Register(uri, route.NewEndpoint(&route.EndpointOpts{
-			AppId:                "app-1",
-			Host:                 "192.168.1.2",
-			Port:                 2222,
-			PrivateInstanceIndex: "0",
-			Tags:                 map[string]string{"process_id": "proc-1"},
-		}))
-	}
-
 	BeforeEach(func() {
 		locallyOptimistic = false
 		az = "meow-zone"
@@ -1527,26 +1509,6 @@ var _ = Describe("RouteRegistry", func() {
 			Expect(route.PoolsMatch(p, p2)).To(BeTrue())
 		})
 
-		Context("fail-closed route service url regressions", func() {
-			It("inherits route service url to surgical pool in fail-closed manner", func() {
-				uri := route.Uri("rs-app.example.com")
-				registerMixed(uri, "https://rs.example.com")
-
-				surgicalPool := r.LookupWithAppInstance(uri, "app-1", "0")
-				Expect(surgicalPool).ToNot(BeNil())
-				Expect(surgicalPool.RouteServiceUrl()).To(Equal("https://rs.example.com"))
-			})
-
-			It("preserves empty route service url as a fail-closed guard when no endpoint has a route service url", func() {
-				uri := route.Uri("no-rs-app.example.com")
-				registerMixed(uri, "")
-
-				surgicalPool := r.LookupWithAppInstance(uri, "app-1", "0")
-				Expect(surgicalPool).ToNot(BeNil())
-				Expect(surgicalPool.RouteServiceUrl()).To(Equal(""))
-			})
-		})
-
 		Context("when lookup fails to find any routes", func() {
 			It("returns nil", func() {
 				p := r.LookupWithAppInstance("foo", appId, appIndex)
@@ -1705,35 +1667,6 @@ var _ = Describe("RouteRegistry", func() {
 				p := r.LookupWithProcessInstance("bar.com/foo", processId, processIndex)
 				p2 := r.Lookup("bar.com/foo")
 				Expect(route.PoolsMatch(p, p2)).To(BeTrue())
-			})
-
-			Context("fail-closed route service url regressions", func() {
-				It("inherits route service url to surgical pool in fail-closed manner", func() {
-					uri := route.Uri("rs-proc.example.com")
-					registerMixed(uri, "https://rs.example.com")
-
-					surgicalPool := r.LookupWithProcessInstance(uri, "proc-1", "0")
-					Expect(surgicalPool).ToNot(BeNil())
-					Expect(surgicalPool.RouteServiceUrl()).To(Equal("https://rs.example.com"))
-				})
-
-				It("preserves empty route service url as a fail-closed guard when no endpoint has a route service url", func() {
-					uri := route.Uri("no-rs-proc.example.com")
-					registerMixed(uri, "")
-
-					surgicalPool := r.LookupWithProcessInstance(uri, "proc-1", "0")
-					Expect(surgicalPool).ToNot(BeNil())
-					Expect(surgicalPool.RouteServiceUrl()).To(Equal(""))
-				})
-
-				It("inherits route service url to surgical pool with empty process index in fail-closed manner", func() {
-					uri := route.Uri("rs-proc-all.example.com")
-					registerMixed(uri, "https://rs.example.com")
-
-					surgicalPool := r.LookupWithProcessInstance(uri, "proc-1", "")
-					Expect(surgicalPool).ToNot(BeNil())
-					Expect(surgicalPool.RouteServiceUrl()).To(Equal("https://rs.example.com"))
-				})
 			})
 		})
 

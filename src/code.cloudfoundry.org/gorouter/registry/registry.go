@@ -305,8 +305,6 @@ func (r *RouteRegistry) LookupWithAppInstance(uri route.Uri, appID string, appIn
 				LoadBalancingAlgorithm: p.LoadBalancingAlgorithm,
 			})
 			surgicalPool.Put(e)
-			// parent p.Lock is held by Each; read the field directly (RouteServiceUrl() would deadlock)
-			surgicalPool.RouteSvcUrl = p.RouteSvcUrl
 		}
 	})
 
@@ -336,8 +334,6 @@ func (r *RouteRegistry) LookupWithProcessInstance(uri route.Uri, processID strin
 				})
 			}
 			surgicalPool.Put(e)
-			// parent p.Lock is held by Each; read the field directly (RouteServiceUrl() would deadlock)
-			surgicalPool.RouteSvcUrl = p.RouteSvcUrl
 		}
 	})
 
