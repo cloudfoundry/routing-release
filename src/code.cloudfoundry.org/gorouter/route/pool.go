@@ -214,6 +214,15 @@ type EndpointPool struct {
 
 	host        string
 	contextPath string
+	// RouteSvcUrl is taken from the most recently advertised endpoint (see
+	// Put), not reconciled across all endpoints. The newest advertisement is
+	// the freshest view of the route's config. Stale endpoints can linger in
+	// the pool until they are pruned (e.g. a route emitter still advertising
+	// old config, or routes stuck in gorouter). If any endpoint with a URL
+	// won, a stale one would keep the route service enforced after an unbind.
+	// If every endpoint had to agree, a stale one would leave it unenforced
+	// after a bind. Out-of-order messages for one endpoint are handled by the
+	// ModificationTag check in Put.
 	RouteSvcUrl string
 
 	retryAfterFailure  time.Duration
