@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
+	"sync"
 
 	"github.com/urfave/negroni/v3"
 
@@ -24,6 +25,7 @@ type RouteService struct {
 	logger                      *slog.Logger
 	errorWriter                 errorwriter.ErrorWriter
 	hairpinningAllowlistDomains map[string]struct{}
+	hairpinDeniedHosts          sync.Map
 }
 
 // NewRouteService creates a handler responsible for handling route services
@@ -169,7 +171,7 @@ func (r *RouteService) ServeHTTP(rw http.ResponseWriter, req *http.Request, next
 
 	hostWithoutPort := hostWithoutPort(routeServiceArgs.ParsedUrl.Host)
 	escapedPath := routeServiceArgs.ParsedUrl.EscapedPath()
-	if r.config.RouteServiceHairpinning() && r.AllowRouteServiceHairpinningRequest(route.Uri(hostWithoutPort+escapedPath)) {
+	if r.config.RouteServiceHairpinning() && r.AllowRouteServiceHairpinningRequest(hostWithoutPort, route.Uri(hostWithoutPort+escapedPath)) {
 		reqInfo.ShouldRouteToInternalRouteService = true
 	}
 
@@ -251,12 +253,12 @@ func (r *RouteService) MatchAllowlistHostname(host string) bool {
 // If the provided route is not known to this gorouter's route registry, the request will always be external.
 // If the route is known, the hairpinning allowlist is consulted (if defined).
 //
-// Only routes with host names that match an entry on the allowlist are resolved internally.
+// The requested route service hostname must match an allowlist entry, and the matched route must itself match an allowlist entry or be the wildcard route directly above that host.
 // Should the allowlist be empty, it is considered disabled and will allow internal resolution of any request
 // that can be resolved via the gorouter's route registry.
 //
 // returns true to use internal resolution via this gorouter, false for external resolution via route service URL call.
-func (r *RouteService) AllowRouteServiceHairpinningRequest(uri route.Uri) bool {
+func (r *RouteService) AllowRouteServiceHairpinningRequest(host string, uri route.Uri) bool {
 	pool := r.registry.Lookup(uri)
 	if pool == nil {
 		// route is not known to the route registry, resolve externally
@@ -268,8 +270,33 @@ func (r *RouteService) AllowRouteServiceHairpinningRequest(uri route.Uri) bool {
 		return true
 	}
 
-	// check if the host URI's host matches the allowlist
-	return r.MatchAllowlistHostname(pool.Host())
+	h := strings.ToLower(host)
+	if strings.HasPrefix(h, ".") || strings.Contains(h, "*") || !r.MatchAllowlistHostname(h) {
+		r.logHairpinDenied(h, uri, pool.Host(), "hostname-not-in-allowlist")
+		return false
+	}
+
+	matched := strings.ToLower(pool.Host())
+	_, parent, _ := strings.Cut(h, ".")
+	if r.MatchAllowlistHostname(matched) || matched == "*."+parent {
+		return true
+	}
+
+	r.logHairpinDenied(h, uri, pool.Host(), "matched-route-not-allowed")
+	return false
+}
+
+func (r *RouteService) logHairpinDenied(host string, uri route.Uri, matched, reason string) {
+	attrs := []any{
+		slog.String("route_service_host", host),
+		slog.String("route_service_uri", uri.String()),
+		slog.String("matched_route", matched),
+		slog.String("reason", reason),
+	}
+	if _, seen := r.hairpinDeniedHosts.LoadOrStore(host, struct{}{}); !seen {
+		r.logger.Info("route-service-hairpin-denied", attrs...)
+	}
+	r.logger.Debug("route-service-hairpin-denied", attrs...)
 }
 
 func (r *RouteService) IsRouteServiceTraffic(req *http.Request) bool {
