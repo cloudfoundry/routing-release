@@ -46,6 +46,27 @@ func hostWithoutPort(reqHost string) string {
 	return host
 }
 
+// forwardedURL builds the X-CF-Forwarded-Url value. For absolute-form request
+// targets (RFC 9112 §3.2.2) the scheme and authority are cut from the raw
+// request target, keeping the path and query bytes exactly as the client sent
+// them, as origin-form does; the host always comes from req.Host.
+func forwardedURL(scheme string, req *http.Request) string {
+	uri := req.RequestURI
+	if req.URL.IsAbs() && req.URL.Opaque == "" {
+		_, uri, _ = strings.Cut(uri, ":")
+		if authority, ok := strings.CutPrefix(uri, "//"); ok {
+			uri = ""
+			if i := strings.IndexAny(authority, "/?"); i >= 0 {
+				uri = authority[i:]
+			}
+		}
+		if !strings.HasPrefix(uri, "/") {
+			uri = "/" + uri
+		}
+	}
+	return scheme + "://" + hostWithoutPort(req.Host) + uri
+}
+
 func IsWebSocketUpgrade(request *http.Request) bool {
 	// websocket should be case insensitive per RFC6455 4.2.1
 	return strings.ToLower(upgradeHeader(request)) == "websocket"
