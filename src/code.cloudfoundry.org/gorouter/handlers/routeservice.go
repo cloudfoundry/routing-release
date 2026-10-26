@@ -253,7 +253,7 @@ func (r *RouteService) MatchAllowlistHostname(host string) bool {
 // If the provided route is not known to this gorouter's route registry, the request will always be external.
 // If the route is known, the hairpinning allowlist is consulted (if defined).
 //
-// The requested route service hostname must match an allowlist entry, and the matched route must be that host or a wildcard route directly above it.
+// The requested route service hostname must match an allowlist entry, and the matched route must itself match an allowlist entry or be the wildcard route directly above that host.
 // Should the allowlist be empty, it is considered disabled and will allow internal resolution of any request
 // that can be resolved via the gorouter's route registry.
 //
