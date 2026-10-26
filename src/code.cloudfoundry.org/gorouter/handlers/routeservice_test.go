@@ -255,6 +255,32 @@ var _ = Describe("Route Service Handler", func() {
 					return r
 				}
 
+				// roundTrip sends clientTarget to the handler, then replays the
+				// signed headers on callbackTarget as the route service would.
+				roundTrip := func(clientTarget, callbackTarget, expectedURL string) {
+					req = readRaw(clientTarget, "my_host.com")
+					handler.ServeHTTP(resp, req)
+
+					var passedReq *http.Request
+					Eventually(reqChan).Should(Receive(&passedReq))
+					assertForwardedURL(passedReq, expectedURL)
+
+					nextCalled = false
+					resp = httptest.NewRecorder()
+					callbackReq := readRaw(callbackTarget, "my_host.com")
+					callbackReq.Header.Set(routeservice.HeaderKeySignature, passedReq.Header.Get(routeservice.HeaderKeySignature))
+					callbackReq.Header.Set(routeservice.HeaderKeyMetadata, passedReq.Header.Get(routeservice.HeaderKeyMetadata))
+
+					handler.ServeHTTP(resp, callbackReq)
+
+					Expect(resp.Code).To(Equal(http.StatusTeapot))
+					Expect(nextCalled).To(BeTrue())
+
+					var secondPassedReq *http.Request
+					Eventually(reqChan).Should(Receive(&secondPassedReq))
+					Expect(secondPassedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(BeEmpty())
+				}
+
 				DescribeTable("sets the forwarded URL",
 					func(target, host, expectedURL string) {
 						req = readRaw(target, host)
@@ -275,7 +301,10 @@ var _ = Describe("Route Service Handler", func() {
 						"my_host.com",
 						"https://my_host.com/resource+9-9_9?query=dog",
 					),
-					Entry("uses the host from an absolute-form target over the host header",
+					// http.ReadRequest (like the net/http server) sets req.Host from
+					// the absolute-form authority, ignoring the Host header;
+					// forwardedURL then takes the host from req.Host.
+					Entry("uses req.Host, which net/http takes from the absolute-form authority",
 						"http://my_host.com:8080/resource+9-9_9?query=dog",
 						"other.example.com",
 						"https://my_host.com/resource+9-9_9?query=dog",
@@ -285,50 +314,72 @@ var _ = Describe("Route Service Handler", func() {
 						"my_host.com",
 						"https://my_host.com/",
 					),
+					Entry("prefixes a slash to a query-only absolute-form target",
+						"http://my_host.com?query=dog",
+						"my_host.com",
+						"https://my_host.com/?query=dog",
+					),
+					Entry("keeps the path of an absolute-form target with no authority",
+						"http:/resource+9-9_9?query=dog",
+						"my_host.com",
+						"https://my_host.com/resource+9-9_9?query=dog",
+					),
 				)
 
-				It("completes the round trip when the client started with an absolute-form target", func() {
-					req = readRaw("http://my_host.com/resource+9-9_9?query=dog", "my_host.com")
-
-					handler.ServeHTTP(resp, req)
-
-					var passedReq *http.Request
-					Eventually(reqChan).Should(Receive(&passedReq))
-
-					sig := passedReq.Header.Get(routeservice.HeaderKeySignature)
-					meta := passedReq.Header.Get(routeservice.HeaderKeyMetadata)
-
-					nextCalled = false
-					resp = httptest.NewRecorder()
-					originReq := readRaw("/resource+9-9_9?query=dog", "my_host.com")
-					originReq.Header.Set(routeservice.HeaderKeySignature, sig)
-					originReq.Header.Set(routeservice.HeaderKeyMetadata, meta)
-
-					handler.ServeHTTP(resp, originReq)
-
-					Expect(resp.Code).To(Equal(http.StatusTeapot))
-					Expect(nextCalled).To(BeTrue())
-
-					var secondPassedReq *http.Request
-					Eventually(reqChan).Should(Receive(&secondPassedReq))
-					Expect(secondPassedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(BeEmpty())
-				})
-
-				DescribeTable("absolute-form guard: origin-form forwarded URL is byte-identical",
-					func(target string) {
+				DescribeTable("keeps the request-target path and query bytes unchanged",
+					func(target, expectedURI string) {
 						req = readRaw(target, "my_host.com")
 						handler.ServeHTTP(resp, req)
 
 						var passedReq *http.Request
 						Eventually(reqChan).Should(Receive(&passedReq))
 
-						assertForwardedURL(passedReq, "https://my_host.com"+target)
+						assertForwardedURL(passedReq, "https://my_host.com"+expectedURI)
 					},
-					Entry("target /a|b", "/a|b"),
-					Entry("target /a%2Fb", "/a%2Fb"),
-					Entry("target /p?", "/p?"),
-					Entry("target //x", "//x"),
+					Entry("origin-form /a|b", "/a|b", "/a|b"),
+					Entry("origin-form /a%2Fb", "/a%2Fb", "/a%2Fb"),
+					Entry("origin-form /p?", "/p?", "/p?"),
+					Entry("origin-form //x", "//x", "//x"),
+					Entry("absolute-form /a|b", "http://my_host.com/a|b", "/a|b"),
+					Entry("absolute-form /a%2Fb", "http://my_host.com/a%2Fb", "/a%2Fb"),
+					Entry("absolute-form /p?", "http://my_host.com/p?", "/p?"),
+					Entry("absolute-form //x", "http://my_host.com//x", "//x"),
 				)
+
+				DescribeTable("completes the round trip when the client started with an absolute-form target",
+					roundTrip,
+					Entry("with an origin-form callback",
+						"http://my_host.com/resource+9-9_9?query=dog",
+						"/resource+9-9_9?query=dog",
+						"https://my_host.com/resource+9-9_9?query=dog",
+					),
+					Entry("with an absolute-form callback",
+						"http://my_host.com/resource+9-9_9?query=dog",
+						"https://my_host.com/resource+9-9_9?query=dog",
+						"https://my_host.com/resource+9-9_9?query=dog",
+					),
+				)
+
+				Context("when recommendHttps is set to false", func() {
+					BeforeEach(func() {
+						config = routeservice.NewRouteServiceConfig(
+							logger.Logger, true, true, nil, 60*time.Second, crypto, nil, false, false, true, []netip.Prefix{})
+					})
+
+					DescribeTable("signs an http forwarded URL and completes the round trip",
+						roundTrip,
+						Entry("with an origin-form callback",
+							"http://my_host.com/resource+9-9_9?query=dog",
+							"/resource+9-9_9?query=dog",
+							"http://my_host.com/resource+9-9_9?query=dog",
+						),
+						Entry("with an absolute-form callback",
+							"http://my_host.com/resource+9-9_9?query=dog",
+							"http://my_host.com/resource+9-9_9?query=dog",
+							"http://my_host.com/resource+9-9_9?query=dog",
+						),
+					)
+				})
 			})
 
 			Context("when the route service has a route in the route registry", func() {
