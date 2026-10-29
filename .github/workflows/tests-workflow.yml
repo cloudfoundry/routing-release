@@ -113,12 +113,6 @@ jobs:
         DB: mysql
       run: |
         "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2
-    - name: routing-api-mysql
-      env:
-        DIR: src/code.cloudfoundry.org/routing-api
-        DB: mysql
-      run: |
-        "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2
   test-on-mysql-8-4:
     runs-on: ubuntu-latest
     needs: [repo-clone, determine-image-tag]
@@ -144,12 +138,6 @@ jobs:
     - name: cf-tcp-router-mysql
       env:
         DIR: src/code.cloudfoundry.org/cf-tcp-router
-        DB: mysql
-      run: |
-        "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2
-    - name: routing-api-mysql
-      env:
-        DIR: src/code.cloudfoundry.org/routing-api
         DB: mysql
       run: |
         "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2
@@ -215,12 +203,6 @@ jobs:
         DB: postgres
       run: |
         "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2
-    - name: routing-api-postgres
-      env:
-        DIR: src/code.cloudfoundry.org/routing-api
-        DB: postgres
-      run: |
-        "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2
   test-on-mysql-8-0:
     runs-on: ubuntu-latest
     needs: [repo-clone, determine-image-tag]
@@ -246,12 +228,6 @@ jobs:
     - name: cf-tcp-router-mysql
       env:
         DIR: src/code.cloudfoundry.org/cf-tcp-router
-        DB: mysql
-      run: |
-        "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2
-    - name: routing-api-mysql
-      env:
-        DIR: src/code.cloudfoundry.org/routing-api
         DB: mysql
       run: |
         "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2
