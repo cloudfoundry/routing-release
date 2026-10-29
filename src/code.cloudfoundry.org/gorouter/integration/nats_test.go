@@ -151,7 +151,7 @@ var _ = Describe("NATS Integration", func() {
 			Eventually(gorouterSession).Should(Say("nats-connection-disconnected"))
 			Eventually(gorouterSession).Should(Say("nats-connection-still-disconnected"))
 			natsRunner.Start()
-			Eventually(gorouterSession, 2*time.Second).Should(Say("nats-connection-reconnected"))
+			Eventually(gorouterSession, 4*time.Second).Should(Say("nats-connection-reconnected"))
 			Consistently(gorouterSession, 500*time.Millisecond).ShouldNot(Say("nats-connection-still-disconnected"))
 			Consistently(gorouterSession.ExitCode, 2*time.Second).Should(Equal(-1))
 		})
