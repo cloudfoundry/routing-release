@@ -51,7 +51,7 @@ Running Unit and Integration Tests
 ---------------
 
 > [!TIP]
-> Running tests for this repo requires a DB flavor. The following scripts will default to mysql DB. Set DB environment variable for alternate DBs. Valid Options: mysql-8.0(or mysql),mysql-5.7,postgres
+> Running tests for this repo requires a DB flavor. The following scripts will default to mysql DB. Set DB environment variable for alternate DBs. Valid Options: mysql-8.0(or mysql),mysql-8.4,mysql-9.7,postgres
 
 - `./scripts/create-docker-container.bash`: This will create a docker container with appropriate mounts. This
 script can be used for interactive development with a long running container. 
