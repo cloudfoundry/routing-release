@@ -85,10 +85,44 @@ jobs:
     - name: template-tests
       run: |
         "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-tests-templates/task.bash
-  test-on-mysql-5-7:
+  test-on-mysql-9-7:
     runs-on: ubuntu-latest
     needs: [repo-clone, determine-image-tag]
-    container: cloudfoundry/tas-runtime-mysql-5.7:${{ needs.determine-image-tag.outputs.go_version }}
+    container: cloudfoundry/tas-runtime-mysql-9.7:${{ needs.determine-image-tag.outputs.go_version }}
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: repo
+    - run: |
+        tar -xzvf repo-artifact.tar.gz
+        tar -xzvf ci-artifact.tar.gz
+    - name: build binaries
+      run: |
+        export DEFAULT_PARAMS="${GITHUB_WORKSPACE}/ci/routing-release/default-params/build-binaries/linux.yml"
+        "${GITHUB_WORKSPACE}"/ci/shared/tasks/build-binaries/task.bash
+    - name: gorouter-mysql
+      env:
+        DIR: src/code.cloudfoundry.org/gorouter
+        DB: mysql
+      run: |
+        "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2
+    - name: cf-tcp-router-mysql
+      env:
+        DIR: src/code.cloudfoundry.org/cf-tcp-router
+        DB: mysql
+      run: |
+        "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2
+    - name: routing-api-mysql
+      env:
+        DIR: src/code.cloudfoundry.org/routing-api
+        DB: mysql
+      run: |
+        "${GITHUB_WORKSPACE}"/ci/shared/tasks/run-bin-test/task.bash --keep-going --trace -r --fail-on-pending --randomize-all --nodes=7 --race --timeout 30m --flake-attempts 2
+  test-on-mysql-8-4:
+    runs-on: ubuntu-latest
+    needs: [repo-clone, determine-image-tag]
+    container: cloudfoundry/tas-runtime-mysql-8.4:${{ needs.determine-image-tag.outputs.go_version }}
     steps:
     - name: Download artifact
       uses: actions/download-artifact@v4
