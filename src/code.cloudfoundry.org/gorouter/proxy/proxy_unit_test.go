@@ -90,7 +90,7 @@ var _ = Describe("Proxy Unit tests", func() {
 		Context("when backend fails to respond", func() {
 			It("logs the error and associated endpoint", func() {
 				body := []byte("some body")
-				req := test_util.NewRequest("GET", "some-app", "/", bytes.NewReader(body))
+				req := httptest.NewRequest("GET", "http://some-app/", bytes.NewReader(body))
 
 				proxyObj.ServeHTTP(resp, req)
 
@@ -107,7 +107,7 @@ var _ = Describe("Proxy Unit tests", func() {
 					})
 
 					It("enables full duplex", func() {
-						req := test_util.NewRequest("GET", "some-app", "/", bytes.NewReader([]byte("some-body")))
+						req := httptest.NewRequest("GET", "http://some-app/", bytes.NewReader([]byte("some-body")))
 						proxyObj.ServeHTTP(resp, req)
 						Expect(responseRecorder.EnableFullDuplexCallCount).To(Equal(1))
 					})
@@ -115,7 +115,7 @@ var _ = Describe("Proxy Unit tests", func() {
 					Context("when enabling duplex fails", func() {
 						It("fails", func() {
 							responseRecorder.EnableFullDuplexErr = errors.New("unsupported")
-							req := test_util.NewRequest("GET", "some-app", "/", bytes.NewReader([]byte("some-body")))
+							req := httptest.NewRequest("GET", "http://some-app/", bytes.NewReader([]byte("some-body")))
 							proxyObj.ServeHTTP(resp, req)
 
 							Eventually(logger).Should(Say("enable-full-duplex-err"))
@@ -129,8 +129,9 @@ var _ = Describe("Proxy Unit tests", func() {
 					})
 
 					It("does not enable full duplex", func() {
-						req := test_util.NewRequest("GET", "some-app", "/", bytes.NewReader([]byte("some-body")))
+						req := httptest.NewRequest("GET", "http://some-app/", bytes.NewReader([]byte("some-body")))
 						proxyObj.ServeHTTP(resp, req)
+						Expect(responseRecorder.Code).NotTo(Equal(http.StatusBadRequest))
 						Expect(responseRecorder.EnableFullDuplexCallCount).To(Equal(0))
 					})
 				})
@@ -138,9 +139,15 @@ var _ = Describe("Proxy Unit tests", func() {
 
 			Context("for HTTP/2 requests", func() {
 				It("does not enable full duplex", func() {
-					req := test_util.NewRequest("GET", "some-app", "/", bytes.NewReader([]byte("some-body")))
+					enableHTTP2 := conf.EnableHTTP2
+					defer func() { conf.EnableHTTP2 = enableHTTP2 }()
+					conf.EnableHTTP2 = true
+					proxyObj = proxy.NewProxy(logger.Logger, fakeAccessLogger, ew, conf, r, combinedReporter,
+						routeServiceConfig, tlsConfig, tlsConfig, &health.Health{}, rt)
+					req := httptest.NewRequest("GET", "http://some-app/", bytes.NewReader([]byte("some-body")))
 					req.ProtoMajor = 2
 					proxyObj.ServeHTTP(resp, req)
+					Expect(responseRecorder.Code).NotTo(Equal(http.StatusBadRequest))
 					Expect(responseRecorder.EnableFullDuplexCallCount).To(Equal(0))
 				})
 			})
@@ -149,30 +156,33 @@ var _ = Describe("Proxy Unit tests", func() {
 		Context("Log response time", func() {
 			It("logs response time for HTTP connections", func() {
 				body := []byte("some body")
-				req := test_util.NewRequest("GET", "some-app", "/", bytes.NewReader(body))
+				req := httptest.NewRequest("GET", "http://some-app/", bytes.NewReader(body))
 
 				proxyObj.ServeHTTP(resp, req)
+				Expect(responseRecorder.Code).NotTo(Equal(http.StatusBadRequest))
 				Expect(fakeAccessLogger.LogCallCount()).To(Equal(1))
 				Expect(fakeAccessLogger.LogArgsForCall(0).FinishedAt).NotTo(Equal(time.Time{}))
 			})
 
 			It("logs response time for TCP connections", func() {
-				req := test_util.NewRequest("UPGRADE", "some-app", "/", nil)
+				req := httptest.NewRequest("UPGRADE", "http://some-app/", nil)
 				req.Header.Set("Upgrade", "tcp")
 				req.Header.Set("Connection", "upgrade")
 
 				proxyObj.ServeHTTP(resp, req)
+				Expect(responseRecorder.Code).NotTo(Equal(http.StatusBadRequest))
 				Expect(fakeAccessLogger.LogCallCount()).To(Equal(1))
 				Expect(fakeAccessLogger.LogArgsForCall(0).FinishedAt).NotTo(Equal(time.Time{}))
 
 			})
 
 			It("logs response time for Web Socket connections", func() {
-				req := test_util.NewRequest("UPGRADE", "some-app", "/", nil)
+				req := httptest.NewRequest("UPGRADE", "http://some-app/", nil)
 				req.Header.Set("Upgrade", "websocket")
 				req.Header.Set("Connection", "upgrade")
 
 				proxyObj.ServeHTTP(resp, req)
+				Expect(responseRecorder.Code).NotTo(Equal(http.StatusBadRequest))
 				Expect(fakeAccessLogger.LogCallCount()).To(Equal(1))
 				Expect(fakeAccessLogger.LogArgsForCall(0).FinishedAt).NotTo(Equal(time.Time{}))
 			})

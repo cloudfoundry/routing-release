@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"strings"
 
 	"github.com/urfave/negroni/v3"
 
@@ -51,8 +52,26 @@ func (p *protocolCheck) ServeHTTP(rw http.ResponseWriter, r *http.Request, next 
 		conn.Close()
 		return
 	}
+	if !isRequestTargetSupported(r) {
+		AddRouterErrorHeader(rw, "invalid_request_target")
+		logger.Info("invalid-request-target")
+		p.errorWriter.WriteError(rw, http.StatusBadRequest, "Invalid request target", logger)
+		return
+	}
 
 	next(rw, r)
+}
+
+func isRequestTargetSupported(r *http.Request) bool {
+	if r.URL.Opaque != "" {
+		return false
+	}
+
+	if r.URL.Scheme == "" && r.URL.Host == "" && strings.HasPrefix(r.RequestURI, "/") {
+		return true
+	}
+
+	return (strings.EqualFold(r.URL.Scheme, "http") || strings.EqualFold(r.URL.Scheme, "https")) && r.URL.Host != ""
 }
 
 func (p *protocolCheck) hijack(rw http.ResponseWriter) (net.Conn, *bufio.ReadWriter, error) {

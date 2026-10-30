@@ -1,4 +1,4 @@
-package handlers_test
+package handlers
 
 import (
 	"bufio"
@@ -19,7 +19,6 @@ import (
 
 	"code.cloudfoundry.org/gorouter/common/secure"
 	"code.cloudfoundry.org/gorouter/errorwriter"
-	"code.cloudfoundry.org/gorouter/handlers"
 	fakeRegistry "code.cloudfoundry.org/gorouter/registry/fakes"
 	"code.cloudfoundry.org/gorouter/route"
 	"code.cloudfoundry.org/gorouter/routeservice"
@@ -45,9 +44,8 @@ var _ = Describe("Route Service Handler", func() {
 
 		reqChan chan *http.Request
 
-		nextCalled  bool
-		prevHandler negroni.Handler
-		logger      *test_util.TestLogger
+		nextCalled bool
+		logger     *test_util.TestLogger
 	)
 
 	nextHandler := http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
@@ -62,7 +60,7 @@ var _ = Describe("Route Service Handler", func() {
 	})
 
 	testSetupHandler := func(rw http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
-		reqInfo, err := handlers.ContextRequestInfo(req)
+		reqInfo, err := ContextRequestInfo(req)
 		Expect(err).ToNot(HaveOccurred())
 		reqInfo.RoutePool = routePool
 		next(rw, req)
@@ -105,7 +103,6 @@ var _ = Describe("Route Service Handler", func() {
 			logger.Logger, true, true, nil, 60*time.Second, crypto, nil, true, false, true, []netip.Prefix{})
 
 		nextCalled = false
-		prevHandler = &PrevHandler{}
 	})
 
 	AfterEach(func() {
@@ -114,10 +111,12 @@ var _ = Describe("Route Service Handler", func() {
 
 	JustBeforeEach(func() {
 		handler = negroni.New()
-		handler.Use(handlers.NewRequestInfo())
+		handler.Use(NewRequestInfo())
 		handler.UseFunc(testSetupHandler)
-		handler.Use(prevHandler)
-		handler.Use(handlers.NewRouteService(config, reg, logger.Logger, ew))
+		handler.Use(negroni.HandlerFunc(func(rw http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
+			next(rw, req)
+		}))
+		handler.Use(NewRouteService(config, reg, logger.Logger, ew))
 		handler.UseHandlerFunc(nextHandler)
 	})
 
@@ -143,7 +142,7 @@ var _ = Describe("Route Service Handler", func() {
 				Expect(passedReq.Header.Get(routeservice.HeaderKeyMetadata)).To(BeEmpty())
 				Expect(passedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(BeEmpty())
 
-				reqInfo, err := handlers.ContextRequestInfo(passedReq)
+				reqInfo, err := ContextRequestInfo(passedReq)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(reqInfo.RouteServiceURL).To(BeNil())
 				Expect(nextCalled).To(BeTrue(), "Expected the next handler to be called.")
@@ -185,7 +184,7 @@ var _ = Describe("Route Service Handler", func() {
 				Expect(passedReq.Header.Get(routeservice.HeaderKeySignature)).To(BeEmpty())
 				Expect(passedReq.Header.Get(routeservice.HeaderKeyMetadata)).To(BeEmpty())
 				Expect(passedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(BeEmpty())
-				reqInfo, err := handlers.ContextRequestInfo(passedReq)
+				reqInfo, err := ContextRequestInfo(passedReq)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(reqInfo.RouteServiceURL).To(BeNil())
 				Expect(nextCalled).To(BeTrue(), "Expected the next handler to be called.")
@@ -228,7 +227,7 @@ var _ = Describe("Route Service Handler", func() {
 				Expect(passedReq.Header.Get(routeservice.HeaderKeyMetadata)).ToNot(BeEmpty())
 				Expect(passedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(ContainSubstring("https://"))
 
-				reqInfo, err := handlers.ContextRequestInfo(passedReq)
+				reqInfo, err := ContextRequestInfo(passedReq)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(reqInfo.RouteServiceURL).ToNot(BeNil())
 
@@ -383,6 +382,74 @@ var _ = Describe("Route Service Handler", func() {
 				})
 			})
 
+			It("keeps escaped paths and query bytes in X-CF-Forwarded-Url", func() {
+				req.RequestURI = "/a%2Fb?q=value"
+				req.URL.Path = "/a/b"
+				req.URL.RawPath = "/a%2Fb"
+				req.URL.RawQuery = "q=value"
+				req.URL.ForceQuery = false
+
+				handler.ServeHTTP(resp, req)
+
+				var passedReq *http.Request
+				Eventually(reqChan).Should(Receive(&passedReq))
+				Expect(passedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(Equal("https://my_host.com/a%2Fb?q=value"))
+			})
+
+			It("keeps a bare query marker in X-CF-Forwarded-Url", func() {
+				req.RequestURI = "/a%2Fb?"
+				req.URL.Path = "/a/b"
+				req.URL.RawPath = "/a%2Fb"
+				req.URL.RawQuery = ""
+				req.URL.ForceQuery = true
+				handler.ServeHTTP(resp, req)
+
+				var passedReq *http.Request
+				Eventually(reqChan).Should(Receive(&passedReq))
+				Expect(passedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(Equal("https://my_host.com/a%2Fb?"))
+			})
+
+			It("keeps origin-form request-target bytes in X-CF-Forwarded-Url", func() {
+				req.RequestURI = "/a|b?x=1"
+				req.URL.Path = "/a|b"
+				req.URL.RawPath = ""
+				req.URL.RawQuery = "x=1"
+
+				handler.ServeHTTP(resp, req)
+
+				var passedReq *http.Request
+				Eventually(reqChan).Should(Receive(&passedReq))
+				Expect(passedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(Equal("https://my_host.com/a|b?x=1"))
+			})
+
+			It("uses the routed host for absolute-form requests", func() {
+				parsedURL, err := http.NewRequest(http.MethodGet, "http://other.example/p?q", nil)
+				Expect(err).NotTo(HaveOccurred())
+				req.URL = parsedURL.URL
+				req.Host = "app.example:8080"
+				req.RequestURI = "http://other.example/p?q"
+
+				handler.ServeHTTP(resp, req)
+
+				var passedReq *http.Request
+				Eventually(reqChan).Should(Receive(&passedReq))
+				Expect(passedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(Equal("https://app.example/p?q"))
+			})
+
+			It("omits user info from absolute-form requests", func() {
+				parsedURL, err := http.NewRequest(http.MethodGet, "http://u:p@app.example/p?q", nil)
+				Expect(err).NotTo(HaveOccurred())
+				req.URL = parsedURL.URL
+				req.Host = "app.example"
+				req.RequestURI = "http://u:p@app.example/p?q"
+
+				handler.ServeHTTP(resp, req)
+
+				var passedReq *http.Request
+				Eventually(reqChan).Should(Receive(&passedReq))
+				Expect(passedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(Equal("https://app.example/p?q"))
+			})
+
 			Context("when the route service has a route in the route registry", func() {
 				BeforeEach(func() {
 					rsPool := route.NewPool(&route.PoolOpts{
@@ -407,7 +474,7 @@ var _ = Describe("Route Service Handler", func() {
 					Expect(passedReq.Header.Get(routeservice.HeaderKeyMetadata)).ToNot(BeEmpty())
 					Expect(passedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(ContainSubstring("https://"))
 
-					reqInfo, err := handlers.ContextRequestInfo(passedReq)
+					reqInfo, err := ContextRequestInfo(passedReq)
 					Expect(err).ToNot(HaveOccurred())
 					Expect(reqInfo.RouteServiceURL).ToNot(BeNil())
 
@@ -437,7 +504,7 @@ var _ = Describe("Route Service Handler", func() {
 						Expect(passedReq.Header.Get(routeservice.HeaderKeyMetadata)).ToNot(BeEmpty())
 						Expect(passedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(ContainSubstring("https://"))
 
-						reqInfo, err := handlers.ContextRequestInfo(passedReq)
+						reqInfo, err := ContextRequestInfo(passedReq)
 						Expect(err).ToNot(HaveOccurred())
 						Expect(reqInfo.RouteServiceURL).ToNot(BeNil())
 
@@ -468,7 +535,7 @@ var _ = Describe("Route Service Handler", func() {
 						Expect(passedReq.Header.Get(routeservice.HeaderKeyMetadata)).ToNot(BeEmpty())
 						Expect(passedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(ContainSubstring("https://"))
 
-						reqInfo, err := handlers.ContextRequestInfo(passedReq)
+						reqInfo, err := ContextRequestInfo(passedReq)
 						Expect(err).ToNot(HaveOccurred())
 						Expect(reqInfo.RouteServiceURL).ToNot(BeNil())
 
@@ -499,7 +566,7 @@ var _ = Describe("Route Service Handler", func() {
 						Expect(passedReq.Header.Get(routeservice.HeaderKeyMetadata)).ToNot(BeEmpty())
 						Expect(passedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(ContainSubstring("https://"))
 
-						reqInfo, err := handlers.ContextRequestInfo(passedReq)
+						reqInfo, err := ContextRequestInfo(passedReq)
 						Expect(err).ToNot(HaveOccurred())
 						Expect(reqInfo.RouteServiceURL).ToNot(BeNil())
 
@@ -531,7 +598,7 @@ var _ = Describe("Route Service Handler", func() {
 						Expect(passedReq.Header.Get(routeservice.HeaderKeyMetadata)).ToNot(BeEmpty())
 						Expect(passedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(ContainSubstring("https://"))
 
-						reqInfo, err := handlers.ContextRequestInfo(passedReq)
+						reqInfo, err := ContextRequestInfo(passedReq)
 						Expect(err).ToNot(HaveOccurred())
 						Expect(reqInfo.RouteServiceURL).ToNot(BeNil())
 
@@ -569,7 +636,7 @@ var _ = Describe("Route Service Handler", func() {
 						Expect(passedReq.Header.Get(routeservice.HeaderKeyMetadata)).ToNot(BeEmpty())
 						Expect(passedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(ContainSubstring("https://"))
 
-						reqInfo, err := handlers.ContextRequestInfo(passedReq)
+						reqInfo, err := ContextRequestInfo(passedReq)
 						Expect(err).ToNot(HaveOccurred())
 						Expect(reqInfo.RouteServiceURL).ToNot(BeNil())
 
@@ -600,7 +667,7 @@ var _ = Describe("Route Service Handler", func() {
 					Expect(passedReq.Header.Get(routeservice.HeaderKeyMetadata)).ToNot(BeEmpty())
 					Expect(passedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(ContainSubstring("http://"))
 
-					reqInfo, err := handlers.ContextRequestInfo(passedReq)
+					reqInfo, err := ContextRequestInfo(passedReq)
 					Expect(err).ToNot(HaveOccurred())
 					Expect(reqInfo.RouteServiceURL).ToNot(BeNil())
 
@@ -630,10 +697,132 @@ var _ = Describe("Route Service Handler", func() {
 					Expect(passedReq.Header.Get(routeservice.HeaderKeySignature)).To(BeEmpty())
 					Expect(passedReq.Header.Get(routeservice.HeaderKeyMetadata)).To(BeEmpty())
 					Expect(passedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(BeEmpty())
-					reqInfo, err := handlers.ContextRequestInfo(passedReq)
+					reqInfo, err := ContextRequestInfo(passedReq)
 					Expect(err).ToNot(HaveOccurred())
 					Expect(reqInfo.RouteServiceURL).To(BeNil())
 					Expect(nextCalled).To(BeTrue(), "Expected the next handler to be called.")
+				})
+			})
+
+			Context("when a returned request has a signed forwarded URL", func() {
+				BeforeEach(func() {
+					routePool = route.NewPool(&route.PoolOpts{
+						Logger:             logger.Logger,
+						RetryAfterFailure:  time.Second,
+						Host:               "app.example",
+						ContextPath:        "/",
+						MaxConnsPerBackend: 0,
+					})
+					routePool.Put(route.NewEndpoint(&route.EndpointOpts{RouteServiceUrl: "https://route-service.com"}))
+					req.Host = "app.example"
+					req.RequestURI = "/b"
+					routeMap["app.example/a"] = routePool
+					routeMap["app.example/b"] = routePool
+					routeMap["app.example"] = routePool
+				})
+
+				It("rejects a different host that resolves to the same pool", func() {
+					routePool = route.NewPool(&route.PoolOpts{
+						Logger:             logger.Logger,
+						RetryAfterFailure:  time.Second,
+						Host:               "*.example.com",
+						ContextPath:        "/",
+						MaxConnsPerBackend: 0,
+					})
+					routePool.Put(route.NewEndpoint(&route.EndpointOpts{RouteServiceUrl: "https://route-service.com"}))
+					routeMap["a.example.com"] = routePool
+					req.Host = "b.example.com"
+					req.RequestURI = "/"
+					reqArgs, err := config.CreateRequest("", "https://a.example.com/")
+					Expect(err).NotTo(HaveOccurred())
+					req.Header.Set(routeservice.HeaderKeySignature, reqArgs.Signature)
+					req.Header.Set(routeservice.HeaderKeyMetadata, reqArgs.Metadata)
+
+					handler.ServeHTTP(resp, req)
+
+					Expect(resp.Code).To(Equal(http.StatusBadGateway))
+					Expect(resp.Body.String()).To(ContainSubstring("forwarded URL host does not match request host"))
+					Expect(nextCalled).To(BeFalse())
+				})
+
+				It("rejects signed forwarded URLs that are opaque or use an unsupported scheme", func() {
+					for _, forwardedURL := range []string{"http:opaque", "ftp://app.example/"} {
+						resp = httptest.NewRecorder()
+						signature := &routeservice.SignatureContents{
+							RequestedTime: time.Now(),
+							ForwardedUrl:  forwardedURL,
+						}
+						signatureHeader, metadataHeader, err := routeservice.BuildSignatureAndMetadata(crypto, signature)
+						Expect(err).NotTo(HaveOccurred())
+						req.Header.Set(routeservice.HeaderKeySignature, signatureHeader)
+						req.Header.Set(routeservice.HeaderKeyMetadata, metadataHeader)
+
+						handler.ServeHTTP(resp, req)
+
+						Expect(resp.Code).To(Equal(http.StatusBadGateway))
+						Expect(resp.Body.String()).To(ContainSubstring("malformed forwarded URL"))
+						Expect(nextCalled).To(BeFalse())
+					}
+				})
+
+				It("rejects a signed forwarded URL with user information", func() {
+					reqArgs, err := config.CreateRequest("", "https://x:pass@app.example/")
+					Expect(err).NotTo(HaveOccurred())
+					req.Header.Set(routeservice.HeaderKeySignature, reqArgs.Signature)
+					req.Header.Set(routeservice.HeaderKeyMetadata, reqArgs.Metadata)
+
+					handler.ServeHTTP(resp, req)
+
+					Expect(resp.Code).To(Equal(http.StatusBadGateway))
+					Expect(resp.Body.String()).To(ContainSubstring("malformed forwarded URL"))
+					Expect(nextCalled).To(BeFalse())
+				})
+
+				It("accepts a same-host path rewrite within the same pool", func() {
+					reqArgs, err := config.CreateRequest("", "https://app.example/a")
+					Expect(err).NotTo(HaveOccurred())
+					req.Header.Set(routeservice.HeaderKeySignature, reqArgs.Signature)
+					req.Header.Set(routeservice.HeaderKeyMetadata, reqArgs.Metadata)
+
+					handler.ServeHTTP(resp, req)
+
+					Expect(resp.Code).To(Equal(http.StatusTeapot))
+					Expect(nextCalled).To(BeTrue())
+				})
+
+				It("rejects a rewrite to a different path pool", func() {
+					otherPool := route.NewPool(&route.PoolOpts{
+						Logger:             logger.Logger,
+						RetryAfterFailure:  time.Second,
+						Host:               "app.example",
+						ContextPath:        "/other",
+						MaxConnsPerBackend: 0,
+					})
+					routeMap["app.example/other"] = otherPool
+					reqArgs, err := config.CreateRequest("", "https://app.example/other")
+					Expect(err).NotTo(HaveOccurred())
+					req.Header.Set(routeservice.HeaderKeySignature, reqArgs.Signature)
+					req.Header.Set(routeservice.HeaderKeyMetadata, reqArgs.Metadata)
+
+					handler.ServeHTTP(resp, req)
+
+					Expect(resp.Code).To(Equal(http.StatusBadGateway))
+					Expect(resp.Body.String()).To(ContainSubstring("does not match the original request URL"))
+					Expect(nextCalled).To(BeFalse())
+				})
+
+				It("accepts host case and port differences", func() {
+					req.Host = "app.example:443"
+					routeMap["APP.example"] = routePool
+					reqArgs, err := config.CreateRequest("", "https://APP.example/")
+					Expect(err).NotTo(HaveOccurred())
+					req.Header.Set(routeservice.HeaderKeySignature, reqArgs.Signature)
+					req.Header.Set(routeservice.HeaderKeyMetadata, reqArgs.Metadata)
+
+					handler.ServeHTTP(resp, req)
+
+					Expect(resp.Code).To(Equal(http.StatusTeapot))
+					Expect(nextCalled).To(BeTrue())
 				})
 			})
 
@@ -782,7 +971,7 @@ var _ = Describe("Route Service Handler", func() {
 						Expect(passedReq.Header.Get(routeservice.HeaderKeySignature)).To(BeEmpty())
 						Expect(passedReq.Header.Get(routeservice.HeaderKeyMetadata)).To(BeEmpty())
 						Expect(passedReq.Header.Get(routeservice.HeaderKeyForwardedURL)).To(BeEmpty())
-						reqInfo, err := handlers.ContextRequestInfo(passedReq)
+						reqInfo, err := ContextRequestInfo(passedReq)
 						Expect(err).ToNot(HaveOccurred())
 						Expect(reqInfo.RouteServiceURL).To(BeNil())
 						Expect(nextCalled).To(BeTrue(), "Expected the next handler to be called.")
@@ -857,7 +1046,7 @@ var _ = Describe("Route Service Handler", func() {
 				var passedReq *http.Request
 				Eventually(reqChan).Should(Receive(&passedReq))
 
-				reqInfo, err := handlers.ContextRequestInfo(passedReq)
+				reqInfo, err := ContextRequestInfo(passedReq)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(reqInfo.RouteServiceURL.Scheme).To(Equal("https"))
 				Expect(reqInfo.RouteServiceURL.Host).To(Equal("goodrouteservice.com"))
@@ -894,10 +1083,12 @@ var _ = Describe("Route Service Handler", func() {
 				config = routeservice.NewRouteServiceConfig(logger.Logger, true, true, allowlist, 60*time.Second, crypto, nil, true, false, true, nil)
 
 				h := negroni.New()
-				h.Use(handlers.NewRequestInfo())
+				h.Use(NewRequestInfo())
 				h.UseFunc(testSetupHandler)
-				h.Use(prevHandler)
-				h.Use(handlers.NewRouteService(config, reg, logger.Logger, ew))
+				h.Use(negroni.HandlerFunc(func(rw http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
+					next(rw, req)
+				}))
+				h.Use(NewRouteService(config, reg, logger.Logger, ew))
 				h.UseHandlerFunc(nextHandler)
 
 				return h
@@ -910,7 +1101,7 @@ var _ = Describe("Route Service Handler", func() {
 				var passedReq *http.Request
 				Eventually(reqChan).Should(Receive(&passedReq))
 
-				reqInfo, err := handlers.ContextRequestInfo(passedReq)
+				reqInfo, err := ContextRequestInfo(passedReq)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(reqInfo.ShouldRouteToInternalRouteService).To(Equal(expected))
 			}
@@ -978,7 +1169,7 @@ var _ = Describe("Route Service Handler", func() {
 		var badHandler *negroni.Negroni
 		BeforeEach(func() {
 			badHandler = negroni.New()
-			badHandler.Use(handlers.NewRouteService(config, reg, logger.Logger, ew))
+			badHandler.Use(NewRouteService(config, reg, logger.Logger, ew))
 			badHandler.UseHandlerFunc(nextHandler)
 		})
 		It("calls Panic on the logger", func() {
@@ -995,8 +1186,8 @@ var _ = Describe("Route Service Handler", func() {
 		var badHandler *negroni.Negroni
 		BeforeEach(func() {
 			badHandler = negroni.New()
-			badHandler.Use(handlers.NewRequestInfo())
-			badHandler.Use(handlers.NewRouteService(config, reg, logger.Logger, ew))
+			badHandler.Use(NewRequestInfo())
+			badHandler.Use(NewRouteService(config, reg, logger.Logger, ew))
 			badHandler.UseHandlerFunc(nextHandler)
 		})
 		It("calls Panic on the logger", func() {
@@ -1138,16 +1329,33 @@ var _ = Describe("Route Service Handler", func() {
 						recover()
 						Eventually(logger).Should(gbytes.Say(`allowlist-entry-invalid`))
 					}()
-					handlers.NewRouteService(config, reg, logger.Logger, ew)
+					NewRouteService(config, reg, logger.Logger, ew)
 					continue
 				}
 
-				r := handlers.NewRouteService(config, reg, logger.Logger, ew).(*handlers.RouteService)
+				r := NewRouteService(config, reg, logger.Logger, ew).(*RouteService)
 
 				matched := r.MatchAllowlistHostname(testCase.host)
 				Expect(matched).To(Equal(testCase.matched))
 			}
 		})
+	})
+})
+
+var _ = Describe("validateForwardedURL", func() {
+	It("rejects opaque URLs, user info, unsupported schemes, and mismatched hosts", func() {
+		for _, raw := range []string{
+			"http:opaque",
+			"https://user@app.example/path",
+			"ftp://app.example/path",
+			"https://other.example/path",
+		} {
+			Expect(validateForwardedURL(raw, "app.example:8080")).To(HaveOccurred(), raw)
+		}
+	})
+
+	It("accepts host case and port differences", func() {
+		Expect(validateForwardedURL("https://APP.EXAMPLE:443/path", "app.example:8080")).To(Succeed())
 	})
 })
 

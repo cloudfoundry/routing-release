@@ -2,13 +2,16 @@ package handlers_test
 
 import (
 	"bufio"
+	"crypto/tls"
 	"net"
 	"net/http"
+	"net/http/httptest"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
 	"github.com/urfave/negroni/v3"
+	"golang.org/x/net/http2"
 
 	"code.cloudfoundry.org/gorouter/errorwriter"
 	"code.cloudfoundry.org/gorouter/handlers"
@@ -59,18 +62,35 @@ var _ = Describe("Protocolcheck", func() {
 				enableHTTP2 = true
 			})
 
-			It("passes the request through", func() {
-				conn, err := net.Dial("tcp", server.Addr())
-				Expect(err).ToNot(HaveOccurred())
-				defer conn.Close()
-				respReader := bufio.NewReader(conn)
+			It("handles HTTP/2 requests and rejects CONNECT request targets", func() {
+				http2Server := httptest.NewUnstartedServer(n)
+				http2Server.EnableHTTP2 = true
+				http2Server.StartTLS()
+				defer http2Server.Close()
 
-				conn.Write([]byte("PRI * HTTP/2.0\r\nHost: example.com\r\n\r\n"))
-				resp, err := http.ReadResponse(respReader, nil)
-				Expect(err).ToNot(HaveOccurred())
+				client := &http.Client{Transport: &http2.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}}
+				defer client.CloseIdleConnections()
 
-				Expect(resp.StatusCode).To(Equal(200))
+				response, err := client.Get(http2Server.URL)
+				Expect(err).NotTo(HaveOccurred())
+				response.Body.Close()
+				Expect(response.ProtoMajor).To(Equal(2))
+				Expect(response.StatusCode).To(Equal(http.StatusOK))
 				Expect(nextCalled).To(BeTrue())
+
+				nextCalled = false
+				connectReq := httptest.NewRequest(http.MethodConnect, "http://example.com:443", nil)
+				connectReq.ProtoMajor = 2
+				connectReq.RequestURI = "example.com:443"
+				connectReq.URL.Scheme = ""
+				connectReq.URL.Host = "example.com:443"
+				connectReq.URL.Path = ""
+				connectResp := httptest.NewRecorder()
+				n.ServeHTTP(connectResp, connectReq)
+
+				Expect(connectResp.Code).To(Equal(http.StatusBadRequest))
+				Expect(connectResp.Header().Get("X-Cf-Routererror")).To(Equal("invalid_request_target"))
+				Expect(nextCalled).To(BeFalse())
 			})
 		})
 
@@ -124,6 +144,55 @@ var _ = Describe("Protocolcheck", func() {
 
 			Expect(resp.StatusCode).To(Equal(200))
 			Expect(nextCalled).To(BeTrue())
+		})
+	})
+
+	Context("request-target forms", func() {
+		It("rejects unsupported forms and passes supported forms", func() {
+			cases := []struct {
+				name       string
+				request    string
+				statusCode int
+				passed     bool
+			}{
+				{name: "opaque", request: "GET x:pass@other.example/ HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n", statusCode: http.StatusBadRequest},
+				{name: "authority", request: "CONNECT host:443 HTTP/1.1\r\nHost: host:443\r\nConnection: close\r\n\r\n", statusCode: http.StatusBadRequest},
+				{name: "userinfo", request: "GET http://u:p@host/ HTTP/1.1\r\nHost: host\r\nConnection: close\r\n\r\n", statusCode: http.StatusOK, passed: true},
+				{name: "unsupported scheme", request: "GET ftp://host/ HTTP/1.1\r\nHost: host\r\nConnection: close\r\n\r\n", statusCode: http.StatusBadRequest},
+				{name: "asterisk", request: "GET * HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n", statusCode: http.StatusBadRequest},
+				{name: "origin", request: "GET / HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n", statusCode: http.StatusOK, passed: true},
+				{name: "http absolute", request: "GET http://example.com/ HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n", statusCode: http.StatusOK, passed: true},
+				{name: "https absolute", request: "GET https://example.com/ HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n", statusCode: http.StatusOK, passed: true},
+				{name: "options asterisk", request: "OPTIONS * HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n", statusCode: http.StatusOK},
+			}
+
+			for _, testCase := range cases {
+				server.Close()
+				server = ghttp.NewUnstartedServer()
+				server.AppendHandlers(n.ServeHTTP)
+				server.Start()
+				nextCalled = false
+				conn, err := net.Dial("tcp", server.Addr())
+				Expect(err).ToNot(HaveOccurred(), testCase.name)
+				respReader := bufio.NewReader(conn)
+
+				_, err = conn.Write([]byte(testCase.request))
+				Expect(err).ToNot(HaveOccurred(), testCase.name)
+				resp, err := http.ReadResponse(respReader, nil)
+				Expect(err).ToNot(HaveOccurred(), testCase.name)
+				conn.Close()
+
+				Expect(resp.StatusCode).To(Equal(testCase.statusCode), testCase.name)
+				if testCase.statusCode == http.StatusBadRequest {
+					Expect(resp.Header.Get("X-Cf-Routererror")).To(Equal("invalid_request_target"), testCase.name)
+					Expect(nextCalled).To(BeFalse(), testCase.name)
+				} else if testCase.passed {
+					Expect(nextCalled).To(BeTrue(), testCase.name)
+				} else {
+					Expect(resp.Header.Get("X-Cf-Routererror")).ToNot(Equal("invalid_request_target"), testCase.name)
+					Expect(nextCalled).To(BeFalse(), testCase.name)
+				}
+			}
 		})
 	})
 

@@ -156,7 +156,12 @@ func (r *RouteService) ServeHTTP(rw http.ResponseWriter, req *http.Request, next
 		recommendedScheme = "http"
 	}
 	forwardedURLRaw := forwardedURL(recommendedScheme, req)
-	routeServiceArgs, err := r.config.CreateRequest(routeServiceURL, forwardedURLRaw)
+
+	var routeServiceArgs routeservice.RequestToSendToRouteService
+	err = validateForwardedURL(forwardedURLRaw, req.Host)
+	if err == nil {
+		routeServiceArgs, err = r.config.CreateRequest(routeServiceURL, forwardedURLRaw)
+	}
 	if err != nil {
 		logger.Error("route-service-failed", log.ErrAttr(err))
 
@@ -180,6 +185,26 @@ func (r *RouteService) ServeHTTP(rw http.ResponseWriter, req *http.Request, next
 	req.Header.Set(routeservice.HeaderKeyForwardedURL, routeServiceArgs.ForwardedURL)
 	reqInfo.RouteServiceURL = routeServiceArgs.ParsedUrl
 	next(rw, req)
+}
+
+func validateForwardedURL(raw, routedHost string) error {
+	u, err := url.ParseRequestURI(raw)
+	if err != nil {
+		return err
+	}
+	if u.Opaque != "" {
+		return errors.New("forwarded URL must not be opaque")
+	}
+	if u.User != nil {
+		return errors.New("forwarded URL must not include user info")
+	}
+	if !strings.EqualFold(u.Scheme, "http") && !strings.EqualFold(u.Scheme, "https") {
+		return fmt.Errorf("unsupported forwarded URL scheme %q", u.Scheme)
+	}
+	if !strings.EqualFold(hostWithoutPort(u.Host), hostWithoutPort(routedHost)) {
+		return fmt.Errorf("forwarded URL host %q does not match routed host %q", u.Host, routedHost)
+	}
+	return nil
 }
 
 // CreateDomainAllowlist collects the static parts of wildcard allowlist expressions and wildcards stripped of their first segment.
@@ -343,7 +368,7 @@ func (r *RouteService) ArrivedViaRouteService(req *http.Request, logger *slog.Lo
 		if err != nil {
 			return false, err
 		}
-		err = r.validateRouteServicePool(validatedSig, reqInfo.RoutePool)
+		err = r.validateRouteServicePool(validatedSig, reqInfo.RoutePool, req.Host)
 		if err != nil {
 			return false, err
 		}
@@ -363,12 +388,21 @@ func newRequestReceivedFromRouteService(appUrl string, requestHeaders http.Heade
 func (r *RouteService) validateRouteServicePool(
 	validatedSig *routeservice.SignatureContents,
 	requestPool *route.EndpointPool,
+	reqHost string,
 ) error {
 
 	forwardedURL, err := url.ParseRequestURI(validatedSig.ForwardedUrl)
 	if err != nil {
 		return err
 	}
+	if forwardedURL.Opaque != "" || forwardedURL.User != nil ||
+		(!strings.EqualFold(forwardedURL.Scheme, "http") && !strings.EqualFold(forwardedURL.Scheme, "https")) {
+		return errors.New("malformed forwarded URL")
+	}
+	if !strings.EqualFold(hostWithoutPort(forwardedURL.Host), hostWithoutPort(reqHost)) {
+		return errors.New("forwarded URL host does not match request host")
+	}
+
 	uri := route.Uri(hostWithoutPort(forwardedURL.Host) + forwardedURL.EscapedPath())
 	forwardedPool := r.registry.Lookup(uri)
 	if forwardedPool == nil {
