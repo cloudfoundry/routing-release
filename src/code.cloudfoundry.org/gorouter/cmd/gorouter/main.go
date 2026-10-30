@@ -192,6 +192,7 @@ func main() {
 		cryptoPrev,
 		c.RouteServiceRecommendHttps,
 		c.RouteServiceConfig.StrictSignatureValidation,
+		c.RouteServiceConfig.AllowUnboundSignatures,
 		c.RouteServiceConfig.EnableWebsockets,
 		egressBlocklist,
 	)

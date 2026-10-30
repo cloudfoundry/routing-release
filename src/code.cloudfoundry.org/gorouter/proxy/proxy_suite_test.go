@@ -122,6 +122,7 @@ var _ = JustBeforeEach(func() {
 		cryptoPrev,
 		recommendHTTPS,
 		strictSignatureValidation,
+		conf.RouteServiceConfig.AllowUnboundSignatures,
 		conf.RouteServiceConfig.EnableWebsockets,
 		[]netip.Prefix{},
 	)

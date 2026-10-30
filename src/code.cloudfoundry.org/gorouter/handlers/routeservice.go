@@ -4,9 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"net"
 	"net/http"
 	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -27,6 +29,8 @@ type RouteService struct {
 	hairpinningAllowlistDomains map[string]struct{}
 	hairpinDeniedHosts          sync.Map
 }
+
+var errUnboundRouteServiceSignature = errors.New("route service signature is not bound to this destination")
 
 // NewRouteService creates a handler responsible for handling route services
 func NewRouteService(
@@ -65,10 +69,7 @@ func (r *RouteService) ServeHTTP(rw http.ResponseWriter, req *http.Request, next
 	if routeServiceURL == "" {
 		// No route service is associated with this request
 		if r.config.StrictSignatureValidation() && len(req.Header.Values(routeservice.HeaderKeySignature)) > 0 {
-			// Someone is still setting the header, possibly trying to impersonate a route service
-			// request. We will validate the request to ensure the header is valid.
-			rreq := newRequestReceivedFromRouteService("", req.Header)
-			_, err := r.config.ValidateRequest(rreq)
+			err := r.classifySignature(req)
 			if err != nil {
 				if errors.Is(err, routeservice.ErrExpired) {
 					AddRouterErrorHeader(rw, "expired_route_service_signature")
@@ -137,6 +138,10 @@ func (r *RouteService) ServeHTTP(rw http.ResponseWriter, req *http.Request, next
 			)
 		}
 		return
+	}
+
+	if !hasBeenToRouteService && req.Header.Get(routeservice.HeaderKeySignature) != "" {
+		logger.Info("route-service-signature-not-trusted-for-current-route-service")
 	}
 
 	if hasBeenToRouteService {
@@ -325,16 +330,115 @@ func (r *RouteService) logHairpinDenied(host string, uri route.Uri, matched, rea
 }
 
 func (r *RouteService) IsRouteServiceTraffic(req *http.Request) bool {
-	forwardedURLRaw := req.Header.Get(routeservice.HeaderKeyForwardedURL)
-	signature := req.Header.Get(routeservice.HeaderKeySignature)
+	return r.classifySignature(req) == nil
+}
 
-	if forwardedURLRaw == "" || signature == "" {
+func (r *RouteService) classifySignature(req *http.Request) error {
+	if req.Header.Get(routeservice.HeaderKeySignature) == "" {
+		return errors.New("route service signature is missing")
+	}
+
+	signature, err := r.config.ValidateRequest(newRequestReceivedFromRouteService("", req.Header))
+	if err != nil {
+		return err
+	}
+
+	reqInfo, err := ContextRequestInfo(req)
+	if err != nil {
+		return err
+	}
+	if reqInfo.RoutePool == nil {
+		return errors.New("failed-to-access-RoutePool")
+	}
+
+	if reqInfo.RoutePool.RouteServiceUrl() != "" {
+		arrivedViaRouteService, err := r.ArrivedViaRouteService(req, r.logger)
+		if err != nil {
+			return err
+		}
+		if !arrivedViaRouteService {
+			return errUnboundRouteServiceSignature
+		}
+		return nil
+	}
+
+	if signature.RouteServiceUrl == "" {
+		if r.config.AllowUnboundSignatures() {
+			return nil
+		}
+		return errUnboundRouteServiceSignature
+	}
+
+	signedURL, err := parseSignedRouteServiceURL(signature.RouteServiceUrl)
+	if err != nil || !matchesSignedRouteService(signedURL, req) {
+		return errUnboundRouteServiceSignature
+	}
+	return nil
+}
+
+func parseSignedRouteServiceURL(raw string) (*url.URL, error) {
+	signed, err := url.Parse(raw)
+	if err != nil {
+		return nil, err
+	}
+	switch strings.ToLower(signed.Scheme) {
+	case "http", "https":
+	default:
+		return nil, errors.New("unsupported route service URL scheme")
+	}
+	if signed.Opaque != "" || signed.Host == "" || signed.User != nil || signed.Fragment != "" {
+		return nil, errors.New("malformed route service URL")
+	}
+	return signed, nil
+}
+
+func matchesSignedRouteService(signed *url.URL, req *http.Request) bool {
+	requestHost := req.Host
+	requestPort := ""
+	if host, port, err := net.SplitHostPort(req.Host); err == nil {
+		requestHost = host
+		requestPort = port
+	} else if strings.HasPrefix(requestHost, "[") && strings.HasSuffix(requestHost, "]") {
+		requestHost = strings.TrimSuffix(strings.TrimPrefix(requestHost, "["), "]")
+	}
+	if !strings.EqualFold(signed.Hostname(), requestHost) {
 		return false
 	}
 
-	request := newRequestReceivedFromRouteService(forwardedURLRaw, req.Header)
-	_, err := r.config.ValidateRequest(request)
-	return err == nil
+	defaultPort := ""
+	switch strings.ToLower(signed.Scheme) {
+	case "http":
+		defaultPort = "80"
+	case "https":
+		defaultPort = "443"
+	default:
+		return false
+	}
+	signedPort := signed.Port()
+	if signedPort == "" {
+		signedPort = defaultPort
+	}
+	if requestPort == "" {
+		requestPort = defaultPort
+	}
+	signedPortNumber, err := strconv.Atoi(signedPort)
+	if err != nil {
+		return false
+	}
+	requestPortNumber, err := strconv.Atoi(requestPort)
+	if err != nil || signedPortNumber != requestPortNumber {
+		return false
+	}
+
+	signedPath := signed.EscapedPath()
+	if signedPath == "" {
+		signedPath = "/"
+	}
+	requestPath := req.URL.EscapedPath()
+	if requestPath == "" {
+		requestPath = "/"
+	}
+	return signedPath == requestPath
 }
 
 func (r *RouteService) ArrivedViaRouteService(req *http.Request, logger *slog.Logger) (bool, error) {
@@ -371,6 +475,14 @@ func (r *RouteService) ArrivedViaRouteService(req *http.Request, logger *slog.Lo
 		err = r.validateRouteServicePool(validatedSig, reqInfo.RoutePool, req.Host)
 		if err != nil {
 			return false, err
+		}
+		if validatedSig.RouteServiceUrl != "" {
+			parsedRouteServiceURL, err := url.Parse(reqInfo.RoutePool.RouteServiceUrl())
+			if err != nil || parsedRouteServiceURL.String() != validatedSig.RouteServiceUrl {
+				return false, nil
+			}
+		} else if !r.config.AllowUnboundSignatures() {
+			return false, nil
 		}
 		return true, nil
 	}

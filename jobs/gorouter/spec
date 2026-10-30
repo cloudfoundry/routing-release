@@ -309,6 +309,9 @@ properties:
   router.route_services_strict_signature_validation:
       description: "Enforce strict validation of a route service signature"
       default: false
+  router.route_services_allow_unbound_signatures:
+    description: "Allow route service signatures without a signed route service URL (minted by Gorouters older than this release) to keep legacy header handling. Set to false only in a separate deploy after every Gorouter sharing the route service secret has been upgraded and the last older Gorouter has drained, then wait at least route_services_timeout (plus clock skew). To roll back to an older release, first set this back to true."
+    default: true
   router.max_request_header_kb:
     description: |
         This value controls the maximum number of bytes (in KB) the gorouter will read

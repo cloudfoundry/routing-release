@@ -36,7 +36,10 @@ var _ = Describe("Route Service Signature", func() {
 			return cipherText, nonce, nil
 		}
 
-		signatureContents = &routeservice.SignatureContents{RequestedTime: time.Now()}
+		signatureContents = &routeservice.SignatureContents{
+			RequestedTime:   time.Now(),
+			RouteServiceUrl: "https://route-service.example.com/path",
+		}
 	})
 
 	Describe("Build Signature and Metadata", func() {
@@ -80,6 +83,29 @@ var _ = Describe("Route Service Signature", func() {
 			decryptedSignature, err := routeservice.SignatureContentsFromHeaders(signatureHeader, metadataHeader, crypto)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(signatureContents.RequestedTime.Sub(decryptedSignature.RequestedTime)).To(Equal(time.Duration(0)))
+			Expect(decryptedSignature.RouteServiceUrl).To(Equal(signatureContents.RouteServiceUrl))
+		})
+
+		It("parses a legacy signature without a route service URL", func() {
+			legacyContents := &routeservice.SignatureContents{ForwardedUrl: "https://app.example.com", RequestedTime: time.Now()}
+			legacySignature, legacyMetadata, err := routeservice.BuildSignatureAndMetadata(crypto, legacyContents)
+			Expect(err).ToNot(HaveOccurred())
+
+			decryptedSignature, err := routeservice.SignatureContentsFromHeaders(legacySignature, legacyMetadata, crypto)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(decryptedSignature.RouteServiceUrl).To(BeEmpty())
+
+			metadataBytes, err := base64.URLEncoding.DecodeString(legacyMetadata)
+			Expect(err).ToNot(HaveOccurred())
+			metadata := routeservice.Metadata{}
+			Expect(json.Unmarshal(metadataBytes, &metadata)).To(Succeed())
+			signatureBytes, err := base64.URLEncoding.DecodeString(legacySignature)
+			Expect(err).ToNot(HaveOccurred())
+			plainText, err := crypto.Decrypt(signatureBytes, metadata.Nonce)
+			Expect(err).ToNot(HaveOccurred())
+			legacyJSON := map[string]interface{}{}
+			Expect(json.Unmarshal(plainText, &legacyJSON)).To(Succeed())
+			Expect(legacyJSON).ToNot(HaveKey("route_service_url"))
 		})
 	})
 

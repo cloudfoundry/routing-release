@@ -10,8 +10,9 @@ import (
 )
 
 type SignatureContents struct {
-	ForwardedUrl  string    `json:"forwarded_url"`
-	RequestedTime time.Time `json:"requested_time"`
+	ForwardedUrl    string    `json:"forwarded_url"`
+	RequestedTime   time.Time `json:"requested_time"`
+	RouteServiceUrl string    `json:"route_service_url,omitempty"`
 }
 
 type Metadata struct {

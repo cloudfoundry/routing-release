@@ -3081,7 +3081,7 @@ var _ = Describe("Proxy", func() {
 		It("does not match IPv4 address to IPv6 prefix", func() {
 			blockList = []netip.Prefix{netip.MustParsePrefix("::1/128")}
 			config = routeservice.NewRouteServiceConfig(
-				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, false, blockList,
+				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, true, false, blockList,
 			)
 			control := proxy.RouteServiceDialControl(config)
 			err := control("tcp", "127.0.0.1:80", nil)
@@ -3091,7 +3091,7 @@ var _ = Describe("Proxy", func() {
 		It("matches IPv4-mapped IPv6 address to IPv4 prefix and blocks it", func() {
 			blockList = []netip.Prefix{netip.MustParsePrefix("192.168.1.0/24")}
 			config = routeservice.NewRouteServiceConfig(
-				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, false, blockList,
+				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, true, false, blockList,
 			)
 			control := proxy.RouteServiceDialControl(config)
 			err := control("tcp", "[::ffff:192.168.1.1]:80", nil)
@@ -3105,7 +3105,7 @@ var _ = Describe("Proxy", func() {
 		It("matches IP with IPv6 zone to prefix and blocks it", func() {
 			blockList = []netip.Prefix{netip.MustParsePrefix("fe80::/10")}
 			config = routeservice.NewRouteServiceConfig(
-				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, false, blockList,
+				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, true, false, blockList,
 			)
 			control := proxy.RouteServiceDialControl(config)
 			err := control("tcp", "[fe80::1%lo0]:80", nil)
@@ -3119,7 +3119,7 @@ var _ = Describe("Proxy", func() {
 		It("blocks plain IPv6 address matched by IPv6 prefix", func() {
 			blockList = []netip.Prefix{netip.MustParsePrefix("2001:db8::/32")}
 			config = routeservice.NewRouteServiceConfig(
-				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, false, blockList,
+				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, true, false, blockList,
 			)
 			control := proxy.RouteServiceDialControl(config)
 			err := control("tcp", "[2001:db8::1]:80", nil)
@@ -3130,7 +3130,7 @@ var _ = Describe("Proxy", func() {
 		It("allows connection when IPv6 address with zone falls outside all blocklist prefixes", func() {
 			blockList = []netip.Prefix{netip.MustParsePrefix("10.0.0.0/8")}
 			config = routeservice.NewRouteServiceConfig(
-				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, false, blockList,
+				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, true, false, blockList,
 			)
 			control := proxy.RouteServiceDialControl(config)
 			// fe80::1%lo0 is a link-local address not in 10.0.0.0/8; must be allowed
@@ -3141,7 +3141,7 @@ var _ = Describe("Proxy", func() {
 		It("allows connection when IP is not in blocklist", func() {
 			blockList = []netip.Prefix{netip.MustParsePrefix("10.0.0.0/8")}
 			config = routeservice.NewRouteServiceConfig(
-				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, false, blockList,
+				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, true, false, blockList,
 			)
 			control := proxy.RouteServiceDialControl(config)
 			err := control("tcp", "192.168.1.1:80", nil)
@@ -3151,7 +3151,7 @@ var _ = Describe("Proxy", func() {
 		It("blocks connection and returns error when IP is in blocklist", func() {
 			blockList = []netip.Prefix{netip.MustParsePrefix("192.168.1.0/24")}
 			config = routeservice.NewRouteServiceConfig(
-				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, false, blockList,
+				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, true, false, blockList,
 			)
 			control := proxy.RouteServiceDialControl(config)
 			err := control("tcp", "192.168.1.1:80", nil)
@@ -3162,7 +3162,7 @@ var _ = Describe("Proxy", func() {
 		It("returns an error when ParseAddrPort fails for an invalid address", func() {
 			blockList = []netip.Prefix{netip.MustParsePrefix("10.0.0.0/8")}
 			config = routeservice.NewRouteServiceConfig(
-				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, false, blockList,
+				logger.Logger, true, false, nil, 1*time.Second, nil, nil, false, false, true, false, blockList,
 			)
 			control := proxy.RouteServiceDialControl(config)
 			// Use an invalid address that is not a zero-value/empty IP

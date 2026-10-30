@@ -84,6 +84,7 @@ var _ = Describe("Route Services", func() {
 			nil,
 			recommendHTTPS,
 			strictSignatureValidation,
+			conf.RouteServiceConfig.AllowUnboundSignatures,
 			conf.RouteServiceConfig.EnableWebsockets,
 			[]netip.Prefix{}, // Pass empty blocklist for tests
 		)

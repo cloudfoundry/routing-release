@@ -65,6 +65,7 @@ var _ = Describe("Proxy Unit tests", func() {
 				cryptoPrev,
 				false,
 				false,
+				conf.RouteServiceConfig.AllowUnboundSignatures,
 				conf.RouteServiceConfig.EnableWebsockets,
 				[]netip.Prefix{},
 			)
