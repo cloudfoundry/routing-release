@@ -1,5 +1,5 @@
-# code.cloudfoundry.org/tlsconfig v0.69.0
-## explicit; go 1.26.0
+# code.cloudfoundry.org/tlsconfig v0.70.0
+## explicit; go 1.27.3
 code.cloudfoundry.org/tlsconfig
 # github.com/klauspost/compress v1.20.3
 ## explicit; go 1.25
