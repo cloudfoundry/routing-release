@@ -167,6 +167,7 @@ files:
   - code.cloudfoundry.org/vendor/github.com/openzipkin/zipkin-go/model/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/openzipkin/zipkin-go/propagation/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/openzipkin/zipkin-go/propagation/b3/*.go # gosub
+  - code.cloudfoundry.org/vendor/github.com/pandatix/go-abnf/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/pkg/errors/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/prometheus/client_golang/internal/github.com/golang/gddo/httputil/*.go # gosub
   - code.cloudfoundry.org/vendor/github.com/prometheus/client_golang/internal/github.com/golang/gddo/httputil/header/*.go # gosub
