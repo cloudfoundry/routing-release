@@ -123,12 +123,15 @@ func (r *routesConfigWatcher) registerNewRoutesFromConfigFile(configFile string)
 		}
 	}
 
-	for i, route := range r.discoveredRoutes[configFile] {
-		if !containsRoute(configRoutes, route) {
-			r.discoveredRoutes[configFile] = append(r.discoveredRoutes[configFile][:i], r.discoveredRoutes[configFile][i+1:]...)
-			r.routeRemovedChan <- route
+	keptRoutes := make([]config.Route, 0, len(r.discoveredRoutes[configFile]))
+	for _, route := range r.discoveredRoutes[configFile] {
+		if containsRoute(configRoutes, route) {
+			keptRoutes = append(keptRoutes, route)
+			continue
 		}
+		r.routeRemovedChan <- route
 	}
+	r.discoveredRoutes[configFile] = keptRoutes
 }
 
 func containsRoute(routes []config.Route, route config.Route) bool {

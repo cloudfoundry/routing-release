@@ -253,6 +253,48 @@ var _ = Describe("RoutesConfigWatcher", func() {
 				})
 			})
 
+			Context("when config file is updated and several routes are removed", func() {
+				BeforeEach(func() {
+					// rewrite file1 so it holds three routes before the watcher first runs
+					routesBytes, err := yaml.Marshal(registrar.RoutesConfigSchema{Routes: []config.RouteSchema{route1Schema, route2Schema, route4Schema}})
+					Expect(err).NotTo(HaveOccurred())
+					Expect(cfgFile1.Truncate(0)).To(Succeed())
+					_, err = cfgFile1.Seek(0, 0)
+					Expect(err).NotTo(HaveOccurred())
+					_, err = cfgFile1.Write(routesBytes)
+					Expect(err).NotTo(HaveOccurred())
+				})
+
+				updateFile1 := func(schemas ...config.RouteSchema) {
+					routesBytes, err := yaml.Marshal(registrar.RoutesConfigSchema{Routes: schemas})
+					Expect(err).NotTo(HaveOccurred())
+					Expect(cfgFile1.Truncate(0)).To(Succeed())
+					_, err = cfgFile1.Seek(0, 0)
+					Expect(err).NotTo(HaveOccurred())
+					_, err = cfgFile1.Write(routesBytes)
+					Expect(err).NotTo(HaveOccurred())
+				}
+
+				drainDiscovered := func() {
+					var r config.Route
+					for i := 0; i < 4; i++ { // route1, route2, route4 from file1 + route3 from file2
+						Eventually(routesDiscovered, 2).Should(Receive(&r))
+					}
+				}
+
+				It("notifies about every removed route without panicking when several are removed at once", func() {
+					drainDiscovered()
+					updateFile1(route1Schema)
+
+					var removed config.Route
+					Eventually(routesRemoved, 3).Should(Receive(&removed))
+					Expect(removed).To(Equal(route2))
+					Eventually(routesRemoved, 3).Should(Receive(&removed))
+					Expect(removed).To(Equal(route4))
+					Consistently(routesRemoved).ShouldNot(Receive())
+				})
+			})
+
 			Context("when config file is removed", func() {
 				It("removes routes from that config file", func() {
 					var receivedRoute config.Route
