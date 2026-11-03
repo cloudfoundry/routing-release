@@ -28,6 +28,7 @@ type RouteService struct {
 	errorWriter                 errorwriter.ErrorWriter
 	hairpinningAllowlistDomains map[string]struct{}
 	hairpinDeniedHosts          sync.Map
+	untrustedSignatureHosts     sync.Map
 }
 
 var errUnboundRouteServiceSignature = errors.New("route service signature is not bound to this destination")
@@ -342,7 +343,31 @@ func (r *RouteService) logHairpinDenied(host string, uri route.Uri, matched, rea
 }
 
 func (r *RouteService) IsRouteServiceTraffic(req *http.Request) bool {
-	return r.classifySignature(req) == nil
+	err := r.classifySignature(req)
+	if errors.Is(err, errUnboundRouteServiceSignature) {
+		// A valid, unexpired signature was presented but is not bound to this
+		// destination, so the request is treated as untrusted and its XFCC/XFP
+		// headers are sanitized.
+		r.logUntrustedSignature(req)
+	}
+	return err == nil
+}
+
+// logUntrustedSignature records that a request carried a valid route-service
+// signature not bound to its destination. It logs once per host at Info (to
+// avoid log-flooding under a replay burst) and every occurrence at Debug,
+// mirroring logHairpinDenied.
+func (r *RouteService) logUntrustedSignature(req *http.Request) {
+	host := req.Host
+	attrs := []any{
+		slog.String("host", hostWithoutPort(host)),
+		slog.String("path", req.URL.EscapedPath()),
+	}
+	logger := LoggerWithTraceInfo(r.logger, req)
+	if _, seen := r.untrustedSignatureHosts.LoadOrStore(host, struct{}{}); !seen {
+		logger.Info("route-service-signature-not-bound-to-destination", attrs...)
+	}
+	logger.Debug("route-service-signature-not-bound-to-destination", attrs...)
 }
 
 func (r *RouteService) classifySignature(req *http.Request) error {

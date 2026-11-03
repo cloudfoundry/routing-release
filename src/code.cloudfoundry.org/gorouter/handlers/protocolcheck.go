@@ -55,7 +55,11 @@ func (p *protocolCheck) ServeHTTP(rw http.ResponseWriter, r *http.Request, next 
 	}
 	if !isRequestTargetSupported(r) {
 		AddRouterErrorHeader(rw, "invalid_request_target")
-		logger.Info("invalid-request-target")
+		// Log the rejected target so operators can spot route-service bypass probes
+		logger.Info("invalid-request-target",
+			slog.String("request-target", r.RequestURI),
+			slog.String("method", r.Method),
+		)
 		p.errorWriter.WriteError(rw, http.StatusBadRequest, "Invalid request target", logger)
 		return
 	}

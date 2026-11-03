@@ -131,6 +131,42 @@ var _ = Describe("Route Service Handler", func() {
 		Expect(strings.Join(logger.Lines(zapcore.InfoLevel), "\n")).To(ContainSubstring("route-service-signature-not-trusted-for-current-route-service"))
 	})
 
+	It("logs once (deduped) when IsRouteServiceTraffic sees a valid signature not bound to the destination", func() {
+		// Destination has no route service of its own; a valid signature bound
+		// to a different route service is replayed here — the header-bypass
+		// shape that SkipSanitize/SkipSanitizeXFP evaluate via IsRouteServiceTraffic.
+		rs := NewRouteService(config, reg, logger.Logger, ew).(*RouteService)
+
+		routeServiceRequest, err := config.CreateRequest("https://other-route-service.com", forwardedUrl)
+		Expect(err).NotTo(HaveOccurred())
+		req.Header.Set(routeservice.HeaderKeySignature, routeServiceRequest.Signature)
+		req.Header.Set(routeservice.HeaderKeyMetadata, routeServiceRequest.Metadata)
+		req.Header.Set(routeservice.HeaderKeyForwardedURL, forwardedUrl)
+
+		callIsRouteServiceTraffic := func() bool {
+			var result bool
+			chain := negroni.New()
+			chain.Use(NewRequestInfo())
+			chain.UseFunc(func(rw http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+				reqInfo, rerr := ContextRequestInfo(r)
+				Expect(rerr).ToNot(HaveOccurred())
+				reqInfo.RoutePool = routePool
+				result = rs.IsRouteServiceTraffic(r)
+			})
+			chain.ServeHTTP(httptest.NewRecorder(), req)
+			return result
+		}
+
+		// routePool has no route service bound and the signed route service URL
+		// does not match the destination, so the signature is not trusted.
+		Expect(callIsRouteServiceTraffic()).To(BeFalse())
+		Expect(callIsRouteServiceTraffic()).To(BeFalse())
+
+		// Logged at Info exactly once despite two calls (deduped by host).
+		infoLines := strings.Join(logger.Lines(zapcore.InfoLevel), "\n")
+		Expect(strings.Count(infoLines, "route-service-signature-not-bound-to-destination")).To(Equal(1))
+	})
+
 	JustBeforeEach(func() {
 		handler = negroni.New()
 		handler.Use(NewRequestInfo())
