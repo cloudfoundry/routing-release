@@ -2435,6 +2435,7 @@ var _ = Describe("sourcing certificates from files", func() {
 		Expect(config.Nats.CertChain).To(Equal(string(chain.CertPEM)))
 		Expect(config.Nats.CACerts).To(Equal(string(chain.CACertPEM)))
 		Expect(config.Nats.CAPool).ToNot(BeNil())
+		Expect(config.Nats.ClientAuthCertificate.Certificate).ToNot(BeEmpty())
 
 		Expect(config.Backends.CertChain).To(Equal(string(chain.CertPEM)))
 		Expect(config.Backends.ClientAuthCertificate.Certificate).ToNot(BeEmpty())
@@ -2522,6 +2523,14 @@ var _ = Describe("sourcing certificates from files", func() {
 		Expect(config.Process()).To(MatchError(And(
 			ContainSubstring("failed to read tls_pem[0].cert_chain_file"),
 			ContainSubstring("missing.crt"),
+		)))
+	})
+
+	It("returns an error when the ca_certs_file is missing", func() {
+		config.CACertsFile = filepath.Join(dir, "missing-ca.crt")
+		Expect(config.Process()).To(MatchError(And(
+			ContainSubstring("failed to read ca_certs_file"),
+			ContainSubstring("missing-ca.crt"),
 		)))
 	})
 })

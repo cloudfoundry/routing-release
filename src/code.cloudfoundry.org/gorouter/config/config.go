@@ -917,7 +917,7 @@ func (c *Config) resolveFileReferences() error {
 	}{
 		{"nats.", &c.Nats.TLSPem},
 		{"backends.", &c.Backends.TLSPem},
-		{"route_services_config.", &c.RouteServiceConfig.TLSPem},
+		{"route_services.", &c.RouteServiceConfig.TLSPem},
 		{"routing_api.", &c.RoutingApi.TLSPem},
 	} {
 		if err := p.pem.resolveFiles(p.prefix); err != nil {
