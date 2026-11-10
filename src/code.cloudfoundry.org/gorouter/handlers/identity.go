@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"code.cloudfoundry.org/gorouter/config"
@@ -18,9 +19,10 @@ import (
 // - space:<space-guid> for the space GUID
 // - organization:<org-guid> for the organization GUID
 type CallerIdentity struct {
-	AppGUID   string
-	SpaceGUID string
-	OrgGUID   string
+	ServiceAccountSource string
+	AppGUID              string
+	SpaceGUID            string
+	OrgGUID              string
 }
 
 // cfIdentityHandler extracts the caller identity from the X-Forwarded-Client-Cert header
@@ -71,6 +73,11 @@ func (h *cfIdentityHandler) ServeHTTP(w http.ResponseWriter, r *http.Request, ne
 	if xfccHeader != "" {
 		identity, err := extractIdentityFromXFCC(xfccHeader, domainConfig.XFCCFormat)
 		if err == nil {
+			// Account grants require SAN-bearing, authenticated certificate data;
+			// compact Subject/Hash headers alone must never supply an account.
+			if len(r.TLS.VerifiedChains) > 0 && len(r.TLS.VerifiedChains[0]) > 0 {
+				identity.ServiceAccountSource = serviceAccountSource(r.TLS.VerifiedChains[0][0])
+			}
 			reqInfo.CallerIdentity = identity
 		}
 		// If extraction fails, continue without setting identity
@@ -78,6 +85,23 @@ func (h *cfIdentityHandler) ServeHTTP(w http.ResponseWriter, r *http.Request, ne
 	}
 
 	next(w, r)
+}
+
+var serviceAccountSANPattern = regexp.MustCompile(`\A([a-z0-9][a-z0-9-]{1,61}[a-z0-9])\.([a-z0-9][a-z0-9-]{1,61}[a-z0-9])\.svc\.identity\z`)
+
+func serviceAccountSource(cert *x509.Certificate) string {
+	var source string
+	for _, san := range cert.DNSNames {
+		if !strings.HasSuffix(strings.TrimSuffix(san, "."), ".svc.identity") {
+			continue
+		}
+		match := serviceAccountSANPattern.FindStringSubmatch(san)
+		if match == nil || source != "" {
+			return ""
+		}
+		source = "cf:svc:" + match[2] + ":" + match[1]
+	}
+	return source
 }
 
 // extractIdentityFromXFCC parses the X-Forwarded-Client-Cert header and extracts
