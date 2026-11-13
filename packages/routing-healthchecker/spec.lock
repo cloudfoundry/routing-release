@@ -1,4 +1,4 @@
 name: routing-healthchecker
-fingerprint: 9024c88090747cd4ef18b2d25ae8031cd0eefa6d02a4dabea0c14f0342003048
+fingerprint: b509fc4c0fb01f5e8f39e9c17dc340f6d62c0f9f1e1f365e0d2d54b876eadea7
 dependencies:
 - routing-golang-1.27-linux
