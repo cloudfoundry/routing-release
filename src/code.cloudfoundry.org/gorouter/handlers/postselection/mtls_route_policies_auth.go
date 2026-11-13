@@ -49,6 +49,10 @@ func (h *MtlsRoutePoliciesAuth) evaluateRoutePolicies(policies []string, identit
 			continue
 		}
 		switch {
+		case strings.HasPrefix(policy, "cf:svc:"):
+			if identity.ServiceAccountSource != "" && policy == identity.ServiceAccountSource {
+				return policy, true
+			}
 		case policy == "cf:any":
 			return policy, true
 		case strings.HasPrefix(policy, "cf:app:"):
