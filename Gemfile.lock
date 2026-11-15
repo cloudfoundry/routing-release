@@ -13,7 +13,7 @@ GEM
     parser (3.3.13.0)
       ast (~> 2.4.1)
       racc
-    prism (1.9.0)
+    prism (2.1.0)
     racc (1.8.1)
     rainbow (3.1.1)
     regexp_parser (2.13.1)
@@ -41,9 +41,9 @@ GEM
       rubocop-ast (>= 1.49.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 4.0)
-    rubocop-ast (1.50.0)
+    rubocop-ast (1.51.0)
       parser (>= 3.3.7.2)
-      prism (~> 1.7)
+      prism (>= 1.7)
     ruby-progressbar (1.13.0)
     semi_semantic (1.2.0)
     unicode-display_width (3.3.0)
@@ -60,4 +60,4 @@ DEPENDENCIES
   rubocop
 
 BUNDLED WITH
-  4.0.23
+  4.0.24
