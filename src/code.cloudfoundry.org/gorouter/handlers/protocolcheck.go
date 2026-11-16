@@ -59,10 +59,6 @@ func (p *protocolCheck) ServeHTTP(rw http.ResponseWriter, r *http.Request, next 
 		p.errorWriter.WriteError(rw, http.StatusBadRequest, "Invalid request target", logger)
 		return
 	}
-	if r.URL.Scheme != "" && !strings.EqualFold(r.URL.Scheme, "http") && !strings.EqualFold(r.URL.Scheme, "https") {
-		logger.Info("non-http-request-target", slog.String("scheme", r.URL.Scheme))
-	}
-
 	next(rw, r)
 }
 
