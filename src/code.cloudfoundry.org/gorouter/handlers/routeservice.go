@@ -31,6 +31,7 @@ type RouteService struct {
 }
 
 var errUnboundRouteServiceSignature = errors.New("route service signature is not bound to this destination")
+var errRouteServiceSignatureBoundMismatch = errors.New("route service signature is bound to a different route service")
 
 // NewRouteService creates a handler responsible for handling route services
 func NewRouteService(
@@ -80,12 +81,23 @@ func (r *RouteService) ServeHTTP(rw http.ResponseWriter, req *http.Request, next
 						logger,
 					)
 				} else {
+					// Strict mode is opt-in and fails loudly on invalid signatures.
+					// A signature bound elsewhere is a replay; an unbound one is disallowed when allow_unbound_signatures=false.
+					// These are security rejections, not a compatibility break; set strict mode off to tolerate them.
+					// The reason attribute helps operators diagnose apps that copy headers.
+					reason := "decrypt_failed"
+					switch {
+					case errors.Is(err, errRouteServiceSignatureBoundMismatch):
+						reason = "bound_mismatch"
+					case errors.Is(err, errUnboundRouteServiceSignature):
+						reason = "unbound"
+					}
 					AddRouterErrorHeader(rw, "invalid_route_service_signature")
 					r.errorWriter.WriteError(
 						rw,
 						http.StatusBadRequest,
 						"invalid route service signature detected",
-						logger,
+						logger.With(slog.String("reason", reason)),
 					)
 				}
 				return
@@ -370,8 +382,11 @@ func (r *RouteService) classifySignature(req *http.Request) error {
 	}
 
 	signedURL, err := parseSignedRouteServiceURL(signature.RouteServiceUrl)
-	if err != nil || !matchesSignedRouteService(signedURL, req) {
+	if err != nil {
 		return errUnboundRouteServiceSignature
+	}
+	if !matchesSignedRouteService(signedURL, req) {
+		return errRouteServiceSignatureBoundMismatch
 	}
 	return nil
 }

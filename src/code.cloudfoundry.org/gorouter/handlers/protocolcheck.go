@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/urfave/negroni/v3"
@@ -58,10 +59,20 @@ func (p *protocolCheck) ServeHTTP(rw http.ResponseWriter, r *http.Request, next 
 		p.errorWriter.WriteError(rw, http.StatusBadRequest, "Invalid request target", logger)
 		return
 	}
+	if r.URL.Scheme != "" && !strings.EqualFold(r.URL.Scheme, "http") && !strings.EqualFold(r.URL.Scheme, "https") {
+		logger.Info("non-http-request-target", slog.String("scheme", r.URL.Scheme))
+	}
 
 	next(rw, r)
 }
 
+// isRequestTargetSupported accepts origin-form and absolute-form targets with any scheme if authority is valid.
+// Non-http schemes were previously routed by host and path; routing and signing use only authority and path.
+// Opaque targets have no authority to route or sign against.
+// Empty host is rejected as required by RFC 9110.
+// CONNECT and non-OPTIONS asterisk targets never route to an app; they previously returned 502 or 404,
+// so the 400 isn't a breaking change.
+// Do not relax the rejected forms without re-reviewing route service signature binding.
 func isRequestTargetSupported(r *http.Request) bool {
 	if r.URL.Opaque != "" {
 		return false
@@ -71,7 +82,11 @@ func isRequestTargetSupported(r *http.Request) bool {
 		return true
 	}
 
-	return (strings.EqualFold(r.URL.Scheme, "http") || strings.EqualFold(r.URL.Scheme, "https")) && r.URL.Host != ""
+	if r.URL.Scheme == "" || r.URL.Host == "" {
+		return false
+	}
+	authority, err := url.Parse((&url.URL{Scheme: "http", Host: r.URL.Host}).String())
+	return err == nil && authority.Host == r.URL.Host
 }
 
 func (p *protocolCheck) hijack(rw http.ResponseWriter) (net.Conn, *bufio.ReadWriter, error) {

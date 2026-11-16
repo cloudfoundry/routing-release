@@ -302,6 +302,57 @@ var _ = Describe("Proxy", func() {
 			Expect(resp.StatusCode).To(Equal(http.StatusOK))
 		})
 
+		It("responds to HTTP/1.1 with non-http absolute-form request target", func() {
+			ln := test_util.RegisterConnHandler(r, "test.io", func(conn *test_util.HttpConn) {
+				conn.CheckLine("GET ws://test.io/p HTTP/1.1")
+				conn.WriteResponse(test_util.NewResponse(http.StatusOK))
+			})
+			defer ln.Close()
+
+			conn := dialProxy(proxyServer)
+			conn.WriteLines([]string{
+				"GET ws://test.io/p HTTP/1.1",
+				"Host: test.io",
+			})
+
+			resp, _ := conn.ReadResponse()
+			Expect(resp.StatusCode).To(Equal(http.StatusOK))
+		})
+
+		DescribeTable("absolute-form request targets", func(method, target string, wantStatus int) {
+			requestLine := fmt.Sprintf("%s %s HTTP/1.1", method, target)
+			if wantStatus == http.StatusOK {
+				ln := test_util.RegisterConnHandler(r, "test.io", func(conn *test_util.HttpConn) {
+					conn.CheckLine(requestLine)
+					conn.WriteResponse(test_util.NewResponse(http.StatusOK))
+				})
+				defer ln.Close()
+			}
+
+			conn := dialProxy(proxyServer)
+			conn.WriteLines([]string{requestLine, "Host: test.io"})
+			resp, _ := conn.ReadResponse()
+			Expect(resp.StatusCode).To(Equal(wantStatus))
+			if wantStatus != http.StatusOK {
+				if routerError := resp.Header.Get("X-Cf-Routererror"); routerError != "" {
+					Expect(routerError).To(Equal("invalid_request_target"))
+				}
+			}
+		},
+			Entry("ws scheme", "GET", "ws://test.io/p", http.StatusOK),
+			Entry("mixed case wss scheme and query", "GET", "WSS://test.io/p?x=1", http.StatusOK),
+			Entry("userinfo authority", "GET", "ftp://u:p@test.io/p", http.StatusOK),
+			Entry("escaped and repeated path separators", "GET", "custom+v1://test.io/a%2Fb//c", http.StatusOK),
+			Entry("empty port", "GET", "ws://test.io:/p", http.StatusOK),
+			Entry("empty path", "GET", "ws://test.io", http.StatusOK),
+			Entry("multi colon port", "GET", "ws://test.io:80:90/p", http.StatusBadRequest),
+			Entry("scheme without authority", "GET", "ws:test.io", http.StatusBadRequest),
+			Entry("empty authority", "GET", "ws:///p", http.StatusBadRequest),
+			Entry("empty http authority", "GET", "http:///p", http.StatusBadRequest),
+			Entry("connect authority form", "CONNECT", "test.io:443", http.StatusBadRequest),
+			Entry("asterisk with GET", "GET", "*", http.StatusBadRequest),
+		)
+
 		It("responds to http/1.1 with absolute-form request that has encoded characters in the path", func() {
 			ln := test_util.RegisterConnHandler(r, "test.io/my%20path/your_path", func(conn *test_util.HttpConn) {
 				conn.CheckLine("GET http://test.io/my%20path/your_path HTTP/1.1")

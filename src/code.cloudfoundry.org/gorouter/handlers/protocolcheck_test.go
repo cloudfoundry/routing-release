@@ -156,9 +156,25 @@ var _ = Describe("Protocolcheck", func() {
 				passed     bool
 			}{
 				{name: "opaque", request: "GET x:pass@other.example/ HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n", statusCode: http.StatusBadRequest},
+				{name: "ws opaque", request: "GET ws:opaque HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n", statusCode: http.StatusBadRequest},
+				{name: "ws no authority", request: "GET ws:/p HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n", statusCode: http.StatusBadRequest},
+				{name: "ws empty host", request: "GET ws:///p HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n", statusCode: http.StatusBadRequest},
 				{name: "authority", request: "CONNECT host:443 HTTP/1.1\r\nHost: host:443\r\nConnection: close\r\n\r\n", statusCode: http.StatusBadRequest},
 				{name: "userinfo", request: "GET http://u:p@host/ HTTP/1.1\r\nHost: host\r\nConnection: close\r\n\r\n", statusCode: http.StatusOK, passed: true},
-				{name: "unsupported scheme", request: "GET ftp://host/ HTTP/1.1\r\nHost: host\r\nConnection: close\r\n\r\n", statusCode: http.StatusBadRequest},
+				{name: "ws absolute", request: "GET ws://h/p HTTP/1.1\r\nHost: h\r\nConnection: close\r\n\r\n", statusCode: http.StatusOK, passed: true},
+				{name: "wss absolute", request: "GET wss://h/p HTTP/1.1\r\nHost: h\r\nConnection: close\r\n\r\n", statusCode: http.StatusOK, passed: true},
+				{name: "ftp absolute", request: "GET ftp://h/p HTTP/1.1\r\nHost: h\r\nConnection: close\r\n\r\n", statusCode: http.StatusOK, passed: true},
+				{name: "custom scheme", request: "GET custom+v1://h/p HTTP/1.1\r\nHost: h\r\nConnection: close\r\n\r\n", statusCode: http.StatusOK, passed: true},
+				{name: "ws userinfo", request: "GET ws://u:p@h/p HTTP/1.1\r\nHost: h\r\nConnection: close\r\n\r\n", statusCode: http.StatusOK, passed: true},
+				{name: "ws no path", request: "GET ws://h HTTP/1.1\r\nHost: h\r\nConnection: close\r\n\r\n", statusCode: http.StatusOK, passed: true},
+				{name: "ws query only", request: "GET ws://h?x=1 HTTP/1.1\r\nHost: h\r\nConnection: close\r\n\r\n", statusCode: http.StatusOK, passed: true},
+				{name: "ws port", request: "GET ws://h:8080/p HTTP/1.1\r\nHost: h:8080\r\nConnection: close\r\n\r\n", statusCode: http.StatusOK, passed: true},
+				{name: "ws empty port", request: "GET ws://h:/p HTTP/1.1\r\nHost: h:\r\nConnection: close\r\n\r\n", statusCode: http.StatusOK, passed: true},
+				{name: "ws ipv6", request: "GET ws://[::1]:80/p HTTP/1.1\r\nHost: [::1]:80\r\nConnection: close\r\n\r\n", statusCode: http.StatusOK, passed: true},
+				{name: "http empty port", request: "GET http://h:/p HTTP/1.1\r\nHost: h:\r\nConnection: close\r\n\r\n", statusCode: http.StatusOK, passed: true},
+				{name: "http percent-escaped host", request: "GET http://a%25.example.com/ HTTP/1.1\r\nHost: a.example.com\r\nConnection: close\r\n\r\n", statusCode: http.StatusOK, passed: true},
+				{name: "ws percent-escaped host", request: "GET ws://a%25.example.com/p HTTP/1.1\r\nHost: a.example.com\r\nConnection: close\r\n\r\n", statusCode: http.StatusOK, passed: true},
+				{name: "ws multi-colon authority", request: "GET ws://h:80:90/p HTTP/1.1\r\nHost: h:80:90\r\nConnection: close\r\n\r\n", statusCode: http.StatusBadRequest},
 				{name: "asterisk", request: "GET * HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n", statusCode: http.StatusBadRequest},
 				{name: "origin", request: "GET / HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n", statusCode: http.StatusOK, passed: true},
 				{name: "http absolute", request: "GET http://example.com/ HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n", statusCode: http.StatusOK, passed: true},
@@ -194,6 +210,38 @@ var _ = Describe("Protocolcheck", func() {
 				}
 			}
 		})
+	})
+
+	It("logs scheme for non-http request target", func() {
+		for _, target := range []struct {
+			request string
+			logged  bool
+		}{
+			{request: "GET ws://h/p HTTP/1.1\r\nHost: h\r\nConnection: close\r\n\r\n", logged: true},
+			{request: "GET http://h/p HTTP/1.1\r\nHost: h\r\nConnection: close\r\n\r\n"},
+			{request: "GET /p HTTP/1.1\r\nHost: h\r\nConnection: close\r\n\r\n"},
+		} {
+			previousLines := len(logger.TestSink.Lines())
+			server.Close()
+			server = ghttp.NewUnstartedServer()
+			server.AppendHandlers(n.ServeHTTP)
+			server.Start()
+			conn, err := net.Dial("tcp", server.Addr())
+			Expect(err).NotTo(HaveOccurred())
+			_, err = conn.Write([]byte(target.request))
+			Expect(err).NotTo(HaveOccurred())
+			_, err = http.ReadResponse(bufio.NewReader(conn), nil)
+			Expect(err).NotTo(HaveOccurred())
+			conn.Close()
+			if target.logged {
+				Expect(logger.TestSink.Lines()[previousLines:]).To(ContainElement(And(
+					ContainSubstring(`"message":"non-http-request-target"`),
+					ContainSubstring(`"scheme":"ws"`),
+				)))
+			} else {
+				Expect(logger.TestSink.Lines()[previousLines:]).NotTo(ContainElement(ContainSubstring("non-http-request-target")))
+			}
+		}
 	})
 
 	Context("unsupported versions of http", func() {

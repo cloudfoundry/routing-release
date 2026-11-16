@@ -1578,16 +1578,19 @@ var _ = Describe("route service signature classification", func() {
 			statusCode int
 			next       bool
 			errorCode  string
+			reason     string
 		}{
 			{name: "legacy field absent allowed", allow: true, requested: time.Now(), statusCode: http.StatusTeapot, next: true},
 			{name: "legacy empty field allowed", signedURL: "", allow: true, requested: time.Now(), statusCode: http.StatusTeapot, next: true},
-			{name: "legacy field absent disabled", allow: false, requested: time.Now(), statusCode: http.StatusBadRequest, errorCode: "invalid_route_service_signature"},
-			{name: "legacy empty field disabled", signedURL: "", allow: false, requested: time.Now(), statusCode: http.StatusBadRequest, errorCode: "invalid_route_service_signature"},
+			{name: "legacy field absent disabled", allow: false, requested: time.Now(), statusCode: http.StatusBadRequest, errorCode: "invalid_route_service_signature", reason: "unbound"},
+			{name: "legacy empty field disabled", signedURL: "", allow: false, requested: time.Now(), statusCode: http.StatusBadRequest, errorCode: "invalid_route_service_signature", reason: "unbound"},
 			{name: "bound match", signedURL: "https://rs.example/service", requested: time.Now(), statusCode: http.StatusTeapot, next: true},
-			{name: "bound mismatch", signedURL: "https://other.example/service", requested: time.Now(), statusCode: http.StatusBadRequest, errorCode: "invalid_route_service_signature"},
+			{name: "bound mismatch", signedURL: "https://other.example/service", requested: time.Now(), statusCode: http.StatusBadRequest, errorCode: "invalid_route_service_signature", reason: "bound_mismatch"},
+			{name: "corrupt signature", requested: time.Now(), statusCode: http.StatusBadRequest, errorCode: "invalid_route_service_signature", reason: "decrypt_failed"},
 			{name: "expired", signedURL: "https://rs.example/service", requested: time.Now().Add(-2 * time.Minute), statusCode: http.StatusGatewayTimeout, errorCode: "expired_route_service_signature"},
 		}
 		for _, testCase := range cases {
+			previousLines := len(logger.TestSink.Lines())
 			config = routeservice.NewRouteServiceConfig(logger.Logger, true, false, nil, time.Minute, crypto, nil, true, true, testCase.allow, true, nil)
 			routeService = NewRouteService(config, &fakeRegistry.FakeRegistry{}, logger.Logger, errorwriter.NewPlaintextErrorWriter()).(*RouteService)
 			req := requestWithPool("rs.example", "/service")
@@ -1595,6 +1598,9 @@ var _ = Describe("route service signature classification", func() {
 				setExplicitLegacySignature(req)
 			} else {
 				setSignature(req, testCase.signedURL, testCase.requested)
+			}
+			if testCase.name == "corrupt signature" {
+				req.Header.Set(routeservice.HeaderKeySignature, "garbage")
 			}
 			response := httptest.NewRecorder()
 			nextWasCalled := false
@@ -1606,6 +1612,13 @@ var _ = Describe("route service signature classification", func() {
 			Expect(nextWasCalled).To(Equal(testCase.next), testCase.name)
 			if testCase.errorCode != "" {
 				Expect(response.Header().Get("X-Cf-RouterError")).To(Equal(testCase.errorCode), testCase.name)
+			}
+			if testCase.statusCode == http.StatusBadRequest {
+				Expect(response.Body.String()).To(ContainSubstring("invalid route service signature detected"), testCase.name)
+				Expect(logger.TestSink.Lines()[previousLines:]).To(ContainElement(ContainSubstring(`"reason":"`+testCase.reason+`"`)), testCase.name)
+			}
+			if testCase.name == "expired" {
+				Expect(logger.TestSink.Lines()[previousLines:]).NotTo(ContainElement(ContainSubstring(`"reason"`)))
 			}
 		}
 	})
