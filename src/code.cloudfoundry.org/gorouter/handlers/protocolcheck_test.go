@@ -11,7 +11,6 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
 	"github.com/urfave/negroni/v3"
-	"golang.org/x/net/http2"
 
 	"code.cloudfoundry.org/gorouter/errorwriter"
 	"code.cloudfoundry.org/gorouter/handlers"
@@ -68,7 +67,7 @@ var _ = Describe("Protocolcheck", func() {
 				http2Server.StartTLS()
 				defer http2Server.Close()
 
-				client := &http.Client{Transport: &http2.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}}
+				client := &http.Client{Transport: &http.Transport{ForceAttemptHTTP2: true, TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}}
 				defer client.CloseIdleConnections()
 
 				response, err := client.Get(http2Server.URL)
