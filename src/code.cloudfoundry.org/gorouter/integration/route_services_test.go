@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"bufio"
 	"crypto/tls"
 	"fmt"
 	"io"
@@ -12,6 +13,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -46,13 +48,15 @@ var _ = Describe("Route services", func() {
 	)
 
 	var (
-		testApp        *httptest.Server
-		routeService   *httptest.Server
-		wsTestApp      *httptest.Server
-		wsRouteService *httptest.Server
+		testApp              *httptest.Server
+		routeService         *httptest.Server
+		wsTestApp            *httptest.Server
+		wsRouteService       *httptest.Server
+		routeServiceRequests int32
 	)
 
 	BeforeEach(func() {
+		atomic.StoreInt32(&routeServiceRequests, 0)
 		testState = NewTestState()
 		testApp = httptest.NewServer(http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
@@ -65,6 +69,7 @@ var _ = Describe("Route services", func() {
 		routeService = httptest.NewUnstartedServer(
 			http.HandlerFunc(
 				func(w http.ResponseWriter, r *http.Request) {
+					atomic.AddInt32(&routeServiceRequests, 1)
 					defer GinkgoRecover()
 
 					forwardedURL := r.Header.Get("X-CF-Forwarded-Url")
@@ -183,6 +188,32 @@ var _ = Describe("Route services", func() {
 		})
 	})
 
+	Context("Internal route service with hairpinning enabled", func() {
+		BeforeEach(func() {
+			testState.cfg.RouteServicesHairpinning = true
+			testState.StartGorouterOrFail()
+			routeService.Start()
+			testState.registerWithInternalRouteService(
+				testApp,
+				routeService,
+				appHostname,
+				testState.cfg.SSLPort,
+			)
+		})
+
+		It("completes a request through the route service", func() {
+			req := testState.newGetRequest(fmt.Sprintf("https://%s", appHostname))
+			res, err := testState.client.Do(req)
+			Expect(err).NotTo(HaveOccurred())
+			defer res.Body.Close()
+			Expect(res.StatusCode).To(Equal(http.StatusOK))
+			body, err := io.ReadAll(res.Body)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(body).To(Equal([]byte("I'm the route service")))
+			Eventually(func() int32 { return atomic.LoadInt32(&routeServiceRequests) }).Should(BeNumerically(">", 0))
+		})
+	})
+
 	Context("Happy Path", func() {
 		Context("When an app is registered with a simple route service", func() {
 			BeforeEach(func() {
@@ -220,6 +251,23 @@ var _ = Describe("Route services", func() {
 				body, err := io.ReadAll(res.Body)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(body).To(Equal([]byte("I'm the route service")))
+			})
+
+			It("rejects an opaque request-target", func() {
+				conn, err := net.Dial("tcp", fmt.Sprintf("127.0.0.1:%d", testState.cfg.Port))
+				Expect(err).NotTo(HaveOccurred())
+				defer conn.Close()
+
+				_, err = fmt.Fprintf(conn, "GET x:pass@other.example/ HTTP/1.1\r\nHost: %s\r\nConnection: close\r\n\r\n", appHostname)
+				Expect(err).NotTo(HaveOccurred())
+
+				res, err := http.ReadResponse(bufio.NewReader(conn), nil)
+				Expect(err).NotTo(HaveOccurred())
+				defer res.Body.Close()
+
+				Expect(res.StatusCode).To(Equal(http.StatusBadRequest))
+				Expect(res.Header.Get("X-Cf-Routererror")).To(Equal("invalid_request_target"))
+				Expect(atomic.LoadInt32(&routeServiceRequests)).To(BeZero())
 			})
 		})
 	})

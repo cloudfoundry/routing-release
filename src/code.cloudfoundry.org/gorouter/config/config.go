@@ -183,6 +183,7 @@ type RouteServiceConfig struct {
 	ClientAuthCertificate     tls.Certificate
 	MaxAttempts               int              `yaml:"max_attempts"`
 	StrictSignatureValidation bool             `yaml:"strict_signature_validation"`
+	AllowUnboundSignatures    bool             `yaml:"allow_unbound_signatures"`
 	TLSPem                    `yaml:",inline"` // embed to get cert_chain and private_key for client authentication
 	EnableWebsockets          bool             `yaml:"enable_websockets"`
 	EgressBlocklist           []string         `yaml:"egress_blocklist,omitempty"`
@@ -576,6 +577,7 @@ var defaultConfig = Config{
 	EndpointDialTimeout:            5 * time.Second,
 	EndpointKeepAliveProbeInterval: 1 * time.Second,
 	RouteServiceTimeout:            60 * time.Second,
+	RouteServiceConfig:             RouteServiceConfig{AllowUnboundSignatures: true},
 	TLSHandshakeTimeout:            10 * time.Second,
 
 	PublishStartMessageInterval:               30 * time.Second,

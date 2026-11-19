@@ -35,6 +35,21 @@ var _ = Describe("Config", func() {
 	}
 
 	Describe("Initialize", func() {
+		Context("route service unbound signatures", func() {
+			It("defaults to true when route_services is omitted", func() {
+				Expect(config.RouteServiceConfig.AllowUnboundSignatures).To(BeTrue())
+			})
+
+			It("allows the setting to be disabled", func() {
+				config.Initialize([]byte("route_services:\n  allow_unbound_signatures: false\n"))
+				Expect(config.RouteServiceConfig.AllowUnboundSignatures).To(BeFalse())
+			})
+
+			It("defaults to true when another route_services setting is provided", func() {
+				config.Initialize([]byte("route_services:\n  enable_websockets: false\n"))
+				Expect(config.RouteServiceConfig.AllowUnboundSignatures).To(BeTrue())
+			})
+		})
 
 		Context("zone", func() {
 			It("can set the zone", func() {

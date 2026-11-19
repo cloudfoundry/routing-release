@@ -228,6 +228,7 @@ describe 'gorouter' do
             'cert_chain' => ROUTE_SERVICES_CLIENT_TEST_CERT,
             'private_key' => ROUTE_SERVICES_CLIENT_TEST_KEY,
             'strict_signature_validation' => false,
+            'allow_unbound_signatures' => true,
             'enable_websockets' => true
           },
           'frontend_idle_timeout' => 5,
@@ -886,6 +887,19 @@ describe 'gorouter' do
           end
           it 'parses to true' do
             expect(parsed_yaml['route_services']['strict_signature_validation']).to eq(true)
+          end
+        end
+        context 'when allow_unbound_signatures not set' do
+          it 'defaults to true' do
+            expect(parsed_yaml['route_services']['allow_unbound_signatures']).to eq(true)
+          end
+        end
+        context 'when allow_unbound_signatures disabled' do
+          before do
+            deployment_manifest_fragment['router']['route_services_allow_unbound_signatures'] = false
+          end
+          it 'parses to false' do
+            expect(parsed_yaml['route_services']['allow_unbound_signatures']).to eq(false)
           end
         end
         context 'when enable_websockets not set' do

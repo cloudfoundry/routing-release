@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"net/netip"
+	"net/url"
 	"sync"
 	"time"
 
@@ -26,16 +27,17 @@ func HaveErrored() types.GomegaMatcher {
 
 var _ = Describe("Route Services", func() {
 	var (
-		routeServiceListener net.Listener
-		routeServiceURL      string
-		routeServiceHandler  func(rw http.ResponseWriter, req *http.Request)
-		signatureHeader      string
-		metadataHeader       string
-		cryptoKey            = "ABCDEFGHIJKLMNOP"
-		forwardedUrl         string
-		rsCertChain          test_util.CertChain
-		routeServiceServer   sync.WaitGroup
-		logger               *test_util.TestLogger
+		routeServiceListener        net.Listener
+		routeServiceURL             string
+		routeServiceHandler         func(rw http.ResponseWriter, req *http.Request)
+		signatureHeader             string
+		metadataHeader              string
+		cryptoKey                   = "ABCDEFGHIJKLMNOP"
+		forwardedUrl                string
+		verifyForwardedURLSignature bool
+		rsCertChain                 test_util.CertChain
+		routeServiceServer          sync.WaitGroup
+		logger                      *test_util.TestLogger
 	)
 
 	JustBeforeEach(func() {
@@ -51,6 +53,7 @@ var _ = Describe("Route Services", func() {
 		conf.RouteServiceEnabled = true
 		recommendHTTPS = true
 		forwardedUrl = "https://my_host.com/resource+9-9_9?query=123&query$2=345#page1..5"
+		verifyForwardedURLSignature = false
 
 		routeServiceHandler = func(w http.ResponseWriter, r *http.Request) {
 			Expect(r.Host).ToNot(Equal("my_host.com"))
@@ -59,13 +62,20 @@ var _ = Describe("Route Services", func() {
 
 			crypto, err := secure.NewAesGCM([]byte(cryptoKey))
 			Expect(err).ToNot(HaveOccurred())
-			_, err = routeservice.SignatureContentsFromHeaders(sigHeader, metaHeader, crypto)
+			contents, err := routeservice.SignatureContentsFromHeaders(sigHeader, metaHeader, crypto)
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(r.Header.Get("X-CF-ApplicationID")).To(Equal(""))
 
 			// validate client request header
 			Expect(r.Header.Get("X-CF-Forwarded-Url")).To(Equal(forwardedUrl))
+			if verifyForwardedURLSignature {
+				Expect(contents.ForwardedUrl).To(Equal(r.Header.Get("X-CF-Forwarded-Url")))
+				parsedURL, err := url.Parse(r.Header.Get("X-CF-Forwarded-Url"))
+				Expect(err).NotTo(HaveOccurred())
+				Expect(parsedURL.Host).To(Equal("my_host.com"))
+				Expect(parsedURL.Scheme).To(Or(Equal("http"), Equal("https")))
+			}
 
 			_, err = w.Write([]byte("My Special Snowflake Route Service\n"))
 			Expect(err).ToNot(HaveOccurred())
@@ -84,6 +94,7 @@ var _ = Describe("Route Services", func() {
 			nil,
 			recommendHTTPS,
 			strictSignatureValidation,
+			conf.RouteServiceConfig.AllowUnboundSignatures,
 			conf.RouteServiceConfig.EnableWebsockets,
 			[]netip.Prefix{}, // Pass empty blocklist for tests
 		)
@@ -145,6 +156,25 @@ var _ = Describe("Route Services", func() {
 	Context("with SkipSSLValidation enabled", func() {
 		BeforeEach(func() {
 			conf.SkipSSLValidation = true
+		})
+
+		It("uses the absolute-form authority for the route service forwarded URL and signature", func() {
+			forwardedUrl = "https://my_host.com/resource+9-9_9?query=123"
+			verifyForwardedURLSignature = true
+
+			ln := test_util.RegisterConnHandler(r, "my_host.com", func(conn *test_util.HttpConn) {
+				defer GinkgoRecover()
+				Fail("request should be sent to the route service")
+			}, test_util.RegisterConfig{RouteServiceUrl: routeServiceURL})
+			defer func() { Expect(ln.Close()).ToNot(HaveErrored()) }()
+
+			conn := dialProxy(proxyServer)
+			conn.WriteLines([]string{
+				"GET ws://my_host.com/resource+9-9_9?query=123 HTTP/1.1",
+				"Host: other.example",
+			})
+			resp, _ := conn.ReadResponse()
+			Expect(resp.StatusCode).To(Equal(http.StatusOK))
 		})
 
 		Context("when a request does not have a valid Route service signature header", func() {

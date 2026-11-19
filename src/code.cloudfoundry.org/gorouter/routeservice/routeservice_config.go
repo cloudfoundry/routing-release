@@ -29,6 +29,7 @@ type RouteServiceConfig struct {
 	logger                           *slog.Logger
 	recommendHttps                   bool
 	strictSignatureValidation        bool
+	allowUnboundSignatures           bool
 	enableWebsockets                 bool
 	egressBlocklist                  []netip.Prefix
 }
@@ -58,6 +59,7 @@ func NewRouteServiceConfig(
 	cryptoPrev secure.Crypto,
 	recommendHttps bool,
 	strictSignatureValidation bool,
+	allowUnboundSignatures bool,
 	enableWebsockets bool,
 	egressBlocklist []netip.Prefix,
 ) *RouteServiceConfig {
@@ -71,6 +73,7 @@ func NewRouteServiceConfig(
 		logger:                           logger,
 		recommendHttps:                   recommendHttps,
 		strictSignatureValidation:        strictSignatureValidation,
+		allowUnboundSignatures:           allowUnboundSignatures,
 		enableWebsockets:                 enableWebsockets,
 		egressBlocklist:                  egressBlocklist,
 	}
@@ -96,6 +99,10 @@ func (rs *RouteServiceConfig) StrictSignatureValidation() bool {
 	return rs.strictSignatureValidation
 }
 
+func (rs *RouteServiceConfig) AllowUnboundSignatures() bool {
+	return rs.allowUnboundSignatures
+}
+
 func (rs *RouteServiceConfig) RouteServiceHairpinning() bool {
 	return rs.routeServiceHairpinning
 }
@@ -106,7 +113,12 @@ func (rs *RouteServiceConfig) RouteServiceHairpinningAllowlist() []string {
 
 func (rs *RouteServiceConfig) CreateRequest(rsUrl, forwardedUrl string) (RequestToSendToRouteService, error) {
 	var routeServiceArgs RequestToSendToRouteService
-	sig, metadata, err := rs.generateSignatureAndMetadata(forwardedUrl)
+	rsURL, err := url.Parse(rsUrl)
+	if err != nil {
+		return routeServiceArgs, err
+	}
+
+	sig, metadata, err := rs.generateSignatureAndMetadata(forwardedUrl, rsURL.String())
 	if err != nil {
 		return routeServiceArgs, err
 	}
@@ -116,10 +128,6 @@ func (rs *RouteServiceConfig) CreateRequest(rsUrl, forwardedUrl string) (Request
 	routeServiceArgs.Metadata = metadata
 	routeServiceArgs.ForwardedURL = forwardedUrl
 
-	rsURL, err := url.Parse(rsUrl)
-	if err != nil {
-		return routeServiceArgs, err
-	}
 	routeServiceArgs.ParsedUrl = rsURL
 
 	return routeServiceArgs, nil
@@ -152,10 +160,11 @@ func (rs *RouteServiceConfig) ValidateRequest(request RequestReceivedFromRouteSe
 	return &signatureContents, nil
 }
 
-func (rs *RouteServiceConfig) generateSignatureAndMetadata(forwardedUrlRaw string) (string, string, error) {
+func (rs *RouteServiceConfig) generateSignatureAndMetadata(forwardedUrlRaw, routeServiceUrl string) (string, string, error) {
 	signatureContents := &SignatureContents{
-		RequestedTime: time.Now(),
-		ForwardedUrl:  forwardedUrlRaw,
+		RequestedTime:   time.Now(),
+		ForwardedUrl:    forwardedUrlRaw,
+		RouteServiceUrl: routeServiceUrl,
 	}
 
 	signatureHeader, metadataHeader, err := BuildSignatureAndMetadata(rs.crypto, signatureContents)
