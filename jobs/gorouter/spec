@@ -210,6 +210,18 @@ properties:
       xfcc_format controls the format of the X-Forwarded-Client-Cert header:
       - "raw" (default): Full base64-encoded certificate (~1.5KB)
       - "envoy": Compact Hash=<sha256>;Subject="<DN>" format (~300 bytes)
+
+      Security — forwarded_client_cert must match where client mTLS terminates:
+      - sanitize_set (default, recommended): use when Gorouter terminates the
+        client mTLS handshake for this domain. Gorouter strips inbound XFCC and
+        sets it from the verified client certificate, so any identity derived from
+        XFCC (e.g. route-policy enforcement) is bound to the verified peer.
+      - always_forward / forward: Gorouter preserves the inbound XFCC header. Only
+        use these when a trusted upstream (e.g. a TLS-terminating load balancer)
+        performs the client mTLS verification AND strips client-supplied XFCC
+        before forwarding. If an untrusted client can reach Gorouter and set XFCC
+        in these modes, it can assert an arbitrary CF app/space/org identity for
+        route-policy authorization.
     default: []
     example:
     - name: "*.apps.identity"
@@ -224,7 +236,7 @@ properties:
         -----BEGIN CERTIFICATE-----
         <CA certificate for secure.example.com>
         -----END CERTIFICATE-----
-      forwarded_client_cert: forward
+      forwarded_client_cert: sanitize_set
       xfcc_format: raw
   router.backends.max_attempts:
     description: |
