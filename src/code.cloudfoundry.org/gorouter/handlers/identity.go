@@ -87,7 +87,20 @@ func (h *cfIdentityHandler) ServeHTTP(w http.ResponseWriter, r *http.Request, ne
 	next(w, r)
 }
 
-var serviceAccountSANPattern = regexp.MustCompile(`\A([a-z0-9][a-z0-9-]{1,61}[a-z0-9])\.([a-z0-9][a-z0-9-]{1,61}[a-z0-9])\.svc\.identity\z`)
+// serviceAccountLabel is a lowercase RFC 1123 label of 3-63 characters, the form
+// of both the org prefix and the account name in a service-account identity.
+const serviceAccountLabel = `[a-z0-9][a-z0-9-]{1,61}[a-z0-9]`
+
+var (
+	serviceAccountSANPattern    = regexp.MustCompile(`\A(` + serviceAccountLabel + `)\.(` + serviceAccountLabel + `)\.svc\.identity\z`)
+	serviceAccountSourcePattern = regexp.MustCompile(`\Acf:svc:(` + serviceAccountLabel + `):(` + serviceAccountLabel + `)\z`)
+)
+
+// IsServiceAccountSource reports whether source is a well-formed route-policy
+// source for a service account: cf:svc:<org-prefix>:<account-name>.
+func IsServiceAccountSource(source string) bool {
+	return serviceAccountSourcePattern.MatchString(source)
+}
 
 func serviceAccountSource(cert *x509.Certificate) string {
 	var source string
