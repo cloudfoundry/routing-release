@@ -38,6 +38,7 @@ func NewMtlsRoutePoliciesAuth(cfg *config.Config, logger *slog.Logger) PostSelec
 //	cf:app:<guid>      — allow a specific app
 //	cf:space:<guid>    — allow all apps in a space
 //	cf:org:<guid>      — allow all apps in an org
+//	cf:svc:<prefix>:<name> — allow apps using a service account
 //
 // Returns the matched source string and true on success; empty string and false
 // if no policy matches. Unrecognized (malformed) rules are skipped, but logged
@@ -49,6 +50,14 @@ func (h *MtlsRoutePoliciesAuth) evaluateRoutePolicies(policies []string, identit
 			continue
 		}
 		switch {
+		case strings.HasPrefix(policy, "cf:svc:"):
+			if !handlers.IsServiceAccountSource(policy) {
+				h.warnMalformed(policy)
+				continue
+			}
+			if identity.ServiceAccountSource != "" && policy == identity.ServiceAccountSource {
+				return policy, true
+			}
 		case policy == "cf:any":
 			return policy, true
 		case strings.HasPrefix(policy, "cf:app:"):
@@ -70,12 +79,16 @@ func (h *MtlsRoutePoliciesAuth) evaluateRoutePolicies(policies []string, identit
 			// Unrecognized rule syntax. Without this log a malformed policy is
 			// silently ignored, making it very hard to diagnose why gorouter is
 			// not enforcing a rule the operator believes is configured.
-			if h.logger != nil {
-				h.logger.Warn("malformed-route-policy", slog.String("policy", policy))
-			}
+			h.warnMalformed(policy)
 		}
 	}
 	return "", false
+}
+
+func (h *MtlsRoutePoliciesAuth) warnMalformed(policy string) {
+	if h.logger != nil {
+		h.logger.Warn("malformed-route-policy", slog.String("policy", policy))
+	}
 }
 
 // Check performs post-selection route policies authorization.

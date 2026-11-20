@@ -2,6 +2,8 @@ package postselection_test
 
 import (
 	"net/http"
+	"regexp"
+	"strings"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -341,6 +343,142 @@ var _ = Describe("MtlsRoutePoliciesAuth", func() {
 				authErr, ok := err.(*postselection.AuthError)
 				Expect(ok).To(BeTrue())
 				Expect(authErr.Rule).To(Equal("route:route_policies"))
+			})
+		})
+
+		// ── Service-account route policies ──────────────────────────────
+
+		Context("with route policy cf:svc:<prefix>:<name>", func() {
+			const policy = "cf:svc:acme-payments:payments-worker"
+
+			checkWith := func(identity *handlers.CallerIdentity, policies ...string) error {
+				endpoint = route.NewEndpoint(&route.EndpointOpts{
+					AppId:            "backend-app",
+					Host:             "192.168.1.1",
+					Port:             8080,
+					RoutePolicyScope: route.RoutePolicyScopeAny,
+					RoutePolicies:    policies,
+				})
+				pool = createPool(endpoint)
+				reqInfo.RoutePool = pool
+				reqInfo.CallerIdentity = identity
+				return handler.Check(endpoint, reqInfo)
+			}
+
+			It("allows a caller whose service account matches exactly", func() {
+				err := checkWith(&handlers.CallerIdentity{
+					AppGUID:              "caller-app",
+					ServiceAccountSource: policy,
+				}, policy)
+
+				Expect(err).To(BeNil())
+				Expect(reqInfo.AuthResult.Outcome).To(Equal("allowed"))
+				Expect(reqInfo.AuthResult.Rule).To(Equal("route:" + policy))
+			})
+
+			DescribeTable("denies callers whose service account does not match",
+				func(callerSource string) {
+					err := checkWith(&handlers.CallerIdentity{
+						AppGUID:              "caller-app",
+						SpaceGUID:            "caller-space",
+						OrgGUID:              "caller-org",
+						ServiceAccountSource: callerSource,
+					}, policy)
+
+					Expect(err).NotTo(BeNil())
+					authErr, ok := err.(*postselection.AuthError)
+					Expect(ok).To(BeTrue())
+					Expect(authErr.Rule).To(Equal("route:route_policies"))
+					Expect(authErr.HTTPStatus).To(Equal(http.StatusForbidden))
+				},
+				Entry("caller has no service account", ""),
+				Entry("different account name in the same org prefix", "cf:svc:acme-payments:other-worker"),
+				Entry("same account name under a different org prefix", "cf:svc:globex-billing:payments-worker"),
+			)
+
+			It("does not treat the caller app, space or org as the account", func() {
+				err := checkWith(&handlers.CallerIdentity{
+					AppGUID:   "acme-payments:payments-worker",
+					SpaceGUID: "acme-payments:payments-worker",
+					OrgGUID:   "acme-payments:payments-worker",
+				}, policy)
+
+				Expect(err).NotTo(BeNil())
+			})
+
+			It("allows when another rule in the list matches the caller", func() {
+				err := checkWith(&handlers.CallerIdentity{AppGUID: "caller-app"}, policy, "cf:app:caller-app")
+
+				Expect(err).To(BeNil())
+				Expect(reqInfo.AuthResult.Rule).To(Equal("route:cf:app:caller-app"))
+			})
+
+			It("allows the account when an earlier rule does not match", func() {
+				err := checkWith(&handlers.CallerIdentity{
+					AppGUID:              "caller-app",
+					ServiceAccountSource: policy,
+				}, "cf:app:someone-else", policy)
+
+				Expect(err).To(BeNil())
+				Expect(reqInfo.AuthResult.Rule).To(Equal("route:" + policy))
+			})
+
+			It("still allows any authenticated caller through cf:any", func() {
+				err := checkWith(&handlers.CallerIdentity{AppGUID: "caller-app"}, policy, "cf:any")
+
+				Expect(err).To(BeNil())
+				Expect(reqInfo.AuthResult.Rule).To(Equal("route:cf:any"))
+			})
+
+			It("does not log a well-formed account rule as malformed", func() {
+				err := checkWith(&handlers.CallerIdentity{
+					AppGUID:              "caller-app",
+					ServiceAccountSource: "cf:svc:globex-billing:other",
+				}, policy)
+
+				Expect(err).NotTo(BeNil())
+				Expect(logger.Buffer()).NotTo(gbytes.Say("malformed-route-policy"))
+			})
+
+			DescribeTable("warns about malformed account rules and skips them",
+				func(malformed string) {
+					err := checkWith(&handlers.CallerIdentity{
+						AppGUID:              "caller-app",
+						ServiceAccountSource: policy,
+					}, malformed, policy)
+
+					// The valid rule is still evaluated after the malformed one.
+					Expect(err).To(BeNil())
+					Expect(reqInfo.AuthResult.Rule).To(Equal("route:" + policy))
+					Expect(logger.Buffer()).To(gbytes.Say("malformed-route-policy"))
+					Expect(logger.Buffer()).To(gbytes.Say(regexp.QuoteMeta(malformed)))
+				},
+				Entry("no account at all", "cf:svc:"),
+				Entry("prefix without account name", "cf:svc:acme-payments"),
+				Entry("prefix with empty account name", "cf:svc:acme-payments:"),
+				Entry("empty prefix", "cf:svc::payments-worker"),
+				Entry("too many segments", "cf:svc:acme-payments:payments-worker:extra"),
+				Entry("prefix shorter than 3 characters", "cf:svc:ac:payments-worker"),
+				Entry("account name shorter than 3 characters", "cf:svc:acme-payments:pw"),
+				Entry("prefix longer than 63 characters", "cf:svc:"+strings.Repeat("a", 64)+":payments-worker"),
+				Entry("account name longer than 63 characters", "cf:svc:acme-payments:"+strings.Repeat("a", 64)),
+				Entry("uppercase prefix", "cf:svc:Acme-Payments:payments-worker"),
+				Entry("uppercase account name", "cf:svc:acme-payments:Payments-Worker"),
+				Entry("dotted prefix", "cf:svc:acme.payments:payments-worker"),
+				Entry("underscore in account name", "cf:svc:acme-payments:payments_worker"),
+				Entry("prefix beginning with a hyphen", "cf:svc:-acme:payments-worker"),
+				Entry("account name ending with a hyphen", "cf:svc:acme-payments:payments-"),
+				Entry("SAN form instead of source form", "payments-worker.acme-payments.svc.identity"),
+			)
+
+			It("never authorizes a caller through a malformed rule", func() {
+				err := checkWith(&handlers.CallerIdentity{
+					AppGUID:              "caller-app",
+					ServiceAccountSource: policy,
+				}, "cf:svc:acme-payments")
+
+				Expect(err).NotTo(BeNil())
+				Expect(logger.Buffer()).To(gbytes.Say("malformed-route-policy"))
 			})
 		})
 

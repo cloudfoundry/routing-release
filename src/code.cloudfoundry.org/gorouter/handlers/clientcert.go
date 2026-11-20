@@ -22,6 +22,12 @@ import (
 
 const xfcc = "X-Forwarded-Client-Cert"
 
+// xfccServiceAccountKey is the element GoRouter adds to the envoy XFCC format
+// to carry a validated service-account SAN. It is not part of Envoy's own
+// format; it is emitted only for a certificate with exactly one well-formed
+// <name>.<prefix>.svc.identity SAN, and always ahead of the Subject.
+const xfccServiceAccountKey = "SVC"
+
 type clientCert struct {
 	skipSanitization  func(req *http.Request) bool
 	forceDeleteHeader func(req *http.Request) (bool, error)
@@ -127,7 +133,8 @@ func replaceXFCCHeaderEnvoyFormat(r *http.Request) {
 }
 
 // formatXFCCEnvoy generates the Envoy-style XFCC header value:
-// Hash=<sha256-hex>;Subject="<X.509 DN>"
+// Hash=<sha256-hex>;Subject="<X.509 DN>", with SVC=<account SAN> between them
+// when the certificate carries a service account.
 func formatXFCCEnvoy(cert *x509.Certificate) string {
 	// Calculate SHA-256 hash of the DER-encoded certificate
 	hash := sha256.Sum256(cert.Raw)
@@ -136,6 +143,11 @@ func formatXFCCEnvoy(cert *x509.Certificate) string {
 	// Format Subject DN using standard X.509 format
 	subject := formatSubjectDN(cert.Subject)
 
+	// The account element precedes the Subject: the Subject carries values taken
+	// from the certificate, and the parser only trusts elements ahead of it.
+	if san := serviceAccountSAN(cert); san != "" {
+		return fmt.Sprintf("Hash=%s;%s=%s;Subject=\"%s\"", hashHex, xfccServiceAccountKey, san, subject)
+	}
 	return fmt.Sprintf("Hash=%s;Subject=\"%s\"", hashHex, subject)
 }
 

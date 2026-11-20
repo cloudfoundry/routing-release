@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"code.cloudfoundry.org/gorouter/config"
@@ -18,9 +19,10 @@ import (
 // - space:<space-guid> for the space GUID
 // - organization:<org-guid> for the organization GUID
 type CallerIdentity struct {
-	AppGUID   string
-	SpaceGUID string
-	OrgGUID   string
+	ServiceAccountSource string
+	AppGUID              string
+	SpaceGUID            string
+	OrgGUID              string
 }
 
 // cfIdentityHandler extracts the caller identity from the X-Forwarded-Client-Cert header
@@ -69,6 +71,10 @@ func (h *cfIdentityHandler) ServeHTTP(w http.ResponseWriter, r *http.Request, ne
 	// Extract identity from X-Forwarded-Client-Cert header using the configured format
 	xfccHeader := r.Header.Get("X-Forwarded-Client-Cert")
 	if xfccHeader != "" {
+		// The whole identity (app, space, org and service account) comes from the
+		// XFCC data, never partly from the TLS connection. With sanitize_set that
+		// header was derived from the verified peer certificate by ClientCert; the
+		// forward modes trust the forwarded header for every field alike.
 		identity, err := extractIdentityFromXFCC(xfccHeader, domainConfig.XFCCFormat)
 		if err == nil {
 			reqInfo.CallerIdentity = identity
@@ -78,6 +84,75 @@ func (h *cfIdentityHandler) ServeHTTP(w http.ResponseWriter, r *http.Request, ne
 	}
 
 	next(w, r)
+}
+
+// serviceAccountLabel is a lowercase RFC 1123 label of 3-63 characters, the form
+// of both the org prefix and the account name in a service-account identity.
+const serviceAccountLabel = `[a-z0-9][a-z0-9-]{1,61}[a-z0-9]`
+
+var (
+	serviceAccountSANPattern    = regexp.MustCompile(`\A(` + serviceAccountLabel + `)\.(` + serviceAccountLabel + `)\.svc\.identity\z`)
+	serviceAccountSourcePattern = regexp.MustCompile(`\Acf:svc:(` + serviceAccountLabel + `):(` + serviceAccountLabel + `)\z`)
+)
+
+// IsServiceAccountSource reports whether source is a well-formed route-policy
+// source for a service account: cf:svc:<org-prefix>:<account-name>.
+func IsServiceAccountSource(source string) bool {
+	return serviceAccountSourcePattern.MatchString(source)
+}
+
+// serviceAccountSAN returns the certificate's service-account SAN, or "" unless
+// the certificate carries exactly one well-formed one. Any other *.svc.identity
+// SAN (malformed or a second account) makes the identity ambiguous, so no
+// account is reported.
+func serviceAccountSAN(cert *x509.Certificate) string {
+	var account string
+	for _, san := range cert.DNSNames {
+		if !strings.HasSuffix(strings.TrimSuffix(san, "."), ".svc.identity") {
+			continue
+		}
+		if !serviceAccountSANPattern.MatchString(san) || account != "" {
+			return ""
+		}
+		account = san
+	}
+	return account
+}
+
+// serviceAccountSourceFromSAN converts <name>.<prefix>.svc.identity to the
+// route-policy source cf:svc:<prefix>:<name>. It returns "" for anything else.
+func serviceAccountSourceFromSAN(san string) string {
+	match := serviceAccountSANPattern.FindStringSubmatch(san)
+	if match == nil {
+		return ""
+	}
+	return "cf:svc:" + match[2] + ":" + match[1]
+}
+
+// serviceAccountSource returns the route-policy source for the certificate's
+// service account, or "" when it has none or an ambiguous one.
+func serviceAccountSource(cert *x509.Certificate) string {
+	return serviceAccountSourceFromSAN(serviceAccountSAN(cert))
+}
+
+// serviceAccountSourceFromEnvoyXFCC reads the SVC=<san> element that GoRouter
+// emits in the envoy format. Only elements ahead of the Subject are considered:
+// the Subject is the one element whose value comes from certificate content, so
+// nothing inside or after it can introduce an account. Repeated SVC= elements
+// are ambiguous and yield no account.
+func serviceAccountSourceFromEnvoyXFCC(beforeSubject string) string {
+	var san string
+	var seen int
+	for _, element := range strings.Split(beforeSubject, ";") {
+		if value, ok := strings.CutPrefix(strings.TrimSpace(element), xfccServiceAccountKey+"="); ok {
+			san = value
+			seen++
+		}
+	}
+	if seen != 1 {
+		return ""
+	}
+	return serviceAccountSourceFromSAN(san)
 }
 
 // extractIdentityFromXFCC parses the X-Forwarded-Client-Cert header and extracts
@@ -119,7 +194,12 @@ func extractIdentityFromEnvoyXFCC(xfcc string) (*CallerIdentity, error) {
 		return nil, errors.New("empty Subject field in XFCC header")
 	}
 	subjectDN := xfcc[subjectStart : subjectStart+subjectEnd]
-	return extractIdentityFromSubjectDN(subjectDN)
+	identity, err := extractIdentityFromSubjectDN(subjectDN)
+	if err != nil {
+		return nil, err
+	}
+	identity.ServiceAccountSource = serviceAccountSourceFromEnvoyXFCC(xfcc[:subjectStart-len("Subject=\"")])
+	return identity, nil
 }
 
 // extractIdentityFromRawXFCC parses raw base64 format (no PEM markers)
@@ -266,6 +346,7 @@ func unescapeDNValue(v string) string {
 }
 
 // extractIdentityFromCert extracts GUIDs from an X.509 certificate's OU fields
+// and its service account from the DNS SANs
 func extractIdentityFromCert(cert *x509.Certificate) (*CallerIdentity, error) {
 	identity := &CallerIdentity{}
 	for _, ou := range cert.Subject.OrganizationalUnit {
@@ -291,6 +372,8 @@ func extractIdentityFromCert(cert *x509.Certificate) (*CallerIdentity, error) {
 	if identity.AppGUID == "" {
 		return nil, errors.New("no app GUID found in certificate OU")
 	}
+
+	identity.ServiceAccountSource = serviceAccountSource(cert)
 
 	return identity, nil
 }
