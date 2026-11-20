@@ -212,7 +212,7 @@ properties:
 
       xfcc_format controls the format of the X-Forwarded-Client-Cert header:
       - "raw" (default): Full base64-encoded certificate (~1.5KB)
-      - "envoy": Compact Hash=<sha256>;Subject="<DN>" format (~300 bytes)
+      - "envoy": Compact Hash=<sha256>;Subject="<DN>" format (~300 bytes). When the client certificate has exactly one service-account SAN (<name>.<org-prefix>.svc.identity), GoRouter adds SVC=<SAN> between Hash and Subject. Other DNS SANs are never included.
     default: []
     example:
     - name: "*.apps.identity"
