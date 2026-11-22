@@ -1,26 +1,26 @@
-# code.cloudfoundry.org/cfhttp/v2 v2.103.0
+# code.cloudfoundry.org/cfhttp/v2 v2.104.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/cfhttp/v2
-# code.cloudfoundry.org/clock v1.96.0
+# code.cloudfoundry.org/clock v1.97.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/clock
 code.cloudfoundry.org/clock/fakeclock
-# code.cloudfoundry.org/debugserver v0.123.0
+# code.cloudfoundry.org/debugserver v0.124.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/debugserver
-# code.cloudfoundry.org/diego-db-helpers v0.26.0
+# code.cloudfoundry.org/diego-db-helpers v0.27.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/diego-db-helpers/guidprovider
 code.cloudfoundry.org/diego-db-helpers/sqldb/helpers
 code.cloudfoundry.org/diego-db-helpers/sqldb/helpers/monitor
-# code.cloudfoundry.org/diego-logging-client v0.133.0
+# code.cloudfoundry.org/diego-logging-client v0.134.0
 ## explicit; go 1.27.3
 code.cloudfoundry.org/diego-logging-client
 code.cloudfoundry.org/diego-logging-client/testhelpers
-# code.cloudfoundry.org/durationjson v0.98.0
+# code.cloudfoundry.org/durationjson v0.99.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/durationjson
-# code.cloudfoundry.org/eventhub v0.98.0
+# code.cloudfoundry.org/eventhub v0.99.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/eventhub
 # code.cloudfoundry.org/go-diodes v0.0.0-20261109092731-97a033397c51
@@ -34,17 +34,17 @@ code.cloudfoundry.org/go-loggregator/v9/runtimeemitter
 # code.cloudfoundry.org/go-metric-registry v0.0.0-20261110084834-0138664d3a28
 ## explicit; go 1.27.3
 code.cloudfoundry.org/go-metric-registry
-# code.cloudfoundry.org/lager/v3 v3.95.0
+# code.cloudfoundry.org/lager/v3 v3.96.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/lager/v3
 code.cloudfoundry.org/lager/v3/internal/truncate
 code.cloudfoundry.org/lager/v3/lagerctx
 code.cloudfoundry.org/lager/v3/lagerflags
 code.cloudfoundry.org/lager/v3/lagertest
-# code.cloudfoundry.org/localip v0.97.0
+# code.cloudfoundry.org/localip v0.98.0
 ## explicit; go 1.26.0
 code.cloudfoundry.org/localip
-# code.cloudfoundry.org/locket v1.20.0
+# code.cloudfoundry.org/locket v1.22.0
 ## explicit; go 1.27.3
 code.cloudfoundry.org/locket
 code.cloudfoundry.org/locket/cmd/locket
@@ -59,7 +59,7 @@ code.cloudfoundry.org/locket/lock
 code.cloudfoundry.org/locket/metrics
 code.cloudfoundry.org/locket/metrics/helpers
 code.cloudfoundry.org/locket/models
-# code.cloudfoundry.org/routing-api v0.23.0
+# code.cloudfoundry.org/routing-api v0.24.0
 ## explicit; go 1.27.3
 code.cloudfoundry.org/routing-api
 code.cloudfoundry.org/routing-api/admin
@@ -78,7 +78,7 @@ code.cloudfoundry.org/routing-api/test_helpers
 code.cloudfoundry.org/routing-api/trace
 code.cloudfoundry.org/routing-api/uaaclient
 code.cloudfoundry.org/routing-api/uaaclient/fakes
-# code.cloudfoundry.org/tlsconfig v0.72.0
+# code.cloudfoundry.org/tlsconfig v0.73.0
 ## explicit; go 1.27.3
 code.cloudfoundry.org/tlsconfig
 # filippo.io/edwards25519 v1.2.0
@@ -162,7 +162,7 @@ github.com/facebookgo/muster
 ## explicit; go 1.18
 github.com/go-logr/logr
 github.com/go-logr/logr/funcr
-# github.com/go-sql-driver/mysql v1.10.1
+# github.com/go-sql-driver/mysql v1.10.2
 ## explicit; go 1.24.0
 github.com/go-sql-driver/mysql
 # github.com/go-task/slim-sprig/v3 v3.0.0
@@ -186,7 +186,7 @@ github.com/google/go-cmp/cmp/internal/value
 github.com/google/go-tpm/legacy/tpm2
 github.com/google/go-tpm/tpmutil
 github.com/google/go-tpm/tpmutil/tbs
-# github.com/google/pprof v0.0.0-20261111200114-fac431ef4d26
+# github.com/google/pprof v0.0.0-20261118010117-084b33a85f63
 ## explicit; go 1.26.0
 github.com/google/pprof/profile
 # github.com/honeycombio/libhoney-go v1.27.1
@@ -215,7 +215,7 @@ github.com/jackc/pgx/v5/pgproto3
 github.com/jackc/pgx/v5/pgtype
 github.com/jackc/pgx/v5/pgxpool
 github.com/jackc/pgx/v5/stdlib
-# github.com/jackc/puddle/v2 v2.2.3
+# github.com/jackc/puddle/v2 v2.2.4
 ## explicit; go 1.19
 github.com/jackc/puddle/v2
 github.com/jackc/puddle/v2/internal/genstack
@@ -229,7 +229,7 @@ github.com/jinzhu/now
 ## explicit; go 1.26.0
 github.com/kisielk/errcheck
 github.com/kisielk/errcheck/errcheck
-# github.com/klauspost/compress v1.20.4
+# github.com/klauspost/compress v1.20.5
 ## explicit; go 1.25
 github.com/klauspost/compress
 github.com/klauspost/compress/flate
@@ -271,7 +271,7 @@ github.com/nats-io/nats-server/v2/server/stree
 github.com/nats-io/nats-server/v2/server/sysmem
 github.com/nats-io/nats-server/v2/server/thw
 github.com/nats-io/nats-server/v2/server/tpm
-# github.com/nats-io/nats.go v1.55.0
+# github.com/nats-io/nats.go v1.56.0
 ## explicit; go 1.26.0
 github.com/nats-io/nats.go
 github.com/nats-io/nats.go/encoders/builtin
@@ -397,7 +397,7 @@ github.com/vmihailenco/msgpack/v5/msgpcode
 github.com/vmihailenco/tagparser/v2
 github.com/vmihailenco/tagparser/v2/internal
 github.com/vmihailenco/tagparser/v2/internal/parser
-# go.step.sm/crypto v0.92.0
+# go.step.sm/crypto v0.92.1
 ## explicit; go 1.26.0
 go.step.sm/crypto/fingerprint
 go.step.sm/crypto/internal/bcrypt_pbkdf
@@ -453,7 +453,7 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 # golang.org/x/mod v0.43.0
 ## explicit; go 1.26.0
 golang.org/x/mod/semver
-# golang.org/x/net v0.62.0
+# golang.org/x/net v0.63.0
 ## explicit; go 1.26.0
 golang.org/x/net/context
 golang.org/x/net/html
@@ -515,7 +515,7 @@ golang.org/x/text/width
 # golang.org/x/time v0.16.0
 ## explicit; go 1.26.0
 golang.org/x/time/rate
-# golang.org/x/tools v0.52.0
+# golang.org/x/tools v0.53.0
 ## explicit; go 1.26.0
 golang.org/x/tools/cover
 golang.org/x/tools/go/analysis
@@ -553,7 +553,7 @@ golang.org/x/tools/internal/pkgbits
 golang.org/x/tools/internal/stdlib
 golang.org/x/tools/internal/typesinternal
 golang.org/x/tools/internal/versions
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20261110000943-09e21b237f2c
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20261118221215-c8830f628b3f
 ## explicit; go 1.26.0
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.85.0
