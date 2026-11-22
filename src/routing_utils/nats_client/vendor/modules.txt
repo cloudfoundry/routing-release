@@ -1,12 +1,12 @@
-# code.cloudfoundry.org/tlsconfig v0.72.0
+# code.cloudfoundry.org/tlsconfig v0.73.0
 ## explicit; go 1.27.3
 code.cloudfoundry.org/tlsconfig
-# github.com/klauspost/compress v1.20.4
+# github.com/klauspost/compress v1.20.5
 ## explicit; go 1.25
 github.com/klauspost/compress/flate
 github.com/klauspost/compress/internal/le
 github.com/klauspost/compress/internal/regmask
-# github.com/nats-io/nats.go v1.55.0
+# github.com/nats-io/nats.go v1.56.0
 ## explicit; go 1.26.0
 github.com/nats-io/nats.go
 github.com/nats-io/nats.go/encoders/builtin
