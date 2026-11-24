@@ -292,23 +292,9 @@ func (r *RouteRegistry) LookupWithAppInstance(uri route.Uri, appID string, appIn
 		return nil
 	}
 
-	var surgicalPool *route.EndpointPool
-
-	p.Each(func(e *route.Endpoint) {
-		if (e.ApplicationId == appID) && (e.PrivateInstanceIndex == appIndex) {
-			surgicalPool = route.NewPool(&route.PoolOpts{
-				Logger:                 r.logger,
-				RetryAfterFailure:      0,
-				Host:                   p.Host(),
-				ContextPath:            p.ContextPath(),
-				MaxConnsPerBackend:     p.MaxConnsPerBackend(),
-				LoadBalancingAlgorithm: p.LoadBalancingAlgorithm,
-			})
-			surgicalPool.Put(e)
-		}
-	})
-
-	return surgicalPool
+	return p.InstancePool(func(e *route.Endpoint) bool {
+		return e.ApplicationId == appID && e.PrivateInstanceIndex == appIndex
+	}, true)
 }
 
 func (r *RouteRegistry) LookupWithProcessInstance(uri route.Uri, processID string, processIndex string) *route.EndpointPool {
@@ -319,25 +305,9 @@ func (r *RouteRegistry) LookupWithProcessInstance(uri route.Uri, processID strin
 		return nil
 	}
 
-	var surgicalPool *route.EndpointPool
-
-	p.Each(func(e *route.Endpoint) {
-		if (e.ProcessId() == processID) && (e.PrivateInstanceIndex == processIndex || processIndex == "") {
-			if surgicalPool == nil {
-				surgicalPool = route.NewPool(&route.PoolOpts{
-					Logger:                 r.logger,
-					RetryAfterFailure:      0,
-					Host:                   p.Host(),
-					ContextPath:            p.ContextPath(),
-					MaxConnsPerBackend:     p.MaxConnsPerBackend(),
-					LoadBalancingAlgorithm: p.LoadBalancingAlgorithm,
-				})
-			}
-			surgicalPool.Put(e)
-		}
-	})
-
-	return surgicalPool
+	return p.InstancePool(func(e *route.Endpoint) bool {
+		return e.ProcessId() == processID && (processIndex == "" || e.PrivateInstanceIndex == processIndex)
+	}, false)
 }
 
 func (r *RouteRegistry) StartPruningCycle() {
