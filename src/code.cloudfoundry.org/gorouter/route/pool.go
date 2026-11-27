@@ -731,6 +731,41 @@ func (p *EndpointPool) EndpointFailed(endpoint *Endpoint, err error) {
 
 }
 
+// InstancePool restricts backend selection while preserving the matched
+// route's security settings. lastMatchOnly preserves the existing app-instance
+// behavior when several endpoints match the same app ID and instance index.
+func (p *EndpointPool) InstancePool(matches func(*Endpoint) bool, lastMatchOnly bool) *EndpointPool {
+	p.Lock()
+	defer p.Unlock()
+
+	var selected *EndpointPool
+	for _, entry := range p.endpoints {
+		if !matches(entry.endpoint) {
+			continue
+		}
+		if selected == nil || lastMatchOnly {
+			selected = NewPool(&PoolOpts{
+				Logger:                 p.logger,
+				RetryAfterFailure:      0,
+				Host:                   p.host,
+				ContextPath:            p.contextPath,
+				MaxConnsPerBackend:     p.maxConnsPerBackend,
+				LoadBalancingAlgorithm: p.LoadBalancingAlgorithm,
+			})
+		}
+		selected.Put(entry.endpoint)
+	}
+
+	if selected != nil {
+		// Put imports security settings from endpoints, which may be stale.
+		// Preserve the parent's settings, including intentionally empty values.
+		selected.RouteSvcUrl = p.RouteSvcUrl
+		selected.routePolicyScope = p.routePolicyScope
+		selected.routePolicies = slices.Clone(p.routePolicies)
+	}
+	return selected
+}
+
 func (p *EndpointPool) Each(f func(endpoint *Endpoint)) {
 	p.Lock()
 	for _, e := range p.endpoints {
